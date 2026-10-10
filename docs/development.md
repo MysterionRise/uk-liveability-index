@@ -117,9 +117,9 @@ directory (CI runs the browser tests on the demo data).
 
 `web/` is a Next.js app (Node 24, see `.nvmrc`):
 
-- a MapLibre map of every England neighbourhood from static PMTiles, coloured by England
-  percentile; weights are recomputed in the browser, so moving a slider recolours all 33,755
-  areas in about 100 ms
+- a MapLibre map of every neighbourhood in England and Wales from static PMTiles, coloured
+  by UK percentile; weights are recomputed in the browser, so moving a slider recolours all
+  35,672 areas in about 100 ms
 - an assistant chat ([CopilotKit](https://copilotkit.ai) over AG-UI) whose tool calls render as
   components: ranked lists, area profiles, side-by-side comparisons, nearby places, score
   explanations and SQL results. The assistant and the page share state, so it can move the map,
@@ -142,9 +142,9 @@ With a model key in `.env`, `make dev` uses the real model from `.env`.
 
 ## Planned
 
-- More open datasets: rail service frequency, surface water flooding and road and rail noise
-  (both published as rasters only), tree cover, and the CDRC's Access to Healthy Assets &
-  Hazards (behind a free login)
+- More open datasets: rail station usage, mobile coverage, EV charging, private rents, jobs
+  density, energy performance certificates, A&E distance and listed buildings, then the
+  CDRC's Access to Healthy Assets & Hazards (behind a free login) as a cross-check
 - Walking-network travel times instead of straight-line distances
 
 ## Building the data

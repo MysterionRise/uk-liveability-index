@@ -23,6 +23,11 @@ All notable changes to this project. The format follows
 - Sources served over WCS (the English noise grids, fetched as deflated GeoTIFF tiles) and
   sets of files under one URL pattern (the WorldCover tiles) in the registry.
 
+### Changed
+
+- The retired preset weights road and rail noise at 1.5, as it already does the distance
+  to a GP and a pharmacy: its description has promised a quieter area since 0.1.0.
+
 ### Fixed
 
 - Welsh flood risk was 0% almost everywhere: the indicator read the English postcode

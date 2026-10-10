@@ -28,7 +28,7 @@ presets:
     label: Retired
     description: Safety, health services, clean air and a quieter area.
     themes: {safety: 2, environment: 1.5, health: 2.5, education: 0.25, transport: 1, amenities: 1, housing: 1, community: 1}
-    indicators: {gp_distance: 1.5, pharmacy_distance: 1.5}
+    indicators: {gp_distance: 1.5, pharmacy_distance: 1.5, road_rail_noise: 1.5}
 
   commuter:
     label: Commuter

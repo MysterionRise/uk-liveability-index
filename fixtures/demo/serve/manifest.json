@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated_at": "2026-10-10T21:43:56+00:00",
+  "generated_at": "2026-10-10T22:17:12+00:00",
   "geography": {
     "country": {
       "code": "UK",
@@ -2935,7 +2935,8 @@
       },
       "indicators": {
         "gp_distance": 1.5,
-        "pharmacy_distance": 1.5
+        "pharmacy_distance": 1.5,
+        "road_rail_noise": 1.5
       }
     },
     "commuter": {
@@ -3561,8 +3562,8 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "e7759d2e2d0ffa20f3e6cbcdc93a1317f43661c50ce84336047e9a39001114b4",
-      "bytes": 1125400
+      "sha256": "9363b8602d4a7355ce641b0115041b16ff7b5d8a560bbea3c5ec2cd70e463638",
+      "bytes": 1125377
     },
     "scores.parquet": {
       "sha256": "935cff292ab2497d90761a3fb358c4939491d94656eb3dc220d95c00311def1b",
@@ -3577,8 +3578,8 @@
       "bytes": 18733
     },
     "areas.parquet": {
-      "sha256": "2c19e9bcf5983bdc8d05be26ab2b7938237a15627985d076d990891759e093f6",
-      "bytes": 14793
+      "sha256": "27a18ac15f8edbd408728e2895880e873f8ca7fd57c7d16ed1dfe45a96f55037",
+      "bytes": 14807
     },
     "pois.parquet": {
       "sha256": "9cba504e89f819a959b559a539472cf0f762c54200cdf97bd17310611a296d85",
