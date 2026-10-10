@@ -230,8 +230,7 @@ def fetch(
             lambda out: overture.fetch_query(spec.access, resolved["url"], out),
         )
     elif spec.access.type == "wcs":
-        urls = wcs.tile_urls(spec.access, resolved)
-        meta = download_set(slug, urls, spec.format, resolved["version"], force, session)
+        meta = wcs.fetch_tiles(slug, spec.access, resolved, spec.format, force, session)
     elif spec.access.type == "wfs":
         urls = wfs.page_urls(spec.access, spec.format, resolved["count"])
         meta = download_set(

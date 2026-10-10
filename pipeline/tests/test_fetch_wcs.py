@@ -140,3 +140,41 @@ class TestDownloadSet:
             )
         assert not (project / "raw" / "zz2" / "bad.tif").exists()
         assert _read_meta(project / "raw" / "zz2").get("completed") is not True
+
+
+class TestFetchTiles:
+    def _access(self, httpserver):
+        return WcsAccess(type="wcs", url=httpserver.url_for("/wcs"), coverage_id="a__b", tile_px=4)
+
+    def test_a_failing_tile_is_fetched_as_quarters(self, httpserver, project, monkeypatch):
+        monkeypatch.setattr("lix_pipeline.fetch.http.time.sleep", lambda s: None)
+        resolved = {"url": "x", "version": "v1", "envelope": [0.0, 0.0, 8.0, 4.0], "res": 1.0}
+
+        def serve(request: Request) -> Response:
+            subset = request.args.getlist("subset")
+            if subset == ["E(0,4)", "N(0,4)"]:
+                return Response("gateway timeout", status=504)  # the dense tile
+            return Response(TIFF + subset[0].encode())
+
+        httpserver.expect_request("/wcs").respond_with_handler(serve)
+        meta = wcs.fetch_tiles(
+            "zz", self._access(httpserver), resolved, "tif", session=make_session()
+        )
+        assert meta["completed"]
+        assert meta["files"]["E0_N0"] == ["E0_N0", "E2_N0", "E0_N2", "E2_N2"]
+        assert isinstance(meta["files"]["E4_N0"], str)
+        names = sorted(p.name for p in (project / "raw" / "zz").glob("*.tif"))
+        assert names == ["E0_N0.tif", "E0_N2.tif", "E2_N0.tif", "E2_N2.tif", "E4_N0.tif"]
+        httpserver.clear()  # the second run touches nothing
+        again = wcs.fetch_tiles(
+            "zz", self._access(httpserver), resolved, "tif", session=make_session()
+        )
+        assert again["sha256"] == meta["sha256"]
+
+    def test_quarters_of_a_tile(self):
+        assert wcs.quarters((0.0, 0.0, 8.0, 4.0)) == [
+            (0.0, 0.0, 4.0, 2.0),
+            (4.0, 0.0, 8.0, 2.0),
+            (0.0, 2.0, 4.0, 4.0),
+            (4.0, 2.0, 8.0, 4.0),
+        ]
