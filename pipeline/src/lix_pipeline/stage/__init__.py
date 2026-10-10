@@ -42,10 +42,28 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "schools": ["gias", "lsoa_boundaries"],
     "childcare": ["ofsted_childcare", "nspl"],
     "pharmacies": ["nhsbsa_pharmacies", "nspl"],
-    "flood": ["ea_flood_postcodes", "nspl"],
+    "ea_flood_all_postcodes": ["ea_flood_postcode_tool", "nspl"],
+    "flood": ["ea_flood_postcodes", "ea_flood_postcode_tool", "nspl"],
+    "tree_cover": ["esa_worldcover", "nspl"],
+    "night_lights": ["viirs_vnl", "nspl"],
+    "noise": [
+        "defra_noise_road_lden",
+        "defra_noise_rail_lden",
+        "wg_noise_road_lden",
+        "wg_noise_rail_lden",
+        "nspl",
+    ],
     "deprivation": ["iod_2025"],
     "wg_ks4_la": ["wg_ks4_la"],
 }
+
+
+# Sources every build rests on whatever the indicators: the geography, postcodes, place
+# names and the boundaries the tiles are cut from. The manifest credits them alongside
+# the indicators' sources.
+BACKBONE_INPUTS: list[str] = sorted(
+    set(STAGE_INPUTS["geo_lsoa"]) | set(STAGE_INPUTS["places"]) | {"msoa_boundaries"}
+)
 
 
 def save_staged(df: pl.LazyFrame | pl.DataFrame, slug: str) -> Path:
@@ -74,6 +92,9 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         geo,
         health,
         housing,
+        landcover,
+        night_lights,
+        noise,
         safety,
         schools,
         transport,
@@ -129,6 +150,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "pharmacies": health.stage_pharmacies,  # needs staged nhsbsa_pharmacies and osm_pois
         "os_greenspace": environment.stage_os_greenspace,
         "ea_flood_postcodes": environment.stage_ea_flood_postcodes,
+        "ea_flood_all_postcodes": environment.stage_ea_flood_all_postcodes,
         "naptan": transport.stage_naptan,
         "bods_gtfs": transport.stage_bods_gtfs,
         "ofcom_broadband": transport.stage_ofcom_broadband,  # needs staged oa_lookup
@@ -139,5 +161,8 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "life_expectancy": community.stage_life_expectancy,
         # Concept tables that union per-nation sources staged above
         "flood": environment.stage_flood,  # needs staged ea_flood_postcodes and voa_ctsop
+        "noise": noise.stage_noise,  # needs staged nspl
+        "tree_cover": landcover.stage_tree_cover,  # needs staged nspl
+        "night_lights": night_lights.stage_night_lights,  # manual source; needs staged nspl
         "deprivation": stage_deprivation,  # needs staged iod_2025
     }

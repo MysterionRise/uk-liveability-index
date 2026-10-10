@@ -8,7 +8,7 @@ import pytest
 
 from lix_pipeline.stage.childcare import stage_ofsted_childcare
 from lix_pipeline.stage.community import stage_claimant_count
-from lix_pipeline.stage.environment import stage_ea_flood_postcodes
+from lix_pipeline.stage.environment import stage_ea_flood_all_postcodes, stage_ea_flood_postcodes
 from lix_pipeline.stage.health import stage_nhsbsa_pharmacies, stage_ods_dentists
 from lix_pipeline.stage.housing import stage_voa_ctsop
 from lix_pipeline.stage.safety import stage_stats19
@@ -115,6 +115,37 @@ def test_flood_postcodes_summed_per_lsoa(data):
     df = stage_ea_flood_postcodes().collect()
     assert df.rows(named=True) == [
         {"lsoa21cd": "E01000001", "res_high": 1, "res_medium": 3, "res_low": 2, "res_verylow": 0}
+    ]
+
+
+def test_flood_all_sources_summed_per_lsoa(data):
+    rows = [
+        "AB1 2CD,3,4,10,Unlikely",
+        "EF3 4GH,0,0,0,Possible",
+        "ZZ1 1ZZ,9,9,9,Unlikely",  # not in NSPL
+        "CF10 1AA,1,0,0,Unlikely",  # Wales, out of an England-only build
+    ]
+    _write(
+        data / "raw" / "ea_flood_postcode_tool" / "ea_flood_postcode_tool.csv",
+        "Postcode,HIGH_CNT,MED_CNT,LOW_CNT,GWTR_RISK\n" + "\n".join(rows) + "\n",
+        encoding="utf-8-sig",  # the real file starts with a byte-order mark
+    )
+    df = stage_ea_flood_all_postcodes().collect().sort("lsoa21cd")
+    assert df.rows(named=True) == [
+        {
+            "lsoa21cd": "E01000001",
+            "any_high": 3,
+            "any_medium": 4,
+            "any_low": 10,
+            "share_groundwater": 0.0,
+        },
+        {
+            "lsoa21cd": "E01000002",
+            "any_high": 0,
+            "any_medium": 0,
+            "any_low": 0,
+            "share_groundwater": 1.0,
+        },
     ]
 
 

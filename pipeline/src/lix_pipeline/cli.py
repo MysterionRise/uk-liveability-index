@@ -80,9 +80,25 @@ def _fetch(args: argparse.Namespace) -> int:
     return 1 if failed else 0
 
 
-def _has_inputs(slug: str) -> bool:
-    raw = data_dir("raw")
-    return all((raw / s / ".meta.json").exists() for s in STAGE_INPUTS.get(slug, [slug]))
+def _has_inputs(slug: str, registry: dict) -> bool:
+    """Every input the stager needs for the active nations is on disk.
+
+    Inputs covering none of the active nations are not needed (Welsh noise maps in an
+    England-only build); a manual source counts when its files sit in data/manual/.
+    """
+    from lix_core.codes import active_nations
+
+    active = set(active_nations())
+
+    def present(s: str) -> bool:
+        spec = registry.get(s)
+        if spec is not None and not (active & set(spec.coverage)):
+            return True
+        if spec is not None and spec.access.type == "manual":
+            return any(p.is_file() for p in (data_dir("manual") / s).glob("**/*"))
+        return (data_dir("raw") / s / ".meta.json").exists()
+
+    return all(present(s) for s in STAGE_INPUTS.get(slug, [slug]))
 
 
 def _covers_active(slug: str, registry: dict) -> bool:
@@ -101,7 +117,7 @@ def _stage(args: argparse.Namespace) -> int:
 
     registry = load_registry()
     for slug in [args.slug] if args.slug else list(available):
-        if args.all and not _has_inputs(slug):
+        if args.all and not _has_inputs(slug, registry):
             logger.info(f"[{slug}] Inputs not fetched — skipping")
             continue
         if args.all and not _covers_active(slug, registry):

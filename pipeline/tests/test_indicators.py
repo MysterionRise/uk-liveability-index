@@ -10,7 +10,7 @@ from lix_pipeline.geo.access import poi_access
 from lix_pipeline.indicators import build_indicator
 from lix_pipeline.indicators.common import count_within, impute_by_proxy, nearest, share
 from lix_pipeline.indicators.community import claimant_rate
-from lix_pipeline.indicators.environment import flood_risk
+from lix_pipeline.indicators.environment import flood_risk, optional_column, percent
 from lix_pipeline.indicators.health import patients_per_gp
 from lix_pipeline.indicators.housing import PRIOR_SALES, council_tax, median_price
 from lix_pipeline.indicators.pubs import match_pubs, normalise_name
@@ -220,10 +220,27 @@ def test_flood_risk_share_of_homes():
         "lsoa21cd": ["E01000001", "E01000003"],
         "res_high": [5, 20], "res_medium": [15, 0], "res_low": [30, 0],
     })  # fmt: skip
-    ctx = FakeContext(voa_ctsop=stock, ea_flood_postcodes=at_risk)
+    ctx = FakeContext(voa_ctsop=stock, flood=at_risk)
     df = flood_risk(ctx, bands=["high", "medium"]).sort("lsoa21cd")
     # 20 of 100; none listed → 0; more at risk than dwellings counted → capped at 100
     assert df["value"].to_list() == [20.0, 0.0, 100.0]
+    assert df["quality"].to_list() == ["ok", "ok", "ok"]
+
+
+def test_flood_risk_any_source_and_estimates_are_flagged():
+    stock = pl.DataFrame({"lsoa21cd": ["E01000001", "W01000001"], "dwellings": [100, 50]})
+    flood = pl.DataFrame({
+        "lsoa21cd": ["E01000001", "W01000001"],
+        "res_high": [5, 0], "res_medium": [5, 0],
+        "any_high": [10, 20], "any_medium": [20, 5],
+        "estimated": [False, True],
+    })  # fmt: skip
+    ctx = FakeContext(voa_ctsop=stock, flood=flood)
+    rivers = flood_risk(ctx, bands=["high", "medium"], prefix="res").sort("lsoa21cd")
+    any_ = flood_risk(ctx, bands=["high", "medium"], prefix="any").sort("lsoa21cd")
+    assert rivers["value"].to_list() == [10.0, 0.0]
+    assert any_["value"].to_list() == [30.0, 50.0]
+    assert any_["quality"].to_list() == ["ok", "imputed"]
 
 
 def test_claimant_rate_per_working_age_resident():
@@ -279,3 +296,17 @@ def test_gp_quality_weights_ratings_by_where_patients_live():
     first, second = df["value"].to_list()
     assert first == pytest.approx((300 * 1.0 + 100 * 0.4) / 400)
     assert second is None  # only a quarter of its patients are at a rated practice
+
+
+def test_percent_scales_a_share():
+    ctx = FakeContext(noise=pl.DataFrame({"lsoa21cd": ["E01000001"], "share_any_55": [0.375]}))
+    assert percent(ctx, "noise", "share_any_55")["value"].to_list() == [37.5]
+
+
+def test_optional_column_is_empty_without_the_staged_table(tmp_path, monkeypatch):
+    monkeypatch.setenv("LIX_DATA_DIR", str(tmp_path))
+    ctx = FakeContext(night_lights=pl.DataFrame({"lsoa21cd": ["E01000001"], "radiance": [3.5]}))
+    assert optional_column(ctx, "night_lights", "radiance").height == 0
+    (tmp_path / "staged").mkdir()
+    ctx.tables["night_lights"].write_parquet(tmp_path / "staged" / "night_lights.parquet")
+    assert optional_column(ctx, "night_lights", "radiance")["value"].to_list() == [3.5]

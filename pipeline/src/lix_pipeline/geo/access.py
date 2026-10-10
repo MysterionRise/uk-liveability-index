@@ -84,8 +84,11 @@ def poi_access(
     )
 
 
-def residential_postcodes() -> pl.DataFrame:
-    """Live small-user postcodes (mostly homes) in the active nations, with BNG coordinates."""
+def residential_postcodes(*extra: str) -> pl.DataFrame:
+    """Live small-user postcodes (mostly homes) in the active nations, with BNG coordinates.
+
+    ``extra`` names further NSPL columns to keep (``"lat"``, ``"long"``).
+    """
     from lix_core.codes import active_nations, nation_of
     from lix_core.paths import data_dir
 
@@ -100,7 +103,7 @@ def residential_postcodes() -> pl.DataFrame:
             & pl.col("lsoa21cd").is_not_null()
             & pl.col("east1m").is_not_null()
         )
-        .select("postcode", "lsoa21cd", "east1m", "north1m")
+        .select("postcode", "lsoa21cd", "east1m", "north1m", *extra)
         .collect()
     )
 
