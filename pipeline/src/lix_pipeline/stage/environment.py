@@ -54,6 +54,11 @@ def stage_os_greenspace() -> pl.LazyFrame:
 FLOOD_BANDS = ("High", "Medium", "Low", "VeryLow")
 NRW_RIVERS_SEA = ("nrw_fraw_rivers", "nrw_fraw_sea")
 NRW_SURFACE_WATER = ("nrw_fraw_surface_water",)
+# A property point stands for a building: buffered by this much, Wales's national totals
+# land within a quarter of NRW's published counts for rivers and the sea and for surface
+# water alike (the point alone finds half of NRW's surface-water properties; 10m finds
+# twice as many), so this is the receptor the estimate uses
+NRW_RECEPTOR_M = 5.0
 COUNT_COLUMNS = (
     "res_high",
     "res_medium",
@@ -90,15 +95,15 @@ def pd_concat(frames):
     return pd.concat(frames, ignore_index=True)
 
 
-def inside_share(points, polygons) -> np.ndarray:
-    """1 for each point inside any of the polygons, else 0."""
+def inside_share(receptors, polygons) -> np.ndarray:
+    """1 for each receptor geometry touching any of the polygons, else 0."""
     import shapely
 
-    out = np.zeros(len(points))
+    out = np.zeros(len(receptors))
     if len(polygons) == 0:
         return out
     tree = shapely.STRtree(polygons.geometry.values)
-    hit, _ = tree.query(points.values, predicate="within")
+    hit, _ = tree.query(receptors.values, predicate="intersects")
     out[np.unique(hit)] = 1
     return out
 
@@ -107,11 +112,12 @@ def _nrw_homes_at_risk() -> pl.DataFrame:
     """Welsh homes at each flood likelihood, estimated from NRW's risk areas.
 
     NRW publishes risk polygons rather than counts, so the count is made the way the
-    agencies make theirs: the share of an LSOA's property points (OS Open UPRN) inside
-    the high areas, and inside the high or medium areas, across rivers and the sea
-    (``res_``) and across those plus surface water and small watercourses (``any_``),
-    applied to the LSOA's dwellings (VOA). Bands match the EA's: High above 1 in 30 a
-    year, Medium 1 in 30 to 1 in 100.
+    agencies make theirs: the share of an LSOA's property points (OS Open UPRN, each
+    buffered by ``NRW_RECEPTOR_M`` to stand for its building) touching the high areas,
+    and the high or medium areas, across rivers and the sea (``res_``) and across those
+    plus surface water and small watercourses (``any_``), applied to the LSOA's
+    dwellings (VOA). Bands match the EA's: High above 1 in 30 a year, Medium 1 in 30 to
+    1 in 100.
     """
     import geopandas as gpd
 
@@ -125,7 +131,7 @@ def _nrw_homes_at_risk() -> pl.DataFrame:
     )
     points = gpd.GeoSeries(
         gpd.points_from_xy(props["x"].to_numpy(), props["y"].to_numpy()), crs=27700
-    )
+    ).buffer(NRW_RECEPTOR_M)
     layers = {
         slug: _layer_polygons(slug, ("High", "Medium"))
         for slug in NRW_RIVERS_SEA + NRW_SURFACE_WATER
