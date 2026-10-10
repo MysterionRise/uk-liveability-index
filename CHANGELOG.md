@@ -4,6 +4,35 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- **Road and rail noise.** Share of homes at 60 dB Lden or more from the strategic noise
+  maps (Defra round 4 for England, the Welsh Government's 2022 maps for Wales), read at
+  every residential postcode from the 10m grids. Scored in the environment theme.
+- **Tree cover around homes.** Share of the land within 500m of homes that ESA WorldCover
+  10m satellite land cover (2021) classes as tree cover. Scored, weight 0.75.
+- **Night-time light** as context, from the VIIRS annual composite: a free Earth
+  Observation Group account is needed to download it, so it is the first manual source
+  and is skipped when the file is absent.
+- **Surface water in flood risk.** The scored flood indicator now counts homes at high or
+  medium risk from rivers, the sea or surface water (the Environment Agency's postcode
+  file in England, NRW's surface-water areas in Wales); rivers and the sea alone stay as
+  a context indicator.
+- Sources served over WCS (the English noise grids, fetched as deflated GeoTIFF tiles) and
+  sets of files under one URL pattern (the WorldCover tiles) in the registry.
+
+### Fixed
+
+- Welsh flood risk was 0% almost everywhere: the indicator read the English postcode
+  counts instead of the table holding NRW's estimates. The estimate itself now counts
+  property points (OS Open UPRN, buffered by 5m to stand for buildings) touching NRW's
+  risk areas, as the agencies do, rather than postcode centroids, which surface water's
+  small patches rarely contain, and so lands within a quarter of NRW's own totals; NRW's
+  surface-water layer is fetched in pages, since the server had been cutting it at a
+  million of its 2.8 million polygons.
+
 ## [0.3.1] - 2026-10-10
 
 ### Changed
@@ -132,6 +161,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[Unreleased]: https://github.com/MysterionRise/uk-liveability-index/compare/v0.3.1...HEAD
 [0.3.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.1
 [0.3.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.0
 [0.2.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.2.0

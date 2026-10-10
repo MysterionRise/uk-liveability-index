@@ -19,7 +19,7 @@ The pipeline downloads, stages and joins the open datasets below:
   population, area and map bounding box; `lix validate geo` checks it
 - helpers bring other geographies onto LSOAs: points, output areas, MSOA/local-authority values,
   1km grids (sampled at postcodes, so population-weighted) and distance-based access to places
-- `lix indicators` builds 64 indicators (31 scored across 8 themes) from
+- `lix indicators` builds 68 indicators (33 scored across 8 themes) from
   [`config/indicators.yaml`](../config/indicators.yaml); `lix score` turns them into theme and
   overall scores per LSOA for five persona presets ([`config/weights.yaml`](../config/weights.yaml)),
   plus a QA report. The method, including how Greater Manchester's missing crime data and
@@ -36,7 +36,7 @@ Datasets ingested so far (full list with licences: [docs/data-sources.md](data-s
 | Community | English Indices of Deprivation 2025; Census 2021 (population, density, age, households, health, accommodation, cars, tenure, commuting, qualifications); Nomis claimant count (monthly); OHID life expectancy by MSOA |
 | Housing | HM Land Registry Price Paid (LSOA medians); ONS small-area income; council tax by billing authority; VOA housing stock by council tax band and build period |
 | Safety | police.uk street crime, 36 months (Greater Manchester Police publishes none; flagged); DfT road collisions (STATS19, 5 years) |
-| Environment | Defra modelled NO₂, PM2.5 and PM10 (1km, population-weighted to LSOAs); OS Open Greenspace; Environment Agency flood risk from rivers and the sea, by postcode |
+| Environment | Defra modelled NO₂ and PM2.5 (1km, population-weighted to LSOAs); OS Open Greenspace; Environment Agency flood risk by postcode (rivers, sea and surface water) and NRW's risk areas in Wales; Defra and Welsh Government strategic noise maps; ESA WorldCover tree cover; VIIRS night-time lights (manual download) |
 | Health | NHS GP practices, patients registered by LSOA (real catchments), GP workforce; CQC ratings of GP practices and care homes; NHS dental practices; NHSBSA community pharmacies |
 | Education | Get Information About Schools; Ofsted inspections blended across the 2024 and 2025 framework changes; Ofsted nurseries and pre-schools; DfE key stage 2 and 4 results |
 | Transport | DfT Transport Connectivity Metric; NaPTAN stations; Bus Open Data Service timetables (bus frequency); Ofcom broadband coverage |

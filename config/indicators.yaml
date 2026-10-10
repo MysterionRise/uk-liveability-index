@@ -15,7 +15,7 @@ themes:
     description: Recorded crime and anti-social behaviour where people live.
   environment:
     label: Environment
-    description: Clean air, parks and green space nearby, and flood risk.
+    description: Clean air, quiet streets, trees and green space nearby, and flood risk.
   health:
     label: Health services
     description: How easily residents can see a GP, pharmacist or dentist.
@@ -193,17 +193,77 @@ indicators:
   - id: flood_risk
     theme: environment
     label: Homes at risk of flooding
-    description: Share of homes at high or medium risk of flooding from rivers or the sea (at least a 1% chance a year).
+    description: Share of homes at high or medium risk of flooding from rivers, the sea or surface water (at least a 1% chance a year).
     unit: "% of homes"
     direction: lower_better
     coverage: [E, W]  # EA postcode counts in England, NRW risk areas in Wales
-    sources: [ea_flood_postcodes, nrw_fraw_rivers, nrw_fraw_sea, voa_ctsop, nspl]
+    sources: [ea_flood_postcode_tool, nrw_fraw_rivers, nrw_fraw_sea, nrw_fraw_surface_water, os_open_uprn, voa_ctsop, nspl]
     builder: environment:flood_risk
-    params: {bands: [high, medium]}
+    params: {bands: [high, medium], prefix: any}
     normalise: threshold
     good: 0
     bad: 25
-    caveats: Rivers and the sea only, not surface water or groundwater; the Environment Agency's model takes flood defences into account. In Wales, NRW publishes risk areas rather than postcode counts, so homes at risk are estimated from the share of an LSOA's residential postcodes inside the high and medium areas.
+    overlap_group: flooding
+    caveats: Each home is rated by the higher of the rivers-and-sea and surface-water assessments, which allow for flood defences; groundwater and sewer flooding are not included. England's counts are addresses, so shops on a flood-prone high street count too. In Wales, NRW publishes risk areas rather than counts, so homes at risk are estimated from the share of an area's property points inside the high and medium areas.
+
+  - id: flood_rivers_sea
+    theme: environment
+    label: Homes at risk from rivers or the sea
+    description: Share of homes at high or medium risk of flooding from rivers or the sea alone (at least a 1% chance a year).
+    unit: "% of homes"
+    direction: lower_better
+    coverage: [E, W]
+    sources: [ea_flood_postcodes, nrw_fraw_rivers, nrw_fraw_sea, os_open_uprn, voa_ctsop, nspl]
+    builder: environment:flood_risk
+    params: {bands: [high, medium], prefix: res}
+    normalise: threshold
+    good: 0
+    bad: 25
+    role: context
+    overlap_group: flooding
+    caveats: The part of flood risk that comes from rivers and the sea; surface water is the rest. Flood defences are taken into account.
+
+  - id: road_rail_noise
+    theme: environment
+    label: Homes in road or rail noise
+    description: Share of homes where road or rail noise averages 60 dB Lden or more over the day, evening and night, from the strategic noise maps.
+    unit: "% of homes"
+    direction: lower_better
+    coverage: [E, W]
+    sources: [defra_noise_road_lden, defra_noise_rail_lden, wg_noise_road_lden, wg_noise_rail_lden, nspl]
+    builder: environment:percent
+    params: {slug: noise, column: share_any_60}
+    normalise: threshold
+    good: 0
+    bad: 40
+    caveats: Each home is read from the 10m noise grid at its postcode. England's maps cover every road inside the larger towns and cities and only major roads elsewhere, while Wales's cover every road, so the cut-off is 60 dB Lden, a busy road's level, rather than the 55 dB at which the Environmental Noise Directive counts people as exposed and at which ordinary streets would count only where they were mapped. Aircraft and industry are not included.
+
+  - id: tree_canopy
+    theme: environment
+    label: Tree cover around homes
+    description: Share of the land within 500m of homes that satellite land cover classes as tree cover (ESA WorldCover, 10m).
+    unit: "%"
+    direction: higher_better
+    sources: [esa_worldcover, nspl]
+    builder: common:column
+    params: {slug: tree_cover, column: canopy_pct}
+    normalise: threshold
+    good: 40   # a well-treed suburb; the national median around homes is about 30
+    bad: 5
+    weight: 0.75
+    caveats: A 10m cell counts as tree cover when trees dominate it, so this reads roughly twice Forest Research's canopy survey (which samples points) while ranking wards much the same; single garden trees and hedges are missed. Water and unmapped cells are left out of the land total, so a seafront home is judged on the land behind it.
+
+  - id: light_pollution
+    theme: environment
+    label: Night-time light
+    description: Average night-time radiance within 1km of homes, from the VIIRS satellite annual composite (nW/cm²/sr).
+    unit: nW/cm²/sr
+    direction: lower_better
+    sources: [viirs_vnl, nspl]
+    builder: environment:optional_column
+    params: {slug: night_lights, column: radiance}
+    role: context
+    caveats: Brighter means more street and building lighting and so less of a view of the night sky; it tracks density and cuts both ways, which is why it is shown but not scored. The satellite is blind to the blue part of LED light, so newly converted streets read darker than they look.
 
   - id: iod_outdoors
     theme: environment
@@ -519,7 +579,7 @@ indicators:
     unit: index 0–1
     direction: higher_better
     coverage: [E, W]  # one OpenStreetMap extract per nation
-    sources: [osm_england, osm_wales, fsa_fhrs, nspl]
+    sources: [osm_england, osm_wales, overture_pubs, fsa_fhrs, nspl]
     builder: pubs:well_run_pub_access
     params: {radius_m: 1200, cap: 3}
     normalise: scale

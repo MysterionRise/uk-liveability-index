@@ -7,9 +7,9 @@ from lix_api.services.scoring import ThemeWeights, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
 
-KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "flood_risk",
-             "gp_distance", "station_distance", "gigabit_broadband", "well_run_pubs",
-             "households_with_children"]  # fmt: skip
+KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "road_rail_noise",
+             "flood_risk", "tree_canopy", "gp_distance", "station_distance",
+             "gigabit_broadband", "well_run_pubs", "households_with_children"]  # fmt: skip
 
 FLAG_TEXT = {
     "imputed": "Crime figures here are estimated: Greater Manchester Police publishes no "

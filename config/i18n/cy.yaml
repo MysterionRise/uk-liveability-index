@@ -6,7 +6,7 @@ _meta: {status: draft, reviewer: null, date: 2026-10-08}
 
 themes:
   safety: {label: Diogelwch, description: Troseddau ac ymddygiad gwrthgymdeithasol a gofnodwyd lle mae pobl yn byw.}
-  environment: {label: Amgylchedd, description: Aer glân, parciau a mannau gwyrdd gerllaw, a pherygl llifogydd.}
+  environment: {label: Amgylchedd, description: Aer glân, strydoedd tawel, coed a mannau gwyrdd gerllaw, a pherygl llifogydd.}
   health: {label: Gwasanaethau iechyd, description: Pa mor hawdd yw hi i drigolion weld meddyg teulu, fferyllydd neu ddeintydd.}
   education: {label: Ysgolion a gofal plant, description: Ysgolion a meithrinfeydd da o fewn cyrraedd.}
   transport: {label: Trafnidiaeth a chysylltedd, description: Pa mor dda mae ardal yn cysylltu â swyddi a gwasanaethau ym mhob dull, a'i band eang.}
@@ -44,6 +44,7 @@ units:
   years_income: "blynyddoedd o incwm"
   years: blynyddoedd
   people_km2: "pobl fesul km²"
+  radiance: "nW/cm²/sr"
 
 flags:
   imputed: "Mae'r ffigurau troseddu yma'n amcangyfrifon: nid yw Heddlu Manceinion Fwyaf yn cyhoeddi data ar lefel stryd."
@@ -63,7 +64,11 @@ indicators:
   pm25: {label: Gronynnau mân (PM2.5), description: PM2.5 cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra).}
   green_space_access: {label: Parciau a mannau gwyrdd gerllaw, description: "Mynedfeydd i barciau, gerddi a chaeau chwarae cyhoeddus o fewn 1km o gerdded, wedi'u pwysoli yn ôl pellter."}
   play_spaces: {label: Mannau chwarae gerllaw, description: "Mynedfeydd i fannau chwarae cyhoeddus o fewn 800m i gartrefi, wedi'u pwysoli yn ôl pellter."}
-  flood_risk: {label: Cartrefi mewn perygl o lifogydd, description: Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd neu'r môr (siawns o 1% y flwyddyn o leiaf).}
+  flood_risk: {label: Cartrefi mewn perygl o lifogydd, description: Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd, y môr neu ddŵr wyneb (siawns o 1% y flwyddyn o leiaf).}
+  flood_rivers_sea: {label: Cartrefi mewn perygl o afonydd neu'r môr, description: Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd neu'r môr yn unig (siawns o 1% y flwyddyn o leiaf).}
+  road_rail_noise: {label: Cartrefi mewn sŵn ffyrdd neu reilffyrdd, description: Cyfran y cartrefi lle mae sŵn ffyrdd neu reilffyrdd yn cyfartalu 60 dB Lden neu fwy dros y dydd, yr hwyr a'r nos, o'r mapiau sŵn strategol.}
+  tree_canopy: {label: Gorchudd coed o amgylch cartrefi, description: Cyfran y tir o fewn 500m i gartrefi y mae gorchudd tir lloeren yn ei ddosbarthu fel gorchudd coed (ESA WorldCover, 10m).}
+  light_pollution: {label: Golau yn y nos, description: Disgleirdeb cyfartalog yn y nos o fewn 1km i gartrefi, o gyfansawdd blynyddol lloeren VIIRS (nW/cm²/sr).}
   iod_outdoors: {label: Amgylchedd byw awyr agored IoD 2025, description: Ansawdd aer a damweiniau traffig ffordd (is-barth IoD 2025).}
   gp_distance: {label: Pellter i'r practis meddyg teulu agosaf, description: Pellter cyfartalog mewn llinell syth o gartrefi i'r practis meddyg teulu agosaf.}
   patients_per_gp: {label: Cleifion fesul meddyg teulu, description: Cleifion cofrestredig fesul meddyg teulu cymwys cyfwerth ag amser llawn yn y practisau mae trigolion yn eu defnyddio mewn gwirionedd.}

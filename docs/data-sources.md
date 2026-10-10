@@ -2,7 +2,7 @@
 
 # Data sources
 
-65 datasets, all under open licences. Each is pinned to a concrete file in `config/datasets.lock.json` by `lix resolve`.
+74 datasets, all under open licences. Each is pinned to a concrete file in `config/datasets.lock.json` by `lix resolve`.
 
 
 ## Geography
@@ -11,7 +11,7 @@
 |---|---|---|---|---|---|
 | `nspl` | [National Statistics Postcode Lookup (latest)](https://geoportal.statistics.gov.uk/search?q=PRD_NSPL) | Postcode to OA/LSOA/MSOA 2021, LAD, region, police force area and coordinates. | England, Wales, Scotland, Northern Ireland | quarterly | OGL-3.0 |
 | `lsoa_boundaries` | LSOA 2021 boundaries (BGC, generalised 20m, clipped) | LSOA 2021 polygons for England and Wales; source for map tiles and point-in-polygon. | England, Wales | static | OGL-3.0 |
-| `lsoa_boundaries_bsc` (P1) | LSOA 2021 boundaries (BSC, super generalised 200m, clipped) | Lightweight LSOA 2021 polygons for quick plots. | England, Wales | static | OGL-3.0 |
+| `lsoa_boundaries_bsc` (P2) | LSOA 2021 boundaries (BSC, super generalised 200m, clipped) | Lightweight LSOA 2021 polygons for quick plots. | England, Wales | static | OGL-3.0 |
 | `msoa_boundaries` | MSOA 2021 boundaries (BGC, generalised 20m, clipped) | MSOA 2021 polygons; the map's middle zoom level. | England, Wales | static | OGL-3.0 |
 | `lad_boundaries` | Local Authority District boundaries (latest, BUC) | Local authority polygons (ultra generalised); the map's outer zoom level. | England, Wales, Scotland, Northern Ireland | annual | OGL-3.0 |
 | `lsoa_centroids` | LSOA 2021 population-weighted centroids | Where each LSOA's residents live on average; origin point for access metrics. | England, Wales | static | OGL-3.0 |
@@ -21,6 +21,7 @@
 | `pop_lsoa_mye` | [ONS mid-year population estimates for LSOAs (England and Wales)](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimatesnationalstatistics) | Usual resident population of every 2021 LSOA in England and Wales at 30 June, by broad age group and sex. The latest year is the backbone population and the denominator of per-head indicators in both nations. | England, Wales | annual | OGL-3.0 |
 | `msoa_names` | [House of Commons Library MSOA names](https://houseofcommonslibrary.github.io/msoanames/) | Human-friendly neighbourhood names for each MSOA (e.g. "Hillside" for Adur 001). | England, Wales | adhoc | OGL-3.0 |
 | `os_open_names` | [OS Open Names](https://www.ordnancesurvey.co.uk/products/os-open-names) | Gazetteer of places, roads and postcodes; powers place search ("near Leeds"). | England, Wales, Scotland | quarterly | OGL-3.0 |
+| `os_open_uprn` | [OS Open UPRN (GB)](https://www.ordnancesurvey.co.uk/products/os-open-uprn) | Every Unique Property Reference Number in Great Britain with its coordinates, the property points behind the address products. | England, Wales, Scotland | monthly | OGL-3.0 |
 
 ## Safety
 
@@ -38,6 +39,14 @@
 | `defra_pcm_pm10` (P1) | [Defra modelled background PM10 (1km grid, latest year)](https://uk-air.defra.gov.uk/data/pcm-data) | Annual mean particulate matter (PM10, gravimetric), µg/m³, on a 1km grid. | England, Wales, Scotland, Northern Ireland | annual | OGL-3.0 |
 | `os_greenspace` | [OS Open Greenspace (GB)](https://www.ordnancesurvey.co.uk/products/os-open-greenspace) | Public parks, playing fields, play spaces, allotments and other green spaces, with their access points. | England, Wales, Scotland | adhoc | OGL-3.0 |
 | `ea_flood_postcodes` | [Environment Agency flood risk from rivers and the sea, by postcode](https://www.data.gov.uk/dataset/risk-of-flooding-from-rivers-and-sea-postcodes-in-areas-at-risk2) | Residential and non-residential properties per postcode in each flood likelihood band (high, medium, low, very low). | England | adhoc | OGL-3.0 |
+| `defra_noise_road_lden` | [Defra strategic noise mapping round 4, road traffic noise (Lden, all roads)](https://environment.data.gov.uk/dataset/562c9d56-7c2d-4d42-83bb-578d6e97a517) | Modelled annual average day-evening-night road traffic noise (Lden, dB) on a 10m grid for 2021, every road inside agglomerations and major roads elsewhere. | England | adhoc | OGL-3.0 |
+| `defra_noise_rail_lden` | [Defra strategic noise mapping round 4, railway noise (Lden, all railways)](https://environment.data.gov.uk/dataset/3fb3c2d7-292c-4e0a-bd5b-d8e4e1fe2947) | Modelled annual average day-evening-night railway noise (Lden, dB) on a 10m grid for 2021, every railway inside agglomerations and major railways elsewhere. | England | adhoc | OGL-3.0 |
+| `wg_noise_road_lden` | [Welsh Government environmental noise mapping 2022, road traffic noise (Lden, all roads)](https://datamap.gov.wales/layers/geonode:cog_WG_RD_LDEN_All) | Modelled annual average day-evening-night road traffic noise (Lden, dB) on a 10m grid, every road in Wales, made with Defra's noise modelling system for the 2022 round. | Wales | adhoc | OGL-3.0 |
+| `wg_noise_rail_lden` | [Welsh Government environmental noise mapping 2022, railway noise (Lden, all railways)](https://datamap.gov.wales/layers/geonode:cog_WG_RL_LDEN_All) | Modelled annual average day-evening-night railway noise (Lden, dB) on a 10m grid, every railway in Wales, 2022 round. | Wales | adhoc | OGL-3.0 |
+| `ea_flood_postcode_tool` | [Environment Agency flood risk by postcode (rivers, sea and surface water)](https://environment.data.gov.uk/dataset/fb921496-1788-4fc2-b469-7b51e2a45553) | Addresses in every English postcode that sit in areas of high, medium and low flood risk, taking the higher of the rivers-and-sea and surface-water assessments, plus whether groundwater flooding is possible. | England | quarterly | OGL-3.0 |
+| `nrw_fraw_surface_water` | [NRW Flood Risk Assessment Wales, risk from surface water and small watercourses](https://datamap.gov.wales/layergroups/inspire-nrw:FloodRiskAssessmentWales) | Areas of Wales at high or medium risk of flooding from surface water and small watercourses (annual chance above 1 in 30, and 1 in 30 to 1 in 100); the low band is not fetched. | Wales | adhoc | OGL-3.0 |
+| `esa_worldcover` | [ESA WorldCover 10m land cover 2021 (v200)](https://esa-worldcover.org/en/data-access) | Land cover on a 10m grid from Sentinel-1 and Sentinel-2 imagery of 2021 (tree cover, shrubland, grassland, cropland, built-up, bare, water and more). | England, Wales, Scotland, Northern Ireland | static | CC-BY-4.0 |
+| `viirs_vnl` | [VIIRS annual night-time lights (Earth Observation Group VNL v2.2)](https://eogdata.mines.edu/products/vnl/) | Annual average night-time radiance (nW/cm²/sr) on a 15 arc-second grid from the VIIRS day/night band, cleaned of clouds, fires and background noise. | England, Wales, Scotland, Northern Ireland | annual | CC-BY-4.0 (unverified) |
 | `nrw_fraw_rivers` | [NRW Flood Risk Assessment Wales, risk from rivers](https://datamap.gov.wales/layers/inspire-nrw:NRW_FLOOD_RISK_FROM_RIVERS) | Areas of Wales at high, medium or low risk of flooding from rivers, allowing for defences (annual chance above 1 in 30, 1 in 30 to 1 in 100, 1 in 100 to 1 in 1000). | Wales | adhoc | OGL-3.0 |
 | `nrw_fraw_sea` | [NRW Flood Risk Assessment Wales, risk from the sea](https://datamap.gov.wales/layers/inspire-nrw:NRW_FLOOD_RISK_FROM_SEA) | Areas of Wales at high, medium or low risk of flooding from the sea, allowing for defences. | Wales | adhoc | OGL-3.0 |
 

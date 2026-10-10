@@ -24,8 +24,14 @@ NOISE_SOURCES: dict[str, tuple[str, str]] = {
     "E": ("defra_noise_road_lden", "defra_noise_rail_lden"),
     "W": ("wg_noise_road_lden", "wg_noise_rail_lden"),
 }
-# The Environmental Noise Directive's reporting threshold for Lden
-NOISY_DB = 55.0
+# 55 dB Lden is the level at which the Environmental Noise Directive counts people as
+# exposed, but at that level the answer depends on whether minor roads were mapped, which
+# they are everywhere in Wales and only inside the larger urban areas in England (39% of
+# Welsh postcodes pass it against 30% of English ones, most on ordinary streets). At
+# 60 dB a home is beside a busy road wherever it is (12% and 14%), so that is the
+# cut-off the indicator uses; 55 and 65 are kept.
+NOISY_DB = 60.0
+REPORTED_DB = 55.0
 LOUD_DB = 65.0
 
 
@@ -34,8 +40,8 @@ def _tiles(slug: str) -> list[Path]:
 
 
 def noise_at_homes(homes: pl.DataFrame, road: list[Path], rail: list[Path]) -> pl.DataFrame:
-    """Per LSOA: the share of residential postcodes at or above 55 and 65 dB Lden from
-    road or rail, each source's share, and the mean of the louder source."""
+    """Per LSOA: the share of residential postcodes at or above 60 dB Lden from road or
+    rail (and at 55 and 65), each source's share at 60, and the mean of the louder source."""
     x = homes["east1m"].to_numpy().astype(float)
     y = homes["north1m"].to_numpy().astype(float)
     road_db = np.nan_to_num(sample_tiles_at_points(road, x, y), nan=0.0)
@@ -47,9 +53,10 @@ def noise_at_homes(homes: pl.DataFrame, road: list[Path], rail: list[Path]) -> p
         .group_by("lsoa21cd")
         .agg(
             pl.len().alias("n_postcodes"),
-            (pl.col("road_db") >= NOISY_DB).mean().alias("share_road_55"),
-            (pl.col("rail_db") >= NOISY_DB).mean().alias("share_rail_55"),
-            (louder >= NOISY_DB).mean().alias("share_any_55"),
+            (pl.col("road_db") >= NOISY_DB).mean().alias("share_road_60"),
+            (pl.col("rail_db") >= NOISY_DB).mean().alias("share_rail_60"),
+            (louder >= NOISY_DB).mean().alias("share_any_60"),
+            (louder >= REPORTED_DB).mean().alias("share_any_55"),
             (louder >= LOUD_DB).mean().alias("share_any_65"),
             louder.mean().alias("mean_db"),
         )
@@ -66,10 +73,10 @@ def stage_noise() -> pl.LazyFrame:
             continue
         pts = homes.filter(nation_of("lsoa21cd") == nation)
         df = noise_at_homes(pts, _tiles(road), _tiles(rail))
-        noisy = df.select((pl.col("share_any_55") * pl.col("n_postcodes")).sum()).item()
+        noisy = df.select((pl.col("share_any_60") * pl.col("n_postcodes")).sum()).item()
         logger.info(
             f"{nation}: {df.height:,} LSOAs from {pts.height:,} postcodes; "
-            f"{noisy / max(pts.height, 1):.1%} of postcodes at 55 dB Lden or more"
+            f"{noisy / max(pts.height, 1):.1%} of postcodes at 60 dB Lden or more"
         )
         frames.append(df)
     return pl.concat(frames).sort("lsoa21cd").lazy()

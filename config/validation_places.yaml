@@ -14,6 +14,14 @@
 # What the review shows beyond the checks (written by hand; rendered into the page)
 observations:
   - >-
+    **Tree cover against Forest Research's canopy survey (v0.3.2).** The LSOA values,
+    averaged over the postcodes of each English urban ward whose code still matches,
+    correlate with Forest Research's point-sampled ward canopy cover at r = 0.72
+    (Spearman 0.70, 1,444 wards). The level is about twice theirs (mean 30% against
+    16%), as a 10m cell counts as tree cover when trees dominate it, so the thresholds
+    (5% poor, 40% good) are on this scale and the indicator says "tree cover", not
+    canopy.
+  - >-
     **Wales joins the index (v0.3.0).** Welsh neighbourhoods are scored on the same
     indicators where the data are the same (distances, air, broadband, OpenStreetMap) and
     within Wales where they are not (crime, WIMD deprivation, prices, council tax). Theme
@@ -97,6 +105,7 @@ places:
       - {theme: housing, op: le, value: 30, anchor: true}
       - {theme: transport, op: ge, value: 75, anchor: true}
       - {overall: true, op: ge, value: 55}
+      - {indicator: tree_canopy, op: ge, value: 30, anchor: true}  # the Heath and leafy streets
 
   - name: Shoreditch
     local_authority: Hackney
@@ -105,6 +114,7 @@ places:
       - {theme: amenities, op: ge, value: 80, anchor: true}
       - {theme: safety, op: le, value: 30, anchor: true}
       - {theme: transport, op: ge, value: 85}
+      - {indicator: road_rail_noise, op: ge, value: 40, anchor: true}  # Old Street, the A10
 
   - name: Whitechapel
     local_authority: Tower Hamlets
@@ -128,6 +138,7 @@ places:
       - {flag: imputed, anchor: true}
       - {theme: safety, op: le, value: 25, anchor: true}
       - {theme: transport, op: ge, value: 85}
+      - {indicator: road_rail_noise, op: ge, value: 50, anchor: true}  # Mancunian Way, Deansgate
 
   - name: Salford
     local_authority: Salford
@@ -226,6 +237,7 @@ places:
     checks:
       - {theme: community, op: le, value: 15, anchor: true}
       - {theme: housing, op: ge, value: 50}
+      - {indicator: tree_canopy, op: le, value: 8, anchor: true}  # seafront terraces, few trees
 
   - name: Middlesbrough
     local_authority: Middlesbrough
@@ -256,9 +268,10 @@ places:
   # ------------------------------------------------------------------ other types
   - name: Milton Keynes
     local_authority: Milton Keynes
-    why: "New town: almost no homes from before 1919"
+    why: "New town: almost no homes from before 1919; grid roads kept away from homes"
     checks:
       - {indicator: period_homes, op: le, value: 5, anchor: true}
+      - {indicator: road_rail_noise, op: le, value: 10, anchor: true}  # 2.6% at 60 dB
 
   - name: Clifton
     local_authority: Bristol

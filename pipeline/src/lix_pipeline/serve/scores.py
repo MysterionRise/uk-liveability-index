@@ -206,9 +206,9 @@ def manifest(
     weights = load_weights()
     registry = load_registry()
     lock = read_lock()
-    used = sorted(
-        {s for i in catalogue.indicators for s in i.sources} | {"nspl", "lsoa_boundaries"}
-    )
+    from lix_pipeline.stage import BACKBONE_INPUTS
+
+    used = sorted({s for i in catalogue.indicators for s in i.sources} | set(BACKBONE_INPUTS))
     return {
         "schema_version": SERVE_SCHEMA_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),

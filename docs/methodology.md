@@ -63,10 +63,12 @@ may be scored. The build's QA report lists scored indicators that correlate abov
 - **Noise** reads the strategic noise maps (Defra round 4 for England, the Welsh
   Government's 2022 maps for Wales, both on a 10m grid from the same modelling system)
   at every residential postcode: a home counts as exposed when road or rail noise is
-  55 dB Lden or more, the level at which the Environmental Noise Directive counts
-  people as exposed. The maps cover every road and railway inside the larger
-  agglomerations and only major ones elsewhere, so a home on a busy minor road in the
-  countryside can read as quiet; aircraft and industry are not included.
+  60 dB Lden or more, a busy road's level. The Directive counts people as exposed from
+  55 dB, but at that level the answer depends on whether ordinary streets were mapped:
+  England's maps cover every road only inside the larger agglomerations and major roads
+  elsewhere, while Wales's cover every road (39% of Welsh postcodes pass 55 dB against
+  30% of English ones; at 60 dB it is 12% and 14%). Aircraft and industry are not
+  included.
 - **Tree cover** is the share of land within about 500m of each home that satellite
   land cover (ESA WorldCover, 10m, 2021) classes as tree cover, averaged over the LSOA's
   postcodes. Water and unmapped cells are left out of the land total. A cell counts when

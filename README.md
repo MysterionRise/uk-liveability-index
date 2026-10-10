@@ -70,7 +70,7 @@ A full walkthrough video comes with each
 
 ## How the scores work
 
-Each neighbourhood gets 64 indicators. The 31 that count towards the score are turned into
+Each neighbourhood gets 68 indicators. The 33 that count towards the score are turned into
 0–100 scores, averaged within eight themes (safety, environment, health services, schools
 and childcare, transport, amenities, housing and community), and the themes are weighted
 by what you choose. Measures that are the same everywhere (distances, air quality,
@@ -126,7 +126,8 @@ The same tools are available to Claude Desktop and other clients over
   force publishes none.
 - **Judgement calls.** The weights, thresholds and choice of indicators are explained,
   not objective. Use the scores to explore, not as property, financial or legal advice.
-- **Not yet included:** road and rail noise, surface-water flooding and tree cover. Welsh
+- **Not yet included:** aircraft and industrial noise, groundwater flooding, and the single
+  garden trees and hedges that 10m satellite land cover cannot see. Welsh
   nurseries and pharmacies come from OpenStreetMap, and Welsh school quality from each
   council's exam results, because Wales publishes no open per-provider lists or grades.
 

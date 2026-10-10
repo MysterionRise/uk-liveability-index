@@ -59,7 +59,7 @@ class TestSampleTilesAtPoints:
 class TestNoiseAtHomes:
     def test_shares_and_unmapped_homes_are_quiet(self, tmp_path):
         road = _tile(tmp_path / "road.tif", 0, 40, [[70, 70, 0, 0]] * 4)  # x 0–20 loud
-        rail = _tile(tmp_path / "rail.tif", 0, 40, [[0, 0, 0, 58]] * 4)  # x 30–40 noisy
+        rail = _tile(tmp_path / "rail.tif", 0, 40, [[0, 0, 0, 58]] * 4)  # x 30–40: 55 but not 60
         homes = pl.DataFrame(
             {
                 "lsoa21cd": ["E01", "E01", "E01", "E01", "E02"],
@@ -70,8 +70,9 @@ class TestNoiseAtHomes:
         out = noise_at_homes(homes, [road], [rail]).sort("lsoa21cd")
         e01 = out.row(0, named=True)
         assert e01["n_postcodes"] == 4
-        assert e01["share_road_55"] == 0.5 and e01["share_rail_55"] == 0.25
+        assert e01["share_road_60"] == 0.5 and e01["share_rail_60"] == 0.0
+        assert e01["share_any_60"] == 0.5
         assert e01["share_any_55"] == 0.75 and e01["share_any_65"] == 0.5
         assert e01["mean_db"] == (70 + 70 + 0 + 58) / 4
         e02 = out.row(1, named=True)
-        assert e02["share_any_55"] == 0.0 and e02["mean_db"] == 0.0
+        assert e02["share_any_60"] == 0.0 and e02["mean_db"] == 0.0
