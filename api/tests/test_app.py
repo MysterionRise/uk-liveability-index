@@ -341,7 +341,7 @@ def test_without_a_key_recorded_prompts_still_answer(monkeypatch, tmp_path):
 
 def test_health_reports_version(client):
     body = client.get("/health").json()
-    assert body["version"] == "0.3.1"
+    assert body["version"] == "0.3.2"
     assert body["assistant"]["recorded_only"] is False
 
 

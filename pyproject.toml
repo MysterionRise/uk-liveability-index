@@ -2,7 +2,7 @@
 # pipeline and `lix` CLI); api/ (FastAPI + agent) and web/ (Next.js) come later.
 [project]
 name = "uk-liveability-index"
-version = "0.3.1"
+version = "0.3.2"
 description = "UK Liveability Index — multi-factor scoring of English neighbourhoods at LSOA level"
 requires-python = ">=3.11"
 dependencies = [

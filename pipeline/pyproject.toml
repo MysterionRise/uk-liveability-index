@@ -1,6 +1,6 @@
 [project]
 name = "lix-pipeline"
-version = "0.3.1"
+version = "0.3.2"
 description = "UK Liveability Index: fetch, stage and score open data at LSOA level"
 requires-python = ">=3.11"
 dependencies = [
