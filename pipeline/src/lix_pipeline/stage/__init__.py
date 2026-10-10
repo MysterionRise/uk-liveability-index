@@ -45,6 +45,7 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "ea_flood_all_postcodes": ["ea_flood_postcode_tool", "nspl"],
     "flood": ["ea_flood_postcodes", "ea_flood_postcode_tool", "nspl"],
     "tree_cover": ["esa_worldcover", "nspl"],
+    "os_open_uprn": ["os_open_uprn", "lsoa_boundaries"],
     "night_lights": ["viirs_vnl", "nspl"],
     "noise": [
         "defra_noise_road_lden",
@@ -98,6 +99,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         safety,
         schools,
         transport,
+        uprn,
     )
     from lix_pipeline.stage.census import stage_census_table
     from lix_pipeline.stage.deprivation import stage_deprivation
@@ -151,6 +153,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "os_greenspace": environment.stage_os_greenspace,
         "ea_flood_postcodes": environment.stage_ea_flood_postcodes,
         "ea_flood_all_postcodes": environment.stage_ea_flood_all_postcodes,
+        "os_open_uprn": uprn.stage_os_open_uprn,  # needs raw lsoa_boundaries
         "naptan": transport.stage_naptan,
         "bods_gtfs": transport.stage_bods_gtfs,
         "ofcom_broadband": transport.stage_ofcom_broadband,  # needs staged oa_lookup

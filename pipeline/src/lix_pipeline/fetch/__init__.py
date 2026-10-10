@@ -202,7 +202,12 @@ def fetch(
         return fetched
 
     entry = read_lock().get(slug, {})
-    resolved = entry.get("resolved") or resolve_and_lock(slug, spec, session)
+    resolved = entry.get("resolved") or {}
+    # A lock entry written for another access type (or an older resolver) lacks what the
+    # tile and page fetchers need: resolve again rather than trust it
+    needed = {"wcs": ("envelope", "res"), "wfs": ("count",)}.get(spec.access.type, ())
+    if not resolved or any(k not in resolved for k in needed):
+        resolved = resolve_and_lock(slug, spec, session)
 
     if spec.access.type == "arcgis_item" and spec.access.mode == "featureserver":
         meta = _fetch_paged(

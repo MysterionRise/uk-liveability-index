@@ -52,6 +52,29 @@ may be scored. The build's QA report lists scored indicators that correlate abov
   mean.
 - **Rates** use mid-2022 resident population as the denominator; the claimant rate uses
   residents aged 16–64, and flood risk uses the VOA's count of dwellings.
+- **Flood risk** counts homes whose surroundings are at high or medium risk (at least a
+  1% chance a year) from rivers, the sea or surface water, each home by the highest of
+  the three. In England the Environment Agency publishes the counts per postcode
+  (addresses, by the higher of its rivers-and-sea and surface-water assessments); in
+  Wales NRW publishes risk areas, so the count is made the way the agencies make
+  theirs, from the share of an LSOA's property points (OS Open UPRN) inside each band,
+  applied to its dwellings, and the values are flagged as estimates. The rivers-and-sea
+  part is shown on its own as context.
+- **Noise** reads the strategic noise maps (Defra round 4 for England, the Welsh
+  Government's 2022 maps for Wales, both on a 10m grid from the same modelling system)
+  at every residential postcode: a home counts as exposed when road or rail noise is
+  55 dB Lden or more, the level at which the Environmental Noise Directive counts
+  people as exposed. The maps cover every road and railway inside the larger
+  agglomerations and only major ones elsewhere, so a home on a busy minor road in the
+  countryside can read as quiet; aircraft and industry are not included.
+- **Tree cover** is the share of land within about 500m of each home that satellite
+  land cover (ESA WorldCover, 10m, 2021) classes as tree cover, averaged over the LSOA's
+  postcodes. Water and unmapped cells are left out of the land total. A cell counts when
+  trees dominate it, so the figure runs about twice Forest Research's point-sampled
+  canopy cover for the same wards while ranking them much the same (see
+  [validation.md](validation.md)).
+- **Night-time light** (context) is the mean VIIRS annual radiance within about 1km of
+  each home. It tracks density and cuts both ways, so it is shown but not scored.
 - **Green space** is measured to the entrances of public parks, gardens and playing
   fields (OS Open Greenspace access points), not their centres: a park is only as close
   as its nearest gate, and a large park with many gates counts for more.
@@ -182,8 +205,10 @@ people affected, as in the IoD; the others are domain scores), the Welsh Governm
 maintained-schools list (no grades: schools count as present for choice and access),
 the examination results release for local-authority attainment, NRW's Flood Risk
 Assessment Wales (risk areas rather than postcode counts: an LSOA's homes at risk are
-estimated from the share of its residential postcodes inside the high, medium and low
-areas, for rivers and the sea), the Welsh Government's council tax levels (band D by
+estimated from the share of its OS Open UPRN property points inside the high and medium
+areas, for rivers, the sea and surface water), the Welsh Government's 2022 noise maps
+(made with Defra's modelling system, so comparable with England's round 4), the Welsh
+Government's council tax levels (band D by
 authority; other bands follow the statutory ninths), the Bus Open Data Service's Wales
 timetable and the OpenStreetMap Wales extract. Nurseries and pharmacies in Wales come
 from OpenStreetMap, since neither CIW nor NWSSP publishes a machine-readable list; they
@@ -201,8 +226,9 @@ the ONS mid-year estimate (mid-2024).
   open countryside or footpaths, and quiet isn't measured yet. Compare within the same
   urban/rural class for like-for-like rankings, as the DfT advises for its
   connectivity scores.
-- **Flood risk** covers rivers and the sea only; surface water flooding, which affects
-  more homes, isn't included yet.
+- **Flood risk** allows for flood defences and leaves out groundwater and sewer
+  flooding. In England the counts are addresses rather than homes, so a flood-prone
+  high street's shops count alongside its flats.
 - **Crime rates per resident** overstate risk in town centres, where visitors
   outnumber residents.
 - **Correlated measures.** Two scored pairs within a theme correlate at or above

@@ -33,6 +33,15 @@ def data(tmp_path: Path, monkeypatch) -> Path:
     pl.DataFrame({"lsoa21cd": ["E01000001", "W01000001"], "dwellings": [100, 40]}).write_parquet(
         staged / "voa_ctsop.parquet"
     )
+    # Two Welsh property points: one inside the surface-water area below, one outside
+    pl.DataFrame(
+        {
+            "uprn": [1, 2, 3],
+            "x": [530000, 318000, 318500],
+            "y": [180000, 176000, 176500],
+            "lsoa21cd": ["E01000001", "W01000001", "W01000001"],
+        }
+    ).write_parquet(staged / "os_open_uprn.parquet")
     pl.DataFrame(
         {
             # The English file also lists a Welsh LSOA through a postcode straddling the border
@@ -79,7 +88,7 @@ def test_flood_unions_england_counts_and_estimates_wales(data):
     ) == (5, 3, 12, 8)
     assert england["estimated"] is False
     wales = df.row(1, named=True)
-    # Half the LSOA's postcodes sit in the high surface-water area: 20 of 40 homes
+    # Half the LSOA's property points sit in the high surface-water area: 20 of 40 homes
     assert wales["lsoa21cd"] == "W01000001"
     assert (wales["res_high"], wales["res_medium"], wales["any_high"], wales["any_medium"]) == (
         0,

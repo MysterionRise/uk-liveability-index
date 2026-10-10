@@ -265,6 +265,44 @@
       "version": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods"
     }
   },
+  "defra_noise_rail_lden": {
+    "resolved": {
+      "envelope": [
+        82645.0,
+        5335.0,
+        655995.0,
+        657605.0
+      ],
+      "grid": [
+        57335,
+        65227
+      ],
+      "nodata": -96.0,
+      "res": 10.0,
+      "resolved_at": "2026-10-10T18:21:58+00:00",
+      "url": "https://environment.data.gov.uk/spatialdata/noise-data/wcs?service=WCS&version=2.0.1&request=DescribeCoverage&coverageId=3fb3c2d7-292c-4e0a-bd5b-d8e4e1fe2947__Rail_Noise_Lden_England_Round_4_All",
+      "version": "3fb3c2d7-292c-4e0a-bd5b-d8e4e1fe2947__Rail_Noise_Lden_England_Round_4_All 57335x65227@10m"
+    }
+  },
+  "defra_noise_road_lden": {
+    "resolved": {
+      "envelope": [
+        82645.0,
+        5335.0,
+        655995.0,
+        657605.0
+      ],
+      "grid": [
+        57335,
+        65227
+      ],
+      "nodata": -96.0,
+      "res": 10.0,
+      "resolved_at": "2026-10-10T18:21:57+00:00",
+      "url": "https://environment.data.gov.uk/spatialdata/road-noise-all-metrics-england-round-4/wcs?service=WCS&version=2.0.1&request=DescribeCoverage&coverageId=562c9d56-7c2d-4d42-83bb-578d6e97a517__Road_Noise_Lden_England_Round_4_All",
+      "version": "562c9d56-7c2d-4d42-83bb-578d6e97a517__Road_Noise_Lden_England_Round_4_All 57335x65227@10m"
+    }
+  },
   "defra_pcm_no2": {
     "fetched": {
       "bytes": 7900343,
@@ -326,6 +364,18 @@
       "version": "https://assets.publishing.service.gov.uk/media/68c966fc07d9e92bc5517b80/connectivity_metrics_2025.ods"
     }
   },
+  "ea_flood_postcode_tool": {
+    "fetched": {
+      "bytes": 35852614,
+      "fetched_at": "2026-10-10T18:30:01.986511+00:00",
+      "sha256": "11062f4a56bb2a796abf3cf7975b0f065219c4ffe64314ebab131e4c0331ba9e"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-10T18:22:02+00:00",
+      "url": "https://environment.data.gov.uk/api/file/download?fileDataSetId=fb921496-1788-4fc2-b469-7b51e2a45553&fileName=Postcodes_Risk_Assessment_All.csv",
+      "version": null
+    }
+  },
   "ea_flood_postcodes": {
     "fetched": {
       "bytes": 5060727,
@@ -340,6 +390,29 @@
       "resolved_at": "2026-10-07T17:05:00+00:00",
       "url": "https://environment.data.gov.uk/api/file/download?fileDataSetId=97781741-2982-4802-af2e-313fe3fd8f7e&fileName=RoFRS_Postcodes_in_Areas_at_Risk.zip",
       "version": null
+    }
+  },
+  "esa_worldcover": {
+    "fetched": {
+      "bytes": 415548763,
+      "fetched_at": "2026-10-10T18:42:02.252212+00:00",
+      "files": {
+        "N48E000": "9f5b06e56a3efe48166663fde287c3e73b0ca9533901f75d908e1a3f8fc144c3",
+        "N48W003": "a860d69a3d2860ba5262b8a47a5604abbfee0544e5f3525f2b83acd3db8fbbcb",
+        "N48W006": "02808becafb63e5b45a23da045553b7ce815d3ba161d268a4868bbd1a9dcf46d",
+        "N48W009": "427ba1cda87a54f6e134529d3c303d8d9286209908b05a582c8c5c0e10c80b30",
+        "N51E000": "2ef6f3339d74493f2c14e15a54cb99bc02e3385d41f05ee306ae35f9536a2529",
+        "N51W003": "fb3e4cde8caee3c6ad61e9b8fb818efbc463320f28ede017745052305e253fdd",
+        "N51W006": "7d4c7c9e143b289a48e1c91a058566b787407521014ab4e2b7a43099cadf780e",
+        "N54W003": "5780e30c6311af55cab6c7a4a9a1ad9fd648f2c04d61bc79fa69fad291604442",
+        "N54W006": "c5be63c29f08db25ce8d44e313c6ed1292dc642fd27badc7bd813b7c88fe973f"
+      },
+      "sha256": "44e9ba6819ebcb6861cfbb8977163f5204a576aa5fe6fd7be463f8ffe0dd854b"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-10T18:30:04+00:00",
+      "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N48W006_Map.tif",
+      "version": "Wed, 26 Oct 2022 12:49:59 GMT"
     }
   },
   "fsa_fhrs": {
@@ -635,6 +708,25 @@
       "resolved_at": "2026-10-08T17:42:33+00:00",
       "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=inspire-nrw%3ANRW_FLOOD_RISK_FROM_SEA&outputFormat=gpkg&srs=EPSG%3A27700",
       "version": null
+    }
+  },
+  "nrw_fraw_surface_water": {
+    "fetched": {
+      "bytes": 1972203520,
+      "fetched_at": "2026-10-10T18:58:57.677768+00:00",
+      "files": {
+        "page_000": "e41fe74ddd4c70fe84c5b047617f0fd0624a78fa1b5edb877547ea5df76b001f",
+        "page_001": "4d02dfeb051fcc48307062eb49aa4a84514c2b3aab15ea1aa0876589dafe6a37",
+        "page_002": "45dd83cea35bfc3b024047abd1892b09fdbbe4cf80d5efac8187d2a673766938",
+        "page_003": "e4eaba7d23d4c5cc288d09fe537dc21a6b5f06fd4ebfb72e196729f7d2fa6556"
+      },
+      "sha256": "fad571d30a073a99e70cc3de5172a889d989ca1268cc3de5cb2a7d56bd3dcf4f"
+    },
+    "resolved": {
+      "count": 1512908,
+      "resolved_at": "2026-10-10T18:55:25+00:00",
+      "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire-nrw%3ANRW_FLOOD_RISK_FROM_SURFACE_WATER_SMALL_WATERCOURSES&CQL_FILTER=risk+IN+%28%27High%27%2C%27Medium%27%29&resultType=hits",
+      "version": "inspire-nrw:NRW_FLOOD_RISK_FROM_SURFACE_WATER_SMALL_WATERCOURSES 1512908 features"
     }
   },
   "nspl": {
@@ -1625,6 +1717,23 @@
     "resolved": {
       "resolved_at": "2026-10-07T15:31:02+00:00",
       "url": "https://api.os.uk/downloads/v1/products/OpenNames/downloads?area=GB&format=CSV&redirect",
+      "version": null
+    }
+  },
+  "os_open_uprn": {
+    "fetched": {
+      "bytes": 619271161,
+      "etag": "\"0x8DF14CEE1F1F137\"",
+      "extracted": [
+        "osopenuprn_202609.csv"
+      ],
+      "fetched_at": "2026-10-10T19:10:26.579357+00:00",
+      "last_modified": "Thu, 17 Sep 2026 15:18:09 GMT",
+      "sha256": "107503d45bedaab7f74511766eedbd617f9ca3592113363711e94f4b6458d55a"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-10T19:09:56+00:00",
+      "url": "https://api.os.uk/downloads/v1/products/OpenUPRN/downloads?area=GB&format=CSV&redirect",
       "version": null
     }
   },
@@ -3299,6 +3408,14 @@
       "version": null
     }
   },
+  "viirs_vnl": {
+    "resolved": {
+      "instructions": "Register for a free Earth Observation Group account at https://eogdata.mines.edu/products/register/, open https://eogdata.mines.edu/nighttime_light/annual/v22/, take the latest year's VNL_npp_<year>_global_vcmslcfg_*.average_masked.dat.tif.gz and gunzip it.",
+      "resolved_at": "2026-10-10T18:30:05+00:00",
+      "url": null,
+      "version": null
+    }
+  },
   "voa_ctsop": {
     "fetched": {
       "bytes": 73430283,
@@ -3347,6 +3464,34 @@
       "resolved_at": "2026-10-08T17:41:42+00:00",
       "url": "https://www.gov.wales/sites/default/files/statistics-and-research/2025-12/examination-results-september-2024-august-2025-081.ods",
       "version": "https://www.gov.wales/sites/default/files/statistics-and-research/2025-12/examination-results-september-2024-august-2025-081.ods"
+    }
+  },
+  "wg_noise_rail_lden": {
+    "fetched": {
+      "bytes": 4913561,
+      "etag": "0x8DB943062110CD2",
+      "fetched_at": "2026-10-10T18:37:24.635582+00:00",
+      "last_modified": "Thu, 03 Aug 2023 14:46:12 GMT",
+      "sha256": "661a5ec809e15608fb3e399709ef92bfa3b7d3414febc3d5d654d4e4fc8bce19"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-10T18:22:00+00:00",
+      "url": "https://dmwproductionblob.blob.core.windows.net/cogs/cog_WG_RL_LDEN_All.tif",
+      "version": "Thu, 03 Aug 2023 14:46:12 GMT"
+    }
+  },
+  "wg_noise_road_lden": {
+    "fetched": {
+      "bytes": 49430142,
+      "etag": "0x8DB942E03CC9DFB",
+      "fetched_at": "2026-10-10T18:37:23.194589+00:00",
+      "last_modified": "Thu, 03 Aug 2023 14:29:15 GMT",
+      "sha256": "a2ad780a034d195fd6094173950036801ea08c3b5815758c9de8222146b77f30"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-10T18:21:59+00:00",
+      "url": "https://dmwproductionblob.blob.core.windows.net/cogs/cog_WG_RD_LDEN_All.tif",
+      "version": "Thu, 03 Aug 2023 14:29:15 GMT"
     }
   },
   "wg_schools": {

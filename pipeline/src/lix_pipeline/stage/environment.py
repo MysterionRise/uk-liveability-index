@@ -54,8 +54,6 @@ def stage_os_greenspace() -> pl.LazyFrame:
 FLOOD_BANDS = ("High", "Medium", "Low", "VeryLow")
 NRW_RIVERS_SEA = ("nrw_fraw_rivers", "nrw_fraw_sea")
 NRW_SURFACE_WATER = ("nrw_fraw_surface_water",)
-# A residential postcode's homes spread over roughly this radius around its point
-NRW_FOOTPRINT_M = 50.0
 COUNT_COLUMNS = (
     "res_high",
     "res_medium",
@@ -92,49 +90,42 @@ def pd_concat(frames):
     return pd.concat(frames, ignore_index=True)
 
 
-def covered_share(discs, polygons) -> np.ndarray:
-    """Share of each disc's area covered by the union of the polygons it touches."""
+def inside_share(points, polygons) -> np.ndarray:
+    """1 for each point inside any of the polygons, else 0."""
     import shapely
 
-    out = np.zeros(len(discs))
+    out = np.zeros(len(points))
     if len(polygons) == 0:
         return out
     tree = shapely.STRtree(polygons.geometry.values)
-    disc_idx, poly_idx = tree.query(discs.values, predicate="intersects")
-    if disc_idx.size == 0:
-        return out
-    order = np.argsort(disc_idx, kind="stable")
-    disc_idx, poly_idx = disc_idx[order], poly_idx[order]
-    bounds = np.flatnonzero(np.diff(disc_idx)) + 1
-    for group in np.split(np.arange(disc_idx.size), bounds):
-        d = disc_idx[group[0]]
-        hit = shapely.union_all(polygons.geometry.values[poly_idx[group]])
-        out[d] = shapely.intersection(discs.values[d], hit).area / discs.values[d].area
+    hit, _ = tree.query(points.values, predicate="within")
+    out[np.unique(hit)] = 1
     return out
 
 
-def _nrw_homes_at_risk(radius_m: float = NRW_FOOTPRINT_M) -> pl.DataFrame:
+def _nrw_homes_at_risk() -> pl.DataFrame:
     """Welsh homes at each flood likelihood, estimated from NRW's risk areas.
 
-    NRW publishes risk polygons, not counts of properties, and surface-water risk comes
-    as small patches that a postcode's single point rarely lands in. So every residential
-    postcode becomes a disc of ``radius_m`` (its homes' footprint) and the share of it
-    inside the high areas, and inside the high or medium areas, stands for the share of
-    its homes at that risk: across rivers and the sea (``res_``) and across those plus
-    surface water and small watercourses (``any_``). An LSOA's dwellings (VOA) are then
-    split in the mean proportion over its postcodes. Bands match the EA's: High above
-    1 in 30 a year, Medium 1 in 30 to 1 in 100.
+    NRW publishes risk polygons rather than counts, so the count is made the way the
+    agencies make theirs: the share of an LSOA's property points (OS Open UPRN) inside
+    the high areas, and inside the high or medium areas, across rivers and the sea
+    (``res_``) and across those plus surface water and small watercourses (``any_``),
+    applied to the LSOA's dwellings (VOA). Bands match the EA's: High above 1 in 30 a
+    year, Medium 1 in 30 to 1 in 100.
     """
     import geopandas as gpd
 
     from lix_core.codes import nation_of
-    from lix_pipeline.geo.access import residential_postcodes
 
-    homes = residential_postcodes().filter(nation_of("lsoa21cd") == "W")
-    discs = gpd.GeoSeries(
-        gpd.points_from_xy(homes["east1m"].to_numpy(), homes["north1m"].to_numpy()),
-        crs=27700,
-    ).buffer(radius_m)
+    props = (
+        pl.scan_parquet(data_dir("staged") / "os_open_uprn.parquet")
+        .filter(nation_of("lsoa21cd") == "W")
+        .select("lsoa21cd", "x", "y")
+        .collect()
+    )
+    points = gpd.GeoSeries(
+        gpd.points_from_xy(props["x"].to_numpy(), props["y"].to_numpy()), crs=27700
+    )
     layers = {
         slug: _layer_polygons(slug, ("High", "Medium"))
         for slug in NRW_RIVERS_SEA + NRW_SURFACE_WATER
@@ -142,18 +133,19 @@ def _nrw_homes_at_risk(radius_m: float = NRW_FOOTPRINT_M) -> pl.DataFrame:
     shares = {}
     for prefix, slugs in (("res", NRW_RIVERS_SEA), ("any", NRW_RIVERS_SEA + NRW_SURFACE_WATER)):
         polys = gpd.GeoDataFrame(pd_concat([layers[s] for s in slugs]), crs=27700)
-        high_or_medium = covered_share(discs, polys)
-        high = covered_share(discs, polys[polys["risk"] == "High"])
+        high_or_medium = inside_share(points, polys)
+        high = inside_share(points, polys[polys["risk"] == "High"])
         shares[f"{prefix}_high"] = high
         shares[f"{prefix}_medium"] = np.clip(high_or_medium - high, 0, 1)
-    per_pc = homes.select("lsoa21cd").with_columns(
+    per_point = props.select("lsoa21cd").with_columns(
         *[pl.Series(name, values) for name, values in shares.items()]
     )
     dwellings = pl.read_parquet(data_dir("staged") / "voa_ctsop.parquet").select(
         "lsoa21cd", "dwellings"
     )
+    logger.info(f"Wales: {props.height:,} property points against the NRW risk areas")
     return (
-        per_pc.group_by("lsoa21cd")
+        per_point.group_by("lsoa21cd")
         .agg(pl.col(c).mean() for c in shares)
         .join(dwellings, on="lsoa21cd", how="inner")
         .select(

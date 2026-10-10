@@ -59,7 +59,7 @@ lsoa_boundaries_bsc:
   coverage: [E, W]
   title: LSOA 2021 boundaries (BSC, super generalised 200m, clipped)
   theme: geography
-  priority: P1
+  priority: P2
   access:
     type: arcgis_item
     query: 'title:"Lower layer Super Output Areas (December 2021) Boundaries EW BSC" AND owner:ONSGeography_data'
@@ -74,6 +74,7 @@ lsoa_boundaries_bsc:
   attribution: *ons
   cadence: static
   size_hint: 16MB
+  notes: Nothing in the pipeline reads it (the tiles simplify the BGC set); kept for notebooks.
 
 msoa_boundaries:
   coverage: [E, W]
@@ -492,6 +493,163 @@ ea_flood_postcodes:
   cadence: adhoc
   size_hint: 20MB zipped
   notes: Rivers and the sea only; surface water flooding is a separate dataset.
+
+defra_noise_road_lden:
+  coverage: [E]
+  title: Defra strategic noise mapping round 4, road traffic noise (Lden, all roads)
+  theme: environment
+  access:
+    type: wcs
+    url: https://environment.data.gov.uk/spatialdata/road-noise-all-metrics-england-round-4/wcs
+    coverage_id: 562c9d56-7c2d-4d42-83bb-578d6e97a517__Road_Noise_Lden_England_Round_4_All
+  format: tif
+  landing_page: https://environment.data.gov.uk/dataset/562c9d56-7c2d-4d42-83bb-578d6e97a517
+  description: Modelled annual average day-evening-night road traffic noise (Lden, dB) on a 10m grid for 2021, every road inside agglomerations and major roads elsewhere.
+  licence: OGL-3.0
+  attribution: "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4)."
+  cadence: adhoc
+  size_hint: 6GB in 56 tiles
+  notes: Fetched as 8192-pixel deflated GeoTIFF tiles over the WCS (the service times out above that). Cells with no mapped source hold 0 dB, so unmapped minor roads outside agglomerations read as quiet.
+
+defra_noise_rail_lden:
+  coverage: [E]
+  title: Defra strategic noise mapping round 4, railway noise (Lden, all railways)
+  theme: environment
+  access:
+    type: wcs
+    url: https://environment.data.gov.uk/spatialdata/noise-data/wcs
+    coverage_id: 3fb3c2d7-292c-4e0a-bd5b-d8e4e1fe2947__Rail_Noise_Lden_England_Round_4_All
+  format: tif
+  landing_page: https://environment.data.gov.uk/dataset/3fb3c2d7-292c-4e0a-bd5b-d8e4e1fe2947
+  description: Modelled annual average day-evening-night railway noise (Lden, dB) on a 10m grid for 2021, every railway inside agglomerations and major railways elsewhere.
+  licence: OGL-3.0
+  attribution: "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4)."
+  cadence: adhoc
+  size_hint: 6GB in 56 tiles
+  notes: As defra_noise_road_lden.
+
+wg_noise_road_lden:
+  coverage: [W]
+  title: Welsh Government environmental noise mapping 2022, road traffic noise (Lden, all roads)
+  theme: environment
+  access:
+    type: http
+    url: https://dmwproductionblob.blob.core.windows.net/cogs/cog_WG_RD_LDEN_All.tif
+  format: tif
+  landing_page: https://datamap.gov.wales/layers/geonode:cog_WG_RD_LDEN_All
+  description: Modelled annual average day-evening-night road traffic noise (Lden, dB) on a 10m grid, every road in Wales, made with Defra's noise modelling system for the 2022 round.
+  licence: OGL-3.0
+  attribution: "Contains Welsh Government information licensed under the Open Government Licence v3.0 (Environmental Noise Mapping 2022)."
+  cadence: adhoc
+  size_hint: 2GB
+  notes: The cloud-optimised GeoTIFF behind the DataMapWales layer; its WCS refuses every request as too large.
+
+wg_noise_rail_lden:
+  coverage: [W]
+  title: Welsh Government environmental noise mapping 2022, railway noise (Lden, all railways)
+  theme: environment
+  access:
+    type: http
+    url: https://dmwproductionblob.blob.core.windows.net/cogs/cog_WG_RL_LDEN_All.tif
+  format: tif
+  landing_page: https://datamap.gov.wales/layers/geonode:cog_WG_RL_LDEN_All
+  description: Modelled annual average day-evening-night railway noise (Lden, dB) on a 10m grid, every railway in Wales, 2022 round.
+  licence: OGL-3.0
+  attribution: "Contains Welsh Government information licensed under the Open Government Licence v3.0 (Environmental Noise Mapping 2022)."
+  cadence: adhoc
+  size_hint: 2GB
+
+ea_flood_postcode_tool:
+  coverage: [E]
+  title: Environment Agency flood risk by postcode (rivers, sea and surface water)
+  theme: environment
+  access:
+    type: http
+    url: "https://environment.data.gov.uk/api/file/download?fileDataSetId=fb921496-1788-4fc2-b469-7b51e2a45553&fileName=Postcodes_Risk_Assessment_All.csv"
+  format: csv
+  landing_page: https://environment.data.gov.uk/dataset/fb921496-1788-4fc2-b469-7b51e2a45553
+  description: Addresses in every English postcode that sit in areas of high, medium and low flood risk, taking the higher of the rivers-and-sea and surface-water assessments, plus whether groundwater flooding is possible.
+  licence: OGL-3.0
+  attribution: "Contains Environment Agency information © Environment Agency and/or database right, licensed under the Open Government Licence v3.0."
+  cadence: quarterly
+  size_hint: 36MB
+  notes: Counts addresses (AddressBase), not homes; addresses at very low risk are not listed.
+
+nrw_fraw_surface_water:
+  coverage: [W]
+  title: NRW Flood Risk Assessment Wales, risk from surface water and small watercourses
+  theme: environment
+  access:
+    type: wfs
+    url: https://datamap.gov.wales/geoserver/ows
+    typename: inspire-nrw:NRW_FLOOD_RISK_FROM_SURFACE_WATER_SMALL_WATERCOURSES
+    sort_by: mm_id
+    cql_filter: "risk IN ('High','Medium')"
+  format: gpkg
+  landing_page: https://datamap.gov.wales/layergroups/inspire-nrw:FloodRiskAssessmentWales
+  description: Areas of Wales at high or medium risk of flooding from surface water and small watercourses (annual chance above 1 in 30, and 1 in 30 to 1 in 100); the low band is not fetched.
+  licence: OGL-3.0
+  attribution: "Natural Resources Wales, Flood Risk Assessment Wales, licensed under the Open Government Licence v3.0; contains Natural Resources Wales information © Natural Resources Wales and database right."
+  cadence: adhoc
+  size_hint: 2GB in 4 pages
+  notes: 2.8 million small polygons; a single GetFeature stops at the server's million, so it is paged.
+
+esa_worldcover:
+  coverage: [E, W, S, N]
+  title: ESA WorldCover 10m land cover 2021 (v200)
+  theme: environment
+  access:
+    type: http
+    url: https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_{tile}_Map.tif
+    # 3° tiles named by their south-west corner; England and Wales for now (Scotland and
+    # Northern Ireland add N54W009, N57W009, N57W006, N57W003 and N60W003)
+    tiles: [N48W009, N48W006, N48W003, N48E000, N51W006, N51W003, N51E000, N54W006, N54W003]
+  format: tif
+  landing_page: https://esa-worldcover.org/en/data-access
+  description: Land cover on a 10m grid from Sentinel-1 and Sentinel-2 imagery of 2021 (tree cover, shrubland, grassland, cropland, built-up, bare, water and more).
+  licence: CC-BY-4.0
+  attribution: "© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium"
+  cadence: static
+  size_hint: 900MB in 8 tiles
+
+viirs_vnl:
+  coverage: [E, W, S, N]
+  title: VIIRS annual night-time lights (Earth Observation Group VNL v2.2)
+  theme: environment
+  access:
+    type: manual
+    instructions: >-
+      Register for a free Earth Observation Group account at
+      https://eogdata.mines.edu/products/register/, open
+      https://eogdata.mines.edu/nighttime_light/annual/v22/, take the latest year's
+      VNL_npp_<year>_global_vcmslcfg_*.average_masked.dat.tif.gz and gunzip it.
+    expect: ["VNL_*average_masked*.tif"]
+  format: tif
+  landing_page: https://eogdata.mines.edu/products/vnl/
+  description: Annual average night-time radiance (nW/cm²/sr) on a 15 arc-second grid from the VIIRS day/night band, cleaned of clouds, fires and background noise.
+  licence: CC-BY-4.0
+  licence_verified: false
+  attribution: "Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines (VIIRS VNL v2.2, from NOAA/NASA Suomi NPP data)."
+  cadence: annual
+  size_hint: 1GB (global)
+  notes: Downloads sit behind a free login, so this is a manual source; the light_pollution context indicator is skipped when the file is absent.
+
+os_open_uprn:
+  coverage: [E, W, S]
+  title: OS Open UPRN (GB)
+  theme: geography
+  access:
+    type: http
+    url: "https://api.os.uk/downloads/v1/products/OpenUPRN/downloads?area=GB&format=CSV&redirect"
+  format: zip
+  extract: ["*.csv"]
+  landing_page: https://www.ordnancesurvey.co.uk/products/os-open-uprn
+  description: Every Unique Property Reference Number in Great Britain with its coordinates, the property points behind the address products.
+  licence: OGL-3.0
+  attribution: "Contains OS data © Crown copyright and database right 2026."
+  cadence: monthly
+  size_hint: 620MB zipped
+  notes: Used where flood risk is published as areas rather than counts (Wales), to count the properties inside them the way the agencies do.
 
 # ---------------------------------------------------------------------------------------
 # Health
