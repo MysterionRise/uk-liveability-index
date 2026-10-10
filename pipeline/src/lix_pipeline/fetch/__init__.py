@@ -16,8 +16,8 @@ import requests
 from lix_core.config import DatasetSpec, HttpAccess, load_registry
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
-from lix_pipeline.fetch import arcgis, ckan, govuk, html, nomis, overture
-from lix_pipeline.fetch.http import _read_meta, _write_meta, download
+from lix_pipeline.fetch import arcgis, ckan, govuk, html, nomis, overture, wcs, wfs
+from lix_pipeline.fetch.http import _read_meta, _write_meta, download, download_set
 from lix_pipeline.fetch.lock import read_lock, update_entry
 from lix_pipeline.fetch.session import make_session
 
@@ -40,27 +40,35 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def _probe(url: str, session: requests.Session) -> requests.Response:
+def _probe(url: str, session: requests.Session, timeout_s: int = 60) -> requests.Response:
     """HEAD the URL, falling back to a streamed GET for servers that mishandle HEAD.
 
     No retries here: some servers answer every HEAD with an error (GIAS returns 500,
     NHS ODS reports 405), and backing off on those just wastes a minute per probe.
     """
     try:
-        resp = requests.head(url, headers=session.headers, allow_redirects=True, timeout=(30, 60))
+        resp = requests.head(
+            url, headers=session.headers, allow_redirects=True, timeout=(30, timeout_s)
+        )
         if resp.ok:
             return resp
     except requests.RequestException:
         pass
-    resp = session.get(url, stream=True, timeout=(30, 60))
+    resp = session.get(url, stream=True, timeout=(30, timeout_s))
     resp.close()
     return resp
 
 
 def _resolve_http(access: HttpAccess, session: requests.Session) -> tuple[str, requests.Response]:
     """The URL to fetch and its HEAD response; for dated URLs, the newest that exists."""
+    if access.tiles:
+        # One URL pattern, many files: the first tile stands for the set
+        url = access.url.format(tile=access.tiles[0])
+        head = _probe(url, session, access.timeout_s)
+        head.raise_for_status()
+        return url, head
     if not access.date_format:
-        head = _probe(access.url, session)
+        head = _probe(access.url, session, access.timeout_s)
         head.raise_for_status()
         return access.url, head
     today = date.today()
@@ -102,6 +110,10 @@ def resolve(slug: str, spec: DatasetSpec, session: requests.Session) -> dict:
         resolved = nomis.resolve_query(access, session)
     elif access.type == "overture":
         resolved = overture.resolve_query(access, session)
+    elif access.type == "wcs":
+        resolved = wcs.resolve_coverage(access, session)
+    elif access.type == "wfs":
+        resolved = wfs.resolve_layer(access, session)
     else:  # manual
         resolved = {"url": None, "version": None, "instructions": access.instructions}
     return {**resolved, "resolved_at": _now()}
@@ -212,6 +224,17 @@ def fetch(
             force,
             lambda out: overture.fetch_query(spec.access, resolved["url"], out),
         )
+    elif spec.access.type == "wcs":
+        urls = wcs.tile_urls(spec.access, resolved)
+        meta = download_set(slug, urls, spec.format, resolved["version"], force, session)
+    elif spec.access.type == "wfs":
+        urls = wfs.page_urls(spec.access, spec.format, resolved["count"])
+        meta = download_set(
+            slug, urls, spec.format, resolved["version"], force, session, spec.access.timeout_s
+        )
+    elif spec.access.type == "http" and spec.access.tiles:
+        urls = {t: spec.access.url.format(tile=t) for t in spec.access.tiles}
+        meta = download_set(slug, urls, spec.format, resolved.get("version"), force, session)
     else:
         meta = download(
             slug,
@@ -221,6 +244,7 @@ def fetch(
             force=force,
             version=resolved.get("version"),
             session=session,
+            read_timeout_s=max(300, getattr(spec.access, "timeout_s", 0)),
         )
 
     previous = entry.get("fetched", {}).get("sha256")
@@ -232,7 +256,7 @@ def fetch(
 
     fetched = {
         k: meta.get(k)
-        for k in ("sha256", "bytes", "rows", "etag", "last_modified", "extracted")
+        for k in ("sha256", "bytes", "rows", "etag", "last_modified", "extracted", "files")
         if meta.get(k) is not None
     }
     fetched["fetched_at"] = meta.get("downloaded_at") or _now()

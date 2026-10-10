@@ -28,6 +28,8 @@ MAGIC_BYTES = {
     "ods": [b"PK\x03\x04"],
     "gpkg": [b"SQLite format 3\x00"],
     "parquet": [b"PAR1"],
+    # Classic and BigTIFF headers, either byte order
+    "tif": [b"II*\x00", b"MM\x00*", b"II+\x00", b"MM\x00+"],
 }
 ERROR_BODY_PREFIXES = (b"{", b"<!doctype", b"<html", b"<?xml")
 
@@ -97,13 +99,18 @@ def _check_payload(path: Path, fmt: str) -> None:
 
 
 def _get(
-    session: requests.Session, url: str, headers: dict, export_wait_s: float, poll_s: float
+    session: requests.Session,
+    url: str,
+    headers: dict,
+    export_wait_s: float,
+    poll_s: float,
+    read_timeout_s: float = 300,
 ) -> requests.Response:
     """GET that waits out ArcGIS Hub's "202: download file is being generated" replies."""
     deadline = time.monotonic() + export_wait_s
     while True:
         # (connect, read) timeout; large files like price_paid (5.5GB) need generous reads
-        resp = session.get(url, headers=headers, stream=True, timeout=(30, 300))
+        resp = session.get(url, headers=headers, stream=True, timeout=(30, read_timeout_s))
         if resp.status_code != 202:
             return resp
         resp.close()
@@ -123,6 +130,7 @@ def download(
     session: requests.Session | None = None,
     export_wait_s: float = 900,
     poll_s: float = 15,
+    read_timeout_s: float = 300,
 ) -> dict:
     """Download ``url`` into data/raw/{slug}/{slug}.{fmt} (extracting zips) and return its meta.
 
@@ -163,7 +171,7 @@ def download(
         headers["If-Modified-Since"] = meta["last_modified"]
 
     logger.info(f"[{slug}] Downloading from {url}")
-    resp = _get(session, url, headers, export_wait_s, poll_s)
+    resp = _get(session, url, headers, export_wait_s, poll_s, read_timeout_s)
 
     if resp.status_code == 304:
         logger.info(f"[{slug}] Not modified since last download — skipping")
@@ -255,4 +263,93 @@ def download(
     }
     _write_meta(dest_dir, new_meta)
 
+    return new_meta
+
+
+def download_file(
+    session: requests.Session,
+    url: str,
+    path: Path,
+    fmt: str,
+    attempts: int = 3,
+    read_timeout_s: float = 900,
+) -> str:
+    """Stream ``url`` to ``path`` (through a .part file) and return its sha256.
+
+    Retries transient server errors and timeouts: a WCS server rendering a large tile
+    answers 504 now and then. The payload is checked against the format's magic bytes.
+    """
+    part = path.with_name(path.name + ".part")
+    for attempt in range(1, attempts + 1):
+        try:
+            sha256 = hashlib.sha256()
+            with session.get(url, stream=True, timeout=(30, read_timeout_s)) as resp:
+                resp.raise_for_status()
+                with open(part, "wb") as f:
+                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
+                        f.write(chunk)
+                        sha256.update(chunk)
+            _check_payload(part, fmt)
+            os.replace(part, path)
+            return sha256.hexdigest()
+        except (requests.RequestException, ValueError) as e:
+            status = getattr(getattr(e, "response", None), "status_code", None)
+            transient = isinstance(e, requests.ConnectionError | requests.Timeout) or (
+                status is not None and status >= 500
+            )
+            if not transient or attempt == attempts:
+                raise
+            logger.warning(f"{path.name}: {e}; retrying ({attempt}/{attempts})")
+            time.sleep(10 * attempt)
+    raise AssertionError("unreachable")
+
+
+def download_set(
+    slug: str,
+    urls: dict[str, str],
+    fmt: str,
+    version: str | None,
+    force: bool = False,
+    session: requests.Session | None = None,
+    read_timeout_s: float = 900,
+) -> dict:
+    """Download several files of one dataset into data/raw/{slug}/{name}.{fmt}.
+
+    Files already present are kept unless ``force``; the set is complete when every
+    name has its file. The meta's sha256 covers the sorted per-file checksums, so a
+    changed tile changes the dataset's checksum.
+    """
+    dest_dir = data_dir("raw") / slug
+    session = session or make_session()
+    meta = _read_meta(dest_dir)
+    same = meta.get("version") == version and set(meta.get("files") or {}) == set(urls)
+    if not force and meta.get("completed") and same:
+        logger.info(f"[{slug}] Already downloaded — skipping (use --force to re-download)")
+        return meta
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    known = meta.get("files") or {} if same else {}
+    files: dict[str, str] = {}
+    for i, (name, url) in enumerate(urls.items(), 1):
+        path = dest_dir / f"{name}.{fmt}"
+        if path.exists() and not force and name in known:
+            files[name] = known[name]
+            continue
+        logger.info(f"[{slug}] {i}/{len(urls)} {name}")
+        files[name] = download_file(session, url, path, fmt, read_timeout_s=read_timeout_s)
+        _write_meta(
+            dest_dir, {"slug": slug, "version": version, "files": files, "completed": False}
+        )
+    combined = hashlib.sha256("\n".join(f"{k} {v}" for k, v in sorted(files.items())).encode())
+    new_meta = {
+        "slug": slug,
+        "url": next(iter(urls.values())),
+        "version": version,
+        "downloaded_at": datetime.now(timezone.utc).isoformat(),
+        "files": files,
+        "bytes": sum((dest_dir / f"{n}.{fmt}").stat().st_size for n in files),
+        "sha256": combined.hexdigest(),
+        "completed": True,
+    }
+    _write_meta(dest_dir, new_meta)
+    logger.info(f"[{slug}] {len(files)} files, {new_meta['bytes'] / 1e6:.0f} MB")
     return new_meta

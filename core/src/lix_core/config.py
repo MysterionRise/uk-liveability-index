@@ -32,6 +32,47 @@ class HttpAccess(_Strict):
     url: str
     date_format: str | None = None
     lookback_days: int = 7
+    # Several files under one URL pattern: ``{tile}`` in the URL takes each value in turn
+    # and each lands in data/raw/{slug}/{tile}.{format}
+    tiles: list[str] | None = None
+    # Seconds to wait for the server to start answering (a WFS export of a large layer
+    # builds the whole file first)
+    timeout_s: int = 60
+
+
+class WfsAccess(_Strict):
+    """A vector layer served over WFS 2.0.0 (GeoServer), fetched in pages.
+
+    GeoServer stops a single GetFeature at its feature limit (a million on DataMapWales),
+    so the layer is fetched ``page_size`` features at a time, sorted by ``sort_by`` for a
+    stable order, into data/raw/{slug}/page_{n}.{format}. ``cql_filter`` keeps only the
+    features wanted (the high and medium flood bands).
+    """
+
+    type: Literal["wfs"]
+    url: str
+    typename: str
+    sort_by: str
+    cql_filter: str | None = None
+    page_size: int = 500_000
+    srs: str = "EPSG:27700"
+    timeout_s: int = 1800
+
+
+class WcsAccess(_Strict):
+    """A raster served over WCS 2.0.1 (Defra's noise maps), fetched as GeoTIFF tiles.
+
+    DescribeCoverage gives the envelope and resolution; the envelope (clipped to ``bbox``,
+    E0 N0 E1 N1 in the coverage's CRS, when set) is cut into ``tile_px``-pixel squares at
+    native resolution and each is requested into data/raw/{slug}/{E}_{N}.tif.
+    """
+
+    type: Literal["wcs"]
+    url: str
+    coverage_id: str
+    tile_px: int = 8192
+    compression: str | None = "Deflate"
+    bbox: list[float] | None = None
 
 
 class ArcgisItemAccess(_Strict):
@@ -155,6 +196,8 @@ Access = Annotated[
     | CkanAccess
     | NomisAccess
     | OvertureAccess
+    | WcsAccess
+    | WfsAccess
     | ManualAccess,
     Field(discriminator="type"),
 ]
@@ -199,7 +242,7 @@ class DatasetSpec(_Strict):
     coverage: list[Nation] = Field(default_factory=lambda: ["E"])
     priority: Literal["P0", "P1", "P2"] = "P0"
     access: Access
-    format: Literal["csv", "zip", "gpkg", "xlsx", "ods", "parquet", "json", "geojson", "pbf"]
+    format: Literal["csv", "zip", "gpkg", "xlsx", "ods", "parquet", "json", "geojson", "pbf", "tif"]
     # zip only: glob patterns of members to extract (everything if omitted)
     extract: list[str] | None = None
     landing_page: str | None = None
@@ -274,6 +317,7 @@ UNIT_CODES: dict[str, str] = {
     "years of income": "years_income",
     "years": "years",
     "people per km²": "people_km2",
+    "nW/cm²/sr": "radiance",
 }
 
 
