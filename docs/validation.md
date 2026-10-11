@@ -23,7 +23,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 | Whitechapel | Spitalfields, Tower Hamlets | 56 | 100 | 26 | 81 | 34 | 71 | 36 | 8 | 91 |
 | Kensington | Kensington Abingdon, Kensington and Chelsea | 68 | 100 | 91 | 96 | 49 | 71 | 18 | 23 | 99 |
 | Manchester | Castlefield & Deansgate, Manchester | 64 | 100 | 63 | 58 | 50 | 73 | 55 | 19 | 97 |
-| Salford | Weaste & Seedley, Salford | 58 | 63 | 21 | 51 | 64 | 85 | 54 | 31 | 98 |
+| Salford | Weaste & Seedley, Salford | 58 | 62 | 21 | 51 | 64 | 85 | 54 | 31 | 98 |
 | Jesmond | South Jesmond & Sandyford, Newcastle upon Tyne | 74 | 99 | 70 | 71 | 78 | 87 | 46 | 43 | 97 |
 | Headingley | Headingley, Leeds | 71 | 99 | 62 | 62 | 78 | 87 | 49 | 30 | 100 |
 | Harrogate | Central Harrogate, North Yorkshire | 70 | 98 | 67 | 65 | 79 | 79 | 34 | 41 | 97 |
@@ -140,7 +140,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 **Winchester** (Winchester East). Affluent cathedral city with strong schools. Flags: broadcast_lad, broadcast_msoa.
 
 - ✅ overall score ≥ 55: 70.3
-- ✅ education score ≥ 55: 78.1
+- ✅ education score ≥ 55: 78.0
 
 **St Albans** (St Albans Central). London commuter city, expensive. Flags: broadcast_lad, broadcast_msoa.
 
