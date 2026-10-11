@@ -43,7 +43,7 @@
     "shortlistCount": "Shortlist ({count})",
     "panels": "Panels",
     "analystTitle": "Analyst mode: distributions, indicator overlap and SQL",
-    "chatPlaceholder": "Ask about places in {coverage}…",
+    "chatPlaceholder": "Ask about a neighbourhood…",
     "chatWelcome": "How can I help you today?",
     "chatDisclaimer": "AI can make mistakes. Please verify important information.",
     "send": "Send",
@@ -73,7 +73,7 @@
     }
   },
   "Search": {
-    "placeholder": "Search a postcode or place",
+    "placeholder": "Postcode or place",
     "noMatches": "No matches in {coverage}",
     "searching": "Searching…",
     "unavailable": "Search is unavailable",

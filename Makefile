@@ -137,7 +137,7 @@ data-pack:
 	@echo "Wrote $(PACK) ($$(du -h $(PACK) | cut -f1))"
 
 data-download:
-	$(eval DATA_TAG ?= $(shell python3 scripts/data_release.py latest --schema $(SCHEMA)))
+	$(eval DATA_TAG := $(or $(DATA_TAG),$(shell python3 scripts/data_release.py latest --schema $(SCHEMA))))
 	@test -n "$(DATA_TAG)" || (echo "No data release with serve schema $(SCHEMA) yet: make build-data, or make data-unpack PACK=..." && exit 1)
 	@echo "Data release $(DATA_TAG)"
 	mkdir -p $(dir $(PACK))

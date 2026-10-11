@@ -43,7 +43,7 @@
     "shortlistCount": "Rhestr fer ({count})",
     "panels": "Paneli",
     "analystTitle": "Modd dadansoddwr: dosraniadau, gorgyffwrdd dangosyddion a SQL",
-    "chatPlaceholder": "Gofynnwch am lefydd yn {coverage}…",
+    "chatPlaceholder": "Gofynnwch am gymdogaeth…",
     "chatWelcome": "Sut alla i helpu heddiw?",
     "chatDisclaimer": "Gall AI wneud camgymeriadau. Gwiriwch wybodaeth bwysig.",
     "send": "Anfon",
@@ -73,7 +73,7 @@
     }
   },
   "Search": {
-    "placeholder": "Chwilio am god post neu le",
+    "placeholder": "Cod post neu le",
     "noMatches": "Dim canlyniadau yn {coverage}",
     "searching": "Yn chwilio…",
     "unavailable": "Nid yw'r chwilio ar gael",

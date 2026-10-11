@@ -29,8 +29,11 @@ jobs:
       - name: Download the data pack from its data release
         env:
           GH_TOKEN: ${{ github.token }}
-          DATA_TAG: ${{ inputs.data_tag }}
-        run: make data-download
+          INPUT_DATA_TAG: ${{ inputs.data_tag }}
+        run: |
+          # Only set DATA_TAG when one was given: an empty variable would stop the lookup
+          if [ -n "$INPUT_DATA_TAG" ]; then export DATA_TAG="$INPUT_DATA_TAG"; fi
+          make data-download
 
       # In case the packages are still private
       - uses: docker/login-action@v3

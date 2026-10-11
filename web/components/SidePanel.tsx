@@ -112,7 +112,7 @@ export function SidePanel() {
           <CopilotChat
             className="h-full"
             labels={{
-              chatInputPlaceholder: t("chatPlaceholder", { coverage }),
+              chatInputPlaceholder: t("chatPlaceholder"),
               welcomeMessageText: t("chatWelcome"),
               chatDisclaimerText: t("chatDisclaimer"),
             }}
