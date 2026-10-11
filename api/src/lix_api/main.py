@@ -140,6 +140,7 @@ class RankRequest(BaseModel):
     min_theme_scores: dict[str, float] | None = None
     urban: bool | None = None
     limit: int = 10
+    sort_by: str = "overall"  # or "theme:<id>" / "indicator:<id>": rank by one measure
 
 
 @app.post(f"{api}/rank")

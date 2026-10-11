@@ -25,6 +25,11 @@ def test_rest_routes(client):
     assert client.get("/api/v1/areas/LS6 3HN").json()["neighbourhood"] == "Headingley"
     r = client.post("/api/v1/rank", json={"within": "Leeds", "level": "lsoa", "limit": 2})
     assert len(r.json()["results"]) == 2
+    quiet = client.post(
+        "/api/v1/rank", json={"within": "Leeds", "limit": 2, "sort_by": "indicator:road_rail_noise"}
+    ).json()
+    assert quiet["sort_by"] == "indicator:road_rail_noise" and quiet["sort_label"]
+    assert client.post("/api/v1/rank", json={"sort_by": "indicator:nope"}).status_code == 404
     assert (
         client.get(
             "/api/v1/compare", params=[("areas", "LS6 3HN"), ("areas", "BN2 9QA")]
