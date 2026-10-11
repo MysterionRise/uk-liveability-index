@@ -1,4 +1,4 @@
-.PHONY: up down up-demo gif tiktok quickstart data-download data-pack data-unpack eval demo demo-offline demo-check demo-record install resolve fetch stage indicators score tiles build-data validate demo-data docs schemas api web-install web web-test e2e dev test lint format
+.PHONY: up down up-demo gif tiktok quickstart data-download data-pack data-unpack eval demo demo-offline demo-check demo-record install resolve fetch stage indicators score tiles build-data validate demo-data docs schemas api web-install web web-test e2e dev test lint format refresh-plan refresh
 
 PY_DIRS := core pipeline api
 APP_URL := http://localhost:$(or $(LIX_PORT),3000)
@@ -38,6 +38,18 @@ tiles:
 
 # Everything from download to scores and tiles
 build-data: fetch stage indicators score tiles validate
+
+# What a refresh would rebuild (re-resolves every source, then compares the lockfile with
+# the sidecars under data/); `make refresh` does it: only stale stages, indicators, scores
+# and tiles are rebuilt, then the docs, the anchor review and a fresh data pack
+refresh-plan:
+	uv run lix refresh --dry-run
+
+refresh:
+	uv run lix refresh
+	uv run lix docs
+	uv run lix qa places
+	$(MAKE) data-pack
 
 # JSON Schema of the API models (contracts/schemas.json) for the front end's types
 schemas:

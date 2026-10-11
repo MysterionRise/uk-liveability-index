@@ -9,6 +9,7 @@ lix validate geo               # check the geography backbone
 lix validate serve             # check data/serve (or --dir another serve directory)
 lix validate places            # anchor checks of the face-validity review
 lix qa places                  # write docs/validation.md
+lix refresh --dry-run          # what a refresh would rebuild; lix refresh does it
 lix demo-data --lad E08000035 E06000043 --out fixtures/demo   # small dataset for CI/demos
 """
 
@@ -26,7 +27,7 @@ from lix_pipeline.fetch import (
     select,
 )
 from lix_pipeline.fetch.session import make_session
-from lix_pipeline.stage import STAGE_INPUTS, save_staged, stagers
+from lix_pipeline.stage import save_staged, stagers
 
 logger = setup_logging("cli")
 
@@ -108,50 +109,24 @@ def _fetch(args: argparse.Namespace) -> int:
     return 1 if failed else 0
 
 
-def _has_inputs(slug: str, registry: dict) -> bool:
-    """Every input the stager needs for the active nations is on disk.
-
-    Inputs covering none of the active nations are not needed (Welsh noise maps in an
-    England-only build); a manual source counts when its files sit in data/manual/.
-    """
-    from lix_core.codes import active_nations
-
-    active = set(active_nations())
-
-    def present(s: str) -> bool:
-        spec = registry.get(s)
-        if spec is not None and not (active & set(spec.coverage)):
-            return True
-        if spec is not None and spec.access.type == "manual":
-            return any(p.is_file() for p in (data_dir("manual") / s).glob("**/*"))
-        return (data_dir("raw") / s / ".meta.json").exists()
-
-    return all(present(s) for s in STAGE_INPUTS.get(slug, [slug]))
-
-
-def _covers_active(slug: str, registry: dict) -> bool:
-    """False when none of the stager's registered inputs covers any active nation."""
-    from lix_core.codes import active_nations
-
-    inputs = [s for s in STAGE_INPUTS.get(slug, [slug]) if s in registry]
-    active = set(active_nations())
-    return not inputs or any(active & set(registry[s].coverage) for s in inputs)
-
-
 def _stage(args: argparse.Namespace) -> int:
+    from lix_core.codes import active_nations
+    from lix_pipeline.stage import graph
+
     available = stagers()
     if args.slug and args.slug not in available:
         raise SystemExit(f"Unknown stager: {args.slug!r}. Available: {list(available)}")
 
-    registry = load_registry()
+    registry, nations = load_registry(), list(active_nations())
     for slug in [args.slug] if args.slug else list(available):
-        if args.all and not _has_inputs(slug, registry):
+        if args.all and not graph.has_inputs(slug, registry, nations):
             logger.info(f"[{slug}] Inputs not fetched — skipping")
             continue
-        if args.all and not _covers_active(slug, registry):
+        if args.all and not graph.covers(slug, registry, nations):
             logger.info(f"[{slug}] Its sources cover none of the active nations — skipping")
             continue
         save_staged(available[slug](), slug)
+        graph.record_staged(slug, registry, nations)
     return 0
 
 
@@ -219,6 +194,17 @@ def _tiles(args: argparse.Namespace) -> int:
     from lix_pipeline.serve.tiles import build_tiles
 
     build_tiles()
+    return 0
+
+
+def _refresh(args: argparse.Namespace) -> int:
+    from lix_pipeline.refresh.run import RefreshFailed, refresh
+
+    try:
+        refresh(dry_run=args.dry_run, force=args.force, skip_fetch=args.skip_fetch)
+    except RefreshFailed as e:
+        logger.error(str(e))
+        return 1
     return 0
 
 
@@ -292,6 +278,16 @@ def main(argv: list[str] | None = None) -> None:
 
     tiles = sub.add_parser("tiles", help="Write map tiles to data/serve/tiles/*.pmtiles")
     tiles.set_defaults(func=_tiles)
+
+    refresh = sub.add_parser(
+        "refresh", help="Resolve, fetch and rebuild only what changed (see refresh/)"
+    )
+    refresh.add_argument("--dry-run", action="store_true", help="Resolve, then print the plan")
+    refresh.add_argument("--force", action="store_true", help="Rebuild every stage")
+    refresh.add_argument(
+        "--skip-fetch", action="store_true", help="Neither resolve nor fetch; rebuild from data/raw"
+    )
+    refresh.set_defaults(func=_refresh)
 
     docs = sub.add_parser("docs", help="Regenerate docs/data-sources.md and ATTRIBUTION.md")
     docs.set_defaults(func=_docs)

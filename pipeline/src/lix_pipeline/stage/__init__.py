@@ -10,7 +10,10 @@ from lix_core.paths import data_dir
 
 logger = setup_logging("stage")
 
-# Raw datasets each stager reads, when that isn't just its own slug
+# Raw datasets each stager reads, when that isn't just its own slug. A glob stands for
+# every registry slug it matches (``osm_*``: one extract per nation). Staged tables a
+# stager reads are declared in STAGE_READS below and bring their own raw inputs along;
+# ``graph.raw_inputs`` closes over both and a test keeps both honest against the code.
 STAGE_INPUTS: dict[str, list[str]] = {
     "price_paid": ["price_paid", "nspl"],
     "population": ["pop_lsoa_mye"],
@@ -32,18 +35,25 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "gias": ["gias", "lsoa_boundaries"],
     "fsa_fhrs": ["fsa_fhrs", "nspl", "lsoa_boundaries"],
     "overture_pubs": ["overture_pubs", "lsoa_boundaries"],
-    "osm_pois": ["osm_england"],
+    "osm_pois": ["osm_*"],
     "ods_dentists": ["ods_dentists", "nspl"],
     "nhsbsa_pharmacies": ["nhsbsa_pharmacies", "nspl"],
     "ofsted_childcare": ["ofsted_childcare", "nspl"],
     "ea_flood_postcodes": ["ea_flood_postcodes", "nspl"],
     "ofcom_broadband": ["ofcom_broadband", "oa_lookup"],
     "wg_schools": ["wg_schools", "lsoa_boundaries"],
-    "schools": ["gias", "lsoa_boundaries"],
-    "childcare": ["ofsted_childcare", "nspl"],
-    "pharmacies": ["nhsbsa_pharmacies", "nspl"],
+    "schools": ["gias", "wg_schools", "lsoa_boundaries"],
+    "childcare": ["ofsted_childcare", "nspl", "lsoa_boundaries"],
+    "pharmacies": ["nhsbsa_pharmacies", "nspl", "lsoa_boundaries"],
     "ea_flood_all_postcodes": ["ea_flood_postcode_tool", "nspl"],
-    "flood": ["ea_flood_postcodes", "ea_flood_postcode_tool", "nspl"],
+    "flood": [
+        "ea_flood_postcodes",
+        "ea_flood_postcode_tool",
+        "nrw_fraw_rivers",
+        "nrw_fraw_sea",
+        "nrw_fraw_surface_water",
+        "nspl",
+    ],
     "tree_cover": ["esa_worldcover", "nspl"],
     "os_open_uprn": ["os_open_uprn", "lsoa_boundaries"],
     "night_lights": ["viirs_vnl", "nspl"],
@@ -54,8 +64,37 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "wg_noise_rail_lden",
         "nspl",
     ],
-    "deprivation": ["iod_2025"],
+    "deprivation": ["iod_2025", "wimd_*"],
+    "council_tax": ["council_tax", "wg_council_tax"],
+    "bods_gtfs": ["bods_gtfs*"],
     "wg_ks4_la": ["wg_ks4_la"],
+}
+
+# Staged tables each stager reads (the stager → staged-table edges of the graph)
+STAGE_READS: dict[str, list[str]] = {
+    "geo_lsoa": ["nspl", "population"],
+    "price_paid": ["nspl"],
+    "defra_pcm_no2": ["nspl"],
+    "defra_pcm_pm25": ["nspl"],
+    "defra_pcm_pm10": ["nspl"],
+    "ods_gp": ["nspl"],
+    "ods_dentists": ["nspl"],
+    "nhsbsa_pharmacies": ["nspl"],
+    "ofsted_childcare": ["nspl"],
+    "fsa_fhrs": ["nspl"],
+    "ea_flood_postcodes": ["nspl"],
+    "ea_flood_all_postcodes": ["nspl"],
+    "schools": ["gias", "wg_schools"],
+    "wg_ks4_la": ["geo_lsoa"],
+    "childcare": ["ofsted_childcare", "osm_pois"],
+    "pharmacies": ["nhsbsa_pharmacies", "osm_pois"],
+    "ofcom_broadband": ["oa_lookup"],
+    "council_tax": ["geo_lsoa"],
+    "flood": ["ea_flood_all_postcodes", "ea_flood_postcodes", "os_open_uprn", "voa_ctsop"],
+    "noise": ["nspl"],
+    "tree_cover": ["nspl"],
+    "night_lights": ["nspl"],
+    "deprivation": ["iod_2025"],
 }
 
 
