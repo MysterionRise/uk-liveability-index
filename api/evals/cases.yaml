@@ -94,7 +94,7 @@ cases:
 
   - name: profile_place
     category: lookup
-    turns: ["What's Whitley Bay like as a place to live?"]
+    turns: ["what's whitley bay like as a place to live?"]  # lower case on purpose (#72)
     expect:
       tools: [get_area_profile]
       grounded: true

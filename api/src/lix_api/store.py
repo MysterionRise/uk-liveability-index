@@ -110,6 +110,26 @@ class Store:
         return pl.read_parquet(self.serve_dir / "areas.parquet")
 
     @cached_property
+    def place_search_names(self) -> list[str]:
+        """Folded place names followed by their folded alternative names ("" where there
+        is none), so an index below ``places.height`` is a name and one above it the
+        alternative of the same row."""
+        from lix_api.services.text import fold
+
+        names = [fold(n) for n in self.places["name"].to_list()]
+        if "name_alt" in self.places.columns:
+            alts = [fold(a) if a else "" for a in self.places["name_alt"].to_list()]
+        else:
+            alts = [""] * len(names)
+        return names + alts
+
+    @cached_property
+    def area_search_names(self) -> list[str]:
+        from lix_api.services.text import fold
+
+        return [fold(n) for n in self.areas["name"].to_list()]
+
+    @cached_property
     def pois(self) -> pl.DataFrame:
         return pl.read_parquet(self.serve_dir / "pois.parquet")
 
@@ -123,7 +143,10 @@ class Store:
 
     def warm(self) -> "Store":
         """Load everything up front so the first request isn't slow."""
-        for attr in ("manifest", "features", "lsoa_index", "postcodes", "places", "areas"):
+        for attr in (
+            "manifest", "features", "lsoa_index", "postcodes", "places", "areas",
+            "place_search_names", "area_search_names",
+        ):  # fmt: skip
             getattr(self, attr)
         self.poi_trees  # noqa: B018
         return self

@@ -25,6 +25,14 @@ class TestSearch:
         assert search.search_place(store, "Headingly")[0].name == "Headingley"
         assert search.search_place(store, "Nowheresville XYZ") == []
 
+    def test_case_and_accents_do_not_matter(self, store):
+        assert search.fold("Ynys Môn") == "ynys mon"
+        assert search.search_place(store, "leeds")[0].kind == "lad"
+        assert search.search_place(store, "ynys mon")[0].name == "Ynys Môn"
+        # A query in the other language matches the alternative name and shows it
+        caerdydd = search.search_place(store, "CAERDYDD")[0]
+        assert (caerdydd.name, caerdydd.lsoa21cd) == ("Caerdydd", "W01001880")
+
 
 class TestProfile:
     def test_profile_fields(self, store):

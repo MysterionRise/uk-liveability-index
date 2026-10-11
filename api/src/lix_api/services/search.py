@@ -6,6 +6,7 @@ import polars as pl
 from rapidfuzz import fuzz, process
 
 from lix_api.models import Place, Point
+from lix_api.services.text import fold
 from lix_api.store import Store, to_bng
 
 POSTCODE = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$")
@@ -15,7 +16,9 @@ GSS = re.compile(r"^[EWSN]\d{8}$")
 
 # Higher wins when names score equally: "Leeds" the city beats Leeds village in Kent
 # WRatio similarity a name must reach: typos ("Headingly", "Mancheser") score ~95,
-# while unrelated names sharing a suffix ("Nowheresville" vs "Teesville") score ~80
+# while unrelated names sharing a suffix ("Nowheresville" vs "Teesville") score ~80.
+# Query and names are both folded first (see services.text), so "leeds" and "Ynys Mon"
+# score 100 against "Leeds" and "Ynys Môn"
 MIN_SIMILARITY = 88
 
 KIND_PRIORITY = {"nation": 7, "lad": 6, "region": 5, "City": 5, "Town": 4, "msoa": 3,
@@ -82,22 +85,26 @@ def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
             return [exact]
 
     candidates: list[tuple[float, Place]] = []
-    names = store.places["name"].to_list()
+    folded = fold(query)
+    n_places = store.places.height
     for _, score, idx in process.extract(
-        query, names, scorer=fuzz.WRatio, limit=40, score_cutoff=MIN_SIMILARITY
-    ):
-        row = store.places.row(idx, named=True)
+        folded, store.place_search_names, scorer=fuzz.WRatio, processor=None, limit=40,
+        score_cutoff=MIN_SIMILARITY,
+    ):  # fmt: skip
+        row = store.places.row(idx % n_places, named=True)
+        # The form that matched is the one shown: "Caerdydd" for a Welsh query
+        matched = row["name"] if idx < n_places else row["name_alt"]
         place = Place(
-            kind="place", name=row["name"], code=row["place_id"], lsoa21cd=row["lsoa21cd"],
+            kind="place", name=matched, code=row["place_id"], lsoa21cd=row["lsoa21cd"],
             detail=f"{row['place_type']}, {row['local_authority']}",
             centre=Point(lat=row["lat"], lon=row["lon"]),
         )  # fmt: skip
         candidates.append((score + KIND_PRIORITY.get(row["place_type"], 0), place))
 
-    area_names = store.areas["name"].to_list()
     for _, score, idx in process.extract(
-        query, area_names, scorer=fuzz.WRatio, limit=20, score_cutoff=MIN_SIMILARITY
-    ):
+        folded, store.area_search_names, scorer=fuzz.WRatio, processor=None, limit=20,
+        score_cutoff=MIN_SIMILARITY,
+    ):  # fmt: skip
         row = store.areas.row(idx, named=True)
         candidates.append((score + KIND_PRIORITY.get(row["level"], 0), _area_place(row)))
 

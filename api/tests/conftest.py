@@ -143,16 +143,16 @@ def build_serve_dir(path) -> None:
     }).write_parquet(path / "postcodes.parquet")  # fmt: skip
 
     pl.DataFrame({
-        "place_id": ["p1", "p2", "p3", "p4", "p5"],
-        "name": ["Headingley", "Leeds", "Leeds", "Brighton", "Cardiff"],
-        "name_alt": [None, None, None, None, "Caerdydd"],
-        "place_type": ["Suburban Area", "City", "Village", "Other Settlement", "City"],
-        "postcode_district": ["LS6", "LS1", "ME17", "BN1", "CF10"],
-        "local_authority": ["Leeds", "Leeds", "Maidstone", "Brighton and Hove", "Cardiff"],
-        "region": ["Yorkshire", "Yorkshire", "South East", "South East", "Wales"],
-        "lon": [-1.5766, -1.5500, 0.6070, -0.1370, -3.1790],
-        "lat": [53.8196, 53.8000, 51.2467, 50.8220, 51.4850],
-        "lsoa21cd": ["E01000001", "E01000002", "E01000002", "E01000005", "W01001880"],
+        "place_id": ["p1", "p2", "p3", "p4", "p5", "p6"],
+        "name": ["Headingley", "Leeds", "Leeds", "Brighton", "Cardiff", "Ynys Môn"],
+        "name_alt": [None, None, None, None, "Caerdydd", None],
+        "place_type": ["Suburban Area", "City", "Village", "Other Settlement", "City", "Village"],
+        "postcode_district": ["LS6", "LS1", "ME17", "BN1", "CF10", "LL77"],
+        "local_authority": ["Leeds", "Leeds", "Maidstone", "Brighton and Hove", "Cardiff", "Isle of Anglesey"],
+        "region": ["Yorkshire", "Yorkshire", "South East", "South East", "Wales", "Wales"],
+        "lon": [-1.5766, -1.5500, 0.6070, -0.1370, -3.1790, -4.3300],
+        "lat": [53.8196, 53.8000, 51.2467, 50.8220, 51.4850, 53.2700],
+        "lsoa21cd": ["E01000001", "E01000002", "E01000002", "E01000005", "W01001880", "W01001881"],
     }).write_parquet(path / "places.parquet")  # fmt: skip
 
     df = df.with_columns(
