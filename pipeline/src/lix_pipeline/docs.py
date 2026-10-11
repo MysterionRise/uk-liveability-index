@@ -39,24 +39,33 @@ def data_sources_md(registry: dict[str, DatasetSpec]) -> str:
     for slug, spec in registry.items():
         by_theme[spec.theme].append((slug, spec))
 
+    from lix_pipeline.fetch.lock import read_lock
+    from lix_pipeline.stage.periods import period_of
+
+    lock = read_lock()
     lines = [
         HEADER + "# Data sources\n",
         f"{len(registry)} datasets, all under open licences. Each is pinned to a concrete file "
-        "in `config/datasets.lock.json` by `lix resolve`.\n",
+        'in `config/datasets.lock.json` by `lix resolve`. "Data for" is the period the data '
+        'describes, as far as the publisher says; "Updated" is how often it is published.\n',
     ]
     for theme, title in THEME_TITLES.items():
         if theme not in by_theme:
             continue
         lines.append(f"\n## {title}\n")
-        lines.append("| Slug | Dataset | What it gives us | Covers | Updated | Licence |")
-        lines.append("|---|---|---|---|---|---|")
+        lines.append(
+            "| Slug | Dataset | What it gives us | Covers | Data for | Updated | Licence |"
+        )
+        lines.append("|---|---|---|---|---|---|---|")
         for slug, spec in by_theme[theme]:
             licence = spec.licence + ("" if spec.licence_verified else " (unverified)")
             priority = "" if spec.priority == "P0" else f" ({spec.priority})"
             covers = ", ".join(NATION_NAMES[n] for n in spec.coverage)
+            period = period_of(slug, spec, lock.get(slug, {}))
             lines.append(
                 f"| `{slug}`{priority} | {_link(spec)} | {_cell(spec.description)} "
-                f"| {covers} | {spec.cadence} | {licence} |"
+                f"| {covers} | {_cell(period['label'] if period else None)} | {spec.cadence} "
+                f"| {licence} |"
             )
     return "\n".join(lines) + "\n"
 

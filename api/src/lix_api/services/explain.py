@@ -59,7 +59,10 @@ def explain_score(
             attribution=known[s]["attribution"],
             version=None if known[s].get("version") is None else str(known[s]["version"]),
             fetched_at=known[s].get("fetched_at"),
+            period=known[s].get("period"),
             stale=bool(known[s].get("stale")),
+            stale_reason=known[s].get("stale_reason")
+            or ("older_than_cadence" if known[s].get("stale") else "none"),
         )
         for s in sorted(used)
         if s in known

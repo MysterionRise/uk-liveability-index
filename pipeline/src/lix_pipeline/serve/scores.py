@@ -152,6 +152,23 @@ def is_stale(fetched_at: str | None, cadence: str, now: datetime | None = None) 
     return ((now or datetime.now(timezone.utc)) - fetched).days > limit
 
 
+def stale_reason(entry: dict, cadence: str, now: datetime | None = None) -> str:
+    """Why a source's data may be out of date: ``newer_edition`` when a resolve found an
+    edition the build lacks, ``older_than_cadence`` when the download is older than the
+    publishing cadence allows, else ``none``."""
+    resolved = entry.get("resolved") or {}
+    fetched = entry.get("fetched") or {}
+    if (
+        resolved.get("version")
+        and fetched.get("version")
+        and resolved["version"] != fetched["version"]
+    ):
+        return "newer_edition"
+    if is_stale(fetched.get("fetched_at"), cadence, now):
+        return "older_than_cadence"
+    return "none"
+
+
 def correlation_matrix(features: pl.DataFrame) -> dict:
     """Spearman correlations between scored indicators, ordered by theme (analyst view)."""
     catalogue = load_indicators()
@@ -202,16 +219,25 @@ def manifest(
     correlations: dict | None = None,
     area_counts: dict[str, int] | None = None,
 ) -> dict:
+    import os
+
+    from lix_pipeline.stage import BACKBONE_INPUTS
+    from lix_pipeline.stage.periods import data_to, period_of
+
     catalogue = load_indicators()
     weights = load_weights()
     registry = load_registry()
     lock = read_lock()
-    from lix_pipeline.stage import BACKBONE_INPUTS
 
     used = sorted({s for i in catalogue.indicators for s in i.sources} | set(BACKBONE_INPUTS))
+    periods = {slug: period_of(slug, registry[slug], lock.get(slug, {})) for slug in used}
     return {
         "schema_version": SERVE_SCHEMA_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        # The data release this build ships in (set by scripts/data-release.sh), and how
+        # recent the data gets: the latest period end across the sources
+        "data_release": os.environ.get("LIX_DATA_RELEASE") or None,
+        "data_to": data_to(periods),
         "geography": geography(area_counts or {}),
         "lsoa_count": lsoa_count,
         "demo": False,
@@ -235,11 +261,12 @@ def manifest(
                 "licence": registry[slug].licence,
                 "attribution": registry[slug].attribution,
                 "version": lock.get(slug, {}).get("resolved", {}).get("version"),
+                "fetched_version": lock.get(slug, {}).get("fetched", {}).get("version"),
                 "fetched_at": lock.get(slug, {}).get("fetched", {}).get("fetched_at"),
+                "period": periods[slug],
                 "cadence": registry[slug].cadence,
-                "stale": is_stale(
-                    lock.get(slug, {}).get("fetched", {}).get("fetched_at"), registry[slug].cadence
-                ),
+                "stale_reason": stale_reason(lock.get(slug, {}), registry[slug].cadence),
+                "stale": stale_reason(lock.get(slug, {}), registry[slug].cadence) != "none",
             }
             for slug in used
         },

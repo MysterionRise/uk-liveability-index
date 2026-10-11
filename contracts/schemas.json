@@ -1238,6 +1238,60 @@
       "title": "ShortlistItem",
       "type": "object"
     },
+    "SourcePeriod": {
+      "description": "The period a source's data describes (not when it was downloaded).",
+      "properties": {
+        "end": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Last day of the period (ISO date)",
+          "title": "End"
+        },
+        "kind": {
+          "default": "text",
+          "description": "How to print the dates; 'text' means show the label",
+          "enum": [
+            "year",
+            "month",
+            "day",
+            "range",
+            "text"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "description": "English wording, e.g. 'September 2023 to August 2026'",
+          "title": "Label",
+          "type": "string"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "First day of the period (ISO date)",
+          "title": "Start"
+        }
+      },
+      "required": [
+        "label"
+      ],
+      "title": "SourcePeriod",
+      "type": "object"
+    },
     "SourceRef": {
       "properties": {
         "attribution": {
@@ -1265,11 +1319,34 @@
           "title": "Licence",
           "type": "string"
         },
+        "period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourcePeriod"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "What period the data is for"
+        },
         "stale": {
           "default": false,
-          "description": "Older than the source's publishing cadence allows",
+          "description": "The data may be out of date (see stale_reason)",
           "title": "Stale",
           "type": "boolean"
+        },
+        "stale_reason": {
+          "default": "none",
+          "description": "A newer edition is published, or the download is older than the source's publishing cadence allows",
+          "enum": [
+            "newer_edition",
+            "older_than_cadence",
+            "none"
+          ],
+          "title": "Stale Reason",
+          "type": "string"
         },
         "title": {
           "title": "Title",

@@ -75,18 +75,24 @@ def build_report() -> tuple[str, list[str]]:
 
     manifest = json.loads((data_dir("serve") / "manifest.json").read_text())
     stale = {k: v for k, v in manifest.get("sources", {}).items() if v.get("stale")}
+    reasons = {
+        "newer_edition": "a newer edition is published",
+        "older_than_cadence": "older than its publishing cadence",
+    }
+
+    def why(v: dict) -> str:
+        reason = reasons.get(v.get("stale_reason"), "older than its publishing cadence")
+        period = (v.get("period") or {}).get("label")
+        return f"{reason}; data for {period}" if period else reason
+
     out.append("\n## Stale sources\n")
     out.append(
-        "\n".join(
-            f"- {k}: fetched {v.get('fetched_at')} ({v.get('cadence')})" for k, v in stale.items()
-        )
+        "\n".join(f"- {k}: {why(v)} (fetched {v.get('fetched_at')})" for k, v in stale.items())
         if stale
-        else "None: every source was fetched within its publishing cadence."
+        else "None: every source is at its latest edition and within its publishing cadence."
     )
     for k, v in stale.items():
-        problems.append(
-            f"{k} is stale (fetched {v.get('fetched_at')}, published {v.get('cadence')})"
-        )
+        problems.append(f"{k} is stale: {why(v)}")
 
     themes = sorted(c for c in features.columns if c.startswith("theme__"))
     view = ["lsoa21nm", "msoa_name", "overall", "overall_pct", *themes]

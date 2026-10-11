@@ -97,6 +97,15 @@ def health() -> dict:
             "area_counts": store.geography.get("area_counts", {}),
         },
         "built": store.manifest["generated_at"],
+        "data": {
+            "built": store.manifest["generated_at"],
+            # How recent the data gets (the latest period across the sources)
+            "data_to": store.manifest.get("data_to"),
+            "data_release": store.manifest.get("data_release"),
+            "stale": sorted(
+                s for s, v in store.manifest.get("sources", {}).items() if v.get("stale")
+            ),
+        },
         "assistant": {
             "model": models.model_name(),
             "problem": models.MODEL_PROBLEM,

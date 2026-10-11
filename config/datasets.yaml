@@ -53,6 +53,7 @@ lsoa_boundaries:
   licence: OGL-3.0
   attribution: *ons
   cadence: static
+  period: "Census 2021 geography"
   size_hint: 50MB
 
 lsoa_boundaries_bsc:
@@ -73,6 +74,7 @@ lsoa_boundaries_bsc:
   licence: OGL-3.0
   attribution: *ons
   cadence: static
+  period: "Census 2021 geography"
   size_hint: 16MB
   notes: Nothing in the pipeline reads it (the tiles simplify the BGC set); kept for notebooks.
 
@@ -94,6 +96,7 @@ msoa_boundaries:
   licence: OGL-3.0
   attribution: *ons
   cadence: static
+  period: "Census 2021 geography"
   size_hint: 22MB
 
 lad_boundaries:
@@ -133,6 +136,7 @@ lsoa_centroids:
   licence: OGL-3.0
   attribution: *ons
   cadence: static
+  period: "Census 2021 geography"
   size_hint: 1MB
 
 oa_lookup:
@@ -152,6 +156,7 @@ oa_lookup:
   licence: OGL-3.0
   attribution: *ons
   cadence: static
+  period: "Census 2021 geography"
   size_hint: 10MB
 
 lsoa11_lsoa21:
@@ -171,6 +176,7 @@ lsoa11_lsoa21:
   licence: OGL-3.0
   attribution: *ons
   cadence: static
+  period: "Census 2021 geography"
   size_hint: 2MB
 
 ruc_2021:
@@ -190,6 +196,7 @@ ruc_2021:
   licence: OGL-3.0
   attribution: *ons
   cadence: static
+  period: "2021"
   size_hint: 2MB
 
 
@@ -206,6 +213,7 @@ pop_lsoa_mye:
   licence: OGL-3.0
   attribution: *ons
   cadence: annual
+  period: "mid-2024"
   size_hint: 13MB
 
 
@@ -294,6 +302,7 @@ iod_2025:
   licence: OGL-3.0
   attribution: "Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025, licensed under the Open Government Licence v3.0."
   cadence: static
+  period: "2025"
   size_hint: 9.4MB
 
 x-census: &census
@@ -304,6 +313,7 @@ x-census: &census
   licence: OGL-3.0
   attribution: "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021."
   cadence: static
+  period: "2021"
   size_hint: 2-4MB zipped
 
 census_ts001:
@@ -508,6 +518,7 @@ defra_noise_road_lden:
   licence: OGL-3.0
   attribution: "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4)."
   cadence: adhoc
+  period: "Round 4 (2021 traffic)"
   size_hint: 6GB in 56 tiles
   notes: Fetched as 8192-pixel deflated GeoTIFF tiles over the WCS (the service times out above that). Cells with no mapped source hold 0 dB, so unmapped minor roads outside agglomerations read as quiet.
 
@@ -525,6 +536,7 @@ defra_noise_rail_lden:
   licence: OGL-3.0
   attribution: "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4)."
   cadence: adhoc
+  period: "Round 4 (2021 traffic)"
   size_hint: 6GB in 56 tiles
   notes: As defra_noise_road_lden.
 
@@ -541,6 +553,7 @@ wg_noise_road_lden:
   licence: OGL-3.0
   attribution: "Contains Welsh Government information licensed under the Open Government Licence v3.0 (Environmental Noise Mapping 2022)."
   cadence: adhoc
+  period: "2022 round"
   size_hint: 2GB
   notes: The cloud-optimised GeoTIFF behind the DataMapWales layer; its WCS refuses every request as too large.
 
@@ -557,6 +570,7 @@ wg_noise_rail_lden:
   licence: OGL-3.0
   attribution: "Contains Welsh Government information licensed under the Open Government Licence v3.0 (Environmental Noise Mapping 2022)."
   cadence: adhoc
+  period: "2022 round"
   size_hint: 2GB
 
 ea_flood_postcode_tool:
@@ -610,6 +624,7 @@ esa_worldcover:
   licence: CC-BY-4.0
   attribution: "© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium"
   cadence: static
+  period: "2021"
   size_hint: 900MB in 8 tiles
 
 viirs_vnl:
@@ -631,6 +646,7 @@ viirs_vnl:
   licence_verified: true  # EOG_products_CC_License.pdf: VNL is CC BY 4.0; the notice below is its Exhibit 1 wording
   attribution: "This product was made utilizing VIIRS Nighttime Lights (VNL v2.2) data produced by the Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines."
   cadence: annual
+  period: "2025"
   size_hint: 1GB (global)
   notes: Downloads sit behind a free login, so this is a manual source; the light_pollution context indicator is skipped when the file is absent.
 
@@ -997,6 +1013,7 @@ msoa_income:
   licence: OGL-3.0
   attribution: *ons
   cadence: adhoc
+  period: "financial year ending 2023"
   size_hint: 3MB
 
 council_tax:
@@ -1012,6 +1029,7 @@ council_tax:
   licence: OGL-3.0
   attribution: "Ministry of Housing, Communities and Local Government, Council Tax levels, licensed under the Open Government Licence v3.0."
   cadence: annual
+  period: "2026/27"
   size_hint: 1MB
   notes: The page path names the financial year; update it each April.
 
@@ -1074,6 +1092,7 @@ wimd_2025_scores:
   licence: OGL-3.0
   attribution: "Welsh Government, Welsh Index of Multiple Deprivation 2025, licensed under the Open Government Licence v3.0."
   cadence: static
+  period: "2025"
   size_hint: 320KB
 
 wimd_2025_ranks:
@@ -1089,6 +1108,7 @@ wimd_2025_ranks:
   licence: OGL-3.0
   attribution: "Welsh Government, Welsh Index of Multiple Deprivation 2025, licensed under the Open Government Licence v3.0."
   cadence: static
+  period: "2025"
   size_hint: 240KB
 
 wg_schools:
@@ -1153,6 +1173,7 @@ wg_council_tax:
   licence: OGL-3.0
   attribution: "Welsh Government, Council tax levels, licensed under the Open Government Licence v3.0."
   cadence: annual
+  period: "2026/27"
   size_hint: 30KB
 
 bods_gtfs_wales:

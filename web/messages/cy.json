@@ -90,6 +90,8 @@
   "BuildInfo": {
     "version": "Fersiwn {version}",
     "dataBuilt": "data wedi'i adeiladu {date}",
+    "dataTo": "data hyd at {date}",
+    "dataRelease": "datganiad data {tag}",
     "demo": "set ddata enghreifftiol",
     "sourceCode": "cod ffynhonnell",
     "disclaimer": "I archwilio cymdogaethau, nid cyngor eiddo, ariannol na chyfreithiol."
@@ -244,7 +246,8 @@
     "caveats": "Cafeatau ({count, number})",
     "sources": "Ffynonellau ({count, number})",
     "dataAsOf": "data fel ar {date}",
-    "stale": "gallai fod wedi dyddio",
+    "staleNewer": "mae rhifyn mwy newydd wedi'i gyhoeddi",
+    "staleOld": "yn hŷn na'i gylch diweddaru arferol",
     "note": "Mae sgoriau pob dangosydd rhwng 0 a 100 (uwch yn well)."
   },
   "Sql": {

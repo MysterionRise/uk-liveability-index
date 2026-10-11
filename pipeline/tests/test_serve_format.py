@@ -135,3 +135,27 @@ def test_manifest_has_geography_and_quality_levels():
 @pytest.fixture(autouse=True)
 def _both_nations(monkeypatch):
     monkeypatch.setenv("LIX_NATIONS", "E,W")
+
+
+def test_stale_reason_tells_a_newer_edition_from_an_old_download():
+    from datetime import datetime, timezone
+
+    from lix_pipeline.serve.scores import stale_reason
+
+    now = datetime(2026, 10, 11, tzinfo=timezone.utc)
+    fresh = {
+        "resolved": {"version": "v1"},
+        "fetched": {"version": "v1", "fetched_at": "2026-10-01"},
+    }
+    assert stale_reason(fresh, "monthly", now) == "none"
+    newer = {
+        "resolved": {"version": "v2"},
+        "fetched": {"version": "v1", "fetched_at": "2026-10-01"},
+    }
+    assert stale_reason(newer, "monthly", now) == "newer_edition"
+    old = {"resolved": {"version": "v1"}, "fetched": {"version": "v1", "fetched_at": "2026-01-01"}}
+    assert stale_reason(old, "monthly", now) == "older_than_cadence"
+    assert stale_reason(old, "static", now) == "none"
+    # A fetched section without a version (older lockfiles) cannot be a newer edition
+    legacy = {"resolved": {"version": "v2"}, "fetched": {"fetched_at": "2026-10-01"}}
+    assert stale_reason(legacy, "monthly", now) == "none"

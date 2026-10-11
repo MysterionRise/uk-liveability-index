@@ -5,8 +5,10 @@ import { useState } from "react";
 
 import { Card, Muted, formatValue, useQualityNote } from "@/components/ui";
 import type { Explanation } from "@/lib/contracts.gen";
+import { BCP47, type Locale } from "@/lib/i18n";
 import { useLabels } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
+import { formatPeriod } from "@/lib/period";
 
 export function MethodExplainer({ explanation }: { explanation: Explanation }) {
   const t = useTranslations("Explainer");
@@ -75,8 +77,17 @@ export function MethodExplainer({ explanation }: { explanation: Explanation }) {
           {explanation.sources.map((s) => (
             <li key={s.id} title={s.attribution}>
               {s.title}
-              {s.fetched_at && <> · {t("dataAsOf", { date: formatDate(s.fetched_at) })}</>}
-              {s.stale && <span className="text-[var(--critical)]"> · {t("stale")}</span>}
+              {s.period ? (
+                <> · {formatPeriod(s.period, BCP47[locale as Locale] ?? "en-GB")}</>
+              ) : (
+                s.fetched_at && <> · {t("dataAsOf", { date: formatDate(s.fetched_at) })}</>
+              )}
+              {s.stale && (
+                <span className="text-[var(--critical)]">
+                  {" "}
+                  · {t(s.stale_reason === "newer_edition" ? "staleNewer" : "staleOld")}
+                </span>
+              )}
             </li>
           ))}
         </ul>

@@ -138,9 +138,29 @@ export type FetchedAt = string | null;
 export type Id1 = string;
 export type Licence = string;
 /**
- * Older than the source's publishing cadence allows
+ * Last day of the period (ISO date)
+ */
+export type End = string | null;
+/**
+ * How to print the dates; 'text' means show the label
+ */
+export type Kind = "year" | "month" | "day" | "range" | "text";
+/**
+ * English wording, e.g. 'September 2023 to August 2026'
+ */
+export type Label3 = string;
+/**
+ * First day of the period (ISO date)
+ */
+export type Start = string | null;
+/**
+ * The data may be out of date (see stale_reason)
  */
 export type Stale = boolean;
+/**
+ * A newer edition is published, or the download is older than the source's publishing cadence allows
+ */
+export type StaleReason = "newer_edition" | "older_than_cadence" | "none";
 export type Title = string;
 /**
  * The upstream version the build used
@@ -156,7 +176,7 @@ export type Coverage1 = string[];
 export type Description = string;
 export type Direction = string;
 export type Id2 = string;
-export type Label3 = string;
+export type Label4 = string;
 export type Normalise = string;
 export type Role1 = string;
 export type Sources1 = string[];
@@ -213,7 +233,7 @@ export type Code2 = string | null;
  * Disambiguation, e.g. the local authority
  */
 export type Detail1 = string | null;
-export type Kind = "postcode" | "place" | "lsoa" | "msoa" | "lad" | "region" | "nation";
+export type Kind1 = "postcode" | "place" | "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type Lsoa21Cd2 = string | null;
 export type Name4 = string;
 export type Category1 = string;
@@ -390,9 +410,26 @@ export interface SourceRef {
   fetched_at?: FetchedAt;
   id: Id1;
   licence: Licence;
+  /**
+   * What period the data is for
+   */
+  period?: SourcePeriod | null;
   stale?: Stale;
+  stale_reason?: StaleReason;
   title: Title;
   version?: Version;
+}
+/**
+ * The period a source's data describes (not when it was downloaded).
+ *
+ * This interface was referenced by `Schemas`'s JSON-Schema
+ * via the `definition` "SourcePeriod".
+ */
+export interface SourcePeriod {
+  end?: End;
+  kind?: Kind;
+  label: Label3;
+  start?: Start;
 }
 /**
  * This interface was referenced by `Schemas`'s JSON-Schema
@@ -405,7 +442,7 @@ export interface IndicatorInfo {
   description: Description;
   direction: Direction;
   id: Id2;
-  label: Label3;
+  label: Label4;
   normalise: Normalise;
   role: Role1;
   sources: Sources1;
@@ -489,7 +526,7 @@ export interface Place {
   centre?: Point | null;
   code?: Code2;
   detail?: Detail1;
-  kind: Kind;
+  kind: Kind1;
   lsoa21cd?: Lsoa21Cd2;
   name: Name4;
 }

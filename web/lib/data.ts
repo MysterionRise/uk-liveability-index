@@ -6,6 +6,7 @@
 import { asyncBufferFromUrl, parquetReadObjects } from "hyparquet";
 
 import { DATA_URL } from "./config";
+import type { Period } from "./period";
 import type { ScoredIndicator } from "./scoring";
 
 export const MISSING_U16 = 65535;
@@ -73,7 +74,24 @@ export interface Manifest {
   themes: Record<string, { label: string; description: string }>;
   default_preset: string;
   presets: Record<string, PresetMeta>;
-  sources: Record<string, { title: string; licence: string; attribution: string; version?: string }>;
+  sources: Record<
+    string,
+    {
+      title: string;
+      licence: string;
+      attribution: string;
+      version?: string | null;
+      fetched_at?: string | null;
+      /** What period the data is for (see lib/period.ts) */
+      period?: Period | null;
+      stale?: boolean;
+      stale_reason?: "newer_edition" | "older_than_cadence" | "none";
+    }
+  >;
+  /** The latest day any source's data reaches (ISO date) */
+  data_to?: string | null;
+  /** The data release this pack shipped in (data-YYYY-MM), if any */
+  data_release?: string | null;
   /** Areas in this build (35,672 for England and Wales; fewer in a demo cut) */
   lsoa_count?: number;
   /** A small cut of the full build (CI and quick starts): see `lix demo-data` */

@@ -21,13 +21,15 @@ _PATTERNS = [
     (re.compile(rf"(?<!\d)(\d{{1,2}}){_SEP}({_MONTH}){_SEP}(\d{{4}})", re.I), ("d", "m", "y")),
     # August 2026 / july-2026 / July-26
     (re.compile(rf"(?<![a-z])({_MONTH}){_SEP}(\d{{4}}|\d{{2}})(?!\d)", re.I), ("m", "y")),
-    # 2026-07-01 / 20261007
+    # 2026-07-01 / 20261007 / 2026_03_31
     (
-        re.compile(r"(?<!\d)(20\d{2})-?(0[1-9]|1[0-2])-?(0[1-9]|[12]\d|3[01])(?!\d)"),
+        re.compile(r"(?<!\d)(20\d{2})[-_.]?(0[1-9]|1[0-2])[-_.]?(0[1-9]|[12]\d|3[01])(?!\d)"),
         ("y", "mn", "d"),
     ),
     # 072026 (month then year, as in GPWPracticeCSV.072026.zip)
     (re.compile(r"(?<!\d)(0[1-9]|1[0-2])(20\d{2})(?!\d)"), ("mn", "y")),
+    # 202601 (year then month, as in Ofcom's 202601_fixed_broadband_coverage.zip)
+    (re.compile(r"(?<!\d)(20\d{2})(0[1-9]|1[0-2])(?!\d)"), ("y", "mn")),
 ]
 
 

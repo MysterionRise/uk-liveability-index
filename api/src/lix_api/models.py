@@ -172,6 +172,17 @@ class Contribution(BaseModel):
     indicators: list[IndicatorValue]
 
 
+class SourcePeriod(BaseModel):
+    """The period a source's data describes (not when it was downloaded)."""
+
+    label: str = Field(description="English wording, e.g. 'September 2023 to August 2026'")
+    start: str | None = Field(None, description="First day of the period (ISO date)")
+    end: str | None = Field(None, description="Last day of the period (ISO date)")
+    kind: Literal["year", "month", "day", "range", "text"] = Field(
+        "text", description="How to print the dates; 'text' means show the label"
+    )
+
+
 class SourceRef(BaseModel):
     id: str
     title: str
@@ -179,7 +190,13 @@ class SourceRef(BaseModel):
     attribution: str
     version: str | None = Field(None, description="The upstream version the build used")
     fetched_at: str | None = Field(None, description="When the build downloaded it (ISO 8601)")
-    stale: bool = Field(False, description="Older than the source's publishing cadence allows")
+    period: SourcePeriod | None = Field(None, description="What period the data is for")
+    stale: bool = Field(False, description="The data may be out of date (see stale_reason)")
+    stale_reason: Literal["newer_edition", "older_than_cadence", "none"] = Field(
+        "none",
+        description="A newer edition is published, or the download is older than the "
+        "source's publishing cadence allows",
+    )
 
 
 class Explanation(BaseModel):

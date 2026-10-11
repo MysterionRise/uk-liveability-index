@@ -251,6 +251,9 @@ class DatasetSpec(_Strict):
     licence_verified: bool = True
     attribution: str
     cadence: Literal["daily", "weekly", "monthly", "quarterly", "annual", "adhoc", "static"]
+    # The period the data describes, for sources whose files carry no date to read it
+    # from ("2021", "Round 4 (2021 traffic)"); see lix_pipeline.stage.periods
+    period: str | None = None
     size_hint: str | None = None
     notes: str | None = None
 

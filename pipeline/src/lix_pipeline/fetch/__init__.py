@@ -62,8 +62,9 @@ def _probe(url: str, session: requests.Session, timeout_s: int = 60) -> requests
 def _resolve_http(access: HttpAccess, session: requests.Session) -> tuple[str, requests.Response]:
     """The URL to fetch and its HEAD response; for dated URLs, the newest that exists."""
     if access.tiles:
-        # One URL pattern, many files: the first tile stands for the set
-        url = access.url.format(tile=access.tiles[0])
+        # One URL pattern, many files: the first tile (in sorted order, so that listing
+        # them differently is not a new edition) stands for the set
+        url = access.url.format(tile=sorted(access.tiles)[0])
         head = _probe(url, session, access.timeout_s)
         head.raise_for_status()
         return url, head

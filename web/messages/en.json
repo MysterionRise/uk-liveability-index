@@ -90,6 +90,8 @@
   "BuildInfo": {
     "version": "Version {version}",
     "dataBuilt": "data built {date}",
+    "dataTo": "data to {date}",
+    "dataRelease": "data release {tag}",
     "demo": "demo dataset",
     "sourceCode": "source code",
     "disclaimer": "For exploring neighbourhoods, not property, financial or legal advice."
@@ -244,7 +246,8 @@
     "caveats": "Caveats ({count, number})",
     "sources": "Sources ({count, number})",
     "dataAsOf": "data as of {date}",
-    "stale": "may be out of date",
+    "staleNewer": "a newer edition has been published",
+    "staleOld": "older than its usual update cycle",
     "note": "Scores per indicator are 0–100 (higher is better)."
   },
   "Sql": {
