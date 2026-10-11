@@ -55,11 +55,14 @@ def rank_areas(
     theme_weights: dict[str, float] | None = None,
     max_median_price: float | None = None,
     limit: int = 10,
+    sort_by: str = "overall",
 ) -> RankResult:
-    """Rank areas best first, optionally within a place/area and under a house price."""
+    """Rank areas best first, optionally within a place/area and under a house price;
+    ``sort_by`` ("theme:<id>" or "indicator:<id>") ranks by one measure instead."""
     return ranking.rank_areas(
         get_store(), within=within, radius_km=radius_km, level=level, preset=preset,
         theme_weights=theme_weights, max_median_price=max_median_price, limit=min(limit, 25),
+        sort_by=sort_by,
     )  # fmt: skip
 
 

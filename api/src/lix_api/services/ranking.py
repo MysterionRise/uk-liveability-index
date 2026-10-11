@@ -1,6 +1,7 @@
 """Rank areas for a weighting, within a place or radius, with optional filters."""
 
 import math
+from dataclasses import dataclass
 
 import numpy as np
 import polars as pl
@@ -39,6 +40,56 @@ def _within(store: Store, within: str | None, radius_km: float | None):
     return dist_km <= km, f"within {km:g} km of {place.name}", bbox
 
 
+@dataclass(frozen=True)
+class Measure:
+    """What a ranking is sorted by: the weighted overall, a theme's score or an indicator."""
+
+    sort_by: str
+    score_column: str
+    feature_columns: tuple[str, ...]
+    label: str | None = None
+    unit: str | None = None
+    raw_column: str | None = None
+
+    def value(self, row: dict) -> float | None:
+        """The figure to show beside the rank: the indicator's raw value, or the score."""
+        if self.sort_by == "overall":
+            return None
+        v = row.get(self.raw_column or self.score_column)
+        # Scores to one decimal like the theme scores beside them; raw values to two
+        return None if v is None else round(float(v), 2 if self.raw_column else 1)
+
+
+def sort_measure(store: Store, sort_by: str | None) -> Measure:
+    """Resolve ``"overall"``, ``"theme:<id>"`` or ``"indicator:<id>"`` against the catalogue."""
+    sort_by = (sort_by or "overall").strip()
+    if sort_by == "overall":
+        return Measure("overall", "overall", ())
+    kind, _, ident = sort_by.partition(":")
+    if kind == "theme" and ident in store.themes:
+        return Measure(
+            sort_by, f"theme__{ident}", (), label=store.themes[ident].label, unit="score"
+        )
+    if kind == "indicator" and ident in store.indicators:
+        spec = store.indicators[ident]
+        score, raw = f"n__{ident}", f"raw__{ident}"
+        columns = tuple(c for c in (score, raw) if c in store.features.columns)
+        if score in columns:
+            return Measure(
+                sort_by,
+                score,
+                columns,
+                label=spec.label,
+                unit=spec.unit,
+                raw_column=raw if raw in columns else None,
+            )
+    themes = ", ".join(f"theme:{t}" for t in store.themes)
+    raise LookupError(
+        f'Unknown sort_by {sort_by!r}: use "overall", one of {themes}, or "indicator:<id>" '
+        "with an id from list_indicators"
+    )
+
+
 def rank_areas(
     store: Store,
     within: str | None = None,
@@ -51,9 +102,17 @@ def rank_areas(
     min_theme_scores: dict[str, float] | None = None,
     urban: bool | None = None,
     limit: int = 10,
+    sort_by: str = "overall",
 ) -> RankResult:
-    """Best areas first. At MSOA level, scores are population-weighted LSOA means."""
+    """Best areas first. At MSOA level, scores are population-weighted LSOA means.
+
+    ``sort_by`` ranks by one measure instead of the weighted overall: ``theme:<id>`` by a
+    theme's score, ``indicator:<id>`` by an indicator's 0–100 score (so "lower is better"
+    indicators rank their lowest values first); the weights still give the overall shown
+    beside it.
+    """
     name, themes, multipliers = resolve_weights(store, preset, theme_weights, indicator_weights)
+    measure = sort_measure(store, sort_by)
     scores = scores_for(store, themes, multipliers)
     df = pl.concat(
         [
@@ -70,6 +129,7 @@ def rank_areas(
                 "pwc_lon",
                 "urban",
                 "raw__house_price",
+                *measure.feature_columns,
             ),  # fmt: skip
             scores.drop("lsoa21cd"),
         ],
@@ -88,7 +148,7 @@ def rank_areas(
             pl.col("lad_nm").first(),
             w.sum().alias("population"),
             *[((pl.col(c) * w).sum() / w.filter(pl.col(c).is_not_null()).sum()).alias(c)
-              for c in ["overall", *theme_cols]],
+              for c in ["overall", *theme_cols, *measure.feature_columns]],
             pl.col("raw__house_price").median(),
             ((pl.col("pwc_lat") * w).sum() / w.sum()).alias("pwc_lat"),
             ((pl.col("pwc_lon") * w).sum() / w.sum()).alias("pwc_lon"),
@@ -108,10 +168,13 @@ def rank_areas(
         df = df.filter(pl.col(f"theme__{theme}") >= minimum)
 
     candidates = df.height
-    df = df.sort("overall", descending=True, nulls_last=True)
-    # How robust the top results are to the exact weights (lix_core.uncertainty)
+    df = df.sort(measure.score_column, descending=True, nulls_last=True)
+    # How robust the top results are to the exact weights (lix_core.uncertainty); a list
+    # ranked by one measure does not depend on the weights
     present = [t for t in store.themes if f"theme__{t}" in df.columns and themes.get(t, 0) > 0]
-    if df.height > limit and present:
+    if measure.sort_by != "overall":
+        shares = np.full(df.height, np.nan)
+    elif df.height > limit and present:
         theme_scores = {t: df[f"theme__{t}"].to_numpy().astype(float) for t in present}
         shares = top_share(theme_scores, {t: themes[t] for t in present}, top_n=limit)
     else:
@@ -133,11 +196,16 @@ def rank_areas(
             median_price=r["raw__house_price"],
             population=int(r["population"]),
             centre=Point(lat=r["pwc_lat"], lon=r["pwc_lon"]),
-            stability=round(float(r["stability"]), 2),
+            sort_value=measure.value(r),
+            sort_score=None
+            if measure.sort_by == "overall" or r[measure.score_column] is None
+            else round(r[measure.score_column], 1),
+            stability=None if np.isnan(r["stability"]) else round(float(r["stability"]), 2),
         )  # fmt: skip
         for i, r in enumerate(top.iter_rows(named=True))
     ]
     return RankResult(
         level=level, within=label, preset=name, theme_weights=themes,
+        sort_by=measure.sort_by, sort_label=measure.label, sort_unit=measure.unit,
         candidates=candidates, results=results, bbox=bbox,
     )  # fmt: skip

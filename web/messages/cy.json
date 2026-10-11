@@ -229,6 +229,8 @@
     "subtitle": "{count, number} yn cyfateb · pwysoli: {preset}",
     "closeCall": "agos iawn",
     "closeCallTitle": "Yn aros yn y {n, number} uchaf o dan {pct, number}% o bwysoliadau credadwy",
+    "rankedBy": "{count, number} yn cyfateb · wedi'u trefnu yn ôl {label}",
+    "overallScore": "cyfanswm {score}",
     "typicalPrice": "pris arferol {price}",
     "note": "Cliciwch ar ardal i'w dangos ar y map.",
     "closeCallNote": "“Agos iawn”: gallai newidiadau bach i'r pwysau ei symud allan o'r rhestr hon."

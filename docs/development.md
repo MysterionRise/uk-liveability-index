@@ -47,7 +47,7 @@ Datasets ingested so far (full list with licences: [docs/data-sources.md](data-s
 `make api` (or `uv run lix-api`) serves, on http://localhost:8000:
 
 - a REST API under `/api/v1`: place search, area profiles, rankings with any weights and
-  filters, comparisons, nearest places (GPs, schools, well-run pubs, ...), score explanations,
+  filters or by one measure, comparisons, nearest places (GPs, schools, well-run pubs, ...), score explanations,
   the indicator catalogue and read-only SQL (docs at `/docs`)
 - an AI assistant at `/agent` speaking [AG-UI](https://docs.ag-ui.com), built with
   [Pydantic AI](https://ai.pydantic.dev): its tools return typed results the front end renders as

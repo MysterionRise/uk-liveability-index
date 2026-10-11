@@ -256,10 +256,30 @@ export type OverallPercentile3 = number | null;
 export type Population1 = number;
 export type Rank = number;
 /**
+ * That measure as a 0–100 score
+ */
+export type SortScore = number | null;
+/**
+ * The ranked-by measure: the indicator's raw value or the theme score
+ */
+export type SortValue = number | null;
+/**
  * Share of plausible weightings (each theme weight nudged by about a quarter) under which this area stays in these top results, 0–1
  */
 export type Stability = number | null;
 export type Results = RankedArea[];
+/**
+ * "overall", "theme:<id>" or "indicator:<id>": what the list is ranked by
+ */
+export type SortBy = string;
+/**
+ * Label of that measure (English)
+ */
+export type SortLabel = string | null;
+/**
+ * Unit of sort_value for an indicator
+ */
+export type SortUnit = string | null;
 /**
  * The area or place the ranking was limited to
  */
@@ -550,6 +570,9 @@ export interface RankResult {
   level: Level1;
   preset: Preset4;
   results: Results;
+  sort_by?: SortBy;
+  sort_label?: SortLabel;
+  sort_unit?: SortUnit;
   theme_weights: ThemeWeights1;
   within?: Within;
 }
@@ -568,6 +591,8 @@ export interface RankedArea {
   overall_percentile: OverallPercentile3;
   population: Population1;
   rank: Rank;
+  sort_score?: SortScore;
+  sort_value?: SortValue;
   stability?: Stability;
   themes: Themes2;
 }

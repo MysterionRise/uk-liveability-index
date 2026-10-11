@@ -33,6 +33,10 @@ All notable changes to this project. The format follows
 
 - Search folds case and accents: "leeds", "ynys mon" and "CAERDYDD" now find Leeds,
   Ynys Môn and Caerdydd (#72).
+- "Which areas have the least noise in London?" was answered with the areas that do
+  best on the environment theme overall. Rankings can now be by one measure
+  (`sort_by: "indicator:road_rail_noise"` or `"theme:safety"`): the list shows that
+  measure beside the overall and the map colours by it (#94).
 - A new NSPL edition is read even when an older one's files are still on disk (the
   August file sorted before November's), and the police window is the latest 36 month
   folders, not every folder present. A new archive edition removes the previous one's

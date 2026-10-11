@@ -112,6 +112,10 @@ class RankedArea(BaseModel):
     median_price: float | None = None
     population: int
     centre: Point
+    sort_value: float | None = Field(
+        None, description="The ranked-by measure: the indicator's raw value or the theme score"
+    )
+    sort_score: float | None = Field(None, description="That measure as a 0–100 score")
     stability: float | None = Field(
         None,
         description="Share of plausible weightings (each theme weight nudged by about a "
@@ -124,6 +128,12 @@ class RankResult(BaseModel):
     within: str | None = Field(None, description="The area or place the ranking was limited to")
     preset: str
     theme_weights: dict[str, float]
+    sort_by: str = Field(
+        "overall",
+        description='"overall", "theme:<id>" or "indicator:<id>": what the list is ranked by',
+    )
+    sort_label: str | None = Field(None, description="Label of that measure (English)")
+    sort_unit: str | None = Field(None, description="Unit of sort_value for an indicator")
     candidates: int = Field(description="Areas that passed the filters")
     results: list[RankedArea]
     bbox: tuple[float, float, float, float] | None = None

@@ -360,3 +360,14 @@ def test_run_cost_prefers_what_the_provider_billed():
     assert run_cost([response(0.001), response(0.002)], estimate) == 0.003
     assert run_cost([response()], estimate) == 0.5
     assert run_cost([response()], SimpleNamespace(cost=None)) is None
+
+
+def test_a_question_about_one_measure_ranks_by_it_and_colours_the_map(client):
+    events = _agui(client, "Which neighbourhoods have the least noise in Leeds?")
+    args = next(json.loads(e["delta"]) for e in events if e["type"] == "TOOL_CALL_ARGS")
+    assert args["sort_by"] == "indicator:road_rail_noise"
+    result = json.loads(next(e for e in events if e["type"] == "TOOL_CALL_RESULT")["content"])
+    assert result["sort_by"] == "indicator:road_rail_noise" and result["sort_label"]
+    snapshot = next(e for e in events if e["type"] == "STATE_SNAPSHOT")["snapshot"]
+    assert snapshot["map"]["layer"] == "indicator:road_rail_noise"
+    assert snapshot["map"]["highlighted"] == [r["code"] for r in result["results"]]

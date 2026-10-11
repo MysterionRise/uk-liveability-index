@@ -265,3 +265,32 @@ class TestLanguage:
             output=SimpleNamespace(reply="Pontcanna scores well and the area is quiet on the map.")
         )
         assert not check.evaluate(ctx).value
+
+
+class TestRankingByOneMeasure:
+    def test_indicator_sort_orders_by_its_score_and_shows_its_value(self, store):
+        r = ranking.rank_areas(store, level="lsoa", limit=3, sort_by="indicator:crime_violence")
+        assert r.sort_by == "indicator:crime_violence"
+        assert r.sort_label == store.indicators["crime_violence"].label
+        assert r.sort_unit == store.indicators["crime_violence"].unit
+        scores = [a.sort_score for a in r.results]
+        assert scores == sorted(scores, reverse=True) and all(s is not None for s in scores)
+        assert all(a.sort_value is not None and a.stability is None for a in r.results)
+        assert all(a.overall is not None for a in r.results)  # the overall stays beside it
+
+    def test_theme_sort_uses_the_theme_score(self, store):
+        r = ranking.rank_areas(store, level="msoa", limit=2, sort_by="theme:safety")
+        assert r.sort_unit == "score"
+        assert [a.sort_value for a in r.results] == [a.themes["safety"] for a in r.results]
+        assert r.results[0].sort_score >= r.results[1].sort_score
+
+    def test_unknown_measure_is_explained(self, store):
+        with pytest.raises(LookupError, match="list_indicators"):
+            ranking.rank_areas(store, sort_by="indicator:nope")
+        with pytest.raises(LookupError, match="theme:safety"):
+            ranking.rank_areas(store, sort_by="theme:nope")
+
+    def test_overall_ranking_is_unchanged(self, store):
+        r = ranking.rank_areas(store, level="lsoa", limit=2)
+        assert r.sort_by == "overall" and r.sort_label is None
+        assert all(a.sort_value is None and a.sort_score is None for a in r.results)

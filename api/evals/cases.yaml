@@ -156,6 +156,18 @@ cases:
       tools: [explain_score]
       grounded: true
 
+  - name: least_noise_london
+    category: ranking
+    turns: ["Which neighbourhoods in London have the least road and rail noise?"]
+    expect:
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: sort_by, op: contains, value: road_rail_noise}
+        - {tool: rank_areas, arg: within, op: contains, value: london}
+      state:
+        - {path: map.layer, op: contains, value: road_rail_noise}
+      grounded: true
+
   - name: map_layer_air
     category: lookup
     turns: ["Colour the map by air quality"]

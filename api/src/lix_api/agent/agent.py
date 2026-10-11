@@ -56,6 +56,10 @@ How to work:
   call set_weights before ranking so the sliders and map reflect them.
 - Rank at "msoa" level (neighbourhoods of ~8,000 people) for broad questions and at
   "lsoa" level when the user wants street-scale detail.
+- When the question is about one measure (the quietest, the least flood-prone, the
+  cleanest air, the cheapest, the best broadband), rank by it with sort_by
+  ("indicator:<id>" or "theme:<id>"; list_indicators gives the ids) rather than
+  changing the weights; the list and the map then show that measure.
 - Mention caveats the tools return when they matter to the answer, and always say when
   a figure is an estimate: an indicator whose quality is "imputed", "low_n" or
   "broadcast_lad" (crime in Greater Manchester, a price from few sales, a council-wide
@@ -190,8 +194,10 @@ def rank_areas(
     min_theme_scores: dict[str, float] | None = None,
     urban: bool | None = None,
     limit: int = 8,
+    sort_by: str = "overall",
 ) -> ToolReturn:
-    """Rank areas by the current weighting, best first, and highlight them on the map.
+    """Rank areas best first and highlight them on the map: by the current weighting, or
+    by one measure when the question is about one thing.
 
     Args:
         within: a local authority, region, neighbourhood or place; with a place, areas
@@ -202,15 +208,21 @@ def rank_areas(
         min_theme_scores: e.g. {"safety": 60} to require a minimum theme score
         urban: True for towns and cities only, False for rural areas only
         limit: how many to return (max 20)
+        sort_by: "overall" (the weighted score) or one measure: "theme:<id>" (e.g.
+            "theme:safety") or "indicator:<id>" (e.g. "indicator:road_rail_noise" for the
+            quietest areas, "indicator:house_price" for the cheapest); the map is then
+            coloured by that measure and the weights are left alone
     """
     result: RankResult = ranking.rank_areas(
         get_store(), within=within, radius_km=radius_km, level=level,
         max_median_price=max_median_price, min_theme_scores=min_theme_scores, urban=urban,
-        limit=min(limit, 20), **_weights(ctx),
+        limit=min(limit, 20), sort_by=sort_by, **_weights(ctx),
     )  # fmt: skip
     ctx.deps.state.map.highlighted = [r.code for r in result.results]
     if result.bbox:
         ctx.deps.state.map.bbox = result.bbox
+    if result.sort_by != "overall":
+        ctx.deps.state.map.layer = result.sort_by
     return _with_state(ctx, result)
 
 

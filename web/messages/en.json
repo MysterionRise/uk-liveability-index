@@ -229,6 +229,8 @@
     "subtitle": "{count, number} matched · weighting: {preset}",
     "closeCall": "close call",
     "closeCallTitle": "Stays in this top {n, number} under {pct, number}% of plausible weightings",
+    "rankedBy": "{count, number} matched · ranked by {label}",
+    "overallScore": "overall {score}",
     "typicalPrice": "typical price {price}",
     "note": "Click an area to show it on the map.",
     "closeCallNote": "“Close call”: small changes to the weights could swap it out of this list."

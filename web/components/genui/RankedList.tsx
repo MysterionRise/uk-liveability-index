@@ -6,6 +6,7 @@ import { useLiveability } from "@/components/AppData";
 import { Card, Muted, formatValue } from "@/components/ui";
 import type { RankResult } from "@/lib/contracts.gen";
 import { useCoverageName } from "@/lib/copy";
+import { useLabels } from "@/lib/labels";
 
 // Below this share of plausible weightings keeping it in the list, a result is a close call
 const CLOSE_CALL = 0.6;
@@ -22,12 +23,24 @@ export function RankedList({ result }: { result: RankResult }) {
       : t("inPlace", { place: result.within })
     : t("inCoverage", { coverage });
   const count = result.results.length;
+  const labels = useLabels();
+  // Ranked by one measure (the quietest, the cheapest…) rather than the weighted overall
+  const measure = result.sort_by && result.sort_by !== "overall" ? result.sort_by : null;
+  const [measureKind, measureId] = measure ? measure.split(":", 2) : [null, null];
+  const measureLabel = measure
+    ? measureKind === "theme"
+      ? labels.theme(measureId ?? "")
+      : labels.indicator(measureId ?? "")
+    : null;
+  const subtitle = measureLabel
+    ? t("rankedBy", { label: measureLabel, count: result.candidates })
+    : t("subtitle", { count: result.candidates, preset: result.preset });
 
   return (
     <Card
       testId="ranked-list"
       title={result.level === "msoa" ? t("titleMsoa", { count, where }) : t("titleLsoa", { count, where })}
-      subtitle={t("subtitle", { count: result.candidates, preset: result.preset })}
+      subtitle={subtitle}
     >
       <ol className="divide-y divide-[var(--border)]">
         {result.results.map((r) => (
@@ -65,10 +78,30 @@ export function RankedList({ result }: { result: RankResult }) {
                 </span>
               </span>
               <span className="text-right">
-                <span className="block text-base font-semibold tabular-nums">{r.overall?.toFixed(0) ?? "–"}</span>
-                <span className="block h-1.5 w-14 rounded-r-[4px] bg-[var(--track)]">
-                  <span className="block h-1.5 rounded-r-[4px] bg-[var(--accent)]" style={{ width: `${r.overall ?? 0}%` }} />
-                </span>
+                {measure ? (
+                  <>
+                    <span className="block text-base font-semibold tabular-nums" data-testid="sort-value">
+                      {measureKind === "theme"
+                        ? (r.sort_value?.toFixed(0) ?? "–")
+                        : r.sort_value != null
+                          ? formatValue(r.sort_value, result.sort_unit ?? "", locale)
+                          : "–"}
+                    </span>
+                    <span className="block h-1.5 w-14 rounded-r-[4px] bg-[var(--track)]">
+                      <span className="block h-1.5 rounded-r-[4px] bg-[var(--accent)]" style={{ width: `${r.sort_score ?? 0}%` }} />
+                    </span>
+                    <span className="block text-[10px] tabular-nums text-[var(--text-muted)]">
+                      {t("overallScore", { score: r.overall?.toFixed(0) ?? "–" })}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="block text-base font-semibold tabular-nums">{r.overall?.toFixed(0) ?? "–"}</span>
+                    <span className="block h-1.5 w-14 rounded-r-[4px] bg-[var(--track)]">
+                      <span className="block h-1.5 rounded-r-[4px] bg-[var(--accent)]" style={{ width: `${r.overall ?? 0}%` }} />
+                    </span>
+                  </>
+                )}
               </span>
             </button>
           </li>

@@ -1053,6 +1053,38 @@
           "title": "Results",
           "type": "array"
         },
+        "sort_by": {
+          "default": "overall",
+          "description": "\"overall\", \"theme:<id>\" or \"indicator:<id>\": what the list is ranked by",
+          "title": "Sort By",
+          "type": "string"
+        },
+        "sort_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Label of that measure (English)",
+          "title": "Sort Label"
+        },
+        "sort_unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Unit of sort_value for an indicator",
+          "title": "Sort Unit"
+        },
         "theme_weights": {
           "additionalProperties": {
             "type": "number"
@@ -1153,6 +1185,32 @@
         "rank": {
           "title": "Rank",
           "type": "integer"
+        },
+        "sort_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "That measure as a 0\u2013100 score",
+          "title": "Sort Score"
+        },
+        "sort_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The ranked-by measure: the indicator's raw value or the theme score",
+          "title": "Sort Value"
         },
         "stability": {
           "anyOf": [
