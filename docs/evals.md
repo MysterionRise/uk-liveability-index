@@ -1,11 +1,11 @@
 # Assistant evals
 
-The assistant is tested with real models on the full build, using 32 cases in
+The assistant is tested with real models on the full build, using 33 cases in
 [api/evals/cases.yaml](../api/evals/cases.yaml):
 
 | Category | Cases | What is checked |
 |---|---|---|
-| Ranking | 6 | Weights set before ranking (family, commuter, retiree, young professional), place and price filters, areas highlighted on the map |
+| Ranking | 7 | Weights set before ranking (family, commuter, retiree, young professional), place and price filters, ranking by one measure (the quietest areas in London) with the map coloured by it, areas highlighted on the map |
 | Look-ups | 11 | The right tool and arguments for profiles, comparisons, nearby pubs and GPs, score explanations, map layers, the shortlist and the indicator catalogue |
 | Follow-ups | 2 | "Compare the top two", "now do that for retirees" |
 | Ambiguity | 2 | Says which Clapham it used; profiles Newport now that Wales is covered |
@@ -20,11 +20,12 @@ The assistant is tested with real models on the full build, using 32 cases in
 | Model (via OpenRouter) | Passed | Turn p50 | Turn p95 | Cost per question | Reply words (median) | Run |
 |---|---|---|---|---|---|---|
 | Claude Opus 5.5 | 32/32 | 7.33 s | 15.52 s | $0.0484 | 77.5 | 2026-10-08 |
-| Claude Haiku 5.5 (the default) | 32/32 | 4.68 s | 8.97 s | $0.0015 | 65.5 | 2026-10-08 |
+| Claude Haiku 5.5 (the default) | 33/33 | 4.7 s | 10.84 s | $0.0016 | 64 | 2026-10-11 |
 | Qwen 3.8 27B (open weights) | 32/32 | 6.44 s | 16.62 s | $0.0017 | 60.5 | 2026-10-08 |
 
 Per-case detail (tools called, replies, failed checks) is in [docs/evals/](evals/).
-Costs are what OpenRouter billed.
+Costs are what OpenRouter billed. The 33rd case (ranking by one measure, #94) was added on
+2026-10-11; the Opus and Qwen rows predate it.
 
 ## What the evals found and fixed
 
