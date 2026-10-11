@@ -4,10 +4,17 @@ name: Source link check
 # items on every version bump). Re-resolve every source nightly so breakage shows up
 # here rather than in the middle of a data build. A 403 is reported as "not verified",
 # not a failure: NHS Digital, Ofcom and NaPTAN block cloud addresses such as the runners'.
+# What the check finds (new editions, sources older than their cadence, failures) is
+# written to one open issue labelled data-refresh, "Data refresh due", which the check
+# rewrites each night and closes when nothing is pending.
 on:
   schedule:
     - cron: "17 4 * * *"
   workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   linkcheck:
@@ -28,4 +35,36 @@ jobs:
         run: uv sync --locked
 
       - name: Check every source resolves and is reachable
-        run: uv run lix resolve --check --all
+        id: check
+        run: |
+          set +e
+          uv run lix resolve --check --all --json check.json
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Write the refresh issue
+        id: report
+        run: |
+          state="$(uv run lix refresh-issue --check check.json --out body.md)"
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+          cat body.md
+
+      - name: Open, rewrite or close the "Data refresh due" issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: ${{ steps.report.outputs.state }}
+        run: |
+          gh label create data-refresh --color d4c5f9 \
+            --description "The nightly source check found data to refresh" 2>/dev/null || true
+          number="$(gh issue list --label data-refresh --state open --json number --jq '.[0].number')"
+          if [ "$STATE" = pending ]; then
+            if [ -n "$number" ]; then
+              gh issue edit "$number" --body-file body.md
+            else
+              gh issue create --title "Data refresh due" --label data-refresh --body-file body.md
+            fi
+          elif [ -n "$number" ]; then
+            gh issue close "$number" --comment "Nothing pending at the last nightly check."
+          fi
+
+      - name: Fail on sources that failed to resolve
+        run: exit "${{ steps.check.outputs.code }}"

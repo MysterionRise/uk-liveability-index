@@ -208,6 +208,21 @@ def _refresh(args: argparse.Namespace) -> int:
     return 0
 
 
+def _refresh_issue(args: argparse.Namespace) -> int:
+    """Write the nightly "Data refresh due" issue body; print pending / nothing."""
+    import json
+    from pathlib import Path
+
+    from lix_pipeline.fetch.lock import read_lock
+    from lix_pipeline.refresh.report import issue_body
+
+    checks = json.loads(Path(args.check).read_text())
+    body, pending = issue_body(checks, read_lock(), load_registry())
+    Path(args.out).write_text(body)
+    print("pending" if pending else "nothing")
+    return 0
+
+
 def _data_release(args: argparse.Namespace) -> int:
     """Stamp the data release's tag into the manifest and write its release notes."""
     import json
@@ -307,6 +322,13 @@ def main(argv: list[str] | None = None) -> None:
         "--skip-fetch", action="store_true", help="Neither resolve nor fetch; rebuild from data/raw"
     )
     refresh.set_defaults(func=_refresh)
+
+    refresh_issue = sub.add_parser(
+        "refresh-issue", help='Write the nightly "Data refresh due" issue from a --check file'
+    )
+    refresh_issue.add_argument("--check", required=True, help="lix resolve --check --json output")
+    refresh_issue.add_argument("--out", default="body.md")
+    refresh_issue.set_defaults(func=_refresh_issue)
 
     data_release = sub.add_parser(
         "data-release", help="Stamp a data release tag into the manifest; write its notes"
