@@ -108,10 +108,12 @@ serves the data files under `/data`, sends `/api/v1`, `/health` and `/mcp` to th
 everything else to the web app, so the same images work on any host.
 
 The data pack: `make data-pack` on a machine with a full build writes
-`dist/lix-serve.tar.gz` (about 120 MB, with the licence notices); `make data-download`
-fetches a release's pack and `make data-unpack` restores one you have. `make demo-data`
-re-cuts the demo dataset from a full build, and `lix validate serve` checks any serve
-directory (CI runs the browser tests on the demo data).
+`dist/lix-serve.tar.gz` (about 140 MB, with the licence notices). Packs ship as monthly
+data releases separate from code releases ([docs/data-releases.md](data-releases.md)):
+`make data-download` fetches the newest one the checkout's serve schema can read
+(`DATA_TAG=data-2026-10` picks one) and `make data-unpack` restores a pack you have.
+`make demo-data` re-cuts the demo dataset from a full build, and `lix validate serve`
+checks any serve directory (CI runs the browser tests on the demo data).
 
 ## Front end
 
@@ -172,6 +174,42 @@ uv run lix resolve --check --all      # is every source still reachable?
 ```
 
 Set `LIX_DATA_DIR` to keep data somewhere other than `./data`.
+
+## Refreshing the data
+
+Every source has its own cadence (the `Updated` column of
+[docs/data-sources.md](data-sources.md)), and the nightly source check opens a single
+"Data refresh due" issue when editions have moved on. The monthly routine, on a machine
+with the raw data (about 1–1.5 hours, mostly downloads):
+
+```bash
+make refresh-plan   # re-resolves every source and prints what is stale and why
+make refresh        # fetch (conditional requests), re-stage and rebuild only what changed,
+                    # then the docs, the anchor review and a fresh dist/lix-serve.tar.gz
+```
+
+`lix refresh` works from fingerprints: each staged table, the indicator table, the serve
+files and the tiles record the lockfile checksums of the raw sources they were built from
+(`data/staged/<slug>.meta.json`, `data/indicators/long.meta.json`, `data/serve/.meta.json`,
+`data/serve/tiles/.meta.json`), so a run killed half way resumes, a second run after a
+complete one finds nothing to do, and a new NSPL re-stages everything that reads
+postcodes. A source that fails to resolve or fetch stops the run before anything is
+rebuilt: a publisher that moved or reshaped a file is a registry fix, not something to
+build around. The run's plan, timings and changed sources go to `data/logs/refresh-*.json`.
+
+After a refresh: read `data/serve/qa.md` (the correlation report, the stale list and the
+anchor review), fix any anchor the data has genuinely moved past, add a `period:` to the
+registry for a source whose period the docs now show as a download date, and commit the
+lockfile ("Data 2026-10: …"). Then `make data-release` publishes `dist/` as the next
+`data-YYYY-MM` pre-release with generated notes (what each source's data is for, its
+edition, and what changed since the last release). Re-record the demo cassettes
+(`make demo-record`) when the storyline rehearsal fails or a stated fact is no longer
+true, and at least once a quarter; re-cut the demo dataset (`make demo-data`) only with a
+code release that changes the serve layout.
+
+Changelog policy: data releases carry their generated notes and `CHANGELOG.md` stays
+code-only; a serve schema bump names the first data release of the new schema, which must
+exist before the code is tagged (`release.yml` refuses otherwise).
 
 ## Layout
 

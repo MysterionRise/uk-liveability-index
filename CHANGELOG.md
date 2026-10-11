@@ -4,6 +4,40 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.3.3] - 2026-10-12
+
+### Added
+
+- **`make refresh`.** Resolves every source, revalidates what is on disk (conditional
+  requests; a fresh download compared by checksum where the server gives no validator),
+  and rebuilds only what changed: each staged table, the indicator table, the scores and
+  the tiles record a fingerprint of their inputs' lockfile checksums in a sidecar, so a
+  run resumes where it stopped and a second run finds nothing to do. `make refresh-plan`
+  prints the plan. A source that fails stops the run before anything is rebuilt.
+- **Data periods.** Every source now says what period its data describes (police months,
+  Price Paid's as-of date, a GTFS reference day, the census year, a noise round), apart
+  from when it was downloaded; the explainer card, the About page ("data to …"),
+  `docs/data-sources.md` and the API show it, and a source is marked stale with a reason:
+  a newer edition is published, or the download is older than its cadence.
+- **Monthly data releases.** The data pack ships as a `data-YYYY-MM` pre-release with
+  generated notes (period and edition per source, what changed); `make data-download`
+  fetches the newest one a checkout's serve schema can read, and code releases stop
+  carrying a pack ([docs/data-releases.md](docs/data-releases.md)).
+- **"Data refresh due".** The nightly source check keeps one issue listing new upstream
+  editions, sources older than their cadence and failures, and closes it when nothing is
+  pending.
+- `lix fetch --revalidate`, `lix resolve --check --json`, `lix refresh`,
+  `lix data-release`, `lix refresh-issue`.
+
+### Fixed
+
+- Search folds case and accents: "leeds", "ynys mon" and "CAERDYDD" now find Leeds,
+  Ynys Môn and Caerdydd (#72).
+- A new NSPL edition is read even when an older one's files are still on disk (the
+  August file sorted before November's), and the police window is the latest 36 month
+  folders, not every folder present. A new archive edition removes the previous one's
+  extracted files first, and tile sets prune files no longer in the set.
+
 ## [0.3.2] - 2026-10-10
 
 ### Added
@@ -167,6 +201,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.3.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.3
 [0.3.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.2
 [0.3.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.1
 [0.3.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.0

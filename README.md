@@ -29,7 +29,7 @@ cd uk-liveability-index
 make quickstart
 ```
 
-That downloads the data pack (about 120 MB) and the app's images, and opens
+That downloads the newest data release's pack (about 140 MB) and the app's images, and opens
 http://localhost:3000. Stop it with `make down`.
 
 **The assistant** needs a model key. Put an [OpenRouter](https://openrouter.ai) key in
@@ -121,9 +121,10 @@ The same tools are available to Claude Desktop and other clients over
   expectancy, GP capacity and ratings) and say so in Welsh profiles.
 - **Neighbourhoods, not streets.** Scores describe areas of 1,000–3,000 residents, and
   distances are straight-line.
-- **Data has dates.** Each source has its own (shown in the app); this release's data was
-  built on 7 October 2026. Crime in Greater Manchester is estimated, because its police
-  force publishes none.
+- **Data has dates.** Each source's data period is shown on the explainer card and in
+  [docs/data-sources.md](docs/data-sources.md); the pack comes from a monthly data release
+  ([docs/data-releases.md](docs/data-releases.md)). Crime in Greater Manchester is
+  estimated, because its police force publishes none.
 - **Judgement calls.** The weights, thresholds and choice of indicators are explained,
   not objective. Use the scores to explore, not as property, financial or legal advice.
 - **Not yet included:** aircraft and industrial noise, groundwater flooding, and the single
