@@ -36,19 +36,39 @@ NSPL_VINTAGED_STEMS = {
 ENGLAND = ("E",)
 
 
+def _edition(name: str):
+    """The date in a file name: NSPL_NOV_2026_UK.csv, or the Documents' "as at 06_26"."""
+    from datetime import date
+
+    from lix_pipeline.fetch.dates import find_date
+
+    found = find_date(name)
+    if found:
+        return found
+    m = re.search(r"(?<!\d)(0[1-9]|1[0-2])_(\d{2})(?!\d)", name)
+    return date(2000 + int(m.group(2)), int(m.group(1)), 1) if m else date.min
+
+
+def _newest(paths: list[Path]) -> Path:
+    """The file of the newest edition: by the date in its name (NSPL_NOV_2026 beats
+    NSPL_AUG_2026, which sorts first alphabetically), then by name."""
+    return max(paths, key=lambda p: (_edition(p.name), p.name))
+
+
 def nspl_document(pattern: str) -> Path:
     """One of the code→name lookups shipped in the NSPL zip's Documents/ folder."""
-    matches = sorted((data_dir("raw") / "nspl" / "Documents").glob(pattern))
+    matches = list((data_dir("raw") / "nspl" / "Documents").glob(pattern))
     if not matches:
         raise FileNotFoundError(f"No NSPL document matching {pattern!r}")
-    return matches[-1]
+    return _newest(matches)
 
 
 def find_nspl_csv(nspl_dir: Path) -> Path:
-    """Locate the NSPL CSV inside the extracted directory (version-agnostic)."""
-    for csv in sorted(nspl_dir.rglob("NSPL*_UK.csv")):
-        return csv
-    raise FileNotFoundError(f"No NSPL CSV found in {nspl_dir}")
+    """Locate the NSPL CSV of the newest edition inside the extracted directory."""
+    matches = list(nspl_dir.rglob("NSPL*_UK.csv"))
+    if not matches:
+        raise FileNotFoundError(f"No NSPL CSV found in {nspl_dir}")
+    return _newest(matches)
 
 
 def _resolve_vintaged(columns: list[str], stem: str) -> str | None:

@@ -1,4 +1,4 @@
-.PHONY: up down up-demo gif tiktok quickstart data-download data-pack data-unpack eval demo demo-offline demo-check demo-record install resolve fetch stage indicators score tiles build-data validate demo-data docs schemas api web-install web web-test e2e dev test lint format refresh-plan refresh
+.PHONY: up down up-demo gif tiktok quickstart data-download data-pack data-unpack data-release eval demo demo-offline demo-check demo-record install resolve fetch stage indicators score tiles build-data validate demo-data docs schemas api web-install web web-test e2e dev test lint format refresh-plan refresh
 
 PY_DIRS := core pipeline api
 APP_URL := http://localhost:$(or $(LIX_PORT),3000)
@@ -118,13 +118,17 @@ up-demo:
 down:
 	docker compose down
 
-# The data pack: a built data/serve (about 120 MB) with its licence notices, so another
-# machine can skip the 14 GB raw download. Releases carry it as an asset:
+# The data pack: a built data/serve (about 140 MB) with its licence notices, so another
+# machine can skip the 17 GB raw download. Packs ship as monthly data releases
+# (data-YYYY-MM, GitHub pre-releases) separate from code releases; a code release reads
+# the newest pack with the serve schema it understands (SERVE_SCHEMA_VERSION):
 #   make data-pack                       write dist/lix-serve.tar.gz (+ .sha256)
-#   make data-download [VERSION=x.y.z]   fetch this release's pack and unpack it
+#   make data-download [DATA_TAG=...]    fetch the newest compatible pack and unpack it
 #   make data-unpack [PACK=...]          unpack a pack you have
+#   make data-release                    publish dist/ as the next data release
 PACK ?= dist/lix-serve.tar.gz
 RELEASES := https://github.com/MysterionRise/uk-liveability-index/releases/download
+SCHEMA := $(shell sed -n 's/^SERVE_SCHEMA_VERSION = //p' core/src/lix_core/config.py)
 data-pack:
 	uv run lix validate serve
 	mkdir -p dist
@@ -133,10 +137,16 @@ data-pack:
 	@echo "Wrote $(PACK) ($$(du -h $(PACK) | cut -f1))"
 
 data-download:
+	$(eval DATA_TAG ?= $(shell python3 scripts/data_release.py latest --schema $(SCHEMA)))
+	@test -n "$(DATA_TAG)" || (echo "No data release with serve schema $(SCHEMA) yet: make build-data, or make data-unpack PACK=..." && exit 1)
+	@echo "Data release $(DATA_TAG)"
 	mkdir -p $(dir $(PACK))
-	curl -fL --progress-bar -o $(PACK) $(RELEASES)/v$(VERSION)/$(notdir $(PACK))
-	curl -fsSL -o $(PACK).sha256 $(RELEASES)/v$(VERSION)/$(notdir $(PACK)).sha256
+	curl -fL --progress-bar -o $(PACK) $(RELEASES)/$(DATA_TAG)/$(notdir $(PACK))
+	curl -fsSL -o $(PACK).sha256 $(RELEASES)/$(DATA_TAG)/$(notdir $(PACK)).sha256
 	$(MAKE) data-unpack
+
+data-release:
+	scripts/data-release.sh
 
 data-unpack:
 	@test -f $(PACK) || (echo "No $(PACK): make data-download, or make data-unpack PACK=path/to/lix-serve.tar.gz" && exit 1)

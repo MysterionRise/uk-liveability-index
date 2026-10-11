@@ -7,6 +7,9 @@ force reported, so rates can be annualised fairly. British Transport Police reco
 crime on the railway rather than where people live, so it is excluded.
 """
 
+import re
+from pathlib import Path
+
 import duckdb
 import polars as pl
 
@@ -17,10 +20,25 @@ from lix_core.paths import data_dir
 logger = setup_logging("stage.police")
 
 EXCLUDED_FORCES = ("British Transport Police",)
+WINDOW_MONTHS = 36
+
+
+def police_months(root: Path, window: int = WINDOW_MONTHS) -> list[Path]:
+    """The latest ``window`` month folders (YYYY-MM) of the archive, so a folder left
+    behind by an earlier download does not stretch the window."""
+    months = sorted(
+        p for p in root.iterdir() if p.is_dir() and re.fullmatch(r"\d{4}-\d{2}", p.name)
+    )
+    return months[-window:]
 
 
 def stage_police() -> pl.LazyFrame:
-    files = str(data_dir("raw") / "police_crime" / "*" / "*-street.csv")
+    months = police_months(data_dir("raw") / "police_crime")
+    if not months:
+        raise FileNotFoundError("No police.uk month folders in data/raw/police_crime")
+    files = [str(f) for m in months for f in sorted(m.glob("*-street.csv"))]
+    window_start, window_end = months[0].name, months[-1].name
+    logger.info(f"{len(months)} months, {window_start} to {window_end}, {len(files)} files")
     con = duckdb.connect()
     con.execute("SET VARIABLE files = ?", [files])
     df = con.execute(
@@ -57,4 +75,9 @@ def stage_police() -> pl.LazyFrame:
             f"{row['force']} reported only {row['force_months']} months (last {row['last_month']})"
         )
     logger.info(f"{df['n'].sum():,} crimes in {df['lsoa21cd'].n_unique():,} LSOAs")
-    return df.with_columns(pl.col("n").cast(pl.Int32), pl.col("force_months").cast(pl.Int16)).lazy()
+    return df.with_columns(
+        pl.col("n").cast(pl.Int32),
+        pl.col("force_months").cast(pl.Int16),
+        pl.lit(window_start).alias("window_start"),
+        pl.lit(window_end).alias("window_end"),
+    ).lazy()

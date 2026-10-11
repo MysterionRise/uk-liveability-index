@@ -208,6 +208,25 @@ def _refresh(args: argparse.Namespace) -> int:
     return 0
 
 
+def _data_release(args: argparse.Namespace) -> int:
+    """Stamp the data release's tag into the manifest and write its release notes."""
+    import json
+    from pathlib import Path
+
+    from lix_pipeline.refresh.notes import release_notes
+
+    manifest_path = data_dir("serve") / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["data_release"] = args.tag
+    manifest_path.write_text(json.dumps(manifest, indent=2, default=str))
+    previous = json.loads(Path(args.previous).read_text()) if args.previous else None
+    out = Path(args.notes)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(release_notes(manifest, previous, args.tag))
+    print(f"stamped {manifest_path} with {args.tag}; wrote {out}")
+    return 0
+
+
 def _docs(args: argparse.Namespace) -> int:
     from lix_pipeline.docs import write_docs
 
@@ -288,6 +307,14 @@ def main(argv: list[str] | None = None) -> None:
         "--skip-fetch", action="store_true", help="Neither resolve nor fetch; rebuild from data/raw"
     )
     refresh.set_defaults(func=_refresh)
+
+    data_release = sub.add_parser(
+        "data-release", help="Stamp a data release tag into the manifest; write its notes"
+    )
+    data_release.add_argument("--tag", required=True, help="e.g. data-2026-10")
+    data_release.add_argument("--previous", help="The previous data release's manifest.json")
+    data_release.add_argument("--notes", default="dist/data-release-notes.md")
+    data_release.set_defaults(func=_data_release)
 
     docs = sub.add_parser("docs", help="Regenerate docs/data-sources.md and ATTRIBUTION.md")
     docs.set_defaults(func=_docs)

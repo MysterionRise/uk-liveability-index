@@ -2,8 +2,9 @@ name: Release
 
 # Pushing a v* tag runs the CI checks, publishes the api and web images to GitHub's
 # container registry (linux/amd64 and linux/arm64, built on native runners) and creates a
-# draft GitHub release with notes from CHANGELOG.md. The data pack is built on a machine
-# with the full data (make data-pack) and uploaded to the draft by hand; then
+# draft GitHub release with notes from CHANGELOG.md. The data pack ships separately as a
+# monthly data release (scripts/data-release.sh); the notes name the one this code reads,
+# and the job fails when no data release of this code's serve schema exists yet. Then
 # release-smoke.yml checks the draft end to end before it is published.
 
 on:
@@ -133,6 +134,18 @@ jobs:
             on { print }
           ' CHANGELOG.md > notes.md
           test -s notes.md || { echo "No CHANGELOG.md section for $version"; exit 1; }
+
+      # Code releases carry no data pack: they read the newest data release with the serve
+      # schema this code understands. None yet means the schema was bumped without a data
+      # release of the new schema: cut one (make refresh, make data-release) before tagging
+      - name: Name the data release this code reads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          schema="$(sed -n 's/^SERVE_SCHEMA_VERSION = //p' core/src/lix_core/config.py)"
+          data_tag="$(python3 scripts/data_release.py latest --schema "$schema")"
+          printf '\n### Data\n\nReads data release [%s](https://github.com/%s/releases/tag/%s) (serve schema %s): `make data-download` fetches it.\n' \
+            "$data_tag" "$GITHUB_REPOSITORY" "$data_tag" "$schema" >> notes.md
 
       - name: Draft the release
         env:
