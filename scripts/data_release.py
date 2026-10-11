@@ -12,6 +12,8 @@ A data release's body carries ``<!-- lix-data schema=N -->``; releases are read 
 the public API (no token needed for public repositories; GH_TOKEN is sent when set).
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os
