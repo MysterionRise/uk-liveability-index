@@ -20,7 +20,7 @@ from lix_core.log import setup_logging
 from lix_core.paths import data_dir, ensure_dirs
 from lix_pipeline.fetch import (
     ManualDownloadRequired,
-    check_link,
+    check_source,
     fetch,
     resolve_and_lock,
     select,
@@ -43,9 +43,12 @@ def _selected(args: argparse.Namespace) -> list[str]:
 def _resolve(args: argparse.Namespace) -> int:
     registry, session = load_registry(), make_session()
     failures = warnings = 0
+    results = []
     for slug in _selected(args):
         if args.check:
-            status, note = check_link(slug, registry[slug], session)
+            result = check_source(slug, registry[slug], session)
+            results.append(result)
+            status, note = result["status"], result["note"]
             print(f"{'FAIL' if status == 'fail' else status:4} {slug:24} {note}")
             failures += status == "fail"
             warnings += status == "warn"
@@ -59,15 +62,38 @@ def _resolve(args: argparse.Namespace) -> int:
             print(f"{slug:24} {resolved.get('title') or ''} {resolved.get('version') or ''}")
     if args.check:
         print(f"{failures} failed, {warnings} not verified from this network")
+        if args.json:
+            import json
+            from datetime import datetime, timezone
+
+            with open(args.json, "w") as f:
+                json.dump(
+                    {
+                        "checked_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                        "results": results,
+                    },
+                    f,
+                    indent=2,
+                )
+            print(f"wrote {args.json}")
     return 1 if failures else 0
 
 
 def _fetch(args: argparse.Namespace) -> int:
     registry, session = load_registry(), make_session()
-    missing_manual, failed = [], []
+    missing_manual, failed, changed = [], [], []
     for slug in _selected(args):
         try:
-            fetch(slug, force=args.force, strict=args.strict, session=session, registry=registry)
+            result = fetch(
+                slug,
+                force=args.force,
+                strict=args.strict,
+                session=session,
+                registry=registry,
+                revalidate=args.revalidate,
+            )
+            if result.get("changed"):
+                changed.append(slug)
         except ManualDownloadRequired as e:
             missing_manual.append(str(e))
         except Exception:
@@ -75,6 +101,8 @@ def _fetch(args: argparse.Namespace) -> int:
             failed.append(slug)
     for msg in missing_manual:
         logger.warning(msg)
+    if args.revalidate:
+        logger.info(f"Changed since the lockfile: {changed or 'nothing'}")
     if failed:
         logger.error(f"Failed: {failed}")
     return 1 if failed else 0
@@ -219,6 +247,7 @@ def main(argv: list[str] | None = None) -> None:
     resolve.add_argument(
         "--check", action="store_true", help="Only check sources are reachable; exit 1 if not"
     )
+    resolve.add_argument("--json", help="--check: also write the results to this file")
     resolve.set_defaults(func=_resolve)
 
     fetch_p = sub.add_parser("fetch", help="Download datasets into data/raw/")
@@ -226,6 +255,11 @@ def main(argv: list[str] | None = None) -> None:
     fetch_p.add_argument("--force", action="store_true", help="Re-download even if cached")
     fetch_p.add_argument(
         "--strict", action="store_true", help="Fail if a file differs from the lockfile checksum"
+    )
+    fetch_p.add_argument(
+        "--revalidate",
+        action="store_true",
+        help="Check files already on disk against the server (conditional requests)",
     )
     fetch_p.set_defaults(func=_fetch)
 

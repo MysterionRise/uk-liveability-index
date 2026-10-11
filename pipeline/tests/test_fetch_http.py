@@ -11,7 +11,14 @@ import pytest
 from pytest_socket import SocketConnectBlockedError
 from werkzeug import Request, Response
 
-from lix_pipeline.fetch.http import _read_meta, _safe_extract, _write_meta, download
+from lix_pipeline.fetch.http import (
+    _read_meta,
+    _remove_extracted,
+    _safe_extract,
+    _write_meta,
+    download,
+    download_set,
+)
 
 
 def _zip_bytes(files: dict[str, str]) -> bytes:
@@ -294,6 +301,105 @@ class TestDownloadDataset:
         assert not meta.get("completed")
         # The validator is recorded so the next run can resume safely
         assert meta["partial_etag"] == '"v1"'
+
+
+class TestRevalidate:
+    """``make refresh`` asks whether a file already on disk is still current."""
+
+    def test_304_keeps_the_file_and_its_date(self, project, httpserver):
+        body = b"a,b\n1,2\n"
+        httpserver.expect_request("/f.csv", headers={"If-None-Match": '"v1"'}).respond_with_data(
+            b"", status=304
+        )
+        url = httpserver.url_for("/f.csv")
+        dest = project / "raw" / "f"
+        dest.mkdir(parents=True)
+        (dest / "f.csv").write_bytes(body)
+        old = {
+            "completed": True, "url": url, "etag": '"v1"', "downloaded_at": "2026-01-01T00:00:00",
+            "sha256": hashlib.sha256(body).hexdigest(),
+        }  # fmt: skip
+        _write_meta(dest, old)
+
+        meta = download("f", url, "csv", revalidate=True)
+
+        assert (dest / "f.csv").read_bytes() == body
+        assert meta["completed"] and meta["downloaded_at"] == "2026-01-01T00:00:00"
+        assert meta["revalidated_at"]
+
+    def test_changed_archive_replaces_the_old_edition(self, project, httpserver):
+        """A new NSPL must not leave August's CSV beside November's."""
+        httpserver.expect_request("/n.zip").respond_with_data(
+            _zip_bytes({"Data/NSPL_NOV.csv": "new\n"}), headers={"ETag": '"v2"'}
+        )
+        url = httpserver.url_for("/n.zip")
+        dest = project / "raw" / "n"
+        (dest / "Data").mkdir(parents=True)
+        (dest / "Data" / "NSPL_AUG.csv").write_text("old\n")
+        _write_meta(
+            dest,
+            {"completed": True, "url": url, "etag": '"v1"', "sha256": "0" * 64,
+             "extracted": ["Data/NSPL_AUG.csv"]},
+        )  # fmt: skip
+
+        meta = download("n", url, "zip", revalidate=True)
+
+        assert not (dest / "Data" / "NSPL_AUG.csv").exists()
+        assert (dest / "Data" / "NSPL_NOV.csv").read_text() == "new\n"
+        assert meta["extracted"] == ["Data/NSPL_NOV.csv"] and meta["etag"] == '"v2"'
+
+    def test_server_without_validators_is_compared_by_checksum(self, project, httpserver):
+        body = b"same,data\n"
+        httpserver.expect_request("/p.csv").respond_with_data(body)
+        url = httpserver.url_for("/p.csv")
+        dest = project / "raw" / "p"
+        dest.mkdir(parents=True)
+        (dest / "p.csv").write_bytes(body)
+        _write_meta(
+            dest,
+            {"completed": True, "url": url, "downloaded_at": "2026-01-01T00:00:00",
+             "sha256": hashlib.sha256(body).hexdigest()},
+        )  # fmt: skip
+
+        meta = download("p", url, "csv", revalidate=True)
+        assert meta["downloaded_at"] == "2026-01-01T00:00:00"  # identical: as old as it was
+
+        httpserver.clear()
+        httpserver.expect_request("/p.csv").respond_with_data(b"new,data\n")
+        meta = download("p", url, "csv", revalidate=True)
+        assert meta["downloaded_at"] != "2026-01-01T00:00:00"
+        assert (dest / "p.csv").read_bytes() == b"new,data\n"
+
+    def test_cached_download_is_not_revalidated_by_default(self, project):
+        url = "http://127.0.0.1:1/never"
+        _write_meta(project / "raw" / "c", {"completed": True, "url": url, "etag": '"v1"'})
+        assert download("c", url, "csv")["completed"] is True
+
+
+class TestSets:
+    def test_download_set_prunes_files_no_longer_in_the_set(self, project, httpserver):
+        httpserver.expect_request("/a.csv").respond_with_data(b"a\n")
+        httpserver.expect_request("/b.csv").respond_with_data(b"b\n")
+        dest = project / "raw" / "s"
+        dest.mkdir(parents=True)
+        (dest / "stale.csv").write_text("gone\n")
+        urls = {"a": httpserver.url_for("/a.csv"), "b": httpserver.url_for("/b.csv")}
+
+        meta = download_set("s", urls, "csv", version="v1")
+
+        assert sorted(p.name for p in dest.glob("*.csv")) == ["a.csv", "b.csv"]
+        assert set(meta["files"]) == {"a", "b"} and meta["completed"]
+
+    def test_remove_extracted_stays_inside_the_dataset_directory(self, tmp_path: Path):
+        dest = tmp_path / "raw" / "x"
+        (dest / "sub").mkdir(parents=True)
+        (dest / "sub" / "a.txt").write_text("a")
+        (tmp_path / "raw" / "evil.txt").write_text("keep")
+
+        _remove_extracted(dest, {"extracted": ["sub/a.txt", "../evil.txt"]})
+
+        assert not (dest / "sub").exists()
+        assert (tmp_path / "raw" / "evil.txt").exists()
 
 
 @pytest.mark.filterwarnings("ignore::UserWarning")

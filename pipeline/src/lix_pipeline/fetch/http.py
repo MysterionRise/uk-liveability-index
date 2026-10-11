@@ -78,6 +78,32 @@ def _safe_extract(
     return [m.filename for m in members]
 
 
+def _remove_extracted(dest_dir: Path, meta: dict) -> None:
+    """Delete the members an earlier archive left behind, so a new edition's files are
+    not mixed with the old one's (an August NSPL beside a November one)."""
+    dest_dir = dest_dir.resolve()
+    for name in meta.get("extracted") or []:
+        path = (dest_dir / name).resolve()
+        if path.is_relative_to(dest_dir) and path.is_file():
+            path.unlink()
+            parent = path.parent
+            while parent != dest_dir and parent.is_dir() and not any(parent.iterdir()):
+                parent.rmdir()
+                parent = parent.parent
+
+
+def _prune(dest_dir: Path, fmt: str, keep: set[str]) -> list[str]:
+    """Delete ``*.{fmt}`` files of a set that are no longer part of it."""
+    gone = []
+    for path in sorted(dest_dir.glob(f"*.{fmt}")):
+        if path.stem not in keep:
+            path.unlink()
+            gone.append(path.name)
+    if gone:
+        logger.info(f"Removed {len(gone)} file(s) no longer in the set: {', '.join(gone[:5])}")
+    return gone
+
+
 def _check_payload(path: Path, fmt: str) -> None:
     """Raise if the downloaded file is an error page instead of the expected format."""
     with open(path, "rb") as f:
@@ -131,13 +157,17 @@ def download(
     export_wait_s: float = 900,
     poll_s: float = 15,
     read_timeout_s: float = 300,
+    revalidate: bool = False,
 ) -> dict:
     """Download ``url`` into data/raw/{slug}/{slug}.{fmt} (extracting zips) and return its meta.
 
     Skips the download if the same URL (and ``version``, when the resolver knows one) was
-    already fetched completely. Downloads stream
-    to ``{file}.part`` and resume with an HTTP Range request if a previous attempt was
-    interrupted. The finished file is moved into place atomically.
+    already fetched completely. With ``revalidate`` a complete download is checked
+    against the server instead: a conditional request where the server gave a validator
+    (ETag or Last-Modified), otherwise a fresh download whose checksum is compared with
+    the old one. Downloads stream to ``{file}.part`` and resume with an HTTP Range
+    request if a previous attempt was interrupted. The finished file is moved into
+    place atomically.
     """
     dest_dir = data_dir("raw") / slug
     session = session or make_session()
@@ -147,7 +177,8 @@ def download(
     # Plain HTTP sources are versioned by Last-Modified, which older metas recorded alone
     meta_version = meta.get("version") or meta.get("last_modified")
     same_source = meta.get("url") == url and (version is None or meta_version == version)
-    if not force and meta.get("completed") and same_source:
+    cached = bool(meta.get("completed") and same_source) and not force
+    if cached and not revalidate:
         logger.info(f"[{slug}] Already downloaded — skipping (use --force to re-download)")
         return meta
 
@@ -167,16 +198,20 @@ def download(
         headers["If-Range"] = partial_validator
     elif resume_from:
         resume_from = 0
-    if not resume_from and not force and meta.get("last_modified") and same_source:
-        headers["If-Modified-Since"] = meta["last_modified"]
+    if not resume_from and not force and same_source:
+        if meta.get("etag"):
+            headers["If-None-Match"] = meta["etag"]
+        elif meta.get("last_modified"):
+            headers["If-Modified-Since"] = meta["last_modified"]
 
-    logger.info(f"[{slug}] Downloading from {url}")
+    logger.info(f"[{slug}] {'Revalidating' if cached else 'Downloading from'} {url}")
     resp = _get(session, url, headers, export_wait_s, poll_s, read_timeout_s)
 
     if resp.status_code == 304:
         logger.info(f"[{slug}] Not modified since last download — skipping")
         # Mark as completed since server confirms data hasn't changed
         meta["completed"] = True
+        meta["revalidated_at"] = datetime.now(timezone.utc).isoformat()
         _write_meta(dest_dir, meta)
         return meta
 
@@ -239,11 +274,18 @@ def download(
 
     os.replace(part_file, out_file)
     size = out_file.stat().st_size
-    logger.info(f"[{slug}] Saved to {out_file} ({size / 1e6:.1f} MB)")
+    digest = sha256.hexdigest()
+    now = datetime.now(timezone.utc).isoformat()
+    unchanged = cached and meta.get("sha256") == digest
+    logger.info(
+        f"[{slug}] {'Unchanged' if unchanged else 'Saved to ' + str(out_file)} "
+        f"({size / 1e6:.1f} MB)"
+    )
 
     extracted = None
     if fmt == "zip":
         logger.info(f"[{slug}] Extracting ZIP archive...")
+        _remove_extracted(dest_dir, meta)
         with zipfile.ZipFile(out_file) as zf:
             extracted = _safe_extract(zf, dest_dir, extract)
         out_file.unlink()
@@ -253,14 +295,17 @@ def download(
         "slug": slug,
         "url": url,
         "version": version,
-        "downloaded_at": datetime.now(timezone.utc).isoformat(),
+        # An identical file keeps its original date: the data is as old as it was
+        "downloaded_at": meta["downloaded_at"] if unchanged and meta.get("downloaded_at") else now,
         "last_modified": resp.headers.get("Last-Modified"),
         "etag": resp.headers.get("ETag"),
         "bytes": size,
-        "sha256": sha256.hexdigest(),
+        "sha256": digest,
         "extracted": extracted,
         "completed": True,
     }
+    if cached:
+        new_meta["revalidated_at"] = now
     _write_meta(dest_dir, new_meta)
 
     return new_meta
@@ -316,8 +361,10 @@ def download_set(
     """Download several files of one dataset into data/raw/{slug}/{name}.{fmt}.
 
     Files already present are kept unless ``force``; the set is complete when every
-    name has its file. The meta's sha256 covers the sorted per-file checksums, so a
-    changed tile changes the dataset's checksum.
+    name has its file, and files that are no longer in the set are deleted then. The
+    meta's sha256 covers the sorted per-file checksums, so a changed tile changes the
+    dataset's checksum. The set's version comes from the resolver (the first file's
+    validators), so a changed edition is a new version and re-downloads everything.
     """
     dest_dir = data_dir("raw") / slug
     session = session or make_session()
@@ -339,12 +386,16 @@ def download_set(
         _write_meta(
             dest_dir, {"slug": slug, "version": version, "files": files, "completed": False}
         )
+    _prune(dest_dir, fmt, set(urls))
     combined = hashlib.sha256("\n".join(f"{k} {v}" for k, v in sorted(files.items())).encode())
+    unchanged = meta.get("completed") and meta.get("sha256") == combined.hexdigest()
     new_meta = {
         "slug": slug,
         "url": next(iter(urls.values())),
         "version": version,
-        "downloaded_at": datetime.now(timezone.utc).isoformat(),
+        "downloaded_at": meta["downloaded_at"]
+        if unchanged and meta.get("downloaded_at")
+        else datetime.now(timezone.utc).isoformat(),
         "files": files,
         "bytes": sum((dest_dir / f"{n}.{fmt}").stat().st_size for n in files),
         "sha256": combined.hexdigest(),

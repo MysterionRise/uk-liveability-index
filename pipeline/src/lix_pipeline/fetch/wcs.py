@@ -15,7 +15,7 @@ import requests
 from lix_core.config import WcsAccess
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
-from lix_pipeline.fetch.http import _read_meta, _write_meta, download_file
+from lix_pipeline.fetch.http import _prune, _read_meta, _write_meta, download_file
 
 logger = setup_logging("fetch.wcs")
 
@@ -179,6 +179,8 @@ def fetch_tiles(
         for entry, name in ((files[n], n) for n in files)
         for q in (entry if isinstance(entry, list) else [name])
     ]
+    # A coverage re-described with a new envelope or resolution tiles differently
+    _prune(dest, fmt, {p.stem for p in paths})
     new_meta = {
         "slug": slug,
         "url": resolved["url"],

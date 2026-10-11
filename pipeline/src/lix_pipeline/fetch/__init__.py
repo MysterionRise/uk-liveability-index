@@ -180,11 +180,16 @@ def fetch(
     strict: bool = False,
     session: requests.Session | None = None,
     registry: dict[str, DatasetSpec] | None = None,
+    revalidate: bool = False,
 ) -> dict:
     """Download one dataset as pinned in the lockfile (resolving it first if unpinned).
 
     With ``strict``, a download whose checksum differs from the lockfile's is an error
-    (for reproducible rebuilds); otherwise it is logged and the lockfile updated.
+    (for reproducible rebuilds); otherwise it is logged and the lockfile updated. With
+    ``revalidate``, a file already on disk is checked against the server (a conditional
+    request, or a fresh download compared by checksum where the server gives no
+    validator). The returned dict is the lock's ``fetched`` section plus ``changed``:
+    whether the data differs from what the lockfile recorded before.
     """
     if registry is None:
         registry = load_registry()
@@ -196,12 +201,13 @@ def fetch(
     if not spec.licence_verified:
         logger.warning(f"[{slug}] Licence not yet verified ({spec.licence}) — check before use")
 
+    entry = read_lock().get(slug, {})
     if spec.access.type == "manual":
         fetched = _fetch_manual(slug, spec)
+        changed = entry.get("fetched", {}).get("files") != fetched["files"]
         update_entry(slug, "fetched", fetched)
-        return fetched
+        return {**fetched, "changed": changed}
 
-    entry = read_lock().get(slug, {})
     resolved = entry.get("resolved") or {}
     # A lock entry written for another access type (or an older resolver) lacks what the
     # tile and page fetchers need: resolve again rather than trust it
@@ -249,9 +255,11 @@ def fetch(
             version=resolved.get("version"),
             session=session,
             read_timeout_s=max(300, getattr(spec.access, "timeout_s", 0)),
+            revalidate=revalidate,
         )
 
     previous = entry.get("fetched", {}).get("sha256")
+    changed = not previous or (bool(meta.get("sha256")) and previous != meta["sha256"])
     if previous and meta.get("sha256") and previous != meta["sha256"]:
         msg = f"[{slug}] Checksum differs from lockfile ({previous[:12]}… → {meta['sha256'][:12]}…)"
         if strict:
@@ -263,9 +271,11 @@ def fetch(
         for k in ("sha256", "bytes", "rows", "etag", "last_modified", "extracted", "files")
         if meta.get(k) is not None
     }
+    # The edition the data came from, so a later resolve can tell the pack lacks a newer one
+    fetched["version"] = resolved.get("version")
     fetched["fetched_at"] = meta.get("downloaded_at") or _now()
     update_entry(slug, "fetched", fetched)
-    return fetched
+    return {**fetched, "changed": changed}
 
 
 def select(
@@ -292,42 +302,105 @@ def select(
 
 LinkStatus = Literal["ok", "warn", "fail"]
 
+# Access types whose URL is one plain file: a conditional probe and a size comparison
+# say whether it changed. API queries, tile sets and pages are only probed for reachability
+PLAIN_FILE_TYPES = ("http", "html_link", "govuk_attachment", "ckan")
 
-def _reachable(url: str, session: requests.Session) -> int:
-    """The HTTP status of the lightest request that proves the file is there."""
+
+def _reachable(
+    url: str, session: requests.Session, validators: dict | None = None
+) -> tuple[int, int | None]:
+    """The status of the lightest request that proves the file is there, and the file's
+    size when the server states it. With ``validators`` (the lockfile's ETag or
+    Last-Modified) the request is conditional, so an unchanged file answers 304."""
     if url.startswith("s3://"):
-        return overture.probe(url, session)
-    resp = session.get(url, headers={"Range": "bytes=0-0"}, stream=True, timeout=60)
+        return overture.probe(url, session), None
+    headers = {"Range": "bytes=0-0"}
+    if validators and validators.get("etag"):
+        headers["If-None-Match"] = validators["etag"]
+    elif validators and validators.get("last_modified"):
+        headers["If-Modified-Since"] = validators["last_modified"]
+    resp = session.get(url, headers=headers, stream=True, timeout=60)
     resp.close()
-    return resp.status_code
+    size = None
+    content_range = resp.headers.get("Content-Range", "")
+    if "/" in content_range and content_range.rsplit("/", 1)[1].isdigit():
+        size = int(content_range.rsplit("/", 1)[1])
+    elif resp.status_code == 200 and (resp.headers.get("Content-Length") or "").isdigit():
+        size = int(resp.headers["Content-Length"])
+    return resp.status_code, size
 
 
-def check_link(slug: str, spec: DatasetSpec, session: requests.Session) -> tuple[LinkStatus, str]:
+def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dict:
     """Re-resolve a dataset and confirm its file is reachable; used by the nightly check.
+
+    Returns ``status`` (ok / warn / fail), a ``note``, the resolved and locked versions,
+    and ``changed``: whether the pack built from the lockfile lacks a newer edition
+    (a new resolved version, a changed validator, or a changed size where the server
+    gives no validator).
 
     A 403 is a warning, not a failure: NHS Digital, Ofcom and NaPTAN refuse cloud addresses
     such as GitHub's runners while serving everyone else, and the check is after files that
     moved or vanished, not firewalls. A fetch from a blocked network still fails loudly.
     """
+    entry = read_lock().get(slug, {})
+    locked = entry.get("resolved", {})
+    fetched = entry.get("fetched", {})
+    out = {
+        "slug": slug,
+        "status": "ok",
+        "note": "",
+        "version": None,
+        "locked_version": locked.get("version"),
+        "fetched_at": fetched.get("fetched_at"),
+        "changed": False,
+    }
+
+    def done(status: LinkStatus, note: str, changed: bool = False) -> dict:
+        return {**out, "status": status, "note": note, "changed": changed}
+
     try:
         resolved = resolve(slug, spec, session)
     except requests.HTTPError as e:
         if e.response is not None and e.response.status_code == 403:
-            return "warn", f"not verified: 403 from {e.response.url}"
-        return "fail", f"resolve failed: {e}"
+            return done("warn", f"not verified: 403 from {e.response.url}")
+        return done("fail", f"resolve failed: {e}")
     except Exception as e:  # report every failure, keep checking the rest
-        return "fail", f"resolve failed: {e}"
+        return done("fail", f"resolve failed: {e}")
+    out["version"] = resolved.get("version")
     if resolved["url"] is None:
-        return "ok", "manual download"
-    locked = read_lock().get(slug, {}).get("resolved", {})
-    changed = locked and locked.get("version") != resolved["version"]
+        return done("ok", "manual download")
+    new_version = bool(locked) and locked.get("version") != resolved["version"]
+
+    plain = spec.access.type in PLAIN_FILE_TYPES and not getattr(spec.access, "tiles", None)
+    validators = {k: fetched.get(k) for k in ("etag", "last_modified")} if plain else None
     try:
-        status = _reachable(resolved["url"], session)
+        status, size = _reachable(resolved["url"], session, validators)
     except requests.RequestException as e:
-        return "fail", f"unreachable: {e}"
+        return done("fail", f"unreachable: {e}")
     if status == 403:
-        return "warn", f"not verified: 403 from {resolved['url']}"
+        return done("warn", f"not verified: 403 from {resolved['url']}")
+    if status == 304:
+        return done("ok", f"unchanged ({json.dumps(resolved.get('version'))})", new_version)
     if status >= 400:
-        return "fail", f"HTTP {status}"
-    note = "new upstream version" if changed else "ok"
-    return "ok", f"{note} ({json.dumps(resolved.get('version'))})"
+        return done("fail", f"HTTP {status}")
+
+    version = json.dumps(resolved.get("version"))
+    if new_version:
+        return done("ok", f"new upstream version ({version})", True)
+    if plain and validators and any(validators.values()):
+        # The server has a validator and did not answer 304: the file changed
+        return done("ok", f"new upstream version: file changed ({version})", True)
+    if plain and size is not None and fetched.get("bytes") and not fetched.get("files"):
+        if size != fetched["bytes"]:
+            return done(
+                "ok", f"new upstream version: size {fetched['bytes']:,} → {size:,} bytes", True
+            )
+        return done("ok", f"ok, size unchanged ({version})")
+    return done("ok", f"ok ({version})")
+
+
+def check_link(slug: str, spec: DatasetSpec, session: requests.Session) -> tuple[LinkStatus, str]:
+    """``check_source`` as (status, note)."""
+    result = check_source(slug, spec, session)
+    return result["status"], result["note"]

@@ -265,6 +265,21 @@ class TestFetchOrchestrator:
         assert lock["fetched"]["sha256"] == fetched["sha256"]
         assert (repo / "data" / "raw" / "f" / "f.csv").read_bytes() == b"a,b\n1,2\n"
 
+    def test_reports_change_and_records_the_version(self, repo, httpserver):
+        httpserver.expect_request("/f.csv", method="HEAD").respond_with_data(
+            "", headers={"ETag": '"v1"'}
+        )
+        httpserver.expect_request("/f.csv", method="GET").respond_with_data(b"a,b\n")
+        registry = {"f": _spec({"type": "http", "url": httpserver.url_for("/f.csv")})}
+
+        first = fetch("f", registry=registry)
+        assert first["changed"] is True
+        assert read_lock()["f"]["fetched"]["version"] == '"v1"'
+        assert "changed" not in read_lock()["f"]["fetched"]
+
+        again = fetch("f", registry=registry)  # cached: nothing changed
+        assert again["changed"] is False
+
     def test_strict_rejects_changed_checksum(self, repo, httpserver):
         httpserver.expect_request("/f.csv", method="HEAD").respond_with_data("")
         httpserver.expect_request("/f.csv", method="GET").respond_with_data(b"new,data\n")
@@ -585,7 +600,49 @@ class TestCheckLink:
             overture.probe("s3://b/release/2026-09-23.1/theme=places/type=place/*", session) == 200
         )
         assert overture.probe("s3://b/release/2099-01-01.0/x/*", session) == 404
-        assert (
-            fetch_mod._reachable("s3://b/release/2026-09-23.1/theme=places/type=place/*", session)
-            == 200
+        assert fetch_mod._reachable(
+            "s3://b/release/2026-09-23.1/theme=places/type=place/*", session
+        ) == (200, None)
+
+    def test_conditional_probe_tells_unchanged_from_changed(self, repo, httpserver):
+        httpserver.expect_request("/f.csv", method="HEAD").respond_with_data(
+            "", headers={"ETag": '"v1"'}
         )
+        httpserver.expect_request(
+            "/f.csv", method="GET", headers={"If-None-Match": '"v1"'}
+        ).respond_with_data(b"", status=304)
+        spec = _spec({"type": "http", "url": httpserver.url_for("/f.csv")})
+        (repo / "config" / "datasets.lock.json").write_text(
+            json.dumps({"f": {"resolved": {"version": '"v1"'}, "fetched": {"etag": '"v1"'}}})
+        )
+
+        result = fetch_mod.check_source("f", spec, make_session())
+        assert (result["status"], result["changed"]) == ("ok", False)
+        assert result["note"].startswith("unchanged")
+
+        # The publisher replaced the file: a new validator, so no 304
+        httpserver.clear()
+        httpserver.expect_request("/f.csv", method="HEAD").respond_with_data(
+            "", headers={"ETag": '"v2"'}
+        )
+        httpserver.expect_request("/f.csv", method="GET").respond_with_data(b"new")
+        result = fetch_mod.check_source("f", spec, make_session())
+        assert result["changed"] and result["note"].startswith("new upstream version")
+        assert (result["version"], result["locked_version"]) == ('"v2"', '"v1"')
+
+    def test_size_stands_in_for_a_missing_validator(self, repo, httpserver):
+        httpserver.expect_request("/g.csv", method="HEAD").respond_with_data("")
+        httpserver.expect_request("/g.csv", method="GET").respond_with_data(b"123456789")
+        spec = _spec({"type": "http", "url": httpserver.url_for("/g.csv")})
+        (repo / "config" / "datasets.lock.json").write_text(
+            json.dumps({"g": {"resolved": {"version": None}, "fetched": {"bytes": 5}}})
+        )
+
+        result = fetch_mod.check_source("g", spec, make_session())
+        assert result["changed"] and "size 5 → 9" in result["note"]
+
+        (repo / "config" / "datasets.lock.json").write_text(
+            json.dumps({"g": {"resolved": {"version": None}, "fetched": {"bytes": 9}}})
+        )
+        result = fetch_mod.check_source("g", spec, make_session())
+        assert not result["changed"] and result["note"].startswith("ok, size unchanged")
