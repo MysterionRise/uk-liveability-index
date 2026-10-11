@@ -3600,6 +3600,12 @@
     }
   },
   "viirs_vnl": {
+    "fetched": {
+      "fetched_at": "2026-10-11T00:42:25+00:00",
+      "files": {
+        "VNL_npp_2025_global_vcmslcfg_v2_c202604011200.average_masked.dat.tif": "13aefdc2f1e7107550215e4c3eb64d5a32b634f2a1fe74f86ebe476b76a1659e"
+      }
+    },
     "resolved": {
       "instructions": "Register for a free Earth Observation Group account at https://eogdata.mines.edu/products/register/, open https://eogdata.mines.edu/nighttime_light/annual/v22/, take the latest year's VNL_npp_<year>_global_vcmslcfg_*.average_masked.dat.tif.gz and gunzip it.",
       "resolved_at": "2026-10-10T18:30:05+00:00",

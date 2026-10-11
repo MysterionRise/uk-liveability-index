@@ -6,7 +6,7 @@ population-weighted, with the default (balanced) weights. Expectations are in
 [config/validation_places.yaml](../config/validation_places.yaml); regenerate this
 page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
-**68 of 68 checks pass** (37 of 37 anchors) across 31 places.
+**70 of 70 checks pass** (39 of 39 anchors) across 31 places.
 
 ## Scores
 
@@ -99,6 +99,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ safety score ≤ 30: 10.0 ⚓
 - ✅ transport score ≥ 85: 96.4
 - ✅ road_rail_noise ≥ 40: 60.0 ⚓
+- ✅ light_pollution ≥ 50: 83.0 ⚓
 
 **Whitechapel** (Spitalfields). Dense, central, high income deprivation. Flags: broadcast_lad, broadcast_msoa.
 
@@ -167,6 +168,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ station_distance ≥ 15,000: 26,209.3 ⚓
 - ✅ transport score ≤ 35: 26.7 ⚓
 - ✅ gigabit_broadband ≤ 85: 44.5
+- ✅ light_pollution ≤ 3: 0.7 ⚓
 
 **Sidmouth** (Sidmouth Town). Seaside retirement town. Flags: broadcast_lad, broadcast_msoa.
 

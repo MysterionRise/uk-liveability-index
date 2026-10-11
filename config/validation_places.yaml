@@ -115,6 +115,7 @@ places:
       - {theme: safety, op: le, value: 30, anchor: true}
       - {theme: transport, op: ge, value: 85}
       - {indicator: road_rail_noise, op: ge, value: 40, anchor: true}  # Old Street, the A10
+      - {indicator: light_pollution, op: ge, value: 50, anchor: true}  # 83 nW/cm²/sr: Old Street, the City's lights
 
   - name: Whitechapel
     local_authority: Tower Hamlets
@@ -212,6 +213,7 @@ places:
       - {indicator: station_distance, op: ge, value: 15000, anchor: true}
       - {theme: transport, op: le, value: 35, anchor: true}
       - {indicator: gigabit_broadband, op: le, value: 85}
+      - {indicator: light_pollution, op: le, value: 3, anchor: true}  # 0.7 nW/cm²/sr: dark Devon skies
 
   - name: Sidmouth
     local_authority: East Devon

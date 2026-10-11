@@ -628,8 +628,8 @@ viirs_vnl:
   landing_page: https://eogdata.mines.edu/products/vnl/
   description: Annual average night-time radiance (nW/cm²/sr) on a 15 arc-second grid from the VIIRS day/night band, cleaned of clouds, fires and background noise.
   licence: CC-BY-4.0
-  licence_verified: false
-  attribution: "Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines (VIIRS VNL v2.2, from NOAA/NASA Suomi NPP data)."
+  licence_verified: true  # EOG_products_CC_License.pdf: VNL is CC BY 4.0; the notice below is its Exhibit 1 wording
+  attribution: "This product was made utilizing VIIRS Nighttime Lights (VNL v2.2) data produced by the Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines."
   cadence: annual
   size_hint: 1GB (global)
   notes: Downloads sit behind a free login, so this is a manual source; the light_pollution context indicator is skipped when the file is absent.

@@ -15,7 +15,8 @@ All notable changes to this project. The format follows
   10m satellite land cover (2021) classes as tree cover. Scored, weight 0.75.
 - **Night-time light** as context, from the VIIRS annual composite: a free Earth
   Observation Group account is needed to download it, so it is the first manual source
-  and is skipped when the file is absent.
+  and is skipped when the file is absent. The release's data pack carries the 2025
+  composite.
 - **Surface water in flood risk.** The scored flood indicator now counts homes at high or
   medium risk from rivers, the sea or surface water (the Environment Agency's postcode
   file in England, NRW's surface-water areas in Wales); rivers and the sea alone stay as

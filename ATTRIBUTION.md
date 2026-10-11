@@ -20,7 +20,7 @@ This project's outputs are built from the datasets below. Reuse must keep these 
 - Contains Welsh Government information licensed under the Open Government Licence v3.0 (Environmental Noise Mapping 2022). (`wg_noise_road_lden`, `wg_noise_rail_lden`)
 - Natural Resources Wales, Flood Risk Assessment Wales, licensed under the Open Government Licence v3.0; contains Natural Resources Wales information © Natural Resources Wales and database right. (`nrw_fraw_surface_water`, `nrw_fraw_rivers`, `nrw_fraw_sea`)
 - © ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium (`esa_worldcover`)
-- Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines (VIIRS VNL v2.2, from NOAA/NASA Suomi NPP data). (`viirs_vnl`)
+- This product was made utilizing VIIRS Nighttime Lights (VNL v2.2) data produced by the Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines. (`viirs_vnl`)
 - Contains NHS England Organisation Data Service data licensed under the Open Government Licence v3.0. (`ods_gp`, `ods_dentists`)
 - Contains Care Quality Commission information licensed under the Open Government Licence v3.0. (`cqc_locations`)
 - NHS Business Services Authority, Consolidated Pharmaceutical List, licensed under the Open Government Licence v3.0. (`nhsbsa_pharmacies`)

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated_at": "2026-10-10T22:17:12+00:00",
+  "generated_at": "2026-10-11T00:44:54+00:00",
   "geography": {
     "country": {
       "code": "UK",
@@ -3481,9 +3481,9 @@
     "viirs_vnl": {
       "title": "VIIRS annual night-time lights (Earth Observation Group VNL v2.2)",
       "licence": "CC-BY-4.0",
-      "attribution": "Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines (VIIRS VNL v2.2, from NOAA/NASA Suomi NPP data).",
+      "attribution": "This product was made utilizing VIIRS Nighttime Lights (VNL v2.2) data produced by the Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines.",
       "version": null,
-      "fetched_at": null,
+      "fetched_at": "2026-10-11T00:42:25+00:00",
       "cadence": "annual",
       "stale": false
     },
@@ -3562,8 +3562,8 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "9363b8602d4a7355ce641b0115041b16ff7b5d8a560bbea3c5ec2cd70e463638",
-      "bytes": 1125377
+      "sha256": "46d587ce53522481be4e43593fe9c8a9060ffbf952fa934f8955920c02f814ad",
+      "bytes": 1139489
     },
     "scores.parquet": {
       "sha256": "935cff292ab2497d90761a3fb358c4939491d94656eb3dc220d95c00311def1b",
@@ -3578,8 +3578,8 @@
       "bytes": 18733
     },
     "areas.parquet": {
-      "sha256": "27a18ac15f8edbd408728e2895880e873f8ca7fd57c7d16ed1dfe45a96f55037",
-      "bytes": 14807
+      "sha256": "dd94435936d1cb00e4c1017c7eac0464831ff608cf33414dc05b4fb658489b75",
+      "bytes": 14851
     },
     "pois.parquet": {
       "sha256": "9cba504e89f819a959b559a539472cf0f762c54200cdf97bd17310611a296d85",
