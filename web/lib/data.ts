@@ -10,8 +10,9 @@ import type { Period } from "./period";
 import type { ScoredIndicator } from "./scoring";
 
 export const MISSING_U16 = 65535;
-/** Layout of the data pack this app reads (lix_core.config.SERVE_SCHEMA_VERSION) */
-export const SCHEMA_VERSION = 3;
+import { SCHEMA_VERSION } from "./schema";
+
+export { SCHEMA_VERSION };
 
 export interface IndicatorMeta extends ScoredIndicator {
   label: string;

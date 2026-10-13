@@ -3,6 +3,7 @@ name: Release smoke test
 # A release as a new user gets it: the published images and the newest data release the
 # code reads (or a given one), no model key, on a fresh Linux (amd64) machine. Run it on
 # the draft: gh workflow run release-smoke.yml -f tag=v0.4.0 [-f data_tag=data-2026-10]
+# [-f ref=master] (ref: where the test code comes from, when the tag's own needs a fix)
 
 on:
   workflow_dispatch:
@@ -12,6 +13,9 @@ on:
         required: true
       data_tag:
         description: "Data release to test with (default: the newest compatible one)"
+        required: false
+      ref:
+        description: "Commit or branch to run the smoke test from (default: the tag)"
         required: false
 
 permissions:
@@ -24,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.tag }}
+          ref: ${{ inputs.ref || inputs.tag }}
 
       - name: Download the data pack from its data release
         env:
