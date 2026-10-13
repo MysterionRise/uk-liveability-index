@@ -6,7 +6,7 @@ residents actually use, rather than of whichever practice happens to be nearest.
 
 import polars as pl
 
-from lix_core.codes import in_scope
+from lix_core.codes import active_nations, in_scope
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
 from lix_pipeline.geo.nspl import load_nspl
@@ -52,9 +52,32 @@ def stage_ods_gp() -> pl.LazyFrame:
     df = raw.select(
         pl.col(f"column_{i}").alias(name) for i, name in EPRACCUR_COLUMNS.items()
     ).filter((pl.col("status") == "ACTIVE") & (pl.col("role") == GP_PRACTICE_ROLE))
-    df = geocode_postcodes(df).filter(in_scope("lsoa21cd"))
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd")).drop("role", "status")
+    if "S" in active_nations():
+        df = pl.concat([df, _phs_gp_practices()], how="diagonal_relaxed")
     logger.info(f"{df.height:,} active GP practices")
-    return df.drop("role", "status").lazy()
+    return df.lazy()
+
+
+def _phs_gp_practices() -> pl.DataFrame:
+    """Scotland's GP practices from Public Health Scotland, with their list sizes."""
+    raw = pl.read_csv(
+        data_dir("raw") / "phs_gp_practices" / "phs_gp_practices.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    df = raw.select(
+        pl.col("PracticeCode").alias("practice_code"),
+        pl.col("GPPracticeName").alias("name"),
+        pl.col("Postcode").alias("postcode"),
+        pl.lit(None, pl.Utf8).alias("open_date"),
+        pl.lit(None, pl.Utf8).alias("close_date"),
+        pl.col("HB").alias("commissioner"),
+        pl.col("PracticeListSize").cast(pl.Int32, strict=False).alias("list_size"),
+    )
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("S",)))
+    logger.info(f"{df.height:,} GP practices in Scotland (PHS)")
+    return df
 
 
 def stage_gp_registrations() -> pl.LazyFrame:
@@ -116,9 +139,30 @@ def stage_ods_dentists() -> pl.LazyFrame:
     df = raw.select(
         pl.col(f"column_{i}").alias(name) for i, name in EGDPPRAC_COLUMNS.items()
     ).filter(pl.col("status") == "ACTIVE")
-    df = geocode_postcodes(df).filter(in_scope("lsoa21cd"))
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd")).drop("status")
+    if "S" in active_nations():
+        df = pl.concat([df, _phs_dentists()], how="diagonal_relaxed")
     logger.info(f"{df.height:,} active dental practices")
-    return df.drop("status").lazy()
+    return df.lazy()
+
+
+def _phs_dentists() -> pl.DataFrame:
+    """Scotland's NHS dental practices from Public Health Scotland."""
+    raw = pl.read_csv(
+        data_dir("raw") / "phs_dentists" / "phs_dentists.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    df = raw.select(
+        pl.col("Dental_Practice_Code").alias("practice_code"),
+        pl.col("address1").alias("name"),
+        pl.col("pc7").alias("postcode"),
+        pl.lit(None, pl.Utf8).alias("open_date"),
+        pl.lit(None, pl.Utf8).alias("close_date"),
+    )
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("S",)))
+    logger.info(f"{df.height:,} NHS dental practices in Scotland (PHS)")
+    return df
 
 
 # Contract types that dispense to the public; DAC (appliance contractors) supply
@@ -128,8 +172,8 @@ PHARMACY_CONTRACTS = ("Community", "LPS")
 
 def stage_pharmacies() -> pl.LazyFrame:
     """Community pharmacies for every active nation: NHSBSA's list in England (with
-    opening hours), OpenStreetMap elsewhere (no hours; Wales has no machine-readable
-    list)."""
+    opening hours), Public Health Scotland's dispenser list in Scotland, OpenStreetMap
+    elsewhere (no hours; Wales has no machine-readable list)."""
     from lix_core.codes import active_nations, nation_of
     from lix_pipeline.geo.joins import points_to_lsoa
 
@@ -140,7 +184,9 @@ def stage_pharmacies() -> pl.LazyFrame:
                 pl.lit("nhsbsa").alias("source")
             )
         )
-    others = [n for n in active_nations() if n != "E"]
+    if "S" in active_nations():
+        frames.append(_phs_pharmacies())
+    others = [n for n in active_nations() if n not in ("E", "S")]
     if others:
         osm = pl.read_parquet(data_dir("staged") / "osm_pois.parquet").filter(
             pl.col("value") == "pharmacy"
@@ -152,6 +198,24 @@ def stage_pharmacies() -> pl.LazyFrame:
         logger.info(f"{osm.height:,} OpenStreetMap pharmacies in {others}")
         frames.append(osm)
     return pl.concat(frames, how="diagonal_relaxed").lazy()
+
+
+def _phs_pharmacies() -> pl.DataFrame:
+    """Scotland's community pharmacies from Public Health Scotland's dispenser list."""
+    raw = pl.read_csv(
+        data_dir("raw") / "phs_pharmacies" / "phs_pharmacies.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    df = raw.select(
+        pl.col("DispCode").alias("pharmacy_code"),
+        pl.col("DispLocationName").alias("name"),
+        pl.col("DispLocationPostcode").alias("postcode"),
+        pl.lit("phs").alias("source"),
+    )
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("S",)))
+    logger.info(f"{df.height:,} community pharmacies in Scotland (PHS)")
+    return df
 
 
 def stage_nhsbsa_pharmacies() -> pl.LazyFrame:

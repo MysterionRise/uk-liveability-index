@@ -1,9 +1,12 @@
-"""Road and rail noise at homes: the strategic noise maps sampled at residential postcodes.
+"""Noise at homes: the strategic noise maps sampled at residential postcodes.
 
-England's Round 4 maps (Defra, 2021 traffic) and Wales's 2022 maps were made with the
-same modelling system on a 10m grid; each residential postcode takes the Lden value of
-the cell it sits in. Cells with no mapped source hold 0 dB (or nodata), so a home on an
-unmapped minor road outside an agglomeration reads as quiet.
+Each nation publishes its Round 4 maps differently: England (Defra, 2021 traffic) and
+Wales (2022) a 10m grid per source, road and rail; Scotland one consolidated grid of every
+mapped source (road, rail, airports, industry) plus an industry grid for its five cities.
+``NOISE_SOURCES`` lists the grids per nation by kind, and every kind is sampled where the
+nation has it; ``share_any_*`` takes the loudest kind at each home, so the scored
+indicator means the same everywhere: the share of homes in mapped noise. Cells with no
+mapped source hold 0 dB (or nodata), so a home on an unmapped minor road reads as quiet.
 """
 
 from pathlib import Path
@@ -19,11 +22,22 @@ from lix_pipeline.geo.rasters import sample_tiles_at_points
 
 logger = setup_logging("stage.noise")
 
-# nation → (road Lden slug, rail Lden slug)
-NOISE_SOURCES: dict[str, tuple[str, str]] = {
-    "E": ("defra_noise_road_lden", "defra_noise_rail_lden"),
-    "W": ("wg_noise_road_lden", "wg_noise_rail_lden"),
+# nation → kind (road, rail, air, industry, all) → metric → registry slug
+NOISE_SOURCES: dict[str, dict[str, dict[str, str]]] = {
+    "E": {
+        "road": {"lden": "defra_noise_road_lden"},
+        "rail": {"lden": "defra_noise_rail_lden"},
+    },
+    "W": {
+        "road": {"lden": "wg_noise_road_lden"},
+        "rail": {"lden": "wg_noise_rail_lden"},
+    },
+    "S": {
+        "all": {"lden": "sepa_noise_all_lden"},
+        "industry": {"lden": "sepa_noise_industry_lden"},
+    },
 }
+KINDS = ("road", "rail", "air", "industry", "all")
 # 55 dB Lden is the level at which the Environmental Noise Directive counts people as
 # exposed, but at that level the answer depends on whether minor roads were mapped, which
 # they are everywhere in Wales and only inside the larger urban areas in England (39% of
@@ -36,47 +50,67 @@ LOUD_DB = 65.0
 
 
 def _tiles(slug: str) -> list[Path]:
-    return sorted((data_dir("raw") / slug).glob("*.tif"))
+    return sorted((data_dir("raw") / slug).glob("**/*.tif"))
 
 
-def noise_at_homes(homes: pl.DataFrame, road: list[Path], rail: list[Path]) -> pl.DataFrame:
-    """Per LSOA: the share of residential postcodes at or above 60 dB Lden from road or
-    rail (and at 55 and 65), each source's share at 60, and the mean of the louder source."""
+def noise_at_homes(homes: pl.DataFrame, layers: dict[str, list[Path]]) -> pl.DataFrame:
+    """Per area: the share of residential postcodes at or above 60 dB Lden from any mapped
+    kind (and at 55 and 65), each kind's own share at 60, and the mean of the loudest kind.
+
+    ``layers`` maps a kind (road, rail, air, industry, all) to its grid tiles; a kind with
+    no grid counts as 0 dB, like a cell no source reaches.
+    """
     x = homes["east1m"].to_numpy().astype(float)
     y = homes["north1m"].to_numpy().astype(float)
-    road_db = np.nan_to_num(sample_tiles_at_points(road, x, y), nan=0.0)
-    rail_db = np.nan_to_num(sample_tiles_at_points(rail, x, y), nan=0.0)
-    louder = pl.max_horizontal("road_db", "rail_db")
+    sampled = {
+        kind: np.nan_to_num(sample_tiles_at_points(tiles, x, y), nan=0.0)
+        for kind, tiles in layers.items()
+        if tiles
+    }
+    if not sampled:
+        raise ValueError("noise_at_homes needs at least one grid")
+    db_columns = [pl.Series(f"{kind}_db", values) for kind, values in sampled.items()]
+    loudest = pl.max_horizontal([f"{kind}_db" for kind in sampled])
     return (
         homes.select("lsoa21cd")
-        .with_columns(pl.Series("road_db", road_db), pl.Series("rail_db", rail_db))
+        .with_columns(*db_columns)
         .group_by("lsoa21cd")
         .agg(
             pl.len().alias("n_postcodes"),
-            (pl.col("road_db") >= NOISY_DB).mean().alias("share_road_60"),
-            (pl.col("rail_db") >= NOISY_DB).mean().alias("share_rail_60"),
-            (louder >= NOISY_DB).mean().alias("share_any_60"),
-            (louder >= REPORTED_DB).mean().alias("share_any_55"),
-            (louder >= LOUD_DB).mean().alias("share_any_65"),
-            louder.mean().alias("mean_db"),
+            *[
+                (pl.col(f"{kind}_db") >= NOISY_DB).mean().alias(f"share_{kind}_60")
+                for kind in sampled
+            ],
+            (loudest >= NOISY_DB).mean().alias("share_any_60"),
+            (loudest >= REPORTED_DB).mean().alias("share_any_55"),
+            (loudest >= LOUD_DB).mean().alias("share_any_65"),
+            loudest.mean().alias("mean_db"),
         )
         .sort("lsoa21cd")
     )
 
 
 def stage_noise() -> pl.LazyFrame:
-    """Noise exposure per LSOA for every active nation with a noise map."""
+    """Noise exposure per area for every active nation with a noise map; each nation's
+    kinds appear as ``share_<kind>_60`` (null where a nation has no such grid)."""
     homes = residential_postcodes()
     frames = []
-    for nation, (road, rail) in NOISE_SOURCES.items():
+    for nation, kinds in NOISE_SOURCES.items():
         if nation not in active_nations():
             continue
+        layers = {kind: _tiles(slugs["lden"]) for kind, slugs in kinds.items()}
         pts = homes.filter(nation_of("lsoa21cd") == nation)
-        df = noise_at_homes(pts, _tiles(road), _tiles(rail))
+        df = noise_at_homes(pts, layers)
         noisy = df.select((pl.col("share_any_60") * pl.col("n_postcodes")).sum()).item()
         logger.info(
-            f"{nation}: {df.height:,} LSOAs from {pts.height:,} postcodes; "
+            f"{nation}: {df.height:,} areas from {pts.height:,} postcodes over {sorted(layers)}; "
             f"{noisy / max(pts.height, 1):.1%} of postcodes at 60 dB Lden or more"
         )
         frames.append(df)
-    return pl.concat(frames).sort("lsoa21cd").lazy()
+    columns = ["lsoa21cd", "n_postcodes", *[f"share_{k}_60" for k in KINDS]]
+    columns += ["share_any_55", "share_any_65", "mean_db"]
+    out = pl.concat(frames, how="diagonal_relaxed").sort("lsoa21cd")
+    for kind in KINDS:
+        if f"share_{kind}_60" not in out.columns:
+            out = out.with_columns(pl.lit(None, pl.Float64).alias(f"share_{kind}_60"))
+    return out.select(columns).lazy()

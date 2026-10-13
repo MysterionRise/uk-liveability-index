@@ -38,6 +38,28 @@
       "version": null
     }
   },
+  "bods_gtfs_scotland": {
+    "fetched": {
+      "bytes": 192913045,
+      "extracted": [
+        "agency.txt",
+        "stops.txt",
+        "routes.txt",
+        "calendar.txt",
+        "calendar_dates.txt",
+        "trips.txt",
+        "stop_times.txt"
+      ],
+      "fetched_at": "2026-10-13T11:24:41.949874+00:00",
+      "sha256": "d1dd8f907d5f9a8bde596d9a30294e094d5a7581726f806961ddb424ae5bc69b",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:24:34+00:00",
+      "url": "https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/scotland/",
+      "version": null
+    }
+  },
   "bods_gtfs_wales": {
     "fetched": {
       "bytes": 37346552,
@@ -58,6 +80,22 @@
       "resolved_at": "2026-10-11T20:25:46+00:00",
       "url": "https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/wales/",
       "version": null
+    }
+  },
+  "care_inspectorate": {
+    "fetched": {
+      "bytes": 9859714,
+      "etag": "\"9311999c3c2b79efec579fb7f695ca66\"",
+      "fetched_at": "2026-10-13T11:23:28.641664+00:00",
+      "last_modified": "Tue, 08 Sep 2026 11:27:30 GMT",
+      "sha256": "39b79612a6f9f7b8854d7f216f6dd00266def33b39816a6f63295f2ecdfbaa84",
+      "version": "https://ci-web-media-production-bucket.s3.eu-west-2.amazonaws.com/assets/resources/datastore/260831datastoreexternal.csv"
+    },
+    "resolved": {
+      "release": "2026-08-31",
+      "resolved_at": "2026-10-13T11:23:27+00:00",
+      "url": "https://ci-web-media-production-bucket.s3.eu-west-2.amazonaws.com/assets/resources/datastore/260831datastoreexternal.csv",
+      "version": "https://ci-web-media-production-bucket.s3.eu-west-2.amazonaws.com/assets/resources/datastore/260831datastoreexternal.csv"
     }
   },
   "census_ts001": {
@@ -610,8 +648,8 @@
   },
   "esa_worldcover": {
     "fetched": {
-      "bytes": 415548763,
-      "fetched_at": "2026-10-10T18:42:02.252212+00:00",
+      "bytes": 477050577,
+      "fetched_at": "2026-10-13T11:24:21.381929+00:00",
       "files": {
         "N48E000": "9f5b06e56a3efe48166663fde287c3e73b0ca9533901f75d908e1a3f8fc144c3",
         "N48W003": "a860d69a3d2860ba5262b8a47a5604abbfee0544e5f3525f2b83acd3db8fbbcb",
@@ -621,13 +659,18 @@
         "N51W003": "fb3e4cde8caee3c6ad61e9b8fb818efbc463320f28ede017745052305e253fdd",
         "N51W006": "7d4c7c9e143b289a48e1c91a058566b787407521014ab4e2b7a43099cadf780e",
         "N54W003": "5780e30c6311af55cab6c7a4a9a1ad9fd648f2c04d61bc79fa69fad291604442",
-        "N54W006": "c5be63c29f08db25ce8d44e313c6ed1292dc642fd27badc7bd813b7c88fe973f"
+        "N54W006": "c5be63c29f08db25ce8d44e313c6ed1292dc642fd27badc7bd813b7c88fe973f",
+        "N54W009": "f60a65bfac7b3d8c13c4e1e5aeaef5a03c3afd318c4ac52c48f9b88e746659fc",
+        "N57W003": "bd42fa8e68c22350b952e9e216a5391f40f048adc5855ea60c35627e58c455e9",
+        "N57W006": "0b9a5194ae2273241c33ebfb1ace2baf83066faa5d6f69d551cfb18e8a40c6c4",
+        "N57W009": "35c2cec22d894a66714dc81c261d9b62c43b4d1f6560ccb584392e5f92dd1095",
+        "N60W003": "3a3451ce39214be956d3b7df66f228044b8b46bcc6648108f4234b9d74851c68"
       },
-      "sha256": "44e9ba6819ebcb6861cfbb8977163f5204a576aa5fe6fd7be463f8ffe0dd854b",
+      "sha256": "472371f6f7371336532436899804cbef96f19673d9afcdf1c22ae44b4e61255e",
       "version": "Wed, 26 Oct 2022 12:53:26 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:57+00:00",
+      "resolved_at": "2026-10-13T11:24:03+00:00",
       "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N48E000_Map.tif",
       "version": "Wed, 26 Oct 2022 12:53:26 GMT"
     }
@@ -921,6 +964,23 @@
       "version": "https://opendata.nhsbsa.net/dataset/240d142d-df82-4e97-b051-12371519e4e1/resource/ce6c7ad3-a3b5-442f-bb0a-a45d7c962944/download/consol_pharmacy_list_202606q1.csv"
     }
   },
+  "nrs_dwellings_by_band": {
+    "fetched": {
+      "bytes": 3189889,
+      "etag": "\"7a0af99f184c9546621b0acc5a263b8e\"",
+      "fetched_at": "2026-10-13T11:23:17.094958+00:00",
+      "last_modified": "Wed, 09 Sep 2026 14:39:25 GMT",
+      "sha256": "b356dfab98a707bc001b27f4756730ff1e68852bcbe044ca615bb683700fd3e1",
+      "version": "https://api.data.gov.scot/resource/e9d042a7-2244-498d-9ddf-da61ba9ccede/download"
+    },
+    "resolved": {
+      "modified": "2026-08-20T15:34:54.055703",
+      "resolved_at": "2026-10-13T11:23:15+00:00",
+      "title": "dwellings-by-council-tax-band-summary-2022-data-zones.csv",
+      "url": "https://api.data.gov.scot/resource/e9d042a7-2244-498d-9ddf-da61ba9ccede/download",
+      "version": "https://api.data.gov.scot/resource/e9d042a7-2244-498d-9ddf-da61ba9ccede/download"
+    }
+  },
   "nrs_oa22_lookup": {
     "fetched": {
       "bytes": 237841,
@@ -1176,6 +1236,36 @@
       "title": "Management information - state-funded schools - latest inspections as at 31 August 2026",
       "url": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv",
       "version": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv"
+    }
+  },
+  "orr_station_attributes": {
+    "fetched": {
+      "bytes": 317203,
+      "etag": "\"1dd1ffda369d513\"",
+      "fetched_at": "2026-10-13T11:24:02.004097+00:00",
+      "last_modified": "Thu, 30 Jul 2026 08:30:12 GMT",
+      "sha256": "da99b7a516b89dbd6c49b406c956a4b3f13ca9d474a69a377326092d43fa7411",
+      "version": "Thu, 30 Jul 2026 08:30:12 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:24:00+00:00",
+      "url": "https://dataportal.orr.gov.uk/media/ootlf0cn/table-6329-station-attributes-for-all-mainline-stations.ods",
+      "version": "Thu, 30 Jul 2026 08:30:12 GMT"
+    }
+  },
+  "orr_station_usage": {
+    "fetched": {
+      "bytes": 388340,
+      "etag": "\"1dc86fcfdaefff4\"",
+      "fetched_at": "2026-10-13T11:23:59.882587+00:00",
+      "last_modified": "Fri, 16 Jan 2026 15:30:06 GMT",
+      "sha256": "e6e0fcab894b26ad42790ea89bb0b178229e17e9dc8e674f3285a70c81a1a2da",
+      "version": "Fri, 16 Jan 2026 15:30:06 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:23:58+00:00",
+      "url": "https://dataportal.orr.gov.uk/media/1909/table-1410-passenger-entries-and-exits-and-interchanges-by-station.csv",
+      "version": "Fri, 16 Jan 2026 15:30:06 GMT"
     }
   },
   "os_greenspace": {
@@ -2066,6 +2156,21 @@
       "version": "Thu, 08 Oct 2026 23:11:01 GMT"
     }
   },
+  "osm_scotland": {
+    "fetched": {
+      "bytes": 327410338,
+      "etag": "\"1383e2a2-65dad12194f4d\"",
+      "fetched_at": "2026-10-13T11:24:33.737562+00:00",
+      "last_modified": "Mon, 12 Oct 2026 23:29:34 GMT",
+      "sha256": "42abae745d5ee5a3a946c23f84c83166eb3eb1da4765ff7c5399a12d354f37df",
+      "version": "Mon, 12 Oct 2026 23:29:34 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:24:22+00:00",
+      "url": "https://download.geofabrik.de/europe/united-kingdom/scotland-latest.osm.pbf",
+      "version": "Mon, 12 Oct 2026 23:29:34 GMT"
+    }
+  },
   "osm_wales": {
     "fetched": {
       "bytes": 148859639,
@@ -2090,9 +2195,77 @@
       "version": "2026-09-23.1"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:09+00:00",
+      "resolved_at": "2026-10-13T11:30:29+00:00",
       "url": "s3://overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/*",
       "version": "2026-09-23.1"
+    }
+  },
+  "phs_ae_sites": {
+    "fetched": {
+      "bytes": 20597,
+      "etag": "W/\"1757492326.65-20597\"",
+      "fetched_at": "2026-10-13T11:23:57.726948+00:00",
+      "last_modified": "Wed, 10 Sep 2025 08:18:46 GMT",
+      "sha256": "daf58bb958f48543eabe3dd83e7e165ca89a2ecc72acca0f60988611c67c9bee",
+      "version": "https://www.opendata.nhs.scot/dataset/a877470a-06a9-492f-b9e8-992f758894d0/resource/1a4e3f48-3d9b-4769-80e9-3ef6d27852fe/download/ae_hospital_site_list_09_09_2025.csv"
+    },
+    "resolved": {
+      "modified": "2025-09-10T08:18:46.495090",
+      "resolved_at": "2026-10-13T11:23:56+00:00",
+      "title": "Accident & Emergency Sites",
+      "url": "https://www.opendata.nhs.scot/dataset/a877470a-06a9-492f-b9e8-992f758894d0/resource/1a4e3f48-3d9b-4769-80e9-3ef6d27852fe/download/ae_hospital_site_list_09_09_2025.csv",
+      "version": "https://www.opendata.nhs.scot/dataset/a877470a-06a9-492f-b9e8-992f758894d0/resource/1a4e3f48-3d9b-4769-80e9-3ef6d27852fe/download/ae_hospital_site_list_09_09_2025.csv"
+    }
+  },
+  "phs_dentists": {
+    "fetched": {
+      "bytes": 139871,
+      "etag": "W/\"1779785394.75-139871\"",
+      "fetched_at": "2026-10-13T11:23:54.663631+00:00",
+      "last_modified": "Tue, 26 May 2026 08:49:54 GMT",
+      "sha256": "c700aa951a24d756cc9f8bef182e21bf310decf6344d2873439197539e52059c",
+      "version": "https://www.opendata.nhs.scot/dataset/2f218ba7-6695-4b22-867d-41383ae36de7/resource/6c0d19e7-ba5b-46c2-8135-3200b59ad482/download/nhs-dental-practices-and-nhs-dental-registrations-as-at-31-mar-2026.csv"
+    },
+    "resolved": {
+      "modified": "2026-05-26T08:49:51.136892",
+      "resolved_at": "2026-10-13T11:23:53+00:00",
+      "title": "Dental Practices March 2026",
+      "url": "https://www.opendata.nhs.scot/dataset/2f218ba7-6695-4b22-867d-41383ae36de7/resource/6c0d19e7-ba5b-46c2-8135-3200b59ad482/download/nhs-dental-practices-and-nhs-dental-registrations-as-at-31-mar-2026.csv",
+      "version": "https://www.opendata.nhs.scot/dataset/2f218ba7-6695-4b22-867d-41383ae36de7/resource/6c0d19e7-ba5b-46c2-8135-3200b59ad482/download/nhs-dental-practices-and-nhs-dental-registrations-as-at-31-mar-2026.csv"
+    }
+  },
+  "phs_gp_practices": {
+    "fetched": {
+      "bytes": 153814,
+      "etag": "W/\"1785241627.83-153814\"",
+      "fetched_at": "2026-10-13T11:23:40.892470+00:00",
+      "last_modified": "Tue, 28 Jul 2026 12:27:07 GMT",
+      "sha256": "7d6494a1d2b9653a7bca8f67094cd854d3f3fe0e1281624966eaf28c2f423a11",
+      "version": "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/0032ce94-f7f6-44dd-879c-7d3074d8e2e8/download/practice_contact_details_20260701_opendata.csv"
+    },
+    "resolved": {
+      "modified": "2026-07-28T12:27:03.680343",
+      "resolved_at": "2026-10-13T11:23:31+00:00",
+      "title": "GP Practices and List sizes July 2026",
+      "url": "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/0032ce94-f7f6-44dd-879c-7d3074d8e2e8/download/practice_contact_details_20260701_opendata.csv",
+      "version": "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/0032ce94-f7f6-44dd-879c-7d3074d8e2e8/download/practice_contact_details_20260701_opendata.csv"
+    }
+  },
+  "phs_pharmacies": {
+    "fetched": {
+      "bytes": 163994,
+      "etag": "W/\"1788872067.82-163994\"",
+      "fetched_at": "2026-10-13T11:23:49.485695+00:00",
+      "last_modified": "Tue, 08 Sep 2026 12:54:27 GMT",
+      "sha256": "d4160419c966df662231af2fa9ed96ef5d9b09d09c982b58c8f5629ef66e9243",
+      "version": "https://www.opendata.nhs.scot/dataset/a30fde16-1226-49b3-b13d-eb90e39c2058/resource/801b1c5a-02e9-49b7-a3c7-884a9144730f/download/dispenser_contactdetails_202606.csv"
+    },
+    "resolved": {
+      "modified": "2026-09-08T12:54:26.947943",
+      "resolved_at": "2026-10-13T11:23:43+00:00",
+      "title": "Dispenser Details - June 2026 ",
+      "url": "https://www.opendata.nhs.scot/dataset/a30fde16-1226-49b3-b13d-eb90e39c2058/resource/801b1c5a-02e9-49b7-a3c7-884a9144730f/download/dispenser_contactdetails_202606.csv",
+      "version": "https://www.opendata.nhs.scot/dataset/a30fde16-1226-49b3-b13d-eb90e39c2058/resource/801b1c5a-02e9-49b7-a3c7-884a9144730f/download/dispenser_contactdetails_202606.csv"
     }
   },
   "police_crime": {
@@ -3717,6 +3890,517 @@
       "version": "2025-08-11T08:24:30+00:00"
     }
   },
+  "scotland_census_2022": {
+    "fetched": {
+      "bytes": 88351131,
+      "etag": "\"1dd18ddbd0ac51b\"",
+      "extracted": [
+        "Table UV101b - Usual resident population by sex by age (6).csv",
+        "Table UV102b - Age (20) by sex.csv",
+        "Table UV103 - Age by single year.csv",
+        "Table UV104 - Marital and civil partnership status.csv",
+        "Table UV104b - Marital and civil partnership status (5) by age (5).csv",
+        "Table UV106 - Living arrangements.csv",
+        "Table UV106b - Living arrangements (7) by age (5).csv",
+        "Table UV110 - Adult lifestage.csv",
+        "Table UV111 - Household lifestage.csv",
+        "Table UV112 - Household composition - People.csv",
+        "Table UV113 - Household composition - Households.csv",
+        "Table UV114 - Household composition (alternative child and adult definitions) - People.csv",
+        "Table UV115 - Household composition (alternative child and adult definitions) - Households.csv",
+        "Table UV116 - Household type.csv",
+        "Table UV201 - Ethnic group.csv",
+        "Table UV201b - Ethnic group (19) by age (6).csv",
+        "Table UV202 - National Identity.csv",
+        "Table UV202b - National Identity (8) by sex by age (6).csv",
+        "Table UV203 - Multiple ethnic groups.csv",
+        "Table UV204b - Country of birth (14) by sex by age (6).csv",
+        "Table UV205 - Religion.csv",
+        "Table UV205b - Religion (12) by sex by age (6).csv",
+        "Table UV206 - Passports held.csv",
+        "Table UV206b - Passports held (9) by sex by age (6).csv",
+        "Table UV207 - Dual passport.csv",
+        "Table UV207b - Dual passport (9) by age (20).csv",
+        "Table UV208 - Gaelic language skills.csv",
+        "Table UV208b - Gaelic language skills (2) by age (6).csv",
+        "Table UV209 - Scots language skills.csv",
+        "Table UV209b - Scots language skills (7) by age.csv",
+        "Table UV210 - English language skills.csv",
+        "Table UV210b - English language skills (6) by age (6).csv",
+        "Table UV211 - British Sign Language (BSL) skills.csv",
+        "Table UV211b - British Sign Language (BSL) skills by sex by age (6).csv",
+        "Table UV212 - Main language.csv",
+        "Table UV212b - Main language (5) by age (6).csv",
+        "Table UV301 - Provision of unpaid care.csv",
+        "Table UV301b - Provision of unpaid care by age (6).csv",
+        "Table UV302 - General health.csv",
+        "Table UV302b - General health by age (6).csv",
+        "Table UV303 - Disability.csv",
+        "Table UV303b - Disability by age (6).csv",
+        "Table UV304 - Long-term health conditions.csv",
+        "Table UV401 - Accommodation type - People.csv",
+        "Table UV402 - Accommodation type - Households.csv",
+        "Table UV403 - Household tenure - People.csv",
+        "Table UV404 - Household tenure - Households.csv",
+        "Table UV405 - Car or van availability.csv",
+        "Table UV406 - Household size.csv",
+        "Table UV407 - Central heating.csv",
+        "Table UV408 - Number of bedrooms.csv",
+        "Table UV415 - Occupancy rating for bedrooms.csv",
+        "Table UV501 - Highest level of qualification.csv",
+        "Table UV501b - Highest level of qualification by age (5).csv",
+        "Table UV601 - Economic activity.csv",
+        "Table UV602 - Economic activity of Household Reference Person.csv",
+        "Table UV603 - Economic activity - Full-time students.csv",
+        "Table UV603b - Economic activity - Full-time students by age (5).csv",
+        "Table UV604 - Hours worked.csv",
+        "Table UV604b - Hours worked by age (5).csv",
+        "Table UV605 - Industry.csv",
+        "Table UV606 - Occupation.csv",
+        "Table UV607 - National Statistics Socio-economic Classification (NS-SeC).csv",
+        "Table UV608 - National Statistics Socio-economic Classification (NS-SeC) of Household Reference Person (HRP).csv",
+        "Table UV701 - Method of travel to work.csv",
+        "Table UV701b - Method of travel to work by age (5).csv",
+        "Table UV702 - Method of travel to work or study.csv",
+        "Table UV703 - Distance travelled to work.csv",
+        "Table UV703b - Distance travelled to work by age (5).csv",
+        "Table UV704 - Distance travelled to place of study.csv",
+        "Table UV704b - Distance travelled to place of study (7) by age (4).csv",
+        "Table UV801 - Year of arrival in UK.csv",
+        "Table UV802 - Age of arrival in UK.csv",
+        "Table UV803 - Length of residence in the UK.csv",
+        "Table UV901 - UK Armed Forces veterans.csv",
+        "Table UV902 - UK Armed Forces veterans - Households.csv"
+      ],
+      "fetched_at": "2026-10-13T11:23:13.300317+00:00",
+      "last_modified": "Tue, 21 Jul 2026 06:54:05 GMT",
+      "sha256": "d13f7f094170d84b7cf4ca38c5db5ecfd0525e4ab5155d18b573dfdf7c4ccc5c",
+      "version": "Tue, 21 Jul 2026 06:54:05 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:23:09+00:00",
+      "url": "https://www.scotlandscensus.gov.uk/media/zz8620251217_10_04_asdfsfgbsdtbbjutiui465in/Datazone2022.zip",
+      "version": "Tue, 21 Jul 2026 06:54:05 GMT"
+    }
+  },
+  "sepa_flood_coastal": {
+    "fetched": {
+      "bytes": 164170697,
+      "etag": "\"2bad9eb32e73db1:0\"",
+      "extracted": [
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000001.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000001.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000001.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000001.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000001.TablesByName.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000002.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000002.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000003.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000003.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000003.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000004.CatItemsByPhysicalName.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000004.CatItemsByType.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000004.FDO_UUID.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000004.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000004.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000004.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000004.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000004.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000004.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000005.CatItemTypesByName.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000005.CatItemTypesByParentTypeID.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000005.CatItemTypesByUUID.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000005.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000005.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000005.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000006.CatRelsByDestinationID.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000006.CatRelsByOriginID.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000006.CatRelsByType.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000006.FDO_UUID.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000006.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000006.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000006.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000006.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByBackwardLabel.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByDestItemTypeID.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByForwardLabel.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByName.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByOriginItemTypeID.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByUUID.atx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000007.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000007.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000007.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000023.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000023.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000023.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000023.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000023.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000024.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000024.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000024.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000024.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000024.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000024.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000025.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000025.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000025.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000025.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000025.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000025.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000026.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000026.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000026.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000026.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000026.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000026.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000027.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000027.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000027.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000027.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000027.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000027.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000028.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000028.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000028.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000028.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000028.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000028.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000029.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000029.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000029.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000029.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000029.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a00000029.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002a.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002a.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002a.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002a.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002a.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002a.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002b.freelist",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002b.gdbindexes",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002b.gdbtable",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002b.gdbtablx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002b.horizon",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/a0000002b.spx",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/gdb",
+        "Data/FRM_Coastal_Flood_Hazard_Layers_v3_0.gdb/timestamps"
+      ],
+      "fetched_at": "2026-10-13T11:25:24.173353+00:00",
+      "last_modified": "Thu, 30 Jan 2025 15:50:35 GMT",
+      "sha256": "49b16e366146f2b3d416324c0f96e7e46f9cd81d41b2ceff99e8995fb7f87c34",
+      "version": "Thu, 30 Jan 2025 15:50:35 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:25:17+00:00",
+      "url": "https://map.sepa.org.uk/atom/flood/SEPA_Coastal_Flood_Maps_v3_0.zip",
+      "version": "Thu, 30 Jan 2025 15:50:35 GMT"
+    }
+  },
+  "sepa_flood_river": {
+    "fetched": {
+      "bytes": 1240306368,
+      "etag": "\"62f1c0b22e73db1:0\"",
+      "extracted": [
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000001.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000001.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000001.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000001.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000001.TablesByName.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000002.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000002.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000003.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000003.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000003.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000004.CatItemsByPhysicalName.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000004.CatItemsByType.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000004.FDO_UUID.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000004.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000004.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000004.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000004.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000004.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000004.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000005.CatItemTypesByName.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000005.CatItemTypesByParentTypeID.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000005.CatItemTypesByUUID.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000005.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000005.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000005.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000006.CatRelsByDestinationID.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000006.CatRelsByOriginID.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000006.CatRelsByType.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000006.FDO_UUID.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000006.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000006.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000006.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000006.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByBackwardLabel.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByDestItemTypeID.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByForwardLabel.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByName.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByOriginItemTypeID.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000007.CatRelTypesByUUID.atx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000007.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000007.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000007.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000009.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000009.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000009.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000009.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000009.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000009.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000a.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000a.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000a.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000a.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000a.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000a.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000b.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000b.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000b.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000b.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000b.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000b.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000c.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000c.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000c.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000c.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000c.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000c.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000d.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000d.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000d.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000d.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000d.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000d.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000e.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000e.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000e.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000e.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000e.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000e.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000f.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000f.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000f.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000f.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000f.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000000f.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000010.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000010.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000010.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000010.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000010.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000010.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000011.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000011.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000011.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000011.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000011.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000011.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000012.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000012.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000012.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000012.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000012.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000012.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000014.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000014.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000014.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000014.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000014.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000014.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000015.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000015.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000015.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000015.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000015.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000015.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000016.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000016.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000016.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000016.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000016.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000016.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000017.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000017.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000017.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000017.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000017.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000017.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000018.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000018.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000018.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000018.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000018.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a00000018.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001a.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001a.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001a.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001a.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001a.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001a.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001b.freelist",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001b.gdbindexes",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001b.gdbtable",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001b.gdbtablx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001b.horizon",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/a0000001b.spx",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/gdb",
+        "Data/FRM_River_Flood_Hazard_Layers_v3_0.gdb/timestamps"
+      ],
+      "fetched_at": "2026-10-13T11:26:06.154347+00:00",
+      "last_modified": "Thu, 30 Jan 2025 15:50:34 GMT",
+      "sha256": "f193447b207b6ada1874f03f0279c0922b8d7cbae06359eb73246005fca3692d",
+      "version": "Thu, 30 Jan 2025 15:50:34 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:25:26+00:00",
+      "url": "https://map.sepa.org.uk/atom/flood/SEPA_River_Flood_Maps_v3_0.zip",
+      "version": "Thu, 30 Jan 2025 15:50:34 GMT"
+    }
+  },
+  "sepa_flood_surface_extent": {
+    "fetched": {
+      "bytes": 2089309264,
+      "etag": "\"9a7a1b92e73db1:0\"",
+      "extracted": [
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000001.freelist",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000001.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000001.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000002.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000002.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000003.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000003.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000004.FDO_UUID.atx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000004.freelist",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000004.gdbindexes",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000004.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000004.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000005.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000005.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000006.FDO_Type.atx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000006.freelist",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000006.gdbindexes",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000006.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000006.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000007.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a00000007.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001b.gdbindexes",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001b.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001b.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001b.horizon",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001b.spx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001c.gdbindexes",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001c.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001c.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001c.horizon",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001c.spx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001d.gdbindexes",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001d.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001d.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001d.horizon",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001d.spx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001e.gdbindexes",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001e.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001e.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001e.horizon",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001e.spx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001f.gdbindexes",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001f.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001f.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001f.horizon",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/a0000001f.spx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/FRM_FH_SURFACE_WATER_EXTENT_M.ASB-SRV-FRM01.30740.31004.sr.lock",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/FRM_FH_SURFACE_WATER_EXTENT_M.ASB-SRV-FRM01.30740.rd.lock",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/frm_fh_surface_water_extent_national_m_cc.gdbindexes",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/frm_fh_surface_water_extent_national_m_cc.gdbtable",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/frm_fh_surface_water_extent_national_m_cc.gdbtablx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/frm_fh_surface_water_extent_national_m_cc.horizon",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/frm_fh_surface_water_extent_national_m_cc.spx",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/gdb",
+        "Data/FRM_Surface_Water_Flood_Hazard_EXTENT_Layers_v3_0.gdb/timestamps"
+      ],
+      "fetched_at": "2026-10-13T11:27:22.675760+00:00",
+      "last_modified": "Thu, 30 Jan 2025 15:50:45 GMT",
+      "sha256": "cf32e85ce33871db4ab6f0bd6e88de0aa128a249939bf7b11743f7a0dae6f3cf",
+      "version": "Thu, 30 Jan 2025 15:50:45 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:26:17+00:00",
+      "url": "https://map.sepa.org.uk/atom/flood/SEPA_Surface_Water_Flood_Maps_EXTENT_v3_0.zip",
+      "version": "Thu, 30 Jan 2025 15:50:45 GMT"
+    }
+  },
+  "sepa_noise_all_lden": {
+    "fetched": {
+      "bytes": 852440797,
+      "etag": "\"c899d616f8ddb1:0\"",
+      "extracted": [
+        "HORE_CONSOLIDATED_LDEN.tif"
+      ],
+      "fetched_at": "2026-10-13T11:25:14.813874+00:00",
+      "last_modified": "Tue, 04 Mar 2025 14:09:48 GMT",
+      "sha256": "a77970301398e2d9e24de3f437b95c127b6978b470c5651a97e688a7c9e69662",
+      "version": "Tue, 04 Mar 2025 14:09:48 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:24:46+00:00",
+      "url": "https://map.sepa.org.uk/atom/noise/Noise_Consolidated_LDEN.zip",
+      "version": "Tue, 04 Mar 2025 14:09:48 GMT"
+    }
+  },
+  "sepa_noise_industry_lden": {
+    "fetched": {
+      "bytes": 17212162,
+      "etag": "\"c914c5ab5ce2da1:0\"",
+      "extracted": [
+        "LDEN/Industry_Noise_LDEN.tfw",
+        "LDEN/Industry_Noise_LDEN.tif"
+      ],
+      "fetched_at": "2026-10-13T11:24:45.774872+00:00",
+      "last_modified": "Tue, 30 Jul 2024 08:44:20 GMT",
+      "sha256": "bb2916101b9d5d5f3e44bde257f905d00994055bf6abd576d0e3cf6aea1ad6e2",
+      "version": "Tue, 30 Jul 2024 08:44:20 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:24:43+00:00",
+      "url": "https://map.sepa.org.uk/atom/noise/Noise_Industry_LDEN.zip",
+      "version": "Tue, 30 Jul 2024 08:44:20 GMT"
+    }
+  },
+  "sg_attainment": {
+    "fetched": {
+      "bytes": 3318601,
+      "etag": "\"b0c792d17b1f519c804d8cb654a55713\"",
+      "fetched_at": "2026-10-13T11:23:23.322489+00:00",
+      "last_modified": "Tue, 18 Aug 2026 09:23:30 GMT",
+      "sha256": "6eeb5bcf8ac2e0970bdd731aa84653796d06e11312cb34866e56f78eb412b1f8",
+      "version": "https://api.data.gov.scot/resource/564b1561-b422-46c3-9522-5fa11f7dde33/download"
+    },
+    "resolved": {
+      "modified": "2026-08-18T09:23:35.543491",
+      "resolved_at": "2026-10-13T11:23:21+00:00",
+      "title": "attainment-for-all.csv",
+      "url": "https://api.data.gov.scot/resource/564b1561-b422-46c3-9522-5fa11f7dde33/download",
+      "version": "https://api.data.gov.scot/resource/564b1561-b422-46c3-9522-5fa11f7dde33/download"
+    }
+  },
+  "sg_council_tax": {
+    "fetched": {
+      "bytes": 19844,
+      "etag": "\"1740120441228\"",
+      "fetched_at": "2026-10-13T11:23:18.953547+00:00",
+      "last_modified": "Thu, 26 Mar 2026 12:12:07 GMT",
+      "sha256": "fa3f5ed1b3261293bb4603d0a3f5dff5d76ca65c10583af754c7701f7443b1ad",
+      "version": "Thu, 26 Mar 2026 12:12:07 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:23:18+00:00",
+      "url": "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2019/04/council-tax-datasets/documents/average-council-tax-per-dwelling/council-tax-by-band-2026-27/council-tax-by-band-2026-27/govscot%3Adocument/CTAS%2B2026%2B-%2BCouncil%2BTax%2BAssumptions%2B-%2BCouncil%2BTax%2Bby%2BBand%2B-%2B2026-27.xlsx",
+      "version": "Thu, 26 Mar 2026 12:12:07 GMT"
+    }
+  },
   "sg_dz22_boundaries": {
     "fetched": {
       "bytes": 26251513,
@@ -3803,6 +4487,28 @@
       "resolved_at": "2026-10-13T11:13:53+00:00",
       "url": "https://maps.gov.scot/ATOM/shapefiles/SG_IntermediateZoneBdry_2022.zip",
       "version": "Fri, 13 Dec 2024 11:38:35 GMT"
+    }
+  },
+  "sg_school_roll": {
+    "fetched": {
+      "bytes": 600239,
+      "etag": "\"0f98b0af85da1:0\"",
+      "extracted": [
+        "SG_SchoolRoll_2023/SG_SchoolRoll_2023.cpg",
+        "SG_SchoolRoll_2023/SG_SchoolRoll_2023.dbf",
+        "SG_SchoolRoll_2023/SG_SchoolRoll_2023.prj",
+        "SG_SchoolRoll_2023/SG_SchoolRoll_2023.shp",
+        "SG_SchoolRoll_2023/SG_SchoolRoll_2023.shx"
+      ],
+      "fetched_at": "2026-10-13T11:23:20.832859+00:00",
+      "last_modified": "Wed, 03 Apr 2024 10:14:18 GMT",
+      "sha256": "f1d9fccc7012684e2f730b6863a34af1c6ff65368f9a03ee82e8a9ddc24e2c78",
+      "version": "Wed, 03 Apr 2024 10:14:18 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:23:19+00:00",
+      "url": "https://maps.gov.scot/ATOM/shapefiles/SG_SchoolRoll_2023.zip",
+      "version": "Wed, 03 Apr 2024 10:14:18 GMT"
     }
   },
   "simd_2020_indicators": {

@@ -52,6 +52,13 @@ def _with_lonlat(df: pl.DataFrame) -> pl.DataFrame:
     return df.with_columns(lon=lon, lat=lat)
 
 
+SCHOOL_SOURCES = {
+    "gias": "DfE Get Information About Schools + Ofsted",
+    "wg": "Welsh Government schools list",
+    "sg": "Scottish Government school roll and locations",
+}
+
+
 def build_pois() -> pl.DataFrame:
     staged, ind = data_dir("staged"), data_dir("indicators")
     frames = []
@@ -125,9 +132,8 @@ def build_pois() -> pl.DataFrame:
             "y",
             "lon",
             "lat",
-            pl.when(pl.col("urn") >= 1_000_000)
-            .then(pl.lit("Welsh Government schools list"))
-            .otherwise(pl.lit("DfE Get Information About Schools + Ofsted"))
+            pl.col("source")
+            .replace_strict(SCHOOL_SOURCES, default="DfE Get Information About Schools + Ofsted")
             .alias("source"),
             pl.lit(OGL).alias("licence"),
             _detail(

@@ -431,7 +431,7 @@ indicators:
     coverage: [E, W, S]  # Wales: the authority's Capped 9 score, broadcast; Scotland: leaver tariff
     sources: [gias, wg_schools, ofsted_schools, ks4_results, wg_ks4_la, nspl, sg_school_roll, sg_attainment]
     builder: education:school_quality_nearby
-    params: {phases: [Secondary, All-through, Middle deemed secondary], results_slug: ks4_results, results_column: attainment8, k: 3, sigma_m: 4000, max_m: 15000, la_results_slug: wg_ks4_la, la_results_column: capped9}
+    params: {phases: [Secondary, All-through, Middle deemed secondary], results_slug: ks4_results, results_column: attainment8, k: 3, sigma_m: 4000, max_m: 15000, la_results_slug: wg_ks4_la, la_results_column: capped9, extra_results: {S: [sg_attainment, tariff_avg]}}
     normalise: threshold
     good: 0.8
     bad: 0.4
@@ -869,8 +869,7 @@ indicators:
     description: Share of homes in the two lowest council tax bands (the cheapest homes in 1991 values).
     unit: "% of homes"
     direction: higher_better
-    coverage: [E, W, S]
-    sources: [voa_ctsop, nrs_dwellings_by_band]
+    sources: [voa_ctsop]
     builder: common:share
     params: {slug: voa_ctsop, numerator: [band_a, band_b], denominator: dwellings}
     role: context
@@ -985,11 +984,11 @@ indicators:
   - id: population_density
     theme: community
     label: Population density
-    description: Residents per square kilometre (Census 2021; Scotland from the 2024 mid-year estimates).
+    description: Residents per square kilometre (Census 2021; Census 2022 in Scotland).
     unit: people per km²
     direction: lower_better
     coverage: [E, W, S]
-    sources: [census_ts006, nrs_sape, sg_dz22_boundaries]
+    sources: [census_ts006, scotland_census_2022, sg_dz22_boundaries]
     builder: common:column
     params: {slug: census_ts006, column: persons_per_square_kilometre}
     role: context

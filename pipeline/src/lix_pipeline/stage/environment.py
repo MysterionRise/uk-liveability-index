@@ -169,6 +169,99 @@ def _nrw_homes_at_risk() -> pl.DataFrame:
     )
 
 
+SEPA_LAYERS = {
+    # slug → gdb layer name template: EXTENT_H is the high likelihood (1 in 10 a year),
+    # EXTENT_M the medium (1 in 200), which contains it
+    "sepa_flood_river": "FRM_FH_RIVER_EXTENT_{band}",
+    "sepa_flood_coastal": "FRM_FH_COASTAL_EXTENT_{band}",
+    "sepa_flood_surface_extent": "FRM_FH_SURFACE_WATER_EXTENT_{band}",
+}
+SEPA_RIVERS_SEA = ("sepa_flood_river", "sepa_flood_coastal")
+SEPA_SURFACE_WATER = ("sepa_flood_surface_extent",)
+SEPA_CHUNK = 400_000  # polygons read at a time (the surface-water extents hold millions)
+
+
+def touched_by_layer(receptors, slug: str, band: str, chunk: int = SEPA_CHUNK) -> np.ndarray:
+    """1 for each receptor geometry touching the polygons of one SEPA extent layer, read
+    from the file geodatabase a chunk at a time."""
+    import pyogrio
+    import shapely
+
+    gdb = next(iter((data_dir("raw") / slug).glob("**/*.gdb")), None)
+    if gdb is None:
+        raise FileNotFoundError(f"No file geodatabase under data/raw/{slug}")
+    layer = SEPA_LAYERS[slug].format(band=band)
+    total = pyogrio.read_info(gdb, layer=layer)["features"]
+    out = np.zeros(len(receptors))
+    tree = shapely.STRtree(receptors.values)
+    for start in range(0, total, chunk):
+        polys = pyogrio.read_dataframe(
+            gdb, layer=layer, skip_features=start, max_features=chunk, columns=[]
+        )
+        if polys.crs is not None and polys.crs.to_epsg() != 27700:
+            polys = polys.to_crs(27700)
+        hit, _ = tree.query(polys.geometry.values, predicate="intersects")
+        out[np.unique(hit)] = 1
+    logger.info(f"{slug} {layer}: {total:,} polygons, {int(out.sum()):,} homes touched")
+    return out
+
+
+def _sepa_homes_at_risk() -> pl.DataFrame:
+    """Scottish homes at each flood likelihood, estimated from SEPA's flood map extents the
+    way the Welsh estimate reads NRW's areas: property points buffered by
+    ``NRW_RECEPTOR_M``, touching the high (1 in 10 a year) and medium (1 in 200) extents
+    of rivers and the sea (``res_``) and of those plus surface water (``any_``), applied
+    to NRS's dwelling counts. SEPA's medium band is looser than the EA's 1 in 100."""
+    import geopandas as gpd
+
+    from lix_core.codes import nation_of
+
+    props = (
+        pl.scan_parquet(data_dir("staged") / "os_open_uprn.parquet")
+        .filter(nation_of("lsoa21cd") == "S")
+        .select("lsoa21cd", "x", "y")
+        .collect()
+    )
+    points = gpd.GeoSeries(
+        gpd.points_from_xy(props["x"].to_numpy(), props["y"].to_numpy()), crs=27700
+    ).buffer(NRW_RECEPTOR_M)
+    touched = {
+        (slug, band): touched_by_layer(points, slug, band)
+        for slug in SEPA_RIVERS_SEA + SEPA_SURFACE_WATER
+        for band in ("H", "M")
+    }
+    shares = {}
+    for prefix, slugs in (("res", SEPA_RIVERS_SEA), ("any", SEPA_RIVERS_SEA + SEPA_SURFACE_WATER)):
+        high = np.maximum.reduce([touched[(s, "H")] for s in slugs])
+        high_or_medium = np.maximum.reduce([touched[(s, "M")] for s in slugs] + [high])
+        shares[f"{prefix}_high"] = high
+        shares[f"{prefix}_medium"] = np.clip(high_or_medium - high, 0, 1)
+    per_point = props.select("lsoa21cd").with_columns(
+        *[pl.Series(name, values) for name, values in shares.items()]
+    )
+    dwellings = pl.read_parquet(data_dir("staged") / "voa_ctsop.parquet").select(
+        "lsoa21cd", "dwellings"
+    )
+    logger.info(f"Scotland: {props.height:,} property points against the SEPA flood maps")
+    return (
+        per_point.group_by("lsoa21cd")
+        .agg(pl.col(c).mean() for c in shares)
+        .join(dwellings, on="lsoa21cd", how="inner")
+        .select(
+            "lsoa21cd",
+            *[(pl.col(c) * pl.col("dwellings")).round().cast(pl.Int64).alias(c) for c in shares],
+        )
+        .with_columns(
+            pl.lit(0, pl.Int64).alias("res_low"),
+            pl.lit(0, pl.Int64).alias("res_verylow"),
+            pl.lit(0, pl.Int64).alias("any_low"),
+            pl.lit(True).alias("estimated"),
+        )
+        .select("lsoa21cd", *COUNT_COLUMNS, "estimated")
+        .sort("lsoa21cd")
+    )
+
+
 def stage_flood() -> pl.LazyFrame:
     """Homes per flood likelihood band per LSOA for every active nation.
 
@@ -194,6 +287,10 @@ def stage_flood() -> pl.LazyFrame:
         wales = _nrw_homes_at_risk()
         logger.info(f"Wales: {wales.height:,} LSOAs with homes in NRW flood risk areas")
         frames.append(wales)
+    if "S" in active_nations():
+        scotland = _sepa_homes_at_risk()
+        logger.info(f"Scotland: {scotland.height:,} Data Zones with homes in SEPA flood extents")
+        frames.append(scotland)
     return (
         pl.concat(frames, how="diagonal_relaxed")
         .with_columns(pl.col(c).fill_null(0) for c in COUNT_COLUMNS)

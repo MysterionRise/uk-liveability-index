@@ -187,15 +187,110 @@ def stage_wg_schools() -> pl.LazyFrame:
     return df.lazy()
 
 
+# The Scottish school roll's SchoolType → GIAS-style phase and type group
+SG_PHASE = {"Primary": "Primary", "Secondary": "Secondary", "Special": "Special"}
+
+
+def stage_sg_schools() -> pl.LazyFrame:
+    """Publicly funded schools in Scotland from the Scottish Government's school roll and
+    locations layer, shaped like the GIAS table (no inspection grades; the SEED code is
+    the ``urn``). School nursery classes are registered with the Care Inspectorate, so
+    ``nursery_provision`` stays "No Nursery Classes" to avoid counting them twice."""
+    import pyogrio
+
+    folder = data_dir("raw") / "sg_school_roll"
+    shp = next(iter(sorted(folder.glob("**/*.shp"))), None)
+    if shp is None:
+        raise FileNotFoundError(f"No school roll shapefile under {folder}")
+    raw = pl.from_pandas(pyogrio.read_dataframe(shp, read_geometry=False))
+    df = raw.select(
+        pl.col("SeedCode").cast(pl.Int64).alias("urn"),
+        pl.col("SchoolName").alias("name"),
+        pl.col("SchoolType").replace_strict(SG_PHASE, default=None).alias("phase"),
+        pl.col("CentreType").alias("type"),
+        pl.when(pl.col("SchoolType") == "Special")
+        .then(pl.lit("Special schools"))
+        .otherwise(pl.lit("Scottish publicly funded schools"))
+        .alias("type_group"),
+        pl.lit(None, pl.Int16).alias("low_age"),
+        pl.lit(None, pl.Int16).alias("high_age"),
+        pl.lit(None, pl.Utf8).alias("gender"),
+        pl.lit(None, pl.Utf8).alias("admissions_policy"),
+        pl.lit("No Nursery Classes").alias("nursery_provision"),
+        pl.lit(None, pl.Utf8).alias("sixth_form"),
+        pl.lit(None, pl.Int32).alias("capacity"),
+        pl.col("PupilRoll").cast(pl.Int32, strict=False).alias("pupils"),
+        pl.col("PostCode").alias("postcode"),
+        pl.col("GridRefEas").cast(pl.Float64).alias("x"),
+        pl.col("GridRefNor").cast(pl.Float64).alias("y"),
+        pl.lit(None, pl.Utf8).alias("welsh_medium"),
+        pl.col("LAName").alias("local_authority"),
+    ).filter(pl.col("urn").is_not_null() & pl.col("x").is_not_null())
+    df = points_to_lsoa(df).filter(in_scope("lsoa21cd"))
+    logger.info(f"{df.height:,} publicly funded schools in Scotland")
+    return df.lazy()
+
+
+def stage_sg_attainment() -> pl.LazyFrame:
+    """Each Scottish secondary's average leaver tariff score for the latest academic year:
+    the Attainment for All table gives the lowest 20%, middle 60% and highest 20% of
+    attainers, so the school's mean is their 1:3:1 average."""
+    raw = pl.read_csv(
+        data_dir("raw") / "sg_attainment" / "sg_attainment.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    schools = raw.filter(
+        (pl.col("School Comparator") == "Real Establishment")
+        & pl.col("GeographyCode").str.contains(r"^\d{7}$")
+        & pl.col("Value").is_not_null()
+    ).with_columns(pl.col("Value").cast(pl.Float64, strict=False))
+    latest = schools["DateCode"].max()
+    weights = {"Lowest 20%": 0.2, "Middle 60%": 0.6, "Highest 20%": 0.2}
+    out = (
+        schools.filter(pl.col("DateCode") == latest)
+        .with_columns(
+            pl.col("Attainment Distribution").replace_strict(weights, default=None).alias("_w")
+        )
+        .filter(pl.col("_w").is_not_null() & pl.col("Value").is_not_null())
+        .group_by(pl.col("GeographyCode").cast(pl.Int64).alias("urn"))
+        .agg(
+            ((pl.col("Value") * pl.col("_w")).sum() / pl.col("_w").sum()).alias("tariff_avg"),
+            pl.col("_w").count().alias("_parts"),
+        )
+        .filter(pl.col("_parts") == 3)
+        .with_columns(pl.lit(latest).alias("period"))
+        .drop("_parts")
+        .sort("urn")
+    )
+    logger.info(f"{out.height:,} Scottish secondaries with a leaver tariff for {latest}")
+    return out.lazy()
+
+
 def stage_schools() -> pl.LazyFrame:
-    """One table of schools for every active nation: GIAS plus the Welsh list."""
+    """One table of schools for every active nation: GIAS, the Welsh list and the Scottish
+    school roll, each row saying which (``source``)."""
     from lix_core.codes import active_nations
 
     frames = []
     if "E" in active_nations():
-        frames.append(pl.read_parquet(data_dir("staged") / "gias.parquet"))
+        frames.append(
+            pl.read_parquet(data_dir("staged") / "gias.parquet").with_columns(
+                pl.lit("gias").alias("source")
+            )
+        )
     if "W" in active_nations():
-        frames.append(pl.read_parquet(data_dir("staged") / "wg_schools.parquet"))
+        frames.append(
+            pl.read_parquet(data_dir("staged") / "wg_schools.parquet").with_columns(
+                pl.lit("wg").alias("source")
+            )
+        )
+    if "S" in active_nations():
+        frames.append(
+            pl.read_parquet(data_dir("staged") / "sg_schools.parquet").with_columns(
+                pl.lit("sg").alias("source")
+            )
+        )
     df = pl.concat(frames, how="diagonal_relaxed").sort("urn")
     logger.info(f"{df.height:,} schools across {active_nations()}")
     return df.lazy()

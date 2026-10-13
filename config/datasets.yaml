@@ -1480,7 +1480,7 @@ nrs_dwellings_by_band:
     resource_regex: '^dwellings-by-council-tax-band'
   format: csv
   landing_page: https://data.gov.scot/dataset/dwellings_by_council_tax_band_summary__2022_data_zones_
-  description: Dwellings in each council tax band per Data Zone 2022 from the assessors' portal, Scotland's counterpart of the VOA stock tables (no build-period breakdown).
+  description: Dwellings per Data Zone 2022 in three groups of council tax bands (A–C, D–E, F–H) from the assessors' portal; the dwelling totals are Scotland's counterpart of the VOA stock table (no single bands or build periods).
   licence: OGL-3.0
   attribution: "National Records of Scotland, Small area statistics on households and dwellings, licensed under the Open Government Licence v3.0."
   cadence: annual

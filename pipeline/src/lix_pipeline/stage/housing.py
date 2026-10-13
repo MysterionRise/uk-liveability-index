@@ -62,6 +62,9 @@ def stage_council_tax() -> pl.LazyFrame:
     wales = data_dir("raw") / "wg_council_tax" / "wg_council_tax.xlsx"
     if "W" in active_nations() and wales.exists():
         out = pl.concat([out, _wg_council_tax(wales)], how="vertical_relaxed")
+    scotland = data_dir("raw") / "sg_council_tax" / "sg_council_tax.xlsx"
+    if "S" in active_nations() and scotland.exists():
+        out = pl.concat([out, _sg_council_tax(scotland)], how="vertical_relaxed")
     logger.info(f"{out.height} billing authorities; Band D median £{out['band_d'].median():,.0f}")
     return out.lazy()
 
@@ -95,6 +98,58 @@ def _wg_council_tax(path) -> pl.DataFrame:
         "authority",
         *[(pl.col("band_d") * r / 9).round(2).alias(f"band_{b}") for b, r in BAND_RATIOS.items()],
     )
+
+
+# The Scottish Government's council names where they differ from ONS's
+SG_COUNCIL_ALIASES = {
+    "Edinburgh, City of": "City of Edinburgh",
+    "Edinburgh City": "City of Edinburgh",
+    "Eilean Siar": "Na h-Eileanan Siar",
+    "Western Isles": "Na h-Eileanan Siar",
+    "Orkney": "Orkney Islands",
+    "Shetland": "Shetland Islands",
+    "Argyll & Bute": "Argyll and Bute",
+    "Dumfries & Galloway": "Dumfries and Galloway",
+    "Perth & Kinross": "Perth and Kinross",
+}
+
+
+def _sg_council_tax(path) -> pl.DataFrame:
+    """Scottish councils' charge for every band from the Scottish Government's council tax
+    by band table (one sheet; the header row names the bands)."""
+    reader = fastexcel.read_excel(path)
+    sheet = reader.sheet_names[0]
+    probe = reader.load_sheet_by_name(sheet, header_row=None, n_rows=20).to_polars()
+    header = next(
+        i for i, row in enumerate(probe.rows()) if any(str(v).strip() == "Band D" for v in row)
+    )
+    df = reader.load_sheet_by_name(sheet, header_row=header).to_polars()
+    df = df.rename({c: c.strip() for c in df.columns})
+    authority = df.columns[0]
+    band_d = pl.col("Band D").cast(pl.Float64, strict=False)
+    df = df.filter(band_d.is_not_null() & ~pl.col(authority).str.contains("(?i)average|ratio"))
+    df = df.select(
+        pl.col(authority)
+        .str.replace_all(r"\s+", " ")
+        .str.strip_chars()
+        .replace(SG_COUNCIL_ALIASES)
+        .alias("authority"),
+        *[
+            pl.col(f"Band {b}").cast(pl.Float64, strict=False).round(2).alias(f"band_{b.lower()}")
+            for b in BANDS
+        ],
+    )
+    lads = (
+        pl.read_parquet(data_dir("staged") / "geo_lsoa.parquet")
+        .filter(in_scope("lad_cd", "upper", nations=("S",)))
+        .select("lad_cd", pl.col("lad_nm").alias("authority"))
+        .unique()
+    )
+    out = df.join(lads, on="authority", how="inner")
+    if out.height != lads.height:
+        missing = sorted(set(lads["authority"]) - set(out["authority"]))
+        logger.warning(f"{len(missing)} Scottish councils missing from council tax: {missing}")
+    return out.select("lad_cd", "authority", *[f"band_{b.lower()}" for b in BANDS])
 
 
 BUILD_PERIODS = {
@@ -145,6 +200,36 @@ def stage_voa_ctsop() -> pl.LazyFrame:
         .pivot(on="band", index="lsoa21cd", values="all_properties")
         .rename({b: f"band_{b.lower()}" for b in BANDS}, strict=False)
     )
-    out = totals.join(bands, on="lsoa21cd", how="left").sort("lsoa21cd")
+    out = totals.join(bands, on="lsoa21cd", how="left")
+    if "S" in active_nations():
+        out = pl.concat([out, _nrs_dwellings()], how="diagonal_relaxed")
+    out = out.sort("lsoa21cd")
     logger.info(f"{out.height:,} LSOAs, {out['dwellings'].sum():,.0f} dwellings")
     return out.lazy()
+
+
+def _nrs_dwellings() -> pl.DataFrame:
+    """Dwellings per Data Zone 2022 from NRS (council tax bands in three groups, so only
+    the totals are comparable with the VOA table; the band and build-period columns stay
+    null for Scotland)."""
+    raw = pl.read_csv(
+        data_dir("raw") / "nrs_dwellings_by_band" / "nrs_dwellings_by_band.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    latest = raw.filter(pl.col("GeographyType").str.contains("2022 Data Zones"))
+    year = latest["DateCode"].cast(pl.Int32, strict=False).max()
+    out = (
+        latest.filter(
+            (pl.col("DateCode").cast(pl.Int32, strict=False) == year)
+            # The file carries the three band groups and their total; keep the total
+            & pl.col("Council Tax Band").str.to_lowercase().str.starts_with("total")
+        )
+        .group_by(pl.col("GeographyCode").alias("lsoa21cd"))
+        .agg(pl.col("Value").cast(pl.Float64, strict=False).sum().alias("dwellings"))
+        .filter(in_scope("lsoa21cd", nations=("S",)))
+    )
+    logger.info(
+        f"Scotland {year}: {out.height:,} Data Zones, {out['dwellings'].sum():,.0f} dwellings"
+    )
+    return out

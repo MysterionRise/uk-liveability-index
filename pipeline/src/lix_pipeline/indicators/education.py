@@ -96,12 +96,16 @@ def school_quality_nearby(
     max_m: float,
     la_results_slug: str | None = None,
     la_results_column: str | None = None,
+    extra_results: dict[str, list[str]] | None = None,
 ) -> pl.DataFrame:
     """Quality of the ``k`` nearest state schools, nearer ones counting more.
 
     Each school's quality blends its Ofsted judgement (0–1) with its results, as a
-    percentile among schools of the same phase: (1 − RESULTS_WEIGHT) × Ofsted +
-    RESULTS_WEIGHT × results. Schools without published results use Ofsted alone.
+    percentile among schools of the same phase in the same nation:
+    (1 − RESULTS_WEIGHT) × Ofsted + RESULTS_WEIGHT × results. Schools without published
+    results use Ofsted alone; schools with results but no inspection grade (Scotland)
+    use the results alone. ``extra_results`` names another results table per nation
+    (``{"S": ["sg_attainment", "tariff_avg"]}``).
 
     Nations with no per-school grades or results (Wales) take the local authority's
     attainment instead, as a percentile among that nation's authorities, copied down
@@ -111,12 +115,22 @@ def school_quality_nearby(
     from lix_core.codes import nation_of
     from lix_pipeline.geo.access import nearest_k_mean
 
-    results = ctx.staged(results_slug).select("urn", pl.col(results_column).alias("_result"))
+    results = pl.concat(
+        [
+            ctx.staged(slug).select("urn", pl.col(column).cast(pl.Float64).alias("_result"))
+            for slug, column in [(results_slug, results_column), *(extra_results or {}).values()]
+        ]
+    ).unique("urn", keep="first")
     schools = state_schools(ctx, phases).join(results, on="urn", how="left")
-    pct = (pl.col("_result").rank("average") - 1) / (pl.col("_result").count() - 1)
+    nation = nation_of("lsoa21cd")
+    pct = ((pl.col("_result").rank("average") - 1) / (pl.col("_result").count() - 1).clip(1)).over(
+        nation
+    )
     schools = schools.with_columns(
-        pl.when(pl.col("_result").is_not_null())
+        pl.when(pl.col("_result").is_not_null() & pl.col("quality").is_not_null())
         .then((1 - RESULTS_WEIGHT) * pl.col("quality") + RESULTS_WEIGHT * pct)
+        .when(pl.col("_result").is_not_null())
+        .then(pct)
         .otherwise(pl.col("quality"))
         .alias("combined")
     )

@@ -76,3 +76,34 @@ def test_places_language_columns():
     out = df.select(_name_in("cym").alias("cy"), _name_in("gla").alias("gd"))
     assert out["cy"].to_list() == ["Caerdydd", None, None]
     assert out["gd"].to_list() == [None, "Achadh na Sine", None]
+
+
+def test_simd_rank_becomes_a_within_scotland_score():
+    from lix_pipeline.stage.deprivation import rank_to_score
+
+    df = pl.DataFrame({"rank": [1.0, 2.0, 3.0]})
+    n = pl.col("rank").count()
+    scores = df.select(rank_to_score(pl.col("rank"), n).alias("s"))["s"].to_list()
+    assert scores == pytest.approx([100.0, 200 / 3, 100 / 3])  # most deprived scores most
+
+
+def test_scottish_census_table_maps_onto_census_2021_columns(tmp_path, monkeypatch):
+    from lix_pipeline.stage.census import read_scottish_table, scotland_census_table
+
+    monkeypatch.setenv("LIX_DATA_DIR", str(tmp_path))
+    folder = tmp_path / "raw" / "scotland_census_2022"
+    folder.mkdir(parents=True)
+    (folder / "Table UV405 - Car or van availability.csv").write_text(
+        "Scotland's Census 2022 - National Records of Scotland\n"
+        "Table UV405 - Car or van availability\n"
+        "All occupied households\n"
+        '"",\n'
+        '"S01000001","All occupied households",491\n'
+        '"S01000001","Number of cars or vans in household: No cars or vans",79\n'
+        '"S01000001","Number of cars or vans in household: One car or van",-\n'
+    )
+    long = read_scottish_table(folder / "Table UV405 - Car or van availability.csv")
+    assert long.height == 3 and long["value"].to_list() == [491.0, 79.0, 0.0]
+    out = scotland_census_table("census_ts045")
+    assert out.rows() == [("S01000001", 491.0, 79.0)]
+    assert out.columns == ["lsoa21cd", "total", "no_cars_or_vans_in_household"]

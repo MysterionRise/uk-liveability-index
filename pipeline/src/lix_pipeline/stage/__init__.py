@@ -51,16 +51,13 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "ods_dentists": ["ods_dentists", "phs_dentists", "nspl"],
     "nhsbsa_pharmacies": ["nhsbsa_pharmacies", "nspl"],
     "ofsted_childcare": ["ofsted_childcare", "nspl"],
+    "care_inspectorate": ["care_inspectorate", "nspl"],
+    "sg_schools": ["sg_school_roll", *LOW_BOUNDARIES],
+    "sg_attainment": ["sg_attainment"],
     "ea_flood_postcodes": ["ea_flood_postcodes", "nspl"],
     "ofcom_broadband": ["ofcom_broadband", "oa_lookup"],
     "wg_schools": ["wg_schools", *LOW_BOUNDARIES],
-    "schools": [
-        "gias",
-        "wg_schools",
-        "sg_school_roll",
-        "sg_attainment",
-        *LOW_BOUNDARIES,
-    ],
+    "schools": ["gias", "wg_schools", "sg_school_roll", *LOW_BOUNDARIES],
     "childcare": [
         "ofsted_childcare",
         "care_inspectorate",
@@ -93,12 +90,17 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "voa_ctsop": ["voa_ctsop", "nrs_dwellings_by_band"],
     "council_tax": ["council_tax", "wg_council_tax", "sg_council_tax"],
     "bods_gtfs": ["bods_gtfs*"],
+    "orr_stations": ["orr_station_usage", "orr_station_attributes"],
     "wg_ks4_la": ["wg_ks4_la"],
     # Census 2021 tables gain Scotland's Census 2022 counterparts (stage/census.py)
+    # (every table shares the stager, so each declares the Scottish archive; only the
+    # mapped ones read it: see census.SCOTLAND_TABLES)
     **{
         f"census_ts{t}": [f"census_ts{t}", "scotland_census_2022"]
-        for t in ("003", "006", "007a", "037", "045", "054", "061")
+        for t in ("001", "003", "007a", "037", "044", "045", "054", "058", "061", "067")
     },
+    # Scotland's density: Census 2022 residents over the zone polygons
+    "census_ts006": ["census_ts006", "scotland_census_2022", "sg_dz22_boundaries"],
 }
 
 # Staged tables each stager reads (the stager → staged-table edges of the graph)
@@ -116,17 +118,18 @@ STAGE_READS: dict[str, list[str]] = {
     "fsa_fhrs": ["nspl"],
     "ea_flood_postcodes": ["nspl"],
     "ea_flood_all_postcodes": ["nspl"],
-    "schools": ["gias", "wg_schools"],
+    "schools": ["gias", "wg_schools", "sg_schools"],
+    "care_inspectorate": ["nspl"],
     "wg_ks4_la": ["geo_lsoa"],
-    "childcare": ["ofsted_childcare", "osm_pois"],
-    "pharmacies": ["nhsbsa_pharmacies", "osm_pois"],
+    "childcare": ["ofsted_childcare", "care_inspectorate", "osm_pois"],
+    "pharmacies": ["nhsbsa_pharmacies", "osm_pois", "nspl"],
     "ofcom_broadband": ["oa_lookup"],
     "council_tax": ["geo_lsoa"],
     "flood": ["ea_flood_all_postcodes", "ea_flood_postcodes", "os_open_uprn", "voa_ctsop"],
     "noise": ["nspl"],
     "tree_cover": ["nspl"],
     "night_lights": ["nspl"],
-    "deprivation": ["iod_2025"],
+    "deprivation": ["iod_2025", "dz11_dz22"],
 }
 
 
@@ -205,12 +208,15 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "gp_workforce": health.stage_gp_workforce,
         "gias": schools.stage_gias,
         "wg_schools": schools.stage_wg_schools,
-        "schools": schools.stage_schools,  # needs staged gias and wg_schools
+        "sg_schools": schools.stage_sg_schools,
+        "sg_attainment": schools.stage_sg_attainment,
+        "schools": schools.stage_schools,  # needs staged gias, wg_schools and sg_schools
         "wg_ks4_la": schools.stage_wg_ks4_la,  # needs staged geo_lsoa
         "ofsted_schools": schools.stage_ofsted_schools,
         "ks2_results": schools.stage_ks2_results,
         "ks4_results": schools.stage_ks4_results,
         "dft_connectivity": transport.stage_dft_connectivity,
+        "orr_stations": transport.stage_orr_stations,
         "fsa_fhrs": stage_fsa,
         "overture_pubs": stage_overture_pubs,
         "active_places": stage_active_places,
@@ -220,6 +226,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "nhsbsa_pharmacies": health.stage_nhsbsa_pharmacies,
         "cqc_locations": health.stage_cqc_locations,
         "ofsted_childcare": childcare.stage_ofsted_childcare,
+        "care_inspectorate": childcare.stage_care_inspectorate,
         "childcare": childcare.stage_childcare,  # needs staged ofsted_childcare and osm_pois
         "pharmacies": health.stage_pharmacies,  # needs staged nhsbsa_pharmacies and osm_pois
         "os_greenspace": environment.stage_os_greenspace,

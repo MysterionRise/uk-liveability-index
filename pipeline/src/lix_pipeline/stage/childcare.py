@@ -37,8 +37,9 @@ def _read(path) -> pl.DataFrame:
 
 
 def stage_childcare() -> pl.LazyFrame:
-    """Nurseries for every active nation: Ofsted's register in England, OpenStreetMap
-    kindergartens and childcare elsewhere (located to an LSOA, quality "expected")."""
+    """Nurseries for every active nation: Ofsted's register in England, the Care
+    Inspectorate's in Scotland, OpenStreetMap kindergartens and childcare elsewhere
+    (located to an LSOA, quality "expected")."""
     from lix_core.codes import active_nations, nation_of
     from lix_pipeline.geo.joins import points_to_lsoa
 
@@ -49,7 +50,13 @@ def stage_childcare() -> pl.LazyFrame:
                 pl.lit("ofsted").alias("source")
             )
         )
-    others = [n for n in active_nations() if n != "E"]
+    if "S" in active_nations():
+        frames.append(
+            pl.read_parquet(data_dir("staged") / "care_inspectorate.parquet").with_columns(
+                pl.lit("care_inspectorate").alias("source")
+            )
+        )
+    others = [n for n in active_nations() if n not in ("E", "S")]
     if others:
         osm = pl.read_parquet(data_dir("staged") / "osm_pois.parquet").filter(
             pl.col("value").is_in(["kindergarten", "childcare"])
@@ -63,6 +70,53 @@ def stage_childcare() -> pl.LazyFrame:
         logger.info(f"{osm.height:,} OpenStreetMap nurseries in {others}")
         frames.append(osm)
     return pl.concat(frames, how="diagonal_relaxed").lazy()
+
+
+CI_KEY_QUESTIONS = [
+    "KQ_Support_Wellbeing",
+    "KQ_Care_and_Support_Planning",
+    "KQ_Setting",
+    "KQ_Staff_Team",
+    "KQ_Leadership",
+    "KQ_Care_Play_and_Learning",
+]
+
+
+def stage_care_inspectorate() -> pl.LazyFrame:
+    """Scotland's registered day care of children (nurseries, playgroups and school nursery
+    classes), with places and a quality from the Care Inspectorate's grades: the mean of
+    the key questions graded 1 (unsatisfactory) to 6 (excellent), on the 0–1 scale."""
+    raw = pl.read_csv(
+        data_dir("raw") / "care_inspectorate" / "care_inspectorate.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    df = raw.filter(
+        (pl.col("CareService") == "Day Care of Children")
+        & pl.col("ServiceStatus").str.to_lowercase().str.starts_with("active")
+    )
+    grades = [
+        pl.col(c).cast(pl.Float64, strict=False) / 6 for c in CI_KEY_QUESTIONS if c in df.columns
+    ]
+    mean_grade = pl.mean_horizontal(grades)
+    df = df.select(
+        pl.col("CSNumber").alias("urn"),
+        pl.col("ServiceName").alias("name"),
+        pl.coalesce("Subtype", "CareService").alias("subtype"),
+        pl.col("Service_Postcode").alias("postcode"),
+        pl.col("Registered_Places").cast(pl.Int32, strict=False).alias("places"),
+        pl.coalesce(mean_grade, pl.lit(NEUTRAL)).alias("quality"),
+        pl.when(mean_grade.is_not_null())
+        .then(pl.lit("care inspectorate grades"))
+        .otherwise(pl.lit("not yet graded"))
+        .alias("quality_source"),
+    )
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd"))
+    logger.info(
+        f"{df.height:,} day care of children services, {df['places'].sum():,} places; "
+        f"{dict(df['quality_source'].value_counts().rows())}"
+    )
+    return df.lazy()
 
 
 def stage_ofsted_childcare() -> pl.LazyFrame:

@@ -1,8 +1,9 @@
 """Food Standards Agency hygiene ratings → food businesses with location.
 
-Ratings run 0–5 in England (Scotland's scheme uses Pass/Improvement Required and is
-dropped with the rest of Scotland). Non-numeric states such as "AwaitingInspection" or
-"Exempt" keep a null ``rating`` and are kept in ``rating_status``. The component
+Ratings run 0–5 in England, Wales and Northern Ireland (FHRS); Scotland's scheme (FHIS)
+says Pass or Improvement Required, so a Scottish row has a null ``rating`` and the
+outcome in ``rating_status``, with ``scheme`` telling the two apart. Non-numeric states
+such as "AwaitingInspection" or "Exempt" keep a null ``rating`` too. The component
 scores (hygiene, structural, confidence in management) are penalty points: lower is
 better.
 """
@@ -23,8 +24,9 @@ PUB_BAR_NIGHTCLUB = 7843
 
 def stage_fsa() -> pl.LazyFrame:
     raw = pl.read_csv(data_dir("raw") / "fsa_fhrs" / "fsa_fhrs.csv", infer_schema_length=0)
-    df = raw.filter(pl.col("SchemeType") == "FHRS").select(
+    df = raw.filter(pl.col("SchemeType").is_in(["FHRS", "FHIS"])).select(
         pl.col("FHRSID").cast(pl.Int64).alias("fhrs_id"),
+        pl.col("SchemeType").alias("scheme"),
         pl.col("BusinessName").alias("name"),
         pl.col("BusinessTypeID").cast(pl.Int32).alias("business_type_id"),
         pl.col("BusinessType").alias("business_type"),

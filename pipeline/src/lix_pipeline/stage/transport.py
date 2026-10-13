@@ -209,3 +209,66 @@ def _gtfs_departures(root) -> pl.DataFrame:
         f"median {df['per_hour'].median():.1f} departures an hour (07:00–19:00)"
     )
     return df
+
+
+def _orr_sheet(reader, sheet: str, first_col: str) -> pl.DataFrame:
+    probe = reader.load_sheet_by_name(sheet, header_row=None, n_rows=12).to_polars()
+    first = probe[probe.columns[0]].to_list()
+    header = next(i for i, v in enumerate(first) if v and str(v).strip() == first_col)
+    df = reader.load_sheet_by_name(sheet, header_row=header).to_polars()
+    return df.rename({c: " ".join(c.split()) for c in df.columns})
+
+
+def stage_orr_stations() -> pl.LazyFrame:
+    """Mainline stations with a year's passenger entries and exits (ORR Table 1410), placed
+    by the grid reference in ORR's station attributes (Table 6329); joined on the national
+    location code. ``entries_exits_m`` is in millions, the weight the rail service
+    indicator uses."""
+    import fastexcel
+
+    usage = pl.read_csv(
+        data_dir("raw") / "orr_station_usage" / "orr_station_usage.csv",
+        skip_rows=3,
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    usage = usage.rename({c: " ".join(c.split()) for c in usage.columns})
+    total = next(c for c in usage.columns if c.startswith("Entries and exits: All"))
+    nlc = next(c for c in usage.columns if c.startswith("National Location Code"))
+    usage = usage.select(
+        pl.col("Station name").alias("station"),
+        pl.col(nlc).str.strip_chars().alias("nlc"),
+        pl.col(total)
+        .str.replace_all(",", "")
+        .cast(pl.Float64, strict=False)
+        .alias("entries_exits"),
+    ).filter(pl.col("nlc").is_not_null() & pl.col("entries_exits").is_not_null())
+    reader = fastexcel.read_excel(
+        data_dir("raw") / "orr_station_attributes" / "orr_station_attributes.ods"
+    )
+    sheet = next(n for n in reader.sheet_names if "attributes" in n.lower())
+    attrs = _orr_sheet(reader, sheet, "Station name")
+    nlc_a = next(c for c in attrs.columns if c.startswith("National Location Code"))
+    east = next(c for c in attrs.columns if "Easting" in c)
+    north = next(c for c in attrs.columns if "Northing" in c)
+    tlc = next(c for c in attrs.columns if c.startswith("Three Letter Code"))
+    attrs = attrs.select(
+        # ODS numbers arrive as floats (5131.0); the usage table has them as text
+        pl.col(nlc_a).cast(pl.Float64, strict=False).cast(pl.Int64).cast(pl.Utf8).alias("nlc"),
+        pl.col(tlc).alias("tlc"),
+        pl.col(east).cast(pl.Float64, strict=False).alias("x"),
+        pl.col(north).cast(pl.Float64, strict=False).alias("y"),
+    )
+    out = (
+        usage.join(attrs, on="nlc", how="left")
+        .filter(pl.col("x").is_not_null() & pl.col("y").is_not_null())
+        .with_columns((pl.col("entries_exits") / 1e6).alias("entries_exits_m"))
+        .sort("station")
+    )
+    unplaced = usage.height - out.height
+    if unplaced:
+        logger.warning(f"{unplaced} stations in the usage table have no grid reference")
+    logger.info(
+        f"{out.height:,} stations, {out['entries_exits'].sum() / 1e6:,.0f}m entries and exits"
+    )
+    return out.lazy()

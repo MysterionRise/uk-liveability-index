@@ -67,7 +67,7 @@ class TestNoiseAtHomes:
                 "north1m": [20.0, 20.0, 20.0, 20.0, 20.0],
             }
         )
-        out = noise_at_homes(homes, [road], [rail]).sort("lsoa21cd")
+        out = noise_at_homes(homes, {"road": [road], "rail": [rail]}).sort("lsoa21cd")
         e01 = out.row(0, named=True)
         assert e01["n_postcodes"] == 4
         assert e01["share_road_60"] == 0.5 and e01["share_rail_60"] == 0.0
