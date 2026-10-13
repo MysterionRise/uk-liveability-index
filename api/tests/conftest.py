@@ -154,7 +154,8 @@ def build_serve_dir(path) -> None:
     pl.DataFrame({
         "place_id": ["p1", "p2", "p3", "p4", "p5", "p6"],
         "name": ["Headingley", "Leeds", "Leeds", "Brighton", "Cardiff", "Ynys Môn"],
-        "name_alt": [None, None, None, None, "Caerdydd", None],
+        "name_cy": [None, None, None, None, "Caerdydd", None],
+        "name_gd": [None, None, None, None, None, None],
         "place_type": ["Suburban Area", "City", "Village", "Other Settlement", "City", "Village"],
         "postcode_district": ["LS6", "LS1", "ME17", "BN1", "CF10", "LL77"],
         "local_authority": ["Leeds", "Leeds", "Maidstone", "Brighton and Hove", "Cardiff", "Isle of Anglesey"],

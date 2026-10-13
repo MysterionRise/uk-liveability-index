@@ -1777,3 +1777,15 @@ ae_sites:
   cadence: adhoc
   size_hint: 40KB
   notes: Rebuilt with `python -m lix_pipeline.curate.ae_sites` after an OSM or PHS refresh; the English and Welsh rows rest on OpenStreetMap's emergency tag until an official site list is open.
+
+council_names_gd:
+  coverage: [S]
+  title: Gaelic names of Scotland's council areas (curated from Wikidata)
+  theme: geography
+  access: {type: curated, path: config/data/council_names_gd.csv}
+  format: csv
+  description: The 32 council areas with their Gàidhlig names as Wikidata labels them (with the item ids), for the Gaelic interface; Ainmean-Àite na h-Alba's database is not open.
+  licence: CC0-1.0
+  attribution: "Gaelic council names from Wikidata (CC0 1.0)."
+  cadence: adhoc
+  size_hint: 3KB

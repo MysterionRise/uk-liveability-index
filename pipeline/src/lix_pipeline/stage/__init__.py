@@ -36,6 +36,7 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "sg_dz22_centroids",
         "nrs_oa22_lookup",
         "nrs_sape",
+        "council_names_gd",
     ],
     "oa_lookup": ["oa_lookup", "nrs_oa22_lookup"],
     "dz11_dz22": ["simd_postcode_lookup", "nrs_oa22_population", "nspl"],

@@ -45,6 +45,9 @@ GEO_COLUMNS = [
     "nation", "ctry_cd", "pfa_nm", "ruc21cd", "ruc21nm", "ruc_class", "urban", "population",
     "area_km2", "pwc_lon", "pwc_lat", "pwc_x", "pwc_y", "bbox_w", "bbox_s", "bbox_e", "bbox_n",
 ]  # fmt: skip
+# The areas' names in the other languages (null where a nation has none): Welsh from the
+# ONS and Commons Library files, Gaelic council names from the curated list
+NAME_COLUMNS = ["lsoa21nm_cy", "msoa_name_cy", "lad_nm_cy", "lad_nm_gd"]
 
 
 def _sha256(path: Path) -> str:
@@ -57,7 +60,11 @@ def build_features() -> pl.DataFrame:
     weights = load_weights()
     preset = weights.presets[weights.default_preset]
     long = pl.read_parquet(data_dir("indicators") / "long.parquet")
-    geo = pl.read_parquet(data_dir("staged") / "geo_lsoa.parquet").select(GEO_COLUMNS)
+    geo = pl.read_parquet(data_dir("staged") / "geo_lsoa.parquet")
+    geo = geo.select(
+        *GEO_COLUMNS,
+        *[pl.col(c) if c in geo.columns else pl.lit(None, pl.Utf8).alias(c) for c in NAME_COLUMNS],
+    )
 
     raw = long.pivot(on="indicator_id", index="lsoa21cd", values="value")
     quality = long.pivot(on="indicator_id", index="lsoa21cd", values="quality")

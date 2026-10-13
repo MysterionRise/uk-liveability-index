@@ -3,6 +3,7 @@
 import polars as pl
 
 from lix_api.models import AreaProfile, IndicatorValue, Point, ThemeScore
+from lix_api.services.names import english_if_different, localised
 from lix_api.services.scoring import ThemeWeights, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
@@ -63,6 +64,7 @@ def area_profile(
     ref: str,
     preset: str | None = None,
     theme_weights: ThemeWeights | None = None,
+    locale: str | None = None,
 ) -> AreaProfile:
     code = resolve_lsoa(store, ref)
     row = store.features.row(store.lsoa_index[code], named=True)
@@ -116,10 +118,12 @@ def area_profile(
     lo, hi = row.get(f"pct_lo__{preset_id}"), row.get(f"pct_hi__{preset_id}")
     return AreaProfile(
         lsoa21cd=code,
-        lsoa_name=row["lsoa21nm"],
-        neighbourhood=row["msoa_name"],
+        lsoa_name=localised(row, "lsoa21nm", locale),
+        neighbourhood=localised(row, "msoa_name", locale),
+        neighbourhood_en=english_if_different(row, "msoa_name", locale),
         msoa21cd=row["msoa21cd"],
-        local_authority=row["lad_nm"],
+        local_authority=localised(row, "lad_nm", locale),
+        local_authority_en=english_if_different(row, "lad_nm", locale),
         region=row["rgn_nm"],
         nation=row["nation"],
         nation_name=store.nation_names.get(row["nation"], row["nation"]),

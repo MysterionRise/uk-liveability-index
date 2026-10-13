@@ -148,6 +148,7 @@ export function SearchBox() {
                   : (KINDS as readonly string[]).includes(p.kind)
                     ? t(`kinds.${p.kind as (typeof KINDS)[number]}`)
                     : p.kind}
+                {p.name_en ? ` · ${p.name_en}` : ""}
                 {p.detail ? ` · ${p.detail}` : ""}
               </span>
             </li>

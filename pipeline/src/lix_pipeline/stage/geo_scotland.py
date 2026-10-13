@@ -107,6 +107,9 @@ def build(nations: Nations) -> pl.DataFrame:
         {lad_code: "lad_cd", lad_code[:-2] + "NM": "lad_nm"}
     )
 
+    gaelic = pl.read_csv(raw_file("council_names_gd", "csv"), infer_schema_length=0).select(
+        pl.col("lad_cd"), pl.col("name_gd").alias("lad_nm_gd")
+    )
     pop = pl.read_parquet(data_dir("staged") / "population.parquet").select(
         "lsoa21cd", "population", "pop_year"
     )
@@ -114,6 +117,7 @@ def build(nations: Nations) -> pl.DataFrame:
 
     df = (
         zones.join(lad_names, on="lad_cd", how="left")
+        .join(gaelic, on="lad_cd", how="left")
         .with_columns(
             pl.col("lad_cd").alias("lad22cd"),
             pl.col("msoa21nm").alias("msoa_name"),

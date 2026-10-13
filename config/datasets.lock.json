@@ -302,6 +302,20 @@
       "version": "August 2026"
     }
   },
+  "council_names_gd": {
+    "fetched": {
+      "bytes": 3876,
+      "fetched_at": "2026-10-13T11:50:58+00:00",
+      "sha256": "4064b39ef7904c6131079a1ce691b80428bd2494c89d04090f53f4a4182695ca",
+      "version": "4064b39ef7904c61"
+    },
+    "resolved": {
+      "path": "config/data/council_names_gd.csv",
+      "resolved_at": "2026-10-13T11:50:58+00:00",
+      "url": null,
+      "version": "4064b39ef7904c61"
+    }
+  },
   "council_tax": {
     "fetched": {
       "bytes": 99083,

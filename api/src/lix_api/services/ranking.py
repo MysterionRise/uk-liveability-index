@@ -7,6 +7,7 @@ import numpy as np
 import polars as pl
 
 from lix_api.models import Level, Point, RankedArea, RankResult
+from lix_api.services.names import base_locale
 from lix_api.services.scoring import ThemeWeights, resolve_weights, scores_for
 from lix_api.services.search import search_place
 from lix_api.store import Store
@@ -103,6 +104,7 @@ def rank_areas(
     urban: bool | None = None,
     limit: int = 10,
     sort_by: str = "overall",
+    locale: str | None = None,
 ) -> RankResult:
     """Best areas first. At MSOA level, scores are population-weighted LSOA means.
 
@@ -141,11 +143,20 @@ def rank_areas(
         df = df.filter(pl.col("urban") == urban)
 
     theme_cols = [f"theme__{t}" for t in store.themes]
+
+    def in_locale(column: str) -> pl.Expr:
+        """The column in the locale asked for where the row has that form."""
+        other = f"{column}_{base_locale(locale)}"
+        if base_locale(locale) != "en" and other in df.columns:
+            return pl.coalesce(other, column)
+        return pl.col(column)
+
     if level == "msoa":
         w = pl.col("population")
         df = df.group_by("msoa21cd").agg(
-            pl.col("msoa_name").first().alias("name"),
-            pl.col("lad_nm").first(),
+            in_locale("msoa_name").first().alias("name"),
+            pl.col("msoa_name").first().alias("name_en"),
+            in_locale("lad_nm").first().alias("lad_nm"),
             w.sum().alias("population"),
             *[((pl.col(c) * w).sum() / w.filter(pl.col(c).is_not_null()).sum()).alias(c)
               for c in ["overall", *theme_cols, *measure.feature_columns]],
@@ -157,9 +168,13 @@ def rank_areas(
         df = df.with_columns(pl.lit(None, pl.Float64).alias("overall_pct"))
     else:
         df = df.rename({"lsoa21cd": "code"}).with_columns(
+            pl.concat_str(
+                in_locale("lsoa21nm"), pl.lit(" ("), in_locale("msoa_name"), pl.lit(")")
+            ).alias("name"),
             pl.concat_str(pl.col("lsoa21nm"), pl.lit(" ("), pl.col("msoa_name"), pl.lit(")")).alias(
-                "name"
-            )
+                "name_en"
+            ),
+            in_locale("lad_nm").alias("lad_nm"),
         )
 
     if max_median_price is not None:
@@ -186,6 +201,7 @@ def rank_areas(
             level=level,
             code=r["code"],
             name=r["name"],
+            name_en=r["name_en"] if r["name_en"] != r["name"] else None,
             local_authority=r["lad_nm"],
             overall=None if r["overall"] is None else round(r["overall"], 1),
             overall_percentile=None if r["overall_pct"] is None else round(r["overall_pct"]),

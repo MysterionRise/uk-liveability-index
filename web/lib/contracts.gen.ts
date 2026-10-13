@@ -48,7 +48,14 @@ export type UnitCode = string;
  */
 export type Value = number | null;
 export type KeyFacts = IndicatorValue[];
+/**
+ * In the locale asked for
+ */
 export type LocalAuthority = string;
+/**
+ * Its English name when it differs
+ */
+export type LocalAuthorityEn = string | null;
 export type Lsoa21Cd = string;
 export type LsoaName = string;
 export type Msoa21Cd = string;
@@ -58,9 +65,13 @@ export type Msoa21Cd = string;
 export type Nation = string;
 export type NationName = string;
 /**
- * Friendly MSOA name
+ * Friendly mid-area name, in the locale asked for
  */
 export type Neighbourhood = string | null;
+/**
+ * Its English name when `neighbourhood` is another language's
+ */
+export type NeighbourhoodEn = string | null;
 export type Overall = number | null;
 export type OverallPercentile = number | null;
 /**
@@ -235,7 +246,14 @@ export type Code2 = string | null;
 export type Detail1 = string | null;
 export type Kind1 = "postcode" | "place" | "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type Lsoa21Cd2 = string | null;
+/**
+ * The form that matched (Welsh or Gaelic when the query was)
+ */
 export type Name4 = string;
+/**
+ * The English name when `name` is another language's
+ */
+export type NameEn = string | null;
 export type Category1 = string;
 export type OriginLabel = string;
 export type Pois1 = Poi[];
@@ -250,7 +268,14 @@ export type Code3 = string;
 export type Level2 = "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type LocalAuthority1 = string;
 export type MedianPrice = number | null;
+/**
+ * In the locale asked for
+ */
 export type Name5 = string;
+/**
+ * The English name when `name` is another language's
+ */
+export type NameEn1 = string | null;
 export type Overall3 = number | null;
 export type OverallPercentile3 = number | null;
 export type Population1 = number;
@@ -301,12 +326,14 @@ export interface AreaProfile {
   flags?: Flags;
   key_facts: KeyFacts;
   local_authority: LocalAuthority;
+  local_authority_en?: LocalAuthorityEn;
   lsoa21cd: Lsoa21Cd;
   lsoa_name: LsoaName;
   msoa21cd: Msoa21Cd;
   nation: Nation;
   nation_name: NationName;
   neighbourhood?: Neighbourhood;
+  neighbourhood_en?: NeighbourhoodEn;
   overall: Overall;
   overall_percentile: OverallPercentile;
   overall_percentile_nation?: OverallPercentileNation;
@@ -549,6 +576,7 @@ export interface Place {
   kind: Kind1;
   lsoa21cd?: Lsoa21Cd2;
   name: Name4;
+  name_en?: NameEn;
 }
 /**
  * This interface was referenced by `Schemas`'s JSON-Schema
@@ -587,6 +615,7 @@ export interface RankedArea {
   local_authority: LocalAuthority1;
   median_price?: MedianPrice;
   name: Name5;
+  name_en?: NameEn1;
   overall: Overall3;
   overall_percentile: OverallPercentile3;
   population: Population1;

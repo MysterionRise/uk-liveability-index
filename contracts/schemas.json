@@ -73,8 +73,22 @@
           "type": "array"
         },
         "local_authority": {
+          "description": "In the locale asked for",
           "title": "Local Authority",
           "type": "string"
+        },
+        "local_authority_en": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Its English name when it differs",
+          "title": "Local Authority En"
         },
         "lsoa21cd": {
           "title": "Lsoa21Cd",
@@ -107,8 +121,21 @@
             }
           ],
           "default": null,
-          "description": "Friendly MSOA name",
+          "description": "Friendly mid-area name, in the locale asked for",
           "title": "Neighbourhood"
+        },
+        "neighbourhood_en": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Its English name when `neighbourhood` is another language's",
+          "title": "Neighbourhood En"
         },
         "overall": {
           "anyOf": [
@@ -888,8 +915,22 @@
           "title": "Lsoa21Cd"
         },
         "name": {
+          "description": "The form that matched (Welsh or Gaelic when the query was)",
           "title": "Name",
           "type": "string"
+        },
+        "name_en": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The English name when `name` is another language's",
+          "title": "Name En"
         }
       },
       "required": [
@@ -1153,8 +1194,22 @@
           "title": "Median Price"
         },
         "name": {
+          "description": "In the locale asked for",
           "title": "Name",
           "type": "string"
+        },
+        "name_en": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The English name when `name` is another language's",
+          "title": "Name En"
         },
         "overall": {
           "anyOf": [

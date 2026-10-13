@@ -18,6 +18,9 @@ from scipy.spatial import cKDTree
 from lix_core.config import SERVE_SCHEMA_VERSION, IndicatorSpec, Preset, ThemeSpec
 from lix_core.paths import data_dir
 
+# A name's English form and the other languages' forms, as the pack's columns call them
+NAME_COLUMNS = ("name", "name_cy", "name_gd")
+
 _TO_BNG = Transformer.from_crs(4326, 27700, always_xy=True)
 
 
@@ -127,24 +130,34 @@ class Store:
         return pl.read_parquet(self.serve_dir / "areas.parquet")
 
     @cached_property
+    def place_name_columns(self) -> list[str]:
+        """The places' name columns the search reads: English, then each language's form."""
+        return [c for c in NAME_COLUMNS if c in self.places.columns]
+
+    @cached_property
     def place_search_names(self) -> list[str]:
-        """Folded place names followed by their folded alternative names ("" where there
-        is none), so an index below ``places.height`` is a name and one above it the
-        alternative of the same row."""
+        """Every place name folded, column after column (``""`` where a place lacks a
+        form), so index ``i`` names column ``i // places.height`` of row ``i % height``."""
         from lix_api.services.text import fold
 
-        names = [fold(n) for n in self.places["name"].to_list()]
-        if "name_alt" in self.places.columns:
-            alts = [fold(a) if a else "" for a in self.places["name_alt"].to_list()]
-        else:
-            alts = [""] * len(names)
-        return names + alts
+        out: list[str] = []
+        for column in self.place_name_columns:
+            out += [fold(n) if n else "" for n in self.places[column].to_list()]
+        return out
+
+    @cached_property
+    def area_name_columns(self) -> list[str]:
+        return [c for c in NAME_COLUMNS if c in self.areas.columns]
 
     @cached_property
     def area_search_names(self) -> list[str]:
+        """Every area name folded, column after column, like ``place_search_names``."""
         from lix_api.services.text import fold
 
-        return [fold(n) for n in self.areas["name"].to_list()]
+        out: list[str] = []
+        for column in self.area_name_columns:
+            out += [fold(n) if n else "" for n in self.areas[column].to_list()]
+        return out
 
     @cached_property
     def pois(self) -> pl.DataFrame:

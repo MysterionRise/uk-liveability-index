@@ -186,19 +186,27 @@ def build_areas(features: pl.DataFrame) -> pl.DataFrame:
     features = features.with_columns(
         pl.col("nation").replace_strict(names, default=None).alias("nation_name")
     )
+
+    def other(column: str) -> pl.Expr:
+        return pl.col(column) if column in features.columns else pl.lit(None, pl.Utf8)
+
+    none = pl.lit(None, pl.Utf8)
+    # level, code, English name, Welsh name, Gaelic name, which rows
     levels = [
-        ("msoa", "msoa21cd", pl.col("msoa_name"), pl.lit(True)),
-        ("lad", "lad_cd", pl.col("lad_nm"), pl.lit(True)),
-        ("region", "rgn_cd", pl.col("rgn_nm"), pl.col("rgn_cd") != pl.col("ctry_cd")),
-        ("nation", "ctry_cd", pl.col("nation_name"), pl.lit(True)),
+        ("msoa", "msoa21cd", pl.col("msoa_name"), other("msoa_name_cy"), none, pl.lit(True)),
+        ("lad", "lad_cd", pl.col("lad_nm"), other("lad_nm_cy"), other("lad_nm_gd"), pl.lit(True)),
+        ("region", "rgn_cd", pl.col("rgn_nm"), none, none, pl.col("rgn_cd") != pl.col("ctry_cd")),
+        ("nation", "ctry_cd", pl.col("nation_name"), none, none, pl.lit(True)),
     ]
     frames = []
-    for level, code, name, keep in levels:
+    for level, code, name, name_cy, name_gd, keep in levels:
         frames.append(
             features.filter(keep)
             .group_by(code)
             .agg(
                 name.first().alias("name"),
+                name_cy.first().alias("name_cy"),
+                name_gd.first().alias("name_gd"),
                 pl.col("lad_nm").first().alias("lad_nm"),
                 pl.col("nation").first().alias("nation"),
                 pl.col("population").sum(),

@@ -4,7 +4,14 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { useLiveability } from "@/components/AppData";
-import { Band, Card, Muted, ScoreBar, formatValue, useQualityNote } from "@/components/ui";
+import {
+  Band,
+  Card,
+  Muted,
+  ScoreBar,
+  formatValue,
+  useQualityNote,
+} from "@/components/ui";
 import type { AreaProfile, IndicatorValue } from "@/lib/contracts.gen";
 import { useLabels } from "@/lib/labels";
 import { bboxOf } from "@/lib/state";
@@ -17,11 +24,15 @@ function Facts({ items }: { items: IndicatorValue[] }) {
     <dl className="grid grid-cols-2 gap-x-3 gap-y-1">
       {items.map((f) => (
         <div key={f.id} className="min-w-0">
-          <dt className="truncate text-xs text-[var(--text-muted)]">{labels.indicator(f.id)}</dt>
+          <dt className="truncate text-xs text-[var(--text-muted)]">
+            {labels.indicator(f.id)}
+          </dt>
           <dd className="text-sm tabular-nums">
             {formatValue(f.value, f.unit, locale)}
             {qualityNote(f.quality) && (
-              <span className="ml-1 text-xs text-[var(--text-muted)]">({qualityNote(f.quality)})</span>
+              <span className="ml-1 text-xs text-[var(--text-muted)]">
+                ({qualityNote(f.quality)})
+              </span>
             )}
           </dd>
         </div>
@@ -40,7 +51,9 @@ function CopyLink({ code }: { code: string }) {
       onClick={async () => {
         const url = new URL(window.location.href);
         try {
-          const view = JSON.parse(decodeURIComponent(url.hash.slice(1) || "{}"));
+          const view = JSON.parse(
+            decodeURIComponent(url.hash.slice(1) || "{}"),
+          );
           url.hash = encodeURIComponent(JSON.stringify({ ...view, s: code }));
         } catch {
           /* keep the current hash */
@@ -64,17 +77,27 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
   const t = useTranslations("Profile");
   const labels = useLabels();
   const saved = state.shortlist.some((i) => i.code === profile.lsoa21cd);
-  const title = profile.neighbourhood ? `${profile.neighbourhood}, ${profile.local_authority}` : profile.lsoa_name;
+  const title = profile.neighbourhood
+    ? `${profile.neighbourhood}, ${profile.local_authority}`
+    : profile.lsoa_name;
+  // The English name beside a Welsh or Gaelic one, so a place stays recognisable
+  const english = [profile.neighbourhood_en, profile.local_authority_en]
+    .filter(Boolean)
+    .join(", ");
 
   return (
     <Card
       testId="area-profile"
       title={title}
-      subtitle={t("subtitle", { area: profile.lsoa_name, ruc: profile.urban_rural, population: profile.population })}
+      subtitle={`${english ? `${english} · ` : ""}${t("subtitle", { area: profile.lsoa_name, ruc: profile.urban_rural, population: profile.population })}`}
     >
       <div className="flex flex-wrap items-baseline gap-2">
-        <span className="text-3xl font-semibold tabular-nums">{profile.overall?.toFixed(0) ?? "–"}</span>
-        <span className="text-xs text-[var(--text-muted)]">{t("overallOf100", { preset: profile.preset })}</span>
+        <span className="text-3xl font-semibold tabular-nums">
+          {profile.overall?.toFixed(0) ?? "–"}
+        </span>
+        <span className="text-xs text-[var(--text-muted)]">
+          {t("overallOf100", { preset: profile.preset })}
+        </span>
       </div>
       <div className="mt-1">
         <Band band={profile.band} percentile={profile.overall_percentile} />
@@ -85,7 +108,10 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
           data-testid="percentile-range"
           title={t("rangeTitle")}
         >
-          {t("range", { lo: profile.overall_percentile_range[0], hi: profile.overall_percentile_range[1] })}
+          {t("range", {
+            lo: profile.overall_percentile_range[0],
+            hi: profile.overall_percentile_range[1],
+          })}
         </p>
       )}
 
@@ -96,32 +122,59 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
             label={labels.theme(th.theme)}
             score={th.score}
             theme={th.theme}
-            hint={th.percentile != null ? t("betterThan", { pct: th.percentile }) : undefined}
+            hint={
+              th.percentile != null
+                ? t("betterThan", { pct: th.percentile })
+                : undefined
+            }
             marks={[
-              { value: th.local_median, kind: "local", label: t("localMedian", { area: profile.local_authority }) },
-              { value: th.country_median, kind: "england", label: t("ukMedian") },
+              {
+                value: th.local_median,
+                kind: "local",
+                label: t("localMedian", { area: profile.local_authority }),
+              },
+              {
+                value: th.country_median,
+                kind: "england",
+                label: t("ukMedian"),
+              },
             ]}
           />
         ))}
         <p className="mt-1 flex gap-3 text-[10px] text-[var(--text-muted)]">
           <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2.5 w-[2px] bg-[var(--text-primary)]" aria-hidden />{" "}
+            <span
+              className="inline-block h-2.5 w-[2px] bg-[var(--text-primary)]"
+              aria-hidden
+            />{" "}
             {t("localMedian", { area: profile.local_authority })}
           </span>
           <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2.5 w-px bg-[var(--text-muted)]" aria-hidden /> {t("ukMedian")}
+            <span
+              className="inline-block h-2.5 w-px bg-[var(--text-muted)]"
+              aria-hidden
+            />{" "}
+            {t("ukMedian")}
           </span>
         </p>
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
         <div>
-          <div className="mb-1 font-medium text-[var(--text-secondary)]">{t("strengths")}</div>
-          {profile.strengths.map((s) => <div key={s.id}>{labels.indicator(s.id)}</div>)}
+          <div className="mb-1 font-medium text-[var(--text-secondary)]">
+            {t("strengths")}
+          </div>
+          {profile.strengths.map((s) => (
+            <div key={s.id}>{labels.indicator(s.id)}</div>
+          ))}
         </div>
         <div>
-          <div className="mb-1 font-medium text-[var(--text-secondary)]">{t("weakerSpots")}</div>
-          {profile.weaknesses.map((s) => <div key={s.id}>{labels.indicator(s.id)}</div>)}
+          <div className="mb-1 font-medium text-[var(--text-secondary)]">
+            {t("weakerSpots")}
+          </div>
+          {profile.weaknesses.map((s) => (
+            <div key={s.id}>{labels.indicator(s.id)}</div>
+          ))}
         </div>
       </div>
 
@@ -131,7 +184,9 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
 
       {profile.flags && profile.flags.length > 0 && (
         <ul className="mt-2 list-disc pl-4 text-xs text-[var(--text-secondary)]">
-          {profile.flags.map((f, i) => <li key={f}>{labels.flag(profile.flag_codes?.[i] ?? f, f)}</li>)}
+          {profile.flags.map((f, i) => (
+            <li key={f}>{labels.flag(profile.flag_codes?.[i] ?? f, f)}</li>
+          ))}
         </ul>
       )}
 
@@ -141,7 +196,11 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
           onClick={() =>
             update((s) => ({
               ...s,
-              map: { ...s.map, selected: profile.lsoa21cd, bbox: bboxOf(profile.bbox) },
+              map: {
+                ...s.map,
+                selected: profile.lsoa21cd,
+                bbox: bboxOf(profile.bbox),
+              },
             }))
           }
         >
@@ -153,7 +212,10 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
           onClick={() =>
             update((s) => ({
               ...s,
-              shortlist: [...s.shortlist, { code: profile.lsoa21cd, name: title, centre: profile.centre }],
+              shortlist: [
+                ...s.shortlist,
+                { code: profile.lsoa21cd, name: title, centre: profile.centre },
+              ],
             }))
           }
         >

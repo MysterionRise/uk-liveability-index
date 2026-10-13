@@ -98,10 +98,30 @@ def _lsoa_lad_from_nspl(nspl: pl.LazyFrame, nations: Nations) -> pl.DataFrame:
     return counts.sort("n", descending=True).unique("lsoa21cd", keep="first").drop("n")
 
 
+def _other_language(other: pl.Expr, english: pl.Expr) -> pl.Expr:
+    """A Welsh (or Gaelic) name column: null where blank or the same as the English."""
+    cleaned = other.cast(pl.Utf8).str.strip_chars()
+    return pl.when((cleaned == "") | (cleaned == english)).then(None).otherwise(cleaned)
+
+
 def _lsoa_bounds(nations: Nations) -> pl.DataFrame:
-    """Land area (km², from the 20m-generalised clipped polygons) and WGS84 bounding box."""
+    """Land area (km², from the 20m-generalised clipped polygons), WGS84 bounding box and
+    the Welsh name where the file has one."""
     gdf = load_lsoa_boundaries("lsoa_boundaries")
     gdf = gdf[gdf.index.str.match(area_code_regex(nations=nations))]
+    welsh = (
+        pl.DataFrame(
+            {
+                "lsoa21cd": gdf.index.to_list(),
+                "w": gdf["LSOA21NMW"].to_list(),
+                "e": gdf["LSOA21NM"].to_list(),
+            }
+        ).select("lsoa21cd", _other_language(pl.col("w"), pl.col("e")).alias("lsoa21nm_cy"))
+        if "LSOA21NMW" in gdf.columns
+        else pl.DataFrame({"lsoa21cd": gdf.index.to_list()}).with_columns(
+            pl.lit(None, pl.Utf8).alias("lsoa21nm_cy")
+        )
+    )
     area = gdf.geometry.area / 1e6
     bbox = gdf.to_crs(4326).geometry.bounds
     return pl.DataFrame(
@@ -113,7 +133,7 @@ def _lsoa_bounds(nations: Nations) -> pl.DataFrame:
             "bbox_e": bbox["maxx"].to_numpy(),
             "bbox_n": bbox["maxy"].to_numpy(),
         }
-    )
+    ).join(welsh, on="lsoa21cd", how="left")
 
 
 def build(nations: Nations) -> pl.DataFrame:
@@ -136,7 +156,9 @@ def build(nations: Nations) -> pl.DataFrame:
     )
 
     msoa_names = pl.read_csv(raw_file("msoa_names", "csv"), encoding="utf8-lossy").select(
-        pl.col("msoa21cd"), pl.col("msoa21hclnm").alias("msoa_name")
+        pl.col("msoa21cd"),
+        pl.col("msoa21hclnm").alias("msoa_name"),
+        _other_language(pl.col("msoa21hclnmw"), pl.col("msoa21hclnm")).alias("msoa_name_cy"),
     )
 
     # Live postcodes only: terminated ones can carry superseded authority codes
@@ -147,8 +169,11 @@ def build(nations: Nations) -> pl.DataFrame:
         c for c in lad_names.columns if c.upper().startswith("LAD") and c.upper().endswith("CD")
     )
     lad_name_col = lad_code_col[:-2] + "NM"
-    lad_names = pl.from_pandas(lad_names[[lad_code_col, lad_name_col]]).rename(
-        {lad_code_col: "lad_cd", lad_name_col: "lad_nm"}
+    lad_welsh_col = lad_code_col[:-2] + "NMW"
+    lad_names = pl.from_pandas(lad_names[[lad_code_col, lad_name_col, lad_welsh_col]]).select(
+        pl.col(lad_code_col).alias("lad_cd"),
+        pl.col(lad_name_col).alias("lad_nm"),
+        _other_language(pl.col(lad_welsh_col), pl.col(lad_name_col)).alias("lad_nm_cy"),
     )
     rgn_doc = pl.read_csv(nspl_document("RGN*names and codes*.csv"), encoding="utf8-lossy")
     rgn_names = rgn_doc.select(
@@ -189,6 +214,22 @@ def build(nations: Nations) -> pl.DataFrame:
         .join(_lsoa_bounds(nations), on="lsoa21cd", how="left")
         .with_columns(nation_columns(nations))
         .with_columns(region_columns(nations))
+        # Welsh LSOA names are the council's Welsh name plus the LSOA's number; built from
+        # the council name because the ONS file misspells a few (Ynys Mfn for Ynys Môn)
+        .with_columns(
+            pl.when(
+                pl.col("lad_nm_cy").is_not_null()
+                & pl.col("lsoa21nm").str.starts_with(pl.col("lad_nm"))
+            )
+            .then(
+                pl.concat_str(
+                    pl.col("lad_nm_cy"),
+                    pl.col("lsoa21nm").str.slice(pl.col("lad_nm").str.len_chars()),
+                )
+            )
+            .otherwise(pl.col("lsoa21nm_cy"))
+            .alias("lsoa21nm_cy")
+        )
         .with_columns(
             ruc_class_expr(nations),
             (pl.col("population") / pl.col("area_km2")).alias("density_per_km2"),

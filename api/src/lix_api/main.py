@@ -125,8 +125,9 @@ def search_place(q: str, limit: int = 8) -> list[Place]:
 
 
 @app.get(f"{api}/areas/{{ref}}")
-def area_profile(ref: str, preset: str | None = None) -> AreaProfile:
-    return areas.area_profile(get_store(), ref, preset=preset)
+def area_profile(ref: str, preset: str | None = None, locale: str | None = None) -> AreaProfile:
+    """``locale`` (en, cy, gd) picks the language of the area names."""
+    return areas.area_profile(get_store(), ref, preset=preset, locale=locale)
 
 
 class RankRequest(BaseModel):
@@ -141,6 +142,7 @@ class RankRequest(BaseModel):
     urban: bool | None = None
     limit: int = 10
     sort_by: str = "overall"  # or "theme:<id>" / "indicator:<id>": rank by one measure
+    locale: str | None = None  # en, cy or gd: the language of the area names
 
 
 @app.post(f"{api}/rank")

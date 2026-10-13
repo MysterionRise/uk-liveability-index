@@ -21,7 +21,10 @@ class Place(BaseModel):
     """A search result: something a user might mean by a name, postcode or code."""
 
     kind: PlaceKind
-    name: str
+    name: str = Field(description="The form that matched (Welsh or Gaelic when the query was)")
+    name_en: str | None = Field(
+        None, description="The English name when `name` is another language's"
+    )
     detail: str | None = Field(None, description="Disambiguation, e.g. the local authority")
     code: str | None = None
     lsoa21cd: str | None = None
@@ -64,9 +67,15 @@ class IndicatorValue(BaseModel):
 class AreaProfile(BaseModel):
     lsoa21cd: str
     lsoa_name: str
-    neighbourhood: str | None = Field(None, description="Friendly MSOA name")
+    neighbourhood: str | None = Field(
+        None, description="Friendly mid-area name, in the locale asked for"
+    )
+    neighbourhood_en: str | None = Field(
+        None, description="Its English name when `neighbourhood` is another language's"
+    )
     msoa21cd: str
-    local_authority: str
+    local_authority: str = Field(description="In the locale asked for")
+    local_authority_en: str | None = Field(None, description="Its English name when it differs")
     region: str
     nation: str = Field(description="Nation code: E, W, S or N")
     nation_name: str
@@ -104,7 +113,10 @@ class RankedArea(BaseModel):
     rank: int
     level: Level
     code: str
-    name: str
+    name: str = Field(description="In the locale asked for")
+    name_en: str | None = Field(
+        None, description="The English name when `name` is another language's"
+    )
     local_authority: str
     overall: float | None
     overall_percentile: float | None

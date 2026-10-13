@@ -87,7 +87,7 @@ nations:
       population: nrs_sape
       code_column: dzcode  # the boundary file's code attribute
       simplify_m: 10  # the shapefiles are full resolution; ONS's E/W files are generalised to 20m
-      extra: [sg_dz22_lookup]
+      extra: [sg_dz22_lookup, council_names_gd]
     places_country: Scotland
     # Scottish Government urban rural classification 2022, 6-fold (UR6 in the Data Zone
     # lookup): large urban · other urban · accessible small towns · remote small towns ·

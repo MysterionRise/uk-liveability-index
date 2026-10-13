@@ -194,13 +194,16 @@ def touched_by_layer(receptors, slug: str, band: str, chunk: int = SEPA_CHUNK) -
     total = pyogrio.read_info(gdb, layer=layer)["features"]
     out = np.zeros(len(receptors))
     tree = shapely.STRtree(receptors.values)
+    # The coastal extents are a handful of multipolygons with tens of thousands of parts;
+    # the parts are queried one by one (much faster, and the holes stay holes)
+    pyogrio.set_gdal_config_options({"OGR_ORGANIZE_POLYGONS": "ONLY_CCW"})
     for start in range(0, total, chunk):
         polys = pyogrio.read_dataframe(
             gdb, layer=layer, skip_features=start, max_features=chunk, columns=[]
         )
         if polys.crs is not None and polys.crs.to_epsg() != 27700:
             polys = polys.to_crs(27700)
-        hit, _ = tree.query(polys.geometry.values, predicate="intersects")
+        hit, _ = tree.query(shapely.get_parts(polys.geometry.values), predicate="intersects")
         out[np.unique(hit)] = 1
     logger.info(f"{slug} {layer}: {total:,} polygons, {int(out.sum()):,} homes touched")
     return out

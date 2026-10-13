@@ -67,12 +67,14 @@ def lookup_code(store: Store, text: str) -> Place | None:
     return _area_place(row)
 
 
-def _area_place(row: dict) -> Place:
+def _area_place(row: dict, name: str | None = None) -> Place:
     bbox = _bbox(row)
     centre = Point(lat=(bbox[1] + bbox[3]) / 2, lon=(bbox[0] + bbox[2]) / 2) if bbox else None
     detail = row["lad_nm"] if row["level"] == "msoa" else None
-    return Place(kind=row["level"], name=row["name"], code=row["code"], detail=detail,
-                 centre=centre, bbox=bbox)  # fmt: skip
+    shown = name or row["name"]
+    return Place(kind=row["level"], name=shown, code=row["code"], detail=detail,
+                 centre=centre, bbox=bbox,
+                 name_en=row["name"] if shown != row["name"] else None)  # fmt: skip
 
 
 def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
@@ -92,21 +94,25 @@ def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
         score_cutoff=MIN_SIMILARITY,
     ):  # fmt: skip
         row = store.places.row(idx % n_places, named=True)
-        # The form that matched is the one shown: "Caerdydd" for a Welsh query
-        matched = row["name"] if idx < n_places else row["name_alt"]
+        # The form that matched is the one shown ("Caerdydd" for a Welsh query), with the
+        # English beside it
+        matched = row[store.place_name_columns[idx // n_places]]
         place = Place(
             kind="place", name=matched, code=row["place_id"], lsoa21cd=row["lsoa21cd"],
             detail=f"{row['place_type']}, {row['local_authority']}",
             centre=Point(lat=row["lat"], lon=row["lon"]),
+            name_en=row["name"] if matched != row["name"] else None,
         )  # fmt: skip
         candidates.append((score + KIND_PRIORITY.get(row["place_type"], 0), place))
 
+    n_areas = store.areas.height
     for _, score, idx in process.extract(
         folded, store.area_search_names, scorer=fuzz.WRatio, processor=None, limit=20,
         score_cutoff=MIN_SIMILARITY,
     ):  # fmt: skip
-        row = store.areas.row(idx, named=True)
-        candidates.append((score + KIND_PRIORITY.get(row["level"], 0), _area_place(row)))
+        row = store.areas.row(idx % n_areas, named=True)
+        matched = row[store.area_name_columns[idx // n_areas]]
+        candidates.append((score + KIND_PRIORITY.get(row["level"], 0), _area_place(row, matched)))
 
     candidates.sort(key=lambda c: c[0], reverse=True)
     seen, out = set(), []

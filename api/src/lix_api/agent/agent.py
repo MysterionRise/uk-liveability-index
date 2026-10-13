@@ -154,6 +154,11 @@ def _weights(ctx: RunContext[Deps]) -> dict:
     return {"preset": s.preset, "theme_weights": s.theme_weights or None}
 
 
+def _locale(ctx: RunContext[Deps]) -> dict:
+    """The interface language, for services that name areas (names come back localised)."""
+    return {"locale": ctx.deps.state.locale}
+
+
 def _with_state(ctx: RunContext[Deps], value) -> ToolReturn:
     snapshot = StateSnapshotEvent(
         type=EventType.STATE_SNAPSHOT, snapshot=ctx.deps.state.model_dump(mode="json")
@@ -177,7 +182,7 @@ def get_area_profile(ctx: RunContext[Deps], area: str) -> ToolReturn:
         area: a postcode, place name or LSOA code (a place resolves to the neighbourhood
             it sits in)
     """
-    profile: AreaProfile = areas.area_profile(get_store(), area, **_weights(ctx))
+    profile: AreaProfile = areas.area_profile(get_store(), area, **_weights(ctx), **_locale(ctx))
     ctx.deps.state.map.selected = profile.lsoa21cd
     ctx.deps.state.map.bbox = profile.bbox
     return _with_state(ctx, profile)
@@ -216,7 +221,7 @@ def rank_areas(
     result: RankResult = ranking.rank_areas(
         get_store(), within=within, radius_km=radius_km, level=level,
         max_median_price=max_median_price, min_theme_scores=min_theme_scores, urban=urban,
-        limit=min(limit, 20), sort_by=sort_by, **_weights(ctx),
+        limit=min(limit, 20), sort_by=sort_by, **_weights(ctx), **_locale(ctx),
     )  # fmt: skip
     ctx.deps.state.map.highlighted = [r.code for r in result.results]
     if result.bbox:
