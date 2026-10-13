@@ -1,0 +1,288 @@
+{
+  "_meta": {
+    "status": "draft",
+    "reviewer": null,
+    "date": "2026-10-13"
+  },
+  "Nations": {
+    "uk": "an RA",
+    "E": "Sasainn",
+    "W": "a' Chuimrigh",
+    "S": "Alba",
+    "N": "Èirinn a Tuath",
+    "and": "agus",
+    "E_W": "Sasainn agus a' Chuimrigh"
+  },
+  "Header": {
+    "title": "Clàr-amais Càileachd Beatha na RA",
+    "blurb": "{count, number} nàbachdan ann an {coverage}, le sgòr bho dhàta fosgailte",
+    "demoBlurb": "Seata dàta taisbeanaidh: {count, number} nàbachdan, le sgòr bho dhàta fosgailte",
+    "demoBadge": "dàta taisbeanaidh",
+    "demoBadgeTitle": "Pìos beag den togail shlàn; tha na ceudadan air a' mhapa an coimeas ris na sgìrean seo",
+    "howScoresWork": "Mar a dh'obraicheas na sgòran",
+    "sources": "Tùsan",
+    "about": "Mu dheidhinn",
+    "loading": "A' luchdachadh nan nàbachdan…",
+    "loadError": "Cha b' urrainn dhuinn na sgòran a luchdachadh ({error}). A bheil an API a' ruith (<code>make api</code>) agus an deach <code>make score tiles</code> a ruith?",
+    "language": "Cànan",
+    "theme": "Dreach"
+  },
+  "Theme": {
+    "system": "Fèin-obrachail",
+    "light": "Soilleir",
+    "dark": "Dorcha"
+  },
+  "SidePanel": {
+    "tabs": {
+      "assistant": "Cuidiche",
+      "weights": "Cuideaman",
+      "area": "Sgìre",
+      "shortlist": "Geàrr-liosta",
+      "analyst": "Anailisiche"
+    },
+    "shortlistCount": "Geàrr-liosta ({count})",
+    "panels": "Panailean",
+    "analystTitle": "Modh anailisiche: sgaoilidhean, tar-lùbadh thaisbeanairean agus SQL",
+    "chatPlaceholder": "Faighnich mu nàbachd…",
+    "chatWelcome": "Ciamar as urrainn dhomh do chuideachadh an-diugh?",
+    "chatDisclaimer": "Faodaidh IF mearachdan a dhèanamh. Dearbh fiosrachadh cudromach.",
+    "send": "Cuir",
+    "moreOptions": "Barrachd roghainnean",
+    "suggestions": {
+      "familyTitle": "Freagarrach do theaghlaichean faisg air Leeds",
+      "familyMessage": "Tha dithis chloinne òga againn agus buidseat de £350k. Càite am bu chòir dhuinn coimhead timcheall air Leeds?",
+      "pubsTitle": "Taighean-seinnse math faisg air làimh",
+      "pubsMessage": "Seall dhomh taighean-seinnse math faisg air SW1A 1AA",
+      "compareTitle": "Dèan coimeas eadar dà àite",
+      "compareMessage": "Dèan coimeas eadar Headingley agus Chapel Allerton",
+      "explainTitle": "Mìnich sgòr",
+      "explainMessage": "Carson a tha meadhan baile Manchester a' faighinn sgòr ìosal air sàbhailteachd?"
+    }
+  },
+  "Onboarding": {
+    "title": "Lorg nàbachd a fhreagras ort",
+    "blurb": "Gach nàbachd ann an {coverage}, le sgòr bho dhàta fosgailte. Tha sgìrean teal nas fheàrr na an àbhaist, sgìrean orains nas miosa. Sùm a-steach agus briog air sgìre airson faicinn carson, no faighnich dhen chuidiche.",
+    "whoIsLooking": "Cò tha a' coimhead?",
+    "skip": "Leum seachad",
+    "personas": {
+      "family": "Teaghlach le clann",
+      "young_professional": "Proifeiseantach òg",
+      "retiree": "Air cluaineas",
+      "commuter": "Neach-siubhail",
+      "balanced": "Cothromaichte"
+    }
+  },
+  "Search": {
+    "placeholder": "Còd-puist no àite",
+    "noMatches": "Gun mhaidseadh ann an {coverage}",
+    "searching": "A' lorg…",
+    "unavailable": "Chan eil an lorg ri fhaighinn",
+    "kinds": {
+      "postcode": "Còd-puist",
+      "place": "Àite",
+      "region": "Roinn",
+      "nation": "Nàisean"
+    }
+  },
+  "BuildInfo": {
+    "version": "Tionndadh {version}",
+    "dataBuilt": "dàta air a thogail {date}",
+    "dataTo": "dàta gu {date}",
+    "dataRelease": "foillseachadh dàta {tag}",
+    "demo": "seata dàta taisbeanaidh",
+    "sourceCode": "còd tùsail",
+    "disclaimer": "Airson nàbachdan a rannsachadh, chan ann airson comhairle seilbhe, ionmhais no laghail."
+  },
+  "Weights": {
+    "startFromPreset": "Tòisich bho ro-shuidheachadh",
+    "howMuch": "Dè cho cudromach 's a tha gach cuspair",
+    "reset": "Ath-shuidhich",
+    "weightOf": "cuideam {theme}",
+    "colourBy": "Dathaich am mapa a rèir",
+    "overall": "Sgòr iomlan",
+    "themes": "Cuspairean",
+    "indicators": "Taisbeanairean",
+    "compareAgainst": "Dèan coimeas ri",
+    "compare": {
+      "uk": "Gach sgìre sa chlàr-amais",
+      "nation": "Sgìrean san aon nàisean",
+      "urban_rural": "Sgìrean den aon seòrsa bailteil/dùthchail"
+    },
+    "compareHint": {
+      "uk": "Ceudadan thar gach sgìre le sgòr.",
+      "nation": "Ceudadan taobh a-staigh gach nàisein; tha na sgòran a' fuireach mar a tha iad.",
+      "urban_rural": "Chan eil bailtean beaga air am measadh an aghaidh meadhanan bhailtean mòra."
+    }
+  },
+  "Band": {
+    "1": "Còigeamh as ìsle",
+    "2": "Fon àbhaist",
+    "3": "Meadhan",
+    "4": "Os cionn na h-àbhaist",
+    "5": "Còigeamh as àirde",
+    "betterThan": "nas fheàrr na {pct, number}% den RA"
+  },
+  "Quality": {
+    "imputed": "tuairmse",
+    "low_n": "beagan reic",
+    "broadcast_msoa": "sgìre nas fharsainge",
+    "broadcast_lad": "air feadh na comhairle",
+    "not_available": "chan eil ri fhaighinn an seo",
+    "missing": "gun dàta"
+  },
+  "Legend": {
+    "against": {
+      "uk": "An aghaidh gach sgìre ann an {coverage}",
+      "nation": "An aghaidh sgìrean san aon nàisean",
+      "urban_rural": "An aghaidh sgìrean den aon seòrsa bailteil/dùthchail"
+    },
+    "worse": "nas miosa",
+    "typical": "àbhaisteach",
+    "better": "nas fheàrr",
+    "noData": "Gun dàta"
+  },
+  "Map": {
+    "hover": "{name}: nas fheàrr na {pct, number}% den RA",
+    "hoverNoName": "nas fheàrr na {pct, number}% den RA",
+    "overall": "Iomlan",
+    "withinNation": "{label} (taobh a-staigh an nàisein)",
+    "withinUrbanRural": "{label} (vs sgìrean bailteil/dùthchail coltach)"
+  },
+  "Docs": {
+    "nav": "Sgrìobhainnean",
+    "method": "Dòigh-obrach",
+    "validation": "Dearbhadh",
+    "evals": "Measaidhean a' chuidiche",
+    "sources": "Tùsan agus ceadachasan",
+    "backToMap": "Air ais chun a' mhapa",
+    "englishOnly": "Tha an duilleag seo ri fhaighinn sa Bheurla a-mhàin."
+  },
+  "Registry": {
+    "working": {
+      "rank_areas": "A' rangachadh sgìrean…",
+      "get_area_profile": "A' dèanamh pròifil na sgìre…",
+      "compare_areas": "A' dèanamh coimeas…",
+      "nearest_pois": "A' lorg àiteachan faisg air làimh…",
+      "explain_score": "Ag obrachadh a-mach an sgòr…",
+      "set_weights": "Ag atharrachadh nan cuideaman…",
+      "show_on_map": "A' gluasad a' mhapa…",
+      "run_sql": "A' ruith na ceiste…",
+      "search_place": "A' lorg an àite…",
+      "list_indicators": "A' liostadh thaisbeanairean…",
+      "add_to_shortlist": "A' sàbhaladh dhan gheàrr-liosta agad…",
+      "remove_from_shortlist": "Ag ùrachadh na geàrr-liosta agad…"
+    },
+    "running": "A' ruith {name}…",
+    "noResult": "{name}: gun toradh",
+    "weightsSet": "Cuideaman air an suidheachadh:",
+    "mapUpdated": "Mapa air ùrachadh · a' dathadh a rèir {layer}",
+    "shortlistSaved": "Geàrr-liosta: {count, plural, one {# air a shàbhaladh} two {# air an sàbhaladh} few {# air an sàbhaladh} other {# air an sàbhaladh}}",
+    "found": "Air lorg: {places}",
+    "nothing": "càil",
+    "indicatorsCount": "{count, plural, one {# taisbeanair} two {# thaisbeanair} few {# taisbeanairean} other {# taisbeanair}}"
+  },
+  "Profile": {
+    "subtitle": "{area} · {ruc} · {population, number} luchd-còmhnaidh",
+    "overallOf100": "/ 100 iomlan ({preset})",
+    "rangeTitle": "Raon 5–95% de cheudad na RA nuair a thèid cuideam gach cuspair a ghluasad mu chairteal",
+    "range": "Le cuideaman beagan eadar-dhealaichte: nas fheàrr na {lo, number}–{hi, number}% den RA",
+    "betterThan": "Nas fheàrr na {pct, number}% den RA",
+    "localMedian": "meadhanach {area}",
+    "ukMedian": "meadhanach na RA",
+    "strengths": "Neartan",
+    "weakerSpots": "Laigsean",
+    "showOnMap": "Seall air a' mhapa",
+    "inShortlist": "Sa gheàrr-liosta",
+    "addToShortlist": "Cuir ris a' gheàrr-liosta",
+    "copyLink": "Dèan lethbhreac den cheangal",
+    "linkCopied": "Ceangal air a chopaigeadh",
+    "copyPrompt": "Dèan lethbhreac den cheangal seo",
+    "note": "Tha sgòran 0–100 (nas àirde nas fheàrr). Tha astaran dìreach."
+  },
+  "Poi": {
+    "titles": {
+      "well_run_pub": "Taighean-seinnse air an deagh ruith",
+      "pub": "Taighean-seinnse",
+      "gp": "Cleachdaidhean dhotairean-teaghlaich",
+      "primary_school": "Bun-sgoiltean",
+      "secondary_school": "Àrd-sgoiltean",
+      "nursery": "Sgoiltean-àraich",
+      "supermarket": "Mòr-bhùthan"
+    },
+    "near": "{title} faisg air {place}",
+    "found": "{count, plural, one {# air lorg} two {# air lorg} few {# air lorg} other {# air lorg}}",
+    "none": "Gun ghin taobh a-staigh an astair — feuch radius nas motha.",
+    "hygiene": "Rangachadh slàinteachas bìdh {rating}/5",
+    "realAle": "fìor leann",
+    "inspection": "Càileachd sgrùdaidh {score}/100",
+    "unnamed": "Gun ainm",
+    "note": "Astar dìreach. Tùs: {sources}."
+  },
+  "Ranked": {
+    "title": "Na {count, number} {tier} as fheàrr {where}",
+    "areas": "sgìrean",
+    "inPlace": "ann an {place}",
+    "inCoverage": "ann an {coverage}",
+    "subtitle": "{count, number} a' maidseadh · cuideam: {preset}",
+    "closeCall": "glè dhlùth",
+    "closeCallTitle": "A' fuireach sna {n, number} as fheàrr fo {pct, number}% de chuideaman creidsinneach",
+    "rankedBy": "{count, number} a' maidseadh · air an rangachadh a rèir {label}",
+    "overallScore": "iomlan {score}",
+    "typicalPrice": "prìs àbhaisteach {price}",
+    "note": "Briog air sgìre airson a sealltainn air a' mhapa.",
+    "closeCallNote": "“Glè dhlùth”: dh'fhaodadh atharraichean beaga air na cuideaman a chur a-mach às an liosta seo."
+  },
+  "Comparison": {
+    "title": "Taobh ri taobh",
+    "subtitle": "Cuideam: {preset}",
+    "overall": "Iomlan",
+    "note": "Tha clò trom a' comharrachadh an sgòr as fheàrr anns gach sreath. Tha sgìrean nas motha agus comhairlean nan cuibheasachdan air an cuideamachadh a rèir sluaigh."
+  },
+  "Explainer": {
+    "title": "Carson a tha {name} a' faighinn {score}",
+    "subtitle": "Tha gach cuspair a' cur a chuid den chuideam × a sgòr (cuideam: {preset})",
+    "notScored": "(gun sgòr)",
+    "caveats": "Rabhaidhean ({count, number})",
+    "sources": "Tùsan ({count, number})",
+    "dataAsOf": "dàta mar a bha e {date}",
+    "staleNewer": "chaidh eagran nas ùire fhoillseachadh",
+    "staleOld": "nas sine na a chuairt ùrachaidh àbhaisteach",
+    "note": "Tha sgòran gach taisbeanair 0–100 (nas àirde nas fheàrr)."
+  },
+  "Sql": {
+    "title": "Toradh na ceiste",
+    "rows": "{count, plural, one {# shreath} two {# shreath} few {# sreathan} other {# sreath}}",
+    "truncated": "(a' chiad 5,000)",
+    "download": "Luchdaich a-nuas CSV",
+    "showing": "A' sealltainn 200 sreath; tha a h-uile gin sa CSV."
+  },
+  "AreaPanel": {
+    "empty": "Briog air sgìre air a' mhapa (sùm a-steach airson nàbachdan fhaicinn) no faighnich dhen chuidiche mu àite.",
+    "loading": "A' luchdachadh…",
+    "error": "Cha b' urrainn dhuinn an sgìre seo a luchdachadh: {error}"
+  },
+  "Shortlist": {
+    "empty": "Gun sgìrean air an sàbhaladh fhathast. Cleachd “Cuir ris a' gheàrr-liosta” air sgìre, no iarr air a' chuidiche tè a shàbhaladh.",
+    "remove": "Thoir air falbh",
+    "compareThese": "Dèan coimeas eadar iad seo",
+    "compareFirst": "Dèan coimeas eadar a' chiad {count, number}",
+    "compareError": "Cha b' urrainn dhuinn coimeas a dhèanamh: {error}"
+  },
+  "Analyst": {
+    "sqlLabel": "SQL (DuckDB, leughadh a-mhàin) thar nan clàran lsoa, pois, areas, places, indicators",
+    "running": "A' ruith…",
+    "run": "Ruith a' cheist"
+  },
+  "Histogram": {
+    "caption": "{label}: nàbachdan a rèir sgòr",
+    "aria": "Histogram de {label}",
+    "selected": "air a thaghadh {value, number}",
+    "hover": "{lo}–{hi}: {count, plural, one {# nàbachd} two {# nàbachd} few {# nàbachdan} other {# nàbachd}}"
+  },
+  "Heatmap": {
+    "caption": "Dè cho mòr 's a tha taisbeanairean le sgòr a' tar-lùbadh (ρ Spearman thar gach nàbachd le sgòr)",
+    "aria": "Matrags co-dhàimh thaisbeanairean le sgòr",
+    "legendHint": "Tha bogsaichean a' buidhneachadh gach cuspair",
+    "pair": "{a} × {b}: ρ {rho}"
+  }
+}

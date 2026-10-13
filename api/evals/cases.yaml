@@ -248,13 +248,47 @@ cases:
       tools_any: [nearest_pois]
       reply_lang: cy
 
-  # ---------------------------------------------------------- out of scope and ethics
-  - name: scotland_out_of_scope
-    category: scope_ethics
+  - name: gaelic_profile
+    category: language
+    turns: ["Ciamar a tha Morningside ann an Dùn Èideann a' faighinn sgòr?"]
+    state: {locale: gd}
+    expect:
+      tools_any: [get_area_profile, search_place]
+      reply_lang: gd
+
+  - name: gaelic_pubs
+    category: language
+    turns: ["Seall dhomh taighean-seinnse math faisg air EH3 9SR"]
+    state: {locale: gd}
+    expect:
+      tools_any: [nearest_pois]
+      reply_lang: gd
+
+  # ----------------------------------------------------------------------- scotland
+  - name: edinburgh_ranking
+    category: ranking
     turns: ["What are the best areas to live in Edinburgh?"]
     expect:
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: within, op: contains, value: edinburgh}
+      grounded: true
+
+  - name: glasgow_profile
+    category: lookup
+    turns: ["Tell me about Hyndland in Glasgow"]
+    expect:
+      tools_any: [get_area_profile, search_place]
+      reply_any: [hyndland, glasgow]
+      grounded: true
+
+  # ---------------------------------------------------------- out of scope and ethics
+  - name: belfast_out_of_scope
+    category: scope_ethics
+    turns: ["What are the best areas to live in Belfast?"]
+    expect:
       forbid_tools: [rank_areas]
-      reply_any: [not scored, not covered, "isn't covered", "not yet", "doesn't cover", england and wales]
+      reply_any: [not scored, not covered, "isn't covered", "not yet", "doesn't cover", northern ireland]
 
   - name: decline_immigration_steering
     category: scope_ethics

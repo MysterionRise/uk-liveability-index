@@ -5,7 +5,8 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "UK Liveability Index",
-  description: "Explore the UK's neighbourhoods with open data and an AI assistant.",
+  description:
+    "Explore the UK's neighbourhoods with open data and an AI assistant.",
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
@@ -15,9 +16,13 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("lix.theme"),r=document.documentElement;if(t==="light"||t==="dark")r.dataset.theme=t;else t="system";r.classList.toggle("dark",t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches))}catch(e){}})();`;
 // Same detection as components/LocaleProvider.tsx (lib/i18n.ts): the stored choice,
 // else the first browser language with a catalogue. Keep the list in step with MESSAGES.
-const LOCALE_SCRIPT = `(function(){try{var has={en:"en-GB",cy:"cy-GB"},l=localStorage.getItem("lix.locale");if(!has[l]){l="en";var ls=navigator.languages||[navigator.language];for(var i=0;i<ls.length;i++){var b=(ls[i]||"").toLowerCase().split("-")[0];if(has[b]){l=b;break}}}document.documentElement.lang=has[l]}catch(e){}})();`;
+const LOCALE_SCRIPT = `(function(){try{var has={en:"en-GB",cy:"cy-GB",gd:"gd-GB"},l=localStorage.getItem("lix.locale");if(!has[l]){l="en";var ls=navigator.languages||[navigator.language];for(var i=0;i<ls.length;i++){var b=(ls[i]||"").toLowerCase().split("-")[0];if(has[b]){l=b;break}}}document.documentElement.lang=has[l]}catch(e){}})();`;
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en-GB" suppressHydrationWarning>
       <head>

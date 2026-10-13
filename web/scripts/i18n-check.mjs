@@ -31,10 +31,11 @@ for (const [locale, cat] of Object.entries(catalogues)) {
   const categories = new Intl.PluralRules(BCP47[locale] ?? locale).resolvedOptions().pluralCategories;
   for (const [k, msg] of Object.entries(keys)) {
     if (typeof msg !== "string" || !/\{\s*\w+\s*,\s*plural\s*,/.test(msg)) continue;
+    // Every category the language uses must be spelt out: "other" alone would show
+    // the wrong form for one, two or few in Welsh and Gaelic
     for (const c of categories) {
-      if (!new RegExp(`\\b${c}\\s*\\{`).test(msg) && !/\bother\s*\{/.test(msg)) problems.push(`${locale}: ${k} lacks plural form "${c}"`);
+      if (!new RegExp(`\\b${c}\\s*\\{`).test(msg)) problems.push(`${locale}: ${k} lacks plural form "${c}"`);
     }
-    if (!/\bother\s*\{/.test(msg)) problems.push(`${locale}: ${k} lacks plural form "other"`);
   }
 }
 

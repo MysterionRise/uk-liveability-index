@@ -1,0 +1,146 @@
+# Gàidhlig labels for the data: themes, indicators (label, description), presets, the
+# profile flags and the words for each nation's area tiers. English stays in
+# indicators.yaml and weights.yaml; anything missing here falls back to it. `_meta.status`
+# is "draft" until a fluent reviewer signs it off (see docs/i18n.md). Drafted 13 October
+# 2026 for the Scotland release (#69).
+_meta: {status: draft, reviewer: null, date: 2026-10-13}
+
+themes:
+  safety: {label: Sàbhailteachd, description: "Eucoir agus giùlan mì-shòisealta a chaidh a chlàradh far a bheil daoine a' fuireach."}
+  environment: {label: Àrainneachd, description: "Èadhar glan, sràidean sàmhach, craobhan agus àiteachan uaine faisg air làimh, agus cunnart tuil."}
+  health: {label: Seirbheisean slàinte, description: "Dè cho furasta 's a tha e do luchd-còmhnaidh dotair-teaghlaich, cungadair no fiaclair fhaicinn."}
+  education: {label: Sgoiltean agus cùram-chloinne, description: "Sgoiltean agus sgoiltean-àraich math taobh a-staigh ruigsinn."}
+  transport: {label: Còmhdhail agus ceangalachd, description: "Dè cho math 's a tha sgìre a' ceangal ri obraichean agus seirbheisean air gach dòigh, agus a bann-leathann."}
+  amenities: {label: Goireasan agus beatha na h-oidhche, description: "Bùthan, cafaidhean, taighean-seinnse math, cur-seachadan agus cultar faisg air làimh."}
+  housing: {label: Taigheadas agus ruigsinneachd, description: "Na chosgas dachaighean agus staid an stoc thaighean."}
+  community: {label: Coimhearsnachd agus sunnd, description: "Teachd-a-steach, obair agus slàinte nan daoine a tha a' fuireach ann."}
+
+presets:
+  balanced: {label: Cothromaichte, description: "Tha gach cuspair a' cunntadh gu co-ionann."}
+  family: {label: Teaghlach le clann, description: "Sgoiltean agus sgoiltean-àraich math, sàbhailteachd agus àiteachan uaine an toiseach."}
+  young_professional: {label: Proifeiseantach òg, description: "Ceanglaichean, rudan ri dhèanamh agus taighean-seinnse math; chan eil sgoiltean cho cudromach."}
+  retiree: {label: Air cluaineas, description: "Sàbhailteachd, seirbheisean slàinte, èadhar glan agus sgìre nas sàmhaiche."}
+  commuter: {label: Neach-siubhail, description: "Ceanglaichean luath ri obraichean, air còmhdhail phoblach gu h-àraidh."}
+
+units:
+  gbp: "£"
+  gbp_year: "£ sa bhliadhna"
+  pct: "%"
+  pct_homes: "% de dhachaighean"
+  pct_pupils: "% de sgoilearan"
+  pct_working_age: "% de dhaoine aois 16–64"
+  metres: meatairean
+  per_1000_year: "gach 1,000 luchd-còmhnaidh sa bhliadhna"
+  score: sgòr
+  score_100: "sgòr 0–100"
+  ugm3: "µg/m³"
+  index: "clàr-amais 0–1"
+  quality: "càileachd 0–1"
+  rating: "rangachadh 0–1 (Math = 0.75)"
+  rate: ìre
+  collisions_year: "tubaistean sa bhliadhna taobh a-staigh 500m"
+  patients_per_gp: "euslaintich gach dotair-teaghlaich làn-ùine"
+  attainment8: "Coileanadh 8"
+  buses_hour: "busaichean san uair"
+  years_income: "bliadhnaichean de theachd-a-steach"
+  years: bliadhnaichean
+  people_km2: "daoine gach km²"
+  radiance: "nW/cm²/sr"
+
+flags:
+  imputed: "Is e tuairmsean a th' anns na figearan eucoir an seo: chan eil Poileas Greater Manchester a' foillseachadh dàta aig ìre sràide."
+  low_n: "Cha deach ach beagan dhachaighean a reic an seo sa bhliadhna a dh'fhalbh, mar sin tha a' phrìs air a daingneachadh a dh'ionnsaigh na sgìre mun cuairt."
+  broadcast_lad: "Tha càileachd nan àrd-sgoiltean a' tighinn bho thoraidhean deuchainnean na comhairle gu lèir, oir chan eil a' Chuimrigh a' foillseachadh thoraidhean no ìrean sgrùdaidh airson gach sgoil."
+  not_available: "Chan eil cuid de thaisbeanairean ri fhaighinn san nàisean seo fhathast; tha an cuspair a' cleachdadh na tha aige."
+
+# What the interface calls each nation's areas (one, several)
+levels:
+  E:
+    low: {one: sgìre bheag, other: sgìrean beaga}
+    mid: {one: nàbachd, other: nàbachdan}
+    upper: {one: comhairle, other: comhairlean}
+  W:
+    low: {one: sgìre bheag, other: sgìrean beaga}
+    mid: {one: nàbachd, other: nàbachdan}
+    upper: {one: comhairle, other: comhairlean}
+  S:
+    low: {one: sòn dàta, other: sònaichean dàta}
+    mid: {one: sòn eadar-mheadhanach, other: sònaichean eadar-mheadhanach}
+    upper: {one: sgìre comhairle, other: sgìrean comhairle}
+
+indicators:
+  crime_violence: {label: Eucoirean fòirneart agus gnèitheasach, description: "Fòirneart agus eucoirean gnèitheasach a chaidh a chlàradh gach 1,000 luchd-còmhnaidh sa bhliadhna (cuibheas 36 mìosan)."}
+  crime_burglary: {label: Bristeadh a-steach, description: "Bristidhean a-steach a chaidh a chlàradh gach 1,000 luchd-còmhnaidh sa bhliadhna."}
+  crime_asb: {label: Giùlan mì-shòisealta, description: "Tachartasan giùlain mhì-shòisealta a chaidh aithris gach 1,000 luchd-còmhnaidh sa bhliadhna."}
+  crime_theft: {label: "Robaireachd, mèirle agus eucoir charbadan", description: "Robaireachd, mèirle bhon neach, eucoir charbadan agus mèirle bhaidhsagalan gach 1,000 luchd-còmhnaidh sa bhliadhna."}
+  crime_damage_disorder: {label: Milleadh eucorach agus òrdugh poblach, description: "Milleadh eucorach, losgadh-dhìol agus eucoirean òrduigh phoblaich gach 1,000 luchd-còmhnaidh sa bhliadhna."}
+  road_danger: {label: Tubaistean rathaid trom faisg air làimh, description: "Tubaistean rathaid anns an deach cuideigin a mharbhadh no a leòn gu trom taobh a-staigh 500m de dhachaighean, sa bhliadhna (cuibheas 5 bliadhna)."}
+  iod_crime: {label: Sgòr raon eucoir IoD 2025, description: "Cunnart modailte de dh'fhulangas pearsanta agus seilbhe (dàta 2021–2023)."}
+  recorded_crime: {label: Eucoir a chaidh a chlàradh (SIMD), description: "Eucoirean a chaidh a chlàradh gach 1,000 luchd-còmhnaidh sa bhliadhna ann an Clàr-amais Ioma-bhochdainn na h-Alba 2020, air an toirt gu sònaichean dàta 2022."}
+  no2: {label: Dà-ogsaid naitridean (NO₂), description: "NO₂ cùil cuibheasach bliadhnail far a bheil luchd-còmhnaidh a' fuireach (modail 1km Defra)."}
+  pm25: {label: Mìon-ghràineanan (PM2.5), description: "PM2.5 cùil cuibheasach bliadhnail far a bheil luchd-còmhnaidh a' fuireach (modail 1km Defra)."}
+  green_space_access: {label: Pàircean agus àiteachan uaine faisg air làimh, description: "Dorsan a-steach gu pàircean, gàrraidhean agus raointean-cluiche poblach taobh a-staigh coiseachd 1km, air an cuideamachadh a rèir astair."}
+  play_spaces: {label: Raointean-cluiche faisg air làimh, description: "Dorsan a-steach gu raointean-cluiche poblach taobh a-staigh 800m de dhachaighean, air an cuideamachadh a rèir astair."}
+  flood_risk: {label: Dachaighean ann an cunnart tuil, description: "Cuid de dhachaighean ann an cunnart àrd no meadhanach tuil bho aibhnichean, bhon mhuir no bho uisge-uachdair (co-dhiù 1% de sheans sa bhliadhna)."}
+  flood_rivers_sea: {label: Dachaighean ann an cunnart bho aibhnichean no bhon mhuir, description: "Cuid de dhachaighean ann an cunnart àrd no meadhanach tuil bho aibhnichean no bhon mhuir a-mhàin (co-dhiù 1% de sheans sa bhliadhna)."}
+  noise_exposure: {label: Dachaighean ann am fuaim còmhdhail no gnìomhachais, description: "Cuid de dhachaighean far a bheil fuaim mapaichte a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche (rathaidean agus rèile ann an Sasainn agus sa Chuimrigh; gach tùs mapaichte ann an Alba)."}
+  road_rail_noise: {label: Dachaighean ann am fuaim rathaid no rèile, description: "Cuid de dhachaighean far a bheil fuaim rathaid no rèile a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche, bho na mapaichean fuaim ro-innleachdail."}
+  tree_canopy: {label: Còmhdach chraobhan timcheall dhachaighean, description: "Cuid den fhearann taobh a-staigh 500m de dhachaighean a tha còmhdach-fearainn saideil a' seòrsachadh mar chòmhdach chraobhan (ESA WorldCover, 10m)."}
+  light_pollution: {label: Solas na h-oidhche, description: "Deàrrsadh oidhche cuibheasach taobh a-staigh 1km de dhachaighean, bho cho-mheasgachadh bliadhnail saideil VIIRS (nW/cm²/sr)."}
+  iod_outdoors: {label: Àrainneachd-còmhnaidh a-muigh IoD 2025, description: "Càileachd èadhair agus tubaistean trafaig rathaid (fo-raon IoD 2025)."}
+  hospital_ae_distance: {label: Astar chun an A&E as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun na roinn èiginn fo stiùir co-chomhairliche as fhaisge."}
+  hospital_distance: {label: Astar chun a' chùraim èiginnich as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun na roinn èiginn no an aonaid mhion-leòntan as fhaisge."}
+  gp_distance: {label: Astar chun a' chleachdaidh dhotair-teaghlaich as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun a' chleachdaidh dhotair-teaghlaich as fhaisge."}
+  patients_per_gp: {label: Euslaintich gach dotair-teaghlaich, description: "Euslaintich clàraichte gach dotair-teaghlaich teisteanaichte làn-ùine aig na cleachdaidhean a bhios luchd-còmhnaidh a' cleachdadh."}
+  gp_quality: {label: Rangachaidhean chleachdaidhean dhotairean-teaghlaich, description: "Rangachaidhean CQC nan cleachdaidhean dhotairean-teaghlaich air a bheil luchd-còmhnaidh clàraichte, air an cuideamachadh a rèir cia mheud a chleachdas gach fear."}
+  care_homes: {label: Dachaighean-cùraim le deagh rangachadh faisg air làimh, description: "Leapannan ann an dachaighean-cùraim air an rangachadh Math no Air leth le CQC taobh a-staigh 5km, air an cuideamachadh a rèir astair."}
+  pharmacy_distance: {label: Astar chun a' chungadair as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun a' chungadair coimhearsnachd NHS as fhaisge."}
+  dentist_distance: {label: Astar chun an fhiaclair NHS as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun a' chleachdaidh fhiaclaireachd le cùmhnant NHS as fhaisge."}
+  primary_school_quality: {label: Bun-sgoiltean math faisg air làimh, description: "Càileachd nan trì bun-sgoiltean stàite as fhaisge (Ofsted agus toraidhean), le feadhainn nas fhaisge a' cunntadh barrachd."}
+  secondary_school_quality: {label: Àrd-sgoiltean math faisg air làimh, description: "Càileachd nan trì àrd-sgoiltean stàite as fhaisge (sgrùdaidhean agus toraidhean), le feadhainn nas fhaisge a' cunntadh barrachd."}
+  school_choice: {label: Roghainn de sgoiltean math, description: "Bun-sgoiltean stàite math taobh a-staigh 2km agus àrd-sgoiltean taobh a-staigh 5km, air an cuideamachadh a rèir càileachd agus astair."}
+  primary_results: {label: Toraidhean bun-sgoile faisg air làimh, description: "Cuid de sgoilearan a' ruighinn na h-ìre ris am biodh dùil ann an leughadh, sgrìobhadh agus matamataig aig bun-sgoiltean stàite taobh a-staigh 2km (cuibheas 3 bliadhna), air an cuideamachadh a rèir astair."}
+  secondary_results: {label: Toraidhean àrd-sgoile faisg air làimh, description: "Sgòr Coileanadh 8 cuibheasach aig àrd-sgoiltean stàite taobh a-staigh 5km, air an cuideamachadh a rèir astair."}
+  nursery_access: {label: Sgoiltean-àraich math faisg air làimh, description: "Sgoiltean-àraich, ro-sgoiltean agus clasaichean-àraich sgoile taobh a-staigh 1km, gach tè air a cuideamachadh a rèir a h-ìre sgrùdaidh agus astair."}
+  connectivity_overall: {label: Ceangalachd iomlan, description: "Sgòr ceangalachd DfT thar gach dòigh-siubhail agus ceann-uidhe."}
+  connectivity_public_transport: {label: Ceangalachd còmhdhail phoblaich, description: "Sgòr ceangalachd DfT airson còmhdhail phoblaich gu gach ceann-uidhe."}
+  connectivity_walking: {label: Coiseachdachd, description: "Sgòr ceangalachd DfT airson coiseachd gu gach ceann-uidhe."}
+  connectivity_cycling: {label: Ceangalachd baidhsagail, description: "Sgòr ceangalachd DfT airson baidhsagal gu gach ceann-uidhe."}
+  access_deprivation: {label: Ruigsinneachd sheirbheisean (SIMD), description: "Raon ruigsinneachd cruinn-eòlasach Clàr-amais Ioma-bhochdainn na h-Alba 2020 (ùineachan dràibhidh agus còmhdhail phoblaich gu dotairean-teaghlaich, sgoiltean, bùthan, oifisean-puist agus stèiseanan peatrail), air an toirt gu sònaichean dàta 2022."}
+  station_distance: {label: Astar chun an stèisein as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun an stad rèile, metro no trama as fhaisge."}
+  rail_service: {label: Seirbheis rèile faisg air làimh, description: "Inntrigidhean agus fàgail stèisein bliadhnail (ORR) taobh a-staigh 2km de dhachaighean, air an cuideamachadh a rèir astair agus a' sàsachadh, gus am bi stèisean trang faisg air làimh a' cunntadh barrachd na stad beag."}
+  bus_frequency: {label: Tricead bhusaichean, description: "Busaichean san uair (làithean-seachdain, 07:00–19:00) aig an stad as trainge taobh a-staigh 400m de dhachaighean."}
+  gigabit_broadband: {label: Bann-leathann gigabit, description: "Cuid de dhachaighean a gheibh bann-leathann comasach air gigabit (làn-fhreumhan no càball)."}
+  slow_broadband: {label: Dachaighean gun bhann-leathann ceart, description: "Cuid de dhachaighean nach fhaigh bann-leathann 10 Mbit/s bho loidhne shuidhichte no uèirleas suidhichte."}
+  well_run_pubs: {label: Taighean-seinnse air an deagh ruith faisg air làimh, description: "Taighean-seinnse taobh a-staigh coiseachd 15 mionaidean le rangachadh slàinteachas bìdh de 4 no 5 bho na trì bliadhna a dh'fhalbh, air an cuideamachadh a rèir astair."}
+  food_and_drink: {label: Cafaidhean agus taighean-bìdh, description: "Cafaidhean agus taighean-bìdh taobh a-staigh 800m, air an cuideamachadh a rèir astair."}
+  supermarket_distance: {label: Astar chun a' mhòr-bhùtha as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun a' mhòr-bhùtha as fhaisge."}
+  shops: {label: Bùthan faisg air làimh, description: "Bùthan de gach seòrsa taobh a-staigh 800m, air an cuideamachadh a rèir astair."}
+  leisure: {label: Goireasan spòrs agus fallaineachd, description: "Ionadan spòrs, taighean-spòrs agus amaran-snàimh fosgailte don phoball taobh a-staigh 2km, air an cuideamachadh a rèir astair (OpenStreetMap)."}
+  leisure_facilities: {label: Goireasan spòrs (Active Places), description: "Tallachan spòrs, taighean-spòrs, amaran, stiùidiothan, cùirtean agus raointean fosgailte don phoball taobh a-staigh 2km ann an clàr Active Places Sport England, air an cuideamachadh a rèir astair."}
+  swimming_pool_distance: {label: Astar chun an amair-snàimh phoblaich as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun an amair-snàimh as fhaisge a tha fosgailte don phoball."}
+  culture: {label: "Leabharlannan, taighean-dhealbh, taighean-cluiche agus taighean-tasgaidh", description: "Leabharlannan, taighean-dhealbh, taighean-cluiche, ionadan ealain, taighean-tasgaidh agus gailearaidhean taobh a-staigh 2km."}
+  fast_food: {label: Bùthan biadh-luath faisg air làimh, description: "Bùthan biadh-luath taobh a-staigh 800m."}
+  gambling: {label: Bùthan geall agus casinothan faisg air làimh, description: "Bùthan geall, ionadan gheall agus casinothan taobh a-staigh 800m."}
+  house_price: {label: Prìs taighe àbhaisteach, description: "Prìs reic mheadhanach thar nan 12 mìosan a dh'fhalbh, air a daingneachadh a dh'ionnsaigh na sgìre mun cuairt far nach eil ach beagan reic."}
+  housing_condition: {label: Staid taigheadais, description: "Raon taigheadais a' chlàr-amais bochdainn (dachaighean ann an droch staid no gun teasachadh meadhanach; ann an Alba, tuilleadh is làn agus gun teasachadh meadhanach)."}
+  price_change: {label: Atharrachadh prìsean thaighean, description: "Atharrachadh sa phrìs reic mheadhanach, na 12 mìosan a dh'fhalbh an aghaidh nan 12 mìosan roimhe."}
+  council_tax: {label: Cìs comhairle (Bann D), description: "Cìs comhairle bhliadhnail air dachaigh Bann D, a' gabhail a-steach cosgaisean siorrachd, poilis, teine agus paraiste cuibheasach."}
+  price_to_income: {label: Prìs an coimeas ri teachd-a-steach ionadail, description: "Prìs taighe àbhaisteach air a roinn le teachd-a-steach lom teaghlaich cuibheasach na sgìre."}
+  new_builds: {label: Dachaighean a thogadh bho 2000, description: "Cuid de dhachaighean a thogadh ann an 2000 no nas fhaide air adhart."}
+  period_homes: {label: Dachaighean a thogadh ro 1919, description: "Cuid de dhachaighean a thogadh ro 1919."}
+  lower_band_homes: {label: Dachaighean ann am bannan cìs comhairle A–B, description: "Cuid de dhachaighean anns an dà bhann cìs comhairle as ìsle (na dachaighean as saoire ann an luachan 1991)."}
+  income_deprivation: {label: Bochdainn teachd-a-steach, description: "Cuid de luchd-còmhnaidh air teachd-a-steach ìosal (raon teachd-a-steach a' chlàr-amais bochdainn)."}
+  employment_deprivation: {label: Bochdainn cosnaidh, description: "Cuid de luchd-còmhnaidh aois-obrach a tha gun obair gun an toil (raon cosnaidh a' chlàr-amais bochdainn)."}
+  claimant_rate: {label: Ìre luchd-tagraidh, description: "Luchd-còmhnaidh a' tagradh shochairean co-cheangailte ri cion-cosnaidh, mar chuid den fheadhainn aois 16–64 (am mìos as ùire)."}
+  household_income: {label: Teachd-a-steach teaghlaich, description: "Teachd-a-steach lom teaghlaich cuibheasach san sgìre nas fharsainge (MSOA), ro chosgaisean taigheadais."}
+  health_deprivation: {label: Slàinte agus ciorram, description: "Bàs ro-luath, tinneas agus ciorram (raon bochdainn slàinte agus ciorraim a' chlàr-amais bochdainn)."}
+  life_expectancy: {label: Dùil-beatha, description: "Dùil-beatha aig breith san sgìre nas fharsainge (MSOA), cuibheas fhear is bhoireannach, 2019–23."}
+  good_health: {label: Deagh shlàinte (fèin-aithris), description: "Luchd-còmhnaidh a' toirt cunntas air an slàinte mar mhath no glè mhath (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
+  imd: {label: Clàr-amais Ioma-bhochdainn, description: "Sgòr bochdainn iomlan; gun sgòr oir tha a raointean a' tar-lùbadh thaisbeanairean eile."}
+  population_density: {label: Dùmhlachd sluaigh, description: "Luchd-còmhnaidh gach cilemeatair ceàrnagach (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
+  households_with_children: {label: Teaghlaichean le clann eisimeileach, description: "Cuid de theaghlaichean le clann eisimeileach (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
+  aged_65_plus: {label: Luchd-còmhnaidh aois 65 is barrachd, description: "Cuid de luchd-còmhnaidh aois 65 no nas sine (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
+  owner_occupied: {label: Dachaighean le sealbhadair a' fuireach annta, description: "Cuid de theaghlaichean a tha nan sealbhadairean air an dachaigh gu tur no le morgaids (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
+  no_car: {label: Teaghlaichean gun chàr, description: "Cuid de theaghlaichean gun chàr no bhan (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
+  sustainable_commute: {label: "Coiseachd, baidhsagal no còmhdhail phoblach gu obair", description: "Cuid de luchd-obrach a' siubhal gu obair air chois, air baidhsagal no air còmhdhail phoblaich (Cunntas-sluaigh 2021, rè bacaidhean COVID-19; 2022 ann an Alba)."}

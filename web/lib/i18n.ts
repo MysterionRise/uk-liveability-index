@@ -8,6 +8,7 @@
  */
 import cy from "@/messages/cy.json";
 import en from "@/messages/en.json";
+import gd from "@/messages/gd.json";
 
 export const LOCALES = ["en", "cy", "gd", "ga"] as const;
 export type Locale = (typeof LOCALES)[number];
@@ -15,11 +16,26 @@ export const DEFAULT_LOCALE: Locale = "en";
 export const LOCALE_KEY = "lix.locale";
 
 /** The language's own name, as the switcher shows it */
-export const AUTONYMS: Record<Locale, string> = { en: "English", cy: "Cymraeg", gd: "Gàidhlig", ga: "Gaeilge" };
+export const AUTONYMS: Record<Locale, string> = {
+  en: "English",
+  cy: "Cymraeg",
+  gd: "Gàidhlig",
+  ga: "Gaeilge",
+};
 /** "draft" in each language, for the switcher: the option is in that language already. */
-export const DRAFT_WORD: Record<Locale, string> = { en: "draft", cy: "drafft", gd: "dreachd", ga: "dréacht" };
+export const DRAFT_WORD: Record<Locale, string> = {
+  en: "draft",
+  cy: "drafft",
+  gd: "dreachd",
+  ga: "dréacht",
+};
 /** BCP 47 tags for <html lang> and Intl formatting */
-export const BCP47: Record<Locale, string> = { en: "en-GB", cy: "cy-GB", gd: "gd-GB", ga: "ga-IE" };
+export const BCP47: Record<Locale, string> = {
+  en: "en-GB",
+  cy: "cy-GB",
+  gd: "gd-GB",
+  ga: "ga-IE",
+};
 
 export interface CatalogueMeta {
   status: "draft" | "reviewed";
@@ -30,10 +46,16 @@ export interface CatalogueMeta {
 type Messages = Record<string, unknown> & { _meta?: CatalogueMeta };
 
 /** Catalogues shipped in this build; a language without one falls back to English. */
-export const MESSAGES: Partial<Record<Locale, Messages>> = { en: en as Messages, cy: cy as Messages };
+export const MESSAGES: Partial<Record<Locale, Messages>> = {
+  en: en as Messages,
+  cy: cy as Messages,
+  gd: gd as Messages,
+};
 
 export function isLocale(value: unknown): value is Locale {
-  return typeof value === "string" && (LOCALES as readonly string[]).includes(value);
+  return (
+    typeof value === "string" && (LOCALES as readonly string[]).includes(value)
+  );
 }
 
 /** Locales with a catalogue, in LOCALES order */
@@ -46,7 +68,10 @@ export function catalogueMeta(locale: Locale): CatalogueMeta {
 }
 
 /** The locale for a browser: the stored choice, else the first supported browser language. */
-export function detectLocale(stored: string | null, languages: readonly string[]): Locale {
+export function detectLocale(
+  stored: string | null,
+  languages: readonly string[],
+): Locale {
   if (isLocale(stored) && MESSAGES[stored]) return stored;
   for (const tag of languages) {
     const base = tag.toLowerCase().split("-")[0];

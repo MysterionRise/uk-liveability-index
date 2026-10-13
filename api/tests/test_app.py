@@ -159,9 +159,9 @@ def test_openrouter_settings(monkeypatch):
 
 
 def test_unknown_place_goes_back_to_the_model(client):
-    # The scripted model ranks "Edinburgh"; the tool can't find it, and the model is told
+    # The scripted model ranks "Belfast"; the tool can't find it, and the model is told
     # so (a retry prompt) instead of the whole turn failing
-    events = _agui(client, "What are the best areas in Edinburgh?")
+    events = _agui(client, "What are the best areas in Belfast?")
     types = [e["type"] for e in events]
     assert "RUN_ERROR" not in types and types[-1] == "RUN_FINISHED"
     text = "".join(e.get("delta", "") for e in events if e["type"] == "TEXT_MESSAGE_CONTENT")

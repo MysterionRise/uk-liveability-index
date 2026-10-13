@@ -108,7 +108,7 @@ def stage_noise() -> pl.LazyFrame:
         )
         frames.append(df)
     columns = ["lsoa21cd", "n_postcodes", *[f"share_{k}_60" for k in KINDS]]
-    columns += ["share_any_55", "share_any_65", "mean_db"]
+    columns += ["share_any_60", "share_any_55", "share_any_65", "mean_db"]
     out = pl.concat(frames, how="diagonal_relaxed").sort("lsoa21cd")
     for kind in KINDS:
         if f"share_{kind}_60" not in out.columns:

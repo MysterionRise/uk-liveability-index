@@ -43,6 +43,25 @@ MESSAGES: dict[str, dict[str, str]] = {
         "{still_works}",
         "unknown": "Aeth rhywbeth o'i le wrth i mi ateb; ceisiwch ofyn eto. {still_works}",
     },
+    "gd": {
+        "still_works": "Tha am mapa, na cuideaman agus duilleagan nan sgìrean ag obair fhathast.",
+        "usage_limit": "Bha feum air barrachd cheumannan na tha ceadaichte dhomh airson aon "
+        "cheist, mar sin stad mi. Feuch ri aon rud iarraidh aig an aon àm.",
+        "tool_retry": "Cha b' urrainn dhomh an dàta a bha a dhìth orm fhaighinn airson sin. "
+        "Feuch ri a chur ann an dòigh eile, no ainmich baile no còd-puist.",
+        "key_rejected": "Chaidh iuchair API a' chuidiche a dhiùltadh; thoir sùil oirre ann an "
+        ".env. {still_works}",
+        "out_of_credit": "Tha cunntas modail a' chuidiche air ruith a-mach à creideas. "
+        "{still_works}",
+        "busy": "Tha am modail cànain trang an-dràsta; feuch a-rithist ann am mionaid. "
+        "{still_works}",
+        "model_problem": "Bha duilgheadas aig seirbheis a' mhodail chànain; feuch a-rithist. "
+        "{still_works}",
+        "no_response": "Cha do fhreagair am modail cànain; feuch a-rithist ann an tiotan. "
+        "{still_works}",
+        "unknown": "Chaidh rudeigin ceàrr fhad 's a bha mi a' freagairt; feuch ri faighneachd "
+        "a-rithist. {still_works}",
+    },
 }
 
 
