@@ -52,7 +52,7 @@ This project's outputs are built from the datasets below. Reuse must keep these 
 - National Records of Scotland, Scotland's Census 2022, licensed under the Open Government Licence v3.0. (`nrs_oa22_population`, `scotland_census_2022`)
 - National Records of Scotland, Small area population estimates, licensed under the Open Government Licence v3.0. (`nrs_sape`)
 - Scottish Government, Scottish Index of Multiple Deprivation 2020, licensed under the Open Government Licence v3.0. (`simd_2020_ranks`, `simd_2020_indicators`, `simd_postcode_lookup`)
-- Registers of Scotland, Small area statistics, licensed under the Open Government Licence v3.0. (`ros_house_prices`)
+- Registers of Scotland, Residential properties sales and price, licensed under the Open Government Licence v3.0. (`ros_house_prices`)
 - Scottish Government, Council Tax datasets, licensed under the Open Government Licence v3.0. (`sg_council_tax`)
 - National Records of Scotland, Small area statistics on households and dwellings, licensed under the Open Government Licence v3.0. (`nrs_dwellings_by_band`)
 - Copyright Scottish Government, contains Ordnance Survey data © Crown copyright and database right 2024; school data created and maintained by Scottish Local Government (Local Government Information House Limited); licensed under the Open Government Licence v3.0. (`sg_school_roll`)

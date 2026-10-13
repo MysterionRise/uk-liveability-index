@@ -2,23 +2,44 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { MIN_THEME_COVERAGE, aggregate, percentileRank, percentileWithin, scoreLsoas } from "./scoring";
+import {
+  MIN_THEME_COVERAGE,
+  aggregate,
+  percentileRank,
+  percentileWithin,
+  scoreLsoas,
+} from "./scoring";
 
 // Shared with core/tests/test_golden.py: both implementations must match
 const golden = JSON.parse(
-  readFileSync(path.resolve(import.meta.dirname, "../../contracts/fixtures/scoring_golden.json"), "utf8"),
+  readFileSync(
+    path.resolve(
+      import.meta.dirname,
+      "../../contracts/fixtures/scoring_golden.json",
+    ),
+    "utf8",
+  ),
 );
 
-const toArray = (xs: (number | null)[]) => Float64Array.from(xs, (x) => (x === null ? NaN : x));
+const toArray = (xs: (number | null)[]) =>
+  Float64Array.from(xs, (x) => (x === null ? NaN : x));
 const close = (a: number, b: number | null) =>
   b === null ? Number.isNaN(a) : Math.abs(a - b) < 1e-9;
 
 describe("golden cases match the Python scorer", () => {
   const norms = Object.fromEntries(
-    golden.indicators.map((i: { id: string }) => [i.id, toArray(golden.normalised[`n__${i.id}`])]),
+    golden.indicators.map((i: { id: string }) => [
+      i.id,
+      toArray(golden.normalised[`n__${i.id}`]),
+    ]),
   );
   const indicators = golden.indicators.map(
-    (i: { id: string; theme: string; weight: number; coverage?: string[] }) => ({
+    (i: {
+      id: string;
+      theme: string;
+      weight: number;
+      coverage?: string[];
+    }) => ({
       id: i.id,
       theme: i.theme,
       weight: i.weight,
@@ -39,9 +60,13 @@ describe("golden cases match the Python scorer", () => {
         MIN_THEME_COVERAGE,
         groups,
         golden.theme_gaps,
+        true,
       );
       const expected = golden.expected[name];
-      for (const [col, values] of Object.entries(expected) as [string, (number | null)[]][]) {
+      for (const [col, values] of Object.entries(expected) as [
+        string,
+        (number | null)[],
+      ][]) {
         let got: Float64Array | undefined;
         if (col === "overall") got = r.overall;
         else if (col === "overall_pct") got = r.overallPercentile;
@@ -60,7 +85,9 @@ describe("golden cases match the Python scorer", () => {
                   : t.coverage;
         }
         if (!got) throw new Error(`no column for ${col}`);
-        values.forEach((v, i) => expect(close(got[i], v), `${name}.${col}[${i}]`).toBe(true));
+        values.forEach((v, i) =>
+          expect(close(got[i], v), `${name}.${col}[${i}]`).toBe(true),
+        );
       }
     });
   }
@@ -68,16 +95,33 @@ describe("golden cases match the Python scorer", () => {
 
 describe("helpers", () => {
   it("percentileRank averages ties and keeps NaN", () => {
-    expect([...percentileRank(toArray([1, 2, 2, 3, null]))]).toEqual([0, 50, 50, 100, NaN]);
+    expect([...percentileRank(toArray([1, 2, 2, 3, null]))]).toEqual([
+      0,
+      50,
+      50,
+      100,
+      NaN,
+    ]);
     expect([...percentileRank(toArray([7, null]))]).toEqual([50, NaN]);
   });
 
   it("scoreLsoas with groups adds within-group percentiles", () => {
     const norms = { a: toArray([10, 20, 30, 40]) };
-    const r = scoreLsoas(norms, [{ id: "a", theme: "t", weight: 1 }], { t: 1 }, {}, 0.5, ["x", "x", "y", "y"]);
+    const r = scoreLsoas(
+      norms,
+      [{ id: "a", theme: "t", weight: 1 }],
+      { t: 1 },
+      {},
+      0.5,
+      ["x", "x", "y", "y"],
+      undefined,
+      true,
+    );
     expect([...r.themes.t.percentileWithin!]).toEqual([0, 100, 0, 100]);
     expect([...r.overallPercentileWithin!]).toEqual([0, 100, 0, 100]);
-    [...r.overallPercentile].forEach((v, i) => expect(v).toBeCloseTo([0, 100 / 3, 200 / 3, 100][i], 9));
+    [...r.overallPercentile].forEach((v, i) =>
+      expect(v).toBeCloseTo([0, 100 / 3, 200 / 3, 100][i], 9),
+    );
   });
 
   it("percentileWithin ranks inside each group", () => {
@@ -86,7 +130,11 @@ describe("helpers", () => {
   });
 
   it("aggregate is population weighted and skips NaN", () => {
-    const m = aggregate(toArray([10, 20, null]), ["a", "a", "a"], toArray([1, 3, 5]));
+    const m = aggregate(
+      toArray([10, 20, null]),
+      ["a", "a", "a"],
+      toArray([1, 3, 5]),
+    );
     expect(m.get("a")).toBeCloseTo(17.5);
   });
 });

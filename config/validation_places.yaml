@@ -64,10 +64,11 @@ places:
 
   - name: Niddrie
     local_authority: City of Edinburgh
-    why: "Among Edinburgh's most deprived neighbourhoods; cheap homes"
+    why: "Among Edinburgh's most deprived neighbourhoods: homes well under the city's prices, many in poor condition"
     checks:
       - {theme: community, op: le, value: 35, anchor: true}
-      - {theme: housing, op: ge, value: 50, anchor: true}
+      - {indicator: house_price, op: le, value: 240000, anchor: true}  # Edinburgh's median is about £265k
+      - {indicator: housing_condition, op: ge, value: 75}  # the SIMD housing domain (overcrowding, no central heating)
       - {flag: not_available, anchor: true}
 
   - name: Bearsden

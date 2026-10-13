@@ -10,7 +10,8 @@ const CELL = 9;
 const LABEL_W = 132;
 
 /** Diverging fill: red (−1) through neutral grey (0) to blue (+1), mixed in OKLab. */
-function fill(rho: number): string {
+function fill(rho: number | null): string {
+  if (rho === null) return "transparent"; // no area in common
   const pct = Math.round(Math.min(Math.abs(rho), 1) * 100);
   const pole = rho < 0 ? "var(--div-neg)" : "var(--div-pos)";
   return `color-mix(in oklab, ${pole} ${pct}%, var(--div-mid))`;
@@ -34,7 +35,11 @@ export function CorrelationHeatmap() {
     if (last && last.theme === t) last.end = k;
     else blocks.push({ start: k, end: k, theme: t });
   });
-  const h = hover && { a: label(c.ids[hover.i]), b: label(c.ids[hover.j]), rho: c.rho[hover.i][hover.j] };
+  const h = hover && {
+    a: label(c.ids[hover.i]),
+    b: label(c.ids[hover.j]),
+    rho: c.rho[hover.i][hover.j],
+  };
 
   return (
     <figure data-testid="correlations">
@@ -55,7 +60,11 @@ export function CorrelationHeatmap() {
             y={i * CELL + CELL - 1.5}
             textAnchor="end"
             fontSize={8}
-            fill={hover && (hover.i === i || hover.j === i) ? "var(--text-primary)" : "var(--text-muted)"}
+            fill={
+              hover && (hover.i === i || hover.j === i)
+                ? "var(--text-primary)"
+                : "var(--text-muted)"
+            }
           >
             {label(id).length > 26 ? `${label(id).slice(0, 25)}…` : label(id)}
           </text>
@@ -92,11 +101,23 @@ export function CorrelationHeatmap() {
         <span>−1</span>
         <span
           className="h-2 w-28 rounded-sm"
-          style={{ background: "linear-gradient(to right, var(--div-neg), var(--div-mid), var(--div-pos))" }}
+          style={{
+            background:
+              "linear-gradient(to right, var(--div-neg), var(--div-mid), var(--div-pos))",
+          }}
         />
         <span>+1</span>
-        <span className="ml-auto min-h-[1em] text-[var(--text-secondary)]" aria-live="polite">
-          {h ? t("pair", { a: h.a, b: h.b, rho: h.rho.toFixed(2) }) : t("legendHint")}
+        <span
+          className="ml-auto min-h-[1em] text-[var(--text-secondary)]"
+          aria-live="polite"
+        >
+          {h
+            ? t("pair", {
+                a: h.a,
+                b: h.b,
+                rho: h.rho === null ? "–" : h.rho.toFixed(2),
+              })
+            : t("legendHint")}
         </span>
       </div>
     </figure>

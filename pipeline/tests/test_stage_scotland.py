@@ -107,3 +107,41 @@ def test_scottish_census_table_maps_onto_census_2021_columns(tmp_path, monkeypat
     out = scotland_census_table("census_ts045")
     assert out.rows() == [("S01000001", 491.0, 79.0)]
     assert out.columns == ["lsoa21cd", "total", "no_cars_or_vans_in_household"]
+
+
+def test_registers_of_scotland_series_is_pooled_per_zone():
+    from lix_pipeline.stage.price_paid import _ros_summary, _ros_zone_years
+
+    rows = [
+        ("S01000001", "2011 Data Zones", "2022", "Count", "10"),
+        ("S01000001", "2011 Data Zones", "2022", "Median", "100000"),
+        ("S01000001", "2011 Data Zones", "2023", "Count", "20"),
+        ("S01000001", "2011 Data Zones", "2023", "Median", "160000"),
+        ("S01000001", "2011 Data Zones", "2023", "Mean", "170000"),
+        ("S01000002", "2011 Data Zones", "2023", "Count", "3"),  # under five: no price
+        ("S02000001", "2011 Intermediate Zones", "2023", "Median", "150000"),
+    ]
+    raw = pl.DataFrame(
+        {
+            "GeographyCode": [r[0] for r in rows],
+            "GeographyType": [r[1] for r in rows],
+            "DateCode": [r[2] for r in rows],
+            "Measurement": [r[3] for r in rows],
+            "Value": [r[4] for r in rows],
+        }
+    )
+    zone_years = _ros_zone_years(raw)
+    assert zone_years.columns == ["dz11cd", "year", "sales", "median"]
+    assert zone_years.height == 3  # the intermediate zone and the mean are left out
+    small = zone_years.filter(pl.col("dz11cd") == "S01000002").row(0, named=True)
+    assert small["sales"] == 3 and small["median"] is None
+
+    summary = _ros_summary(zone_years, 2023).sort("dz11cd")
+    a = summary.row(0, named=True)
+    assert a["median_price_12m"] == 160_000 and a["transaction_count_12m"] == 20
+    assert a["median_prev"] == 100_000
+    assert a["transaction_count_5y"] == 30
+    assert a["median_price_5y"] == pytest.approx((100_000 * 10 + 160_000 * 20) / 30)
+    b = summary.row(1, named=True)
+    assert b["median_price_12m"] is None and b["median_price_5y"] is None
+    assert b["transaction_count_12m"] == 3

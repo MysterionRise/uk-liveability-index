@@ -15,6 +15,7 @@ the same maths as ``lix_core.scoring`` whenever weights change.
 
 import hashlib
 import json
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -196,10 +197,14 @@ def correlation_matrix(features: pl.DataFrame) -> dict:
     scored = sorted(catalogue.scored(), key=lambda i: (i.theme, i.id))
     ids = [i.id for i in scored if f"n__{i.id}" in features.columns]
     rho = features.select(f"n__{i}" for i in ids).to_pandas().corr(method="spearman")
+    # Two indicators with no area in common (one nation's substitute for another's
+    # measure) have no correlation: null, never NaN, which is not JSON
     return {
         "ids": ids,
         "themes": [next(i.theme for i in scored if i.id == iid) for iid in ids],
-        "rho": [[round(float(v), 2) for v in row] for row in rho.to_numpy()],
+        "rho": [
+            [None if math.isnan(v) else round(float(v), 2) for v in row] for row in rho.to_numpy()
+        ],
     }
 
 
@@ -331,6 +336,7 @@ def build_serve() -> dict[str, Path]:
                 correlations=correlation_matrix(features),
                 area_counts=area_counts,
             ),
+            allow_nan=False,
             indent=2,
             default=str,
         )

@@ -1,6 +1,5 @@
 """HM Land Registry Price Paid → median prices and sales counts per LSOA (England and Wales)."""
 
-import re
 from datetime import date
 from pathlib import Path
 
@@ -160,119 +159,119 @@ def stage_price_paid(
     return df.lazy()
 
 
-def _ros_sheet(reader, pattern: str):
-    """A Registers of Scotland sheet whose name matches ``pattern`` (case apart), with its
-    header found by the first row that names a code column."""
-    name = next((n for n in reader.sheet_names if re.search(pattern, n, re.I)), None)
-    if name is None:
-        return None
-    probe = reader.load_sheet_by_name(name, header_row=None, n_rows=15).to_polars()
-    header = next(
-        (
-            i
-            for i, row in enumerate(probe.rows())
-            if any(re.search(r"(?i)data ?zone|intermediate|code", str(v) or "") for v in row)
-        ),
-        0,
+ROS_FILE = "ros_house_prices.csv"
+
+
+def _ros_zone_years(raw: pl.DataFrame) -> pl.DataFrame:
+    """Registers of Scotland's long table → one row per 2011 Data Zone and calendar year
+    with the sales count and the median price (null where sales were under five)."""
+    df = raw.filter(
+        (pl.col("GeographyType") == "2011 Data Zones")
+        & pl.col("Measurement").is_in(["Count", "Median"])
+    ).select(
+        pl.col("GeographyCode").alias("dz11cd"),
+        pl.col("DateCode").cast(pl.Int32, strict=False).alias("year"),
+        "Measurement",
+        pl.col("Value").cast(pl.Float64, strict=False).alias("value"),
     )
-    df = reader.load_sheet_by_name(name, header_row=header).to_polars()
-    return df.rename({c: " ".join(str(c).split()) for c in df.columns})
+    out = df.pivot(
+        on="Measurement", index=["dz11cd", "year"], values="value", aggregate_function="first"
+    ).rename({"Count": "sales", "Median": "median"}, strict=False)
+    for c in ("sales", "median"):
+        if c not in out.columns:
+            out = out.with_columns(pl.lit(None, dtype=pl.Float64).alias(c))
+    return out.filter(pl.col("year").is_not_null()).sort("dz11cd", "year")
 
 
-def _ros_table(df: pl.DataFrame, code_prefix: str) -> pl.DataFrame:
-    """One Registers of Scotland sheet → code, year, sales, median (the columns are found
-    by their names, which the workbook may spell in several ways)."""
-
-    def find(*patterns: str) -> str | None:
-        for pattern in patterns:
-            found = next((c for c in df.columns if re.search(pattern, c, re.I)), None)
-            if found:
-                return found
-        return None
-
-    code = find(r"zone.*code", r"^code$", r"code")
-    year = find(r"^year$", r"year")
-    sales = find(r"sales", r"number", r"count", r"volume")
-    median = find(r"median")
-    if not (code and year and sales and median):
-        raise ValueError(f"Registers of Scotland sheet lacks columns among {df.columns}")
-    return df.select(
-        pl.col(code).cast(pl.Utf8).str.strip_chars().alias("code"),
-        pl.col(year).cast(pl.Utf8).str.extract(r"(\d{4})").cast(pl.Int32).alias("year"),
-        pl.col(sales).cast(pl.Float64, strict=False).alias("sales"),
-        pl.col(median).cast(pl.Float64, strict=False).alias("median"),
-    ).filter(pl.col("code").str.starts_with(code_prefix) & pl.col("year").is_not_null())
-
-
-def _scotland() -> pl.DataFrame | None:
-    """Scottish Data Zones from Registers of Scotland's small-area statistics (an annual
-    workbook downloaded by hand): the latest year's median and sales as the 12-month
-    figures, the five latest years pooled (sales-weighted mean of the annual medians) as
-    the five-year ones, and the Intermediate Zone's median where a zone's sales are
-    suppressed (under five), flagged ``broadcast_msoa``. None when the file is absent."""
-    import fastexcel
-
-    folder = data_dir("manual") / "ros_house_prices"
-    files = sorted(folder.glob("*.xlsx"))
-    if not files:
-        logger.warning(f"No Registers of Scotland workbook under {folder}: Scottish prices skipped")
-        return None
-    reader = fastexcel.read_excel(files[-1])
-    dz = _ros_sheet(reader, r"data ?zone")
-    iz = _ros_sheet(reader, r"intermediate")
-    if dz is None:
-        raise ValueError(f"No Data Zone sheet among {reader.sheet_names}")
-    zones = _ros_table(dz, "S01")
-    latest = int(zones["year"].max())
-    recent = zones.filter(pl.col("year") > latest - 5)
-    pooled = recent.group_by("code").agg(
+def _ros_summary(zone_years: pl.DataFrame, latest: int) -> pl.DataFrame:
+    """Per 2011 zone: the latest year's median and sales, the year before's median, and
+    the latest five years pooled (the sales-weighted mean of the annual medians, the
+    sales summed)."""
+    recent = zone_years.filter(pl.col("year") > latest - 5)
+    pooled = recent.group_by("dz11cd").agg(
         pl.col("sales").sum().alias("transaction_count_5y"),
         (
             (pl.col("median") * pl.col("sales")).sum()
             / pl.col("sales").filter(pl.col("median").is_not_null()).sum()
-        ).alias("median_price_5y"),
+        )
+        .fill_nan(None)
+        .alias("median_price_5y"),
     )
-    this_year = zones.filter(pl.col("year") == latest).select(
-        "code",
+    this_year = zone_years.filter(pl.col("year") == latest).select(
+        "dz11cd",
         pl.col("median").alias("median_price_12m"),
         pl.col("sales").alias("transaction_count_12m"),
     )
-    previous = zones.filter(pl.col("year") == latest - 1).select(
-        "code", pl.col("median").alias("median_prev")
+    previous = zone_years.filter(pl.col("year") == latest - 1).select(
+        "dz11cd", pl.col("median").alias("median_prev")
+    )
+    return this_year.join(previous, on="dz11cd", how="full", coalesce=True).join(
+        pooled, on="dz11cd", how="full", coalesce=True
+    )
+
+
+def _scotland() -> pl.DataFrame | None:
+    """Scottish Data Zones from Registers of Scotland's small-area series (annual, on the
+    2011 zones, prices suppressed under five sales), brought onto the 2022 zones through
+    the postcode crosswalk: medians as population-weighted means, sales apportioned. The
+    latest calendar year stands for the 12 months, the latest five pooled for the five
+    years. A zone with no price takes its Intermediate Zone's (the population-weighted
+    mean of its sibling zones' medians), flagged ``broadcast_msoa``. None until fetched."""
+    from lix_pipeline.geo.crosswalk import crosswalk
+
+    path = data_dir("raw") / "ros_house_prices" / ROS_FILE
+    if not path.exists():
+        logger.warning(f"{path} not fetched: Scottish prices skipped")
+        return None
+    raw = pl.read_csv(path, infer_schema_length=0, encoding="utf8-lossy")
+    zone_years = _ros_zone_years(raw)
+    latest = int(zone_years["year"].max())
+    per_zone = _ros_summary(zone_years, latest)
+    weights = pl.read_parquet(data_dir("staged") / "dz11_dz22.parquet")
+    prices = crosswalk(
+        per_zone, weights, ["median_price_12m", "median_prev", "median_price_5y"], how="mean"
+    )
+    counts = crosswalk(
+        per_zone, weights, ["transaction_count_12m", "transaction_count_5y"], how="sum"
+    )
+    zones = (
+        pl.read_parquet(data_dir("staged") / "geo_lsoa.parquet")
+        .filter(pl.col("nation") == "S")
+        .select("lsoa21cd", "msoa21cd", "population")
     )
     out = (
-        this_year.join(previous, on="code", how="left")
-        .join(pooled, on="code", how="left")
+        zones.join(prices, on="lsoa21cd", how="left")
+        .join(counts, on="lsoa21cd", how="left")
         .with_columns(
             (
                 (pl.col("median_price_12m") - pl.col("median_prev")) / pl.col("median_prev") * 100
-            ).alias("yoy_change_pct"),
-            pl.lit(date(latest, 12, 31)).alias("as_of"),
+            ).alias("yoy_change_pct")
         )
     )
-    if iz is not None:
-        lookup = (
-            pl.read_parquet(data_dir("staged") / "geo_lsoa.parquet")
-            .filter(pl.col("nation") == "S")
-            .select(pl.col("lsoa21cd").alias("code"), "msoa21cd")
+    iz = out.group_by("msoa21cd").agg(
+        (
+            (pl.col("median_price_12m") * pl.col("population")).sum()
+            / pl.col("population").filter(pl.col("median_price_12m").is_not_null()).sum()
         )
-        iz_latest = (
-            _ros_table(iz, "S02")
-            .filter(pl.col("year") == latest)
-            .select(pl.col("code").alias("msoa21cd"), pl.col("median").alias("iz_median"))
+        .fill_nan(None)
+        .alias("iz_median")
+    )
+    out = (
+        out.join(iz, on="msoa21cd", how="left")
+        .with_columns(
+            pl.when(pl.col("median_price_12m").is_null() & pl.col("iz_median").is_not_null())
+            .then(pl.lit("broadcast_msoa"))
+            .otherwise(pl.lit("ok"))
+            .alias("quality"),
+            pl.coalesce("median_price_12m", "iz_median").alias("median_price_12m"),
+            pl.lit(date(latest, 12, 31)).alias("as_of"),
         )
-        out = (
-            out.join(lookup, on="code", how="left")
-            .join(iz_latest, on="msoa21cd", how="left")
-            .with_columns(
-                pl.when(pl.col("median_price_12m").is_null() & pl.col("iz_median").is_not_null())
-                .then(pl.lit("broadcast_msoa"))
-                .otherwise(pl.lit("ok"))
-                .alias("quality"),
-                pl.coalesce("median_price_12m", "iz_median").alias("median_price_12m"),
-            )
-            .drop("msoa21cd", "iz_median")
-        )
-    out = out.rename({"code": "lsoa21cd"}).drop("median_prev")
-    logger.info(f"Registers of Scotland {latest}: {out.height:,} Data Zones with prices")
+        .drop("median_prev", "iz_median", "msoa21cd", "population")
+    )
+    broadcast = out.filter(pl.col("quality") == "broadcast_msoa").height
+    logger.info(
+        f"Registers of Scotland {latest}: {out.height:,} Data Zones, "
+        f"{out['median_price_12m'].null_count():,} without a price, {broadcast:,} from the "
+        f"Intermediate Zone"
+    )
     return out

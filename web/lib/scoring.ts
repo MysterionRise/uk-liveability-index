@@ -36,24 +36,37 @@ export interface ScoreResult {
 export function percentileRank(values: Float64Array): Float64Array {
   const n = values.length;
   const out = new Float64Array(n).fill(NaN);
-  const idx: number[] = [];
-  for (let i = 0; i < n; i++) if (!Number.isNaN(values[i])) idx.push(i);
-  const m = idx.length;
+  // Sort the values themselves (a typed-array sort is numeric and fast), then place
+  // each row by binary search; ties take the average of their 1-based ranks
+  const sorted = new Float64Array(n);
+  let m = 0;
+  for (let i = 0; i < n; i++)
+    if (values[i] === values[i]) sorted[m++] = values[i];
   if (m === 0) return out;
-  if (m === 1) {
-    out[idx[0]] = 50;
-    return out;
-  }
-  idx.sort((a, b) => values[a] - values[b]);
-  let start = 0;
-  while (start < m) {
-    let end = start;
-    while (end + 1 < m && values[idx[end + 1]] === values[idx[start]]) end++;
-    // Average 1-based rank of the tie group
-    const rank = (start + end) / 2 + 1;
-    const pct = ((rank - 1) / (m - 1)) * 100;
-    for (let k = start; k <= end; k++) out[idx[k]] = pct;
-    start = end + 1;
+  const s = sorted.subarray(0, m).sort();
+  for (let i = 0; i < n; i++) {
+    const v = values[i];
+    if (v !== v) continue;
+    if (m === 1) {
+      out[i] = 50;
+      continue;
+    }
+    let lo = 0;
+    let hi = m;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (s[mid] < v) lo = mid + 1;
+      else hi = mid;
+    }
+    const first = lo;
+    hi = m;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (s[mid] <= v) lo = mid + 1;
+      else hi = mid;
+    }
+    const rank = (first + lo - 1) / 2 + 1;
+    out[i] = ((rank - 1) / (m - 1)) * 100;
   }
   return out;
 }
@@ -69,22 +82,32 @@ export function weightedScore(
   minCoverage = MIN_THEME_COVERAGE,
   masks?: (Uint8Array | undefined)[],
 ): { score: Float64Array; coverage: Float64Array } {
-  const active = columns
-    .map((c, i) => [c, weights[i], masks?.[i]] as const)
-    .filter(([, w]) => w > 0);
-  if (active.length === 0) throw new Error("At least one weight must be positive");
-  const n = active[0][0].length;
+  const cols: Float64Array[] = [];
+  const ws: number[] = [];
+  const ms: (Uint8Array | undefined)[] = [];
+  columns.forEach((c, i) => {
+    if (weights[i] > 0) {
+      cols.push(c);
+      ws.push(weights[i]);
+      ms.push(masks?.[i]);
+    }
+  });
+  const k = cols.length;
+  if (k === 0) throw new Error("At least one weight must be positive");
+  const n = cols[0].length;
   const score = new Float64Array(n);
   const coverage = new Float64Array(n);
   for (let i = 0; i < n; i++) {
     let num = 0;
     let avail = 0;
     let total = 0;
-    for (const [col, w, mask] of active) {
-      if (mask && !mask[i]) continue;
+    for (let j = 0; j < k; j++) {
+      const mask = ms[j];
+      if (mask !== undefined && mask[i] === 0) continue;
+      const w = ws[j];
       total += w;
-      const v = col[i];
-      if (!Number.isNaN(v)) {
+      const v = cols[j][i];
+      if (v === v) {
         num += v * w;
         avail += w;
       }
@@ -111,16 +134,33 @@ export function scoreLsoas(
   minCoverage = MIN_THEME_COVERAGE,
   groups?: string[],
   themeGaps?: Record<string, string[]>,
+  withinGroups = false,
 ): ScoreResult {
+  // Within-group percentiles (the compare-within toggle) are computed on demand by the
+  // page from whichever layer is shown; scoring every theme's would cost nine extra sorts
   const themeNames = [...new Set(indicators.map((i) => i.theme))].sort();
   const themes: Record<string, ThemeResult> = {};
   const themeMasks: Record<string, Uint8Array | undefined> = {};
   const n = groups?.length ?? Object.values(norms)[0]?.length ?? 0;
+  const present = groups ? new Set(groups) : new Set<string>();
+  // One mask per distinct coverage list; none when it covers every group in the data
+  const maskCache = new Map<string, Uint8Array | undefined>();
   const maskOf = (allowed: string[] | undefined): Uint8Array | undefined => {
     if (!groups || !allowed) return undefined;
-    const ok = new Set(allowed);
-    return Uint8Array.from(groups, (g) => (ok.has(g) ? 1 : 0));
+    const key = allowed.join(",");
+    if (!maskCache.has(key)) {
+      const ok = new Set(allowed);
+      const full = [...present].every((g) => ok.has(g));
+      maskCache.set(
+        key,
+        full ? undefined : Uint8Array.from(groups, (g) => (ok.has(g) ? 1 : 0)),
+      );
+    }
+    return maskCache.get(key);
   };
+  const gapKeys = new Set<string>();
+  for (const [g, ts] of Object.entries(themeGaps ?? {}))
+    for (const t of ts) gapKeys.add(`${g}|${t}`);
   for (const theme of themeNames) {
     const members = indicators.filter((i) => i.theme === theme);
     const weights = members.map((i) => i.weight * (multipliers[i.id] ?? 1));
@@ -131,9 +171,10 @@ export function scoreLsoas(
       minCoverage,
       members.map((i) => maskOf(i.coverage)),
     );
-    const gapped = groups
-      ? Uint8Array.from(groups, (g) => (themeGaps?.[g]?.includes(theme) ? 1 : 0))
-      : undefined;
+    const gapped =
+      groups && [...present].some((g) => gapKeys.has(`${g}|${theme}`))
+        ? Uint8Array.from(groups, (g) => (gapKeys.has(`${g}|${theme}`) ? 1 : 0))
+        : undefined;
     if (gapped) {
       for (let i = 0; i < n; i++) {
         if (gapped[i]) {
@@ -143,29 +184,43 @@ export function scoreLsoas(
       }
     }
     themeMasks[theme] =
-      groups && (themeGaps || members.some((i) => i.coverage))
+      groups && (gapped || members.some((i) => maskOf(i.coverage)))
         ? Uint8Array.from(coverage, (c, i) => (c > 0 && !gapped?.[i] ? 1 : 0))
         : undefined;
     themes[theme] = { score, percentile: percentileRank(score), coverage };
-    if (groups) themes[theme].percentileWithin = percentileWithin(score, groups);
+    if (groups && withinGroups)
+      themes[theme].percentileWithin = percentileWithin(score, groups);
   }
-  const present = Object.keys(themes);
+  const scoredThemes = Object.keys(themes);
   const { score: overall, coverage } = weightedScore(
-    present.map((t) => themes[t].score),
-    present.map((t) => themeWeights[t] ?? 0),
+    scoredThemes.map((t) => themes[t].score),
+    scoredThemes.map((t) => themeWeights[t] ?? 0),
     minCoverage,
-    present.map((t) => themeMasks[t]),
+    scoredThemes.map((t) => themeMasks[t]),
   );
-  const result: ScoreResult = { themes, overall, overallPercentile: percentileRank(overall), coverage };
-  if (groups) result.overallPercentileWithin = percentileWithin(overall, groups);
+  const result: ScoreResult = {
+    themes,
+    overall,
+    overallPercentile: percentileRank(overall),
+    coverage,
+  };
+  if (groups && withinGroups)
+    result.overallPercentileWithin = percentileWithin(overall, groups);
   return result;
 }
 
 /** Percentile within groups (e.g. urban/rural class), for like-for-like comparison. */
-export function percentileWithin(values: Float64Array, groups: string[]): Float64Array {
+export function percentileWithin(
+  values: Float64Array,
+  groups: string[],
+): Float64Array {
   const out = new Float64Array(values.length).fill(NaN);
   const byGroup = new Map<string, number[]>();
-  groups.forEach((g, i) => byGroup.set(g, [...(byGroup.get(g) ?? []), i]));
+  for (let i = 0; i < groups.length; i++) {
+    let members = byGroup.get(groups[i]);
+    if (!members) byGroup.set(groups[i], (members = []));
+    members.push(i);
+  }
   for (const members of byGroup.values()) {
     const ranks = percentileRank(Float64Array.from(members, (i) => values[i]));
     members.forEach((i, k) => (out[i] = ranks[k]));

@@ -159,3 +159,30 @@ def test_stale_reason_tells_a_newer_edition_from_an_old_download():
     # A fetched section without a version (older lockfiles) cannot be a newer edition
     legacy = {"resolved": {"version": "v2"}, "fetched": {"fetched_at": "2026-10-01"}}
     assert stale_reason(legacy, "monthly", now) == "none"
+
+
+def test_correlation_matrix_has_no_nan_for_indicators_that_share_no_area():
+    import json
+
+    import polars as pl
+
+    from lix_pipeline.serve.scores import correlation_matrix
+
+    # crime_violence covers England and Wales, recorded_crime Scotland: no row has both
+    features = pl.DataFrame(
+        {
+            "n__crime_violence": [0.1, 0.5, 0.9, None, None],
+            "n__recorded_crime": [None, None, None, 0.2, 0.8],
+            "n__no2": [0.2, 0.4, 0.8, 0.3, 0.7],
+        }
+    )
+    c = correlation_matrix(features)
+    assert c["ids"] == ["no2", "recorded_crime", "crime_violence"] or set(c["ids"]) == {
+        "no2",
+        "recorded_crime",
+        "crime_violence",
+    }
+    i, j = c["ids"].index("crime_violence"), c["ids"].index("recorded_crime")
+    assert c["rho"][i][j] is None and c["rho"][j][i] is None
+    assert c["rho"][i][i] == 1.0
+    json.dumps(c, allow_nan=False)  # must be valid JSON for the browser

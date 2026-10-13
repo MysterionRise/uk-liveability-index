@@ -18,7 +18,8 @@ All notable changes to this project. The format follows
   columns; the Scottish Index of Multiple Deprivation 2020v2, brought from the 2011 to
   the 2022 zones through postcodes (`dz11_dz22`: every zone weighted, 94% mostly one
   2011 zone, Spearman 0.99 on the rest); NRS population estimates and dwellings by band;
-  Registers of Scotland prices (an annual workbook downloaded by hand); the Scottish
+  Registers of Scotland's small-area prices (annual, on the 2011 zones, through the
+  crosswalk); the Scottish
   Government's council tax by band and school roll with leaver tariffs; the Care
   Inspectorate's day care of children with its grades; Public Health Scotland's GP,
   dispenser, dental and emergency-department lists; SEPA's flood maps and Scotland's

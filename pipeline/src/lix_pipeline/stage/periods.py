@@ -120,6 +120,24 @@ def _price_paid(slug: str) -> Period | None:
     return month(as_of, f"12 months to {as_of.strftime('%B %Y')}") if as_of else None
 
 
+def _ros_prices(slug: str) -> Period | None:
+    """Registers of Scotland's series is annual: the latest calendar year staged."""
+    import polars as pl
+
+    path = _staged("price_paid")
+    if not path.exists():
+        return None
+    latest = (
+        pl.scan_parquet(path)
+        .filter(pl.col("lsoa21cd").str.starts_with("S01"))
+        .select(pl.col("as_of").max())
+        .collect()
+        .item()
+    )
+    d = _to_date(latest)
+    return year(d.year, f"calendar year {d.year}") if d else None
+
+
 def _gtfs(slug: str) -> Period | None:
     ref = _to_date(_column_max(_staged("bods_gtfs"), "reference_day"))
     return day(ref, f"timetable for {_day_label(ref)}") if ref else None
@@ -178,6 +196,7 @@ def _curated(path: str) -> Period | None:
 STAGED_EXTRACTORS = {
     "police_crime": _police,
     "price_paid": _price_paid,
+    "ros_house_prices": _ros_prices,
     "ofsted_schools": _ofsted,
 }
 

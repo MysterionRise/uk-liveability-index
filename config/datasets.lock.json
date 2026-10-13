@@ -10,7 +10,7 @@
     "resolved": {
       "item_id": "1e189022e7064e0e9b1bdaadef6d3b78",
       "modified": "2026-07-27T13:06:11+00:00",
-      "resolved_at": "2026-10-11T20:25:09+00:00",
+      "resolved_at": "2026-10-13T12:31:40+00:00",
       "title": "GIS Active Places Power Facility",
       "url": "https://services-eu1.arcgis.com/s9MgJChYyPlPX2Nk/arcgis/rest/services/GIS_Active_Places_Power_Facility/FeatureServer/1",
       "version": "2026-07-27T13:06:11+00:00"
@@ -25,7 +25,7 @@
     },
     "resolved": {
       "path": "config/data/ae_sites.csv",
-      "resolved_at": "2026-10-13T11:39:58+00:00",
+      "resolved_at": "2026-10-13T12:32:29+00:00",
       "url": null,
       "version": "86b1636e9eb653f8"
     }
@@ -47,7 +47,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:08+00:00",
+      "resolved_at": "2026-10-13T12:31:39+00:00",
       "url": "https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/all/",
       "version": null
     }
@@ -69,7 +69,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:24:34+00:00",
+      "resolved_at": "2026-10-13T12:32:29+00:00",
       "url": "https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/scotland/",
       "version": null
     }
@@ -91,7 +91,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:46+00:00",
+      "resolved_at": "2026-10-13T12:32:23+00:00",
       "url": "https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/wales/",
       "version": null
     }
@@ -107,7 +107,7 @@
     },
     "resolved": {
       "release": "2026-08-31",
-      "resolved_at": "2026-10-13T11:23:27+00:00",
+      "resolved_at": "2026-10-13T12:32:27+00:00",
       "url": "https://ci-web-media-production-bucket.s3.eu-west-2.amazonaws.com/assets/resources/datastore/260831datastoreexternal.csv",
       "version": "https://ci-web-media-production-bucket.s3.eu-west-2.amazonaws.com/assets/resources/datastore/260831datastoreexternal.csv"
     }
@@ -123,7 +123,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:51+00:00",
+      "resolved_at": "2026-10-13T12:31:23+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts001.zip",
       "version": null
     }
@@ -139,7 +139,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:51+00:00",
+      "resolved_at": "2026-10-13T12:31:24+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts003.zip",
       "version": null
     }
@@ -155,7 +155,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:51+00:00",
+      "resolved_at": "2026-10-13T12:31:24+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts006.zip",
       "version": null
     }
@@ -171,7 +171,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:51+00:00",
+      "resolved_at": "2026-10-13T12:31:24+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts007a.zip",
       "version": null
     }
@@ -187,7 +187,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:51+00:00",
+      "resolved_at": "2026-10-13T12:31:24+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts037.zip",
       "version": null
     }
@@ -203,7 +203,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:51+00:00",
+      "resolved_at": "2026-10-13T12:31:24+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts044.zip",
       "version": null
     }
@@ -219,7 +219,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:51+00:00",
+      "resolved_at": "2026-10-13T12:31:24+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts045.zip",
       "version": null
     }
@@ -235,7 +235,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:52+00:00",
+      "resolved_at": "2026-10-13T12:31:24+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts054.zip",
       "version": null
     }
@@ -251,7 +251,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:52+00:00",
+      "resolved_at": "2026-10-13T12:31:24+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts058.zip",
       "version": null
     }
@@ -267,7 +267,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:52+00:00",
+      "resolved_at": "2026-10-13T12:31:25+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts061.zip",
       "version": null
     }
@@ -283,7 +283,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:52+00:00",
+      "resolved_at": "2026-10-13T12:31:25+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts067.zip",
       "version": null
     }
@@ -297,7 +297,7 @@
       "version": "August 2026"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:11+00:00",
+      "resolved_at": "2026-10-13T12:31:41+00:00",
       "url": "https://www.nomisweb.co.uk/api/v01/dataset/NM_162_1.data.csv?geography=TYPE151&date=latest&gender=0&age=0&measure=1&measures=20100&select=date_name%2Cgeography_code%2Cobs_value",
       "version": "August 2026"
     }
@@ -311,7 +311,7 @@
     },
     "resolved": {
       "path": "config/data/council_names_gd.csv",
-      "resolved_at": "2026-10-13T11:50:58+00:00",
+      "resolved_at": "2026-10-13T12:32:29+00:00",
       "url": null,
       "version": "4064b39ef7904c61"
     }
@@ -327,7 +327,7 @@
     },
     "resolved": {
       "modified": "2026-03-25T09:30:00+00:00",
-      "resolved_at": "2026-10-11T20:25:09+00:00",
+      "resolved_at": "2026-10-13T12:31:40+00:00",
       "title": "Council Tax levels set by local authorities in England 2026 to 2027: Tables 1 to 9",
       "url": "https://assets.publishing.service.gov.uk/media/69de1fa63e81003ae0422508/Tables_1-9_2026-27.ods",
       "version": "https://assets.publishing.service.gov.uk/media/69de1fa63e81003ae0422508/Tables_1-9_2026-27.ods"
@@ -343,7 +343,7 @@
     },
     "resolved": {
       "release": "2026-10-01",
-      "resolved_at": "2026-10-11T20:24:59+00:00",
+      "resolved_at": "2026-10-13T12:31:31+00:00",
       "url": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods",
       "version": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods"
     }
@@ -426,7 +426,7 @@
       ],
       "nodata": -96.0,
       "res": 10.0,
-      "resolved_at": "2026-10-11T20:24:55+00:00",
+      "resolved_at": "2026-10-13T12:31:28+00:00",
       "url": "https://environment.data.gov.uk/spatialdata/noise-data/wcs?service=WCS&version=2.0.1&request=DescribeCoverage&coverageId=3fb3c2d7-292c-4e0a-bd5b-d8e4e1fe2947__Rail_Noise_Lden_England_Round_4_All",
       "version": "3fb3c2d7-292c-4e0a-bd5b-d8e4e1fe2947__Rail_Noise_Lden_England_Round_4_All 57335x65227@10m"
     }
@@ -574,7 +574,7 @@
       ],
       "nodata": -96.0,
       "res": 10.0,
-      "resolved_at": "2026-10-11T20:24:55+00:00",
+      "resolved_at": "2026-10-13T12:31:28+00:00",
       "url": "https://environment.data.gov.uk/spatialdata/road-noise-all-metrics-england-round-4/wcs?service=WCS&version=2.0.1&request=DescribeCoverage&coverageId=562c9d56-7c2d-4d42-83bb-578d6e97a517__Road_Noise_Lden_England_Round_4_All",
       "version": "562c9d56-7c2d-4d42-83bb-578d6e97a517__Road_Noise_Lden_England_Round_4_All 57335x65227@10m"
     }
@@ -590,7 +590,7 @@
     },
     "resolved": {
       "release": null,
-      "resolved_at": "2026-10-11T20:24:54+00:00",
+      "resolved_at": "2026-10-13T12:31:26+00:00",
       "url": "https://uk-air.defra.gov.uk/datastore/pcm/mapno22024.csv",
       "version": "https://uk-air.defra.gov.uk/datastore/pcm/mapno22024.csv"
     }
@@ -606,7 +606,7 @@
     },
     "resolved": {
       "release": "2024-10-01",
-      "resolved_at": "2026-10-11T20:24:54+00:00",
+      "resolved_at": "2026-10-13T12:31:26+00:00",
       "url": "https://uk-air.defra.gov.uk/datastore/pcm/mappm102024g.csv",
       "version": "https://uk-air.defra.gov.uk/datastore/pcm/mappm102024g.csv"
     }
@@ -622,7 +622,7 @@
     },
     "resolved": {
       "release": null,
-      "resolved_at": "2026-10-11T20:24:54+00:00",
+      "resolved_at": "2026-10-13T12:31:26+00:00",
       "url": "https://uk-air.defra.gov.uk/datastore/pcm/mappm252024g.csv",
       "version": "https://uk-air.defra.gov.uk/datastore/pcm/mappm252024g.csv"
     }
@@ -638,7 +638,7 @@
     },
     "resolved": {
       "modified": "2025-09-29T00:00:00+01:00",
-      "resolved_at": "2026-10-11T20:25:06+00:00",
+      "resolved_at": "2026-10-13T12:31:36+00:00",
       "title": "Connectivity metrics 2025",
       "url": "https://assets.publishing.service.gov.uk/media/68c966fc07d9e92bc5517b80/connectivity_metrics_2025.ods",
       "version": "https://assets.publishing.service.gov.uk/media/68c966fc07d9e92bc5517b80/connectivity_metrics_2025.ods"
@@ -652,7 +652,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:56+00:00",
+      "resolved_at": "2026-10-13T12:31:29+00:00",
       "url": "https://environment.data.gov.uk/api/file/download?fileDataSetId=fb921496-1788-4fc2-b469-7b51e2a45553&fileName=Postcodes_Risk_Assessment_All.csv",
       "version": null
     }
@@ -669,7 +669,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:55+00:00",
+      "resolved_at": "2026-10-13T12:31:28+00:00",
       "url": "https://environment.data.gov.uk/api/file/download?fileDataSetId=97781741-2982-4802-af2e-313fe3fd8f7e&fileName=RoFRS_Postcodes_in_Areas_at_Risk.zip",
       "version": null
     }
@@ -698,7 +698,7 @@
       "version": "Wed, 26 Oct 2022 12:53:26 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:24:03+00:00",
+      "resolved_at": "2026-10-13T12:31:30+00:00",
       "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N48E000_Map.tif",
       "version": "Wed, 26 Oct 2022 12:53:26 GMT"
     }
@@ -713,9 +713,9 @@
       "version": "Sun, 11 Oct 2026 01:10:38 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:09+00:00",
+      "resolved_at": "2026-10-13T12:31:40+00:00",
       "url": "https://safhrsprodstorage.blob.core.windows.net/opendatafileblobstorage/FHRS_All_en-GB.csv",
-      "version": "Sun, 11 Oct 2026 01:10:38 GMT"
+      "version": "Tue, 13 Oct 2026 01:08:09 GMT"
     }
   },
   "gias": {
@@ -726,9 +726,9 @@
       "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261011.csv"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:05+00:00",
-      "url": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261011.csv",
-      "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261011.csv"
+      "resolved_at": "2026-10-13T12:31:36+00:00",
+      "url": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261013.csv",
+      "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261013.csv"
     }
   },
   "gp_registrations": {
@@ -745,7 +745,7 @@
     },
     "resolved": {
       "release": "2026-07-01",
-      "resolved_at": "2026-10-11T20:25:03+00:00",
+      "resolved_at": "2026-10-13T12:31:34+00:00",
       "url": "https://files.digital.nhs.uk/93/C90730/gp-reg-pat-prac-lsoa-male-female-July-26.zip",
       "version": "https://files.digital.nhs.uk/93/C90730/gp-reg-pat-prac-lsoa-male-female-July-26.zip"
     }
@@ -767,7 +767,7 @@
     },
     "resolved": {
       "release": "2026-08-01",
-      "resolved_at": "2026-10-11T20:25:04+00:00",
+      "resolved_at": "2026-10-13T12:31:34+00:00",
       "url": "https://files.digital.nhs.uk/49/2ABF5A/GPWPracticeCSV.082026.zip",
       "version": "https://files.digital.nhs.uk/49/2ABF5A/GPWPracticeCSV.082026.zip"
     }
@@ -783,7 +783,7 @@
     },
     "resolved": {
       "modified": "2025-11-17T09:20:39+00:00",
-      "resolved_at": "2026-10-11T20:24:51+00:00",
+      "resolved_at": "2026-10-13T12:31:23+00:00",
       "title": "File 7: All ranks, scores, deciles and population denominators for the Indices of Deprivation",
       "url": "https://assets.publishing.service.gov.uk/media/691ded56d140bbbaa59a2a7d/File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv",
       "version": "https://assets.publishing.service.gov.uk/media/691ded56d140bbbaa59a2a7d/File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv"
@@ -797,7 +797,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:05+00:00",
+      "resolved_at": "2026-10-13T12:31:36+00:00",
       "url": "https://api.education.gov.uk/statistics/v1/data-sets/019afee4-e5d0-72f9-9a8f-d7a1a56eac1d/csv",
       "version": null
     }
@@ -810,7 +810,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:06+00:00",
+      "resolved_at": "2026-10-13T12:31:36+00:00",
       "url": "https://api.education.gov.uk/statistics/v1/data-sets/19e39901-a96c-be76-b9c2-6af54ae076d2/csv",
       "version": null
     }
@@ -826,7 +826,7 @@
     "resolved": {
       "item_id": "fe180cafba734c6c8c5ad41ee960d30b",
       "modified": "2026-09-09T17:10:07+00:00",
-      "resolved_at": "2026-10-11T20:23:48+00:00",
+      "resolved_at": "2026-10-13T12:30:22+00:00",
       "title": "Local Authority Districts (May 2026) Boundaries UK BUC",
       "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_May_2026_Boundaries_UK_BUC/FeatureServer/0",
       "version": "2026-09-09T17:10:07+00:00"
@@ -840,7 +840,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:50+00:00",
+      "resolved_at": "2026-10-13T12:31:23+00:00",
       "url": "https://fingertips.phe.org.uk/api/all_data/csv/by_indicator_id?indicator_ids=93283&child_area_type_id=3",
       "version": null
     }
@@ -856,7 +856,7 @@
     "resolved": {
       "item_id": "cbfe64cc03d74af982c1afec639bafd1",
       "modified": "2025-08-11T08:22:30+00:00",
-      "resolved_at": "2026-10-11T20:23:48+00:00",
+      "resolved_at": "2026-10-13T12:30:22+00:00",
       "title": "LSOA (2011) to LSOA (2021) to Local Authority District (2022) Exact Fit Lookup for EW (V3)",
       "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA11_LSOA21_LAD22_EW_LU_v5/FeatureServer/0",
       "version": "2025-08-11T08:22:30+00:00"
@@ -874,7 +874,7 @@
     "resolved": {
       "item_id": "68515293204e43ca8ab56fa13ae8a547",
       "modified": "2025-08-11T08:22:17+00:00",
-      "resolved_at": "2026-10-11T20:23:48+00:00",
+      "resolved_at": "2026-10-13T12:30:21+00:00",
       "title": "Lower layer Super Output Areas (December 2021) Boundaries EW BGC (V5)",
       "url": "https://geoportal.statistics.gov.uk/api/download/v1/items/68515293204e43ca8ab56fa13ae8a547/geoPackage?layers=0",
       "version": "2025-08-11T08:22:17+00:00"
@@ -892,7 +892,7 @@
     "resolved": {
       "item_id": "04c65a08ecff4858bffc16e9ca9356f4",
       "modified": "2025-08-11T08:22:18+00:00",
-      "resolved_at": "2026-10-11T20:23:48+00:00",
+      "resolved_at": "2026-10-13T12:30:22+00:00",
       "title": "Lower layer Super Output Areas (December 2021) Boundaries EW BSC (V4)",
       "url": "https://geoportal.statistics.gov.uk/api/download/v1/items/04c65a08ecff4858bffc16e9ca9356f4/geoPackage?layers=0",
       "version": "2025-08-11T08:22:18+00:00"
@@ -909,7 +909,7 @@
     "resolved": {
       "item_id": "32729e42d05e4e23bc7e43a36aa4ae8b",
       "modified": "2026-03-02T12:04:53+00:00",
-      "resolved_at": "2026-10-11T20:23:48+00:00",
+      "resolved_at": "2026-10-13T12:30:22+00:00",
       "title": "Lower layer Super Output Areas (December 2021) EW Population Weighted Centroids",
       "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA_PopCentroids_EW_2021_V4/FeatureServer/0",
       "version": "2026-03-02T12:04:53+00:00"
@@ -926,7 +926,7 @@
     "resolved": {
       "item_id": "6b282db29762450881ed5159259a6e4e",
       "modified": "2025-08-11T08:22:21+00:00",
-      "resolved_at": "2026-10-11T20:23:48+00:00",
+      "resolved_at": "2026-10-13T12:30:22+00:00",
       "title": "Middle layer Super Output Areas (December 2021) Boundaries EW BGC (V3)",
       "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Middle_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V3/FeatureServer/0",
       "version": "2025-08-11T08:22:21+00:00"
@@ -942,7 +942,7 @@
     },
     "resolved": {
       "release": null,
-      "resolved_at": "2026-10-11T20:25:09+00:00",
+      "resolved_at": "2026-10-13T12:31:40+00:00",
       "url": "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/smallareaincomeestimatesformiddlelayersuperoutputareasenglandandwales/financialyearending2023/datasetfinal.xlsx",
       "version": "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/smallareaincomeestimatesformiddlelayersuperoutputareasenglandandwales/financialyearending2023/datasetfinal.xlsx"
     }
@@ -957,7 +957,7 @@
       "version": "Fri, 13 Feb 2026 12:43:35 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:23:49+00:00",
+      "resolved_at": "2026-10-13T12:30:23+00:00",
       "url": "https://houseofcommonslibrary.github.io/msoanames/MSOA-Names-Latest2.csv",
       "version": "Fri, 13 Feb 2026 12:43:35 GMT"
     }
@@ -970,7 +970,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:07+00:00",
+      "resolved_at": "2026-10-13T12:31:38+00:00",
       "url": "https://naptan.api.dft.gov.uk/v1/access-nodes?dataFormat=csv",
       "version": null
     }
@@ -986,7 +986,7 @@
     },
     "resolved": {
       "modified": "2026-07-29T10:16:19.170930",
-      "resolved_at": "2026-10-11T20:25:02+00:00",
+      "resolved_at": "2026-10-13T12:31:33+00:00",
       "title": "CONSOL_PHARMACY_LIST_202606Q1",
       "url": "https://opendata.nhsbsa.net/dataset/240d142d-df82-4e97-b051-12371519e4e1/resource/ce6c7ad3-a3b5-442f-bb0a-a45d7c962944/download/consol_pharmacy_list_202606q1.csv",
       "version": "https://opendata.nhsbsa.net/dataset/240d142d-df82-4e97-b051-12371519e4e1/resource/ce6c7ad3-a3b5-442f-bb0a-a45d7c962944/download/consol_pharmacy_list_202606q1.csv"
@@ -1003,7 +1003,7 @@
     },
     "resolved": {
       "modified": "2026-08-20T15:34:54.055703",
-      "resolved_at": "2026-10-13T11:23:15+00:00",
+      "resolved_at": "2026-10-13T12:32:26+00:00",
       "title": "dwellings-by-council-tax-band-summary-2022-data-zones.csv",
       "url": "https://api.data.gov.scot/resource/e9d042a7-2244-498d-9ddf-da61ba9ccede/download",
       "version": "https://api.data.gov.scot/resource/e9d042a7-2244-498d-9ddf-da61ba9ccede/download"
@@ -1024,7 +1024,7 @@
       "version": "Mon, 03 Nov 2025 11:56:47 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:13:59+00:00",
+      "resolved_at": "2026-10-13T12:32:24+00:00",
       "url": "https://www.nrscotland.gov.uk/media/iz3evrqt/oa22_dz22_iz22.zip",
       "version": "Mon, 03 Nov 2025 11:56:47 GMT"
     }
@@ -1039,7 +1039,7 @@
       "version": "Tue, 14 Jan 2025 15:17:41 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:10:00+00:00",
+      "resolved_at": "2026-10-13T12:32:25+00:00",
       "url": "https://www.nrscotland.gov.uk/media/owpknvgk/outputarea2022_usualresidentpopulation.csv",
       "version": "Tue, 14 Jan 2025 15:17:41 GMT"
     }
@@ -1070,7 +1070,7 @@
       "version": "Mon, 31 Aug 2026 10:23:12 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:14:01+00:00",
+      "resolved_at": "2026-10-13T12:32:25+00:00",
       "url": "https://www.nrscotland.gov.uk/media/yqqbrvbw/small-area-population-estimates-mid-2011-to-mid-2024-2022-dz.zip",
       "version": "Mon, 31 Aug 2026 10:23:12 GMT"
     }
@@ -1083,7 +1083,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:40+00:00",
+      "resolved_at": "2026-10-13T12:32:16+00:00",
       "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=inspire-nrw%3ANRW_FLOOD_RISK_FROM_RIVERS&outputFormat=gpkg&srs=EPSG%3A27700",
       "version": null
     }
@@ -1096,7 +1096,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:46+00:00",
+      "resolved_at": "2026-10-13T12:32:22+00:00",
       "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=inspire-nrw%3ANRW_FLOOD_RISK_FROM_SEA&outputFormat=gpkg&srs=EPSG%3A27700",
       "version": null
     }
@@ -1116,7 +1116,7 @@
     },
     "resolved": {
       "count": 1512908,
-      "resolved_at": "2026-10-11T20:24:57+00:00",
+      "resolved_at": "2026-10-13T12:31:30+00:00",
       "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire-nrw%3ANRW_FLOOD_RISK_FROM_SURFACE_WATER_SMALL_WATERCOURSES&CQL_FILTER=risk+IN+%28%27High%27%2C%27Medium%27%29&resultType=hits",
       "version": "inspire-nrw:NRW_FLOOD_RISK_FROM_SURFACE_WATER_SMALL_WATERCOURSES 1512908 features"
     }
@@ -1161,7 +1161,7 @@
     "resolved": {
       "item_id": "9d8364ebae8b4439aa66cda440e54fc8",
       "modified": "2026-09-01T11:08:22+00:00",
-      "resolved_at": "2026-10-11T20:23:47+00:00",
+      "resolved_at": "2026-10-13T12:30:21+00:00",
       "title": "National Statistics Postcode Lookup (August 2026)",
       "url": "https://www.arcgis.com/sharing/rest/content/items/9d8364ebae8b4439aa66cda440e54fc8/data",
       "version": "2026-09-01T11:08:22+00:00"
@@ -1178,7 +1178,7 @@
     "resolved": {
       "item_id": "b9ca90c10aaa4b8d9791e9859a38ca67",
       "modified": "2025-08-11T08:16:10+00:00",
-      "resolved_at": "2026-10-11T20:23:48+00:00",
+      "resolved_at": "2026-10-13T12:30:22+00:00",
       "title": "Output Area (2021) to LSOA to MSOA to LAD (December 2021) Exact Fit Lookup in EW (V3)",
       "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/OA_LSOA_MSOA_EW_DEC_2021_LU_v3/FeatureServer/0",
       "version": "2025-08-11T08:16:10+00:00"
@@ -1193,9 +1193,9 @@
       "version": "\"xg67yyzyxm1c4nj\""
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:00+00:00",
+      "resolved_at": "2026-10-13T12:31:32+00:00",
       "url": "https://www.odsdatasearchandexport.nhs.uk/api/getReport?report=egdpprac",
-      "version": "\"xg67yyzyxm1c4nj\""
+      "version": "\"rppolg608h1c4n9\""
     }
   },
   "ods_gp": {
@@ -1207,7 +1207,7 @@
       "version": "\"14qs31iwkfe1z6q8\""
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:59+00:00",
+      "resolved_at": "2026-10-13T12:31:31+00:00",
       "url": "https://www.odsdatasearchandexport.nhs.uk/api/getReport?report=epraccur",
       "version": "\"14qs31iwkfe1z6q8\""
     }
@@ -1227,7 +1227,7 @@
     },
     "resolved": {
       "release": "2026-01-01",
-      "resolved_at": "2026-10-11T20:25:08+00:00",
+      "resolved_at": "2026-10-13T12:31:39+00:00",
       "url": "https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/multi-sector/infrastructure-research/connected-nations-spring-2026/202601_fixed_broadband_coverage_and_full_fibre_take-up-r1.zip?v=422620",
       "version": "https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/multi-sector/infrastructure-research/connected-nations-spring-2026/202601_fixed_broadband_coverage_and_full_fibre_take-up-r1.zip?v=422620"
     }
@@ -1243,7 +1243,7 @@
     },
     "resolved": {
       "modified": "2026-08-06T09:45:54+01:00",
-      "resolved_at": "2026-10-11T20:25:06+00:00",
+      "resolved_at": "2026-10-13T12:31:36+00:00",
       "title": "Management information - childcare providers and inspections - childcare provider data as at 30 June 2026 ",
       "url": "https://assets.publishing.service.gov.uk/media/6a6ca4eb0c36759b5ccaa2e0/Management_information_-_childcare_providers_and_inspections_-_childcare_providers_data_as_at_30_June_2026.csv",
       "version": "https://assets.publishing.service.gov.uk/media/6a6ca4eb0c36759b5ccaa2e0/Management_information_-_childcare_providers_and_inspections_-_childcare_providers_data_as_at_30_June_2026.csv"
@@ -1260,7 +1260,7 @@
     },
     "resolved": {
       "modified": "2026-09-10T09:30:07+01:00",
-      "resolved_at": "2026-10-11T20:25:05+00:00",
+      "resolved_at": "2026-10-13T12:31:36+00:00",
       "title": "Management information - state-funded schools - latest inspections as at 31 August 2026",
       "url": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv",
       "version": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv"
@@ -1276,7 +1276,7 @@
       "version": "Thu, 30 Jul 2026 08:30:12 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:24:00+00:00",
+      "resolved_at": "2026-10-13T12:32:29+00:00",
       "url": "https://dataportal.orr.gov.uk/media/ootlf0cn/table-6329-station-attributes-for-all-mainline-stations.ods",
       "version": "Thu, 30 Jul 2026 08:30:12 GMT"
     }
@@ -1291,7 +1291,7 @@
       "version": "Fri, 16 Jan 2026 15:30:06 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:23:58+00:00",
+      "resolved_at": "2026-10-13T12:32:29+00:00",
       "url": "https://dataportal.orr.gov.uk/media/1909/table-1410-passenger-entries-and-exits-and-interchanges-by-station.csv",
       "version": "Fri, 16 Jan 2026 15:30:06 GMT"
     }
@@ -1309,7 +1309,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:54+00:00",
+      "resolved_at": "2026-10-13T12:31:27+00:00",
       "url": "https://api.os.uk/downloads/v1/products/OpenGreenspace/downloads?area=GB&format=GeoPackage&redirect",
       "version": null
     }
@@ -2146,7 +2146,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:23:50+00:00",
+      "resolved_at": "2026-10-13T12:30:23+00:00",
       "url": "https://api.os.uk/downloads/v1/products/OpenNames/downloads?area=GB&format=CSV&redirect",
       "version": null
     }
@@ -2164,7 +2164,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:58+00:00",
+      "resolved_at": "2026-10-13T12:31:30+00:00",
       "url": "https://api.os.uk/downloads/v1/products/OpenUPRN/downloads?area=GB&format=CSV&redirect",
       "version": null
     }
@@ -2179,9 +2179,9 @@
       "version": "Thu, 08 Oct 2026 23:11:01 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:08+00:00",
+      "resolved_at": "2026-10-13T12:31:39+00:00",
       "url": "https://download.geofabrik.de/europe/united-kingdom/england-latest.osm.pbf",
-      "version": "Thu, 08 Oct 2026 23:11:01 GMT"
+      "version": "Mon, 12 Oct 2026 23:31:50 GMT"
     }
   },
   "osm_scotland": {
@@ -2194,7 +2194,7 @@
       "version": "Mon, 12 Oct 2026 23:29:34 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:24:22+00:00",
+      "resolved_at": "2026-10-13T12:32:29+00:00",
       "url": "https://download.geofabrik.de/europe/united-kingdom/scotland-latest.osm.pbf",
       "version": "Mon, 12 Oct 2026 23:29:34 GMT"
     }
@@ -2209,9 +2209,9 @@
       "version": "Thu, 08 Oct 2026 23:06:33 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:47+00:00",
+      "resolved_at": "2026-10-13T12:32:23+00:00",
       "url": "https://download.geofabrik.de/europe/united-kingdom/wales-latest.osm.pbf",
-      "version": "Thu, 08 Oct 2026 23:06:33 GMT"
+      "version": "Mon, 12 Oct 2026 23:31:59 GMT"
     }
   },
   "overture_pubs": {
@@ -2223,7 +2223,7 @@
       "version": "2026-09-23.1"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:30:29+00:00",
+      "resolved_at": "2026-10-13T12:31:40+00:00",
       "url": "s3://overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/*",
       "version": "2026-09-23.1"
     }
@@ -2239,7 +2239,7 @@
     },
     "resolved": {
       "modified": "2025-09-10T08:18:46.495090",
-      "resolved_at": "2026-10-13T11:23:56+00:00",
+      "resolved_at": "2026-10-13T12:32:28+00:00",
       "title": "Accident & Emergency Sites",
       "url": "https://www.opendata.nhs.scot/dataset/a877470a-06a9-492f-b9e8-992f758894d0/resource/1a4e3f48-3d9b-4769-80e9-3ef6d27852fe/download/ae_hospital_site_list_09_09_2025.csv",
       "version": "https://www.opendata.nhs.scot/dataset/a877470a-06a9-492f-b9e8-992f758894d0/resource/1a4e3f48-3d9b-4769-80e9-3ef6d27852fe/download/ae_hospital_site_list_09_09_2025.csv"
@@ -2256,7 +2256,7 @@
     },
     "resolved": {
       "modified": "2026-05-26T08:49:51.136892",
-      "resolved_at": "2026-10-13T11:23:53+00:00",
+      "resolved_at": "2026-10-13T12:32:27+00:00",
       "title": "Dental Practices March 2026",
       "url": "https://www.opendata.nhs.scot/dataset/2f218ba7-6695-4b22-867d-41383ae36de7/resource/6c0d19e7-ba5b-46c2-8135-3200b59ad482/download/nhs-dental-practices-and-nhs-dental-registrations-as-at-31-mar-2026.csv",
       "version": "https://www.opendata.nhs.scot/dataset/2f218ba7-6695-4b22-867d-41383ae36de7/resource/6c0d19e7-ba5b-46c2-8135-3200b59ad482/download/nhs-dental-practices-and-nhs-dental-registrations-as-at-31-mar-2026.csv"
@@ -2273,7 +2273,7 @@
     },
     "resolved": {
       "modified": "2026-07-28T12:27:03.680343",
-      "resolved_at": "2026-10-13T11:23:31+00:00",
+      "resolved_at": "2026-10-13T12:32:27+00:00",
       "title": "GP Practices and List sizes July 2026",
       "url": "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/0032ce94-f7f6-44dd-879c-7d3074d8e2e8/download/practice_contact_details_20260701_opendata.csv",
       "version": "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/0032ce94-f7f6-44dd-879c-7d3074d8e2e8/download/practice_contact_details_20260701_opendata.csv"
@@ -2290,7 +2290,7 @@
     },
     "resolved": {
       "modified": "2026-09-08T12:54:26.947943",
-      "resolved_at": "2026-10-13T11:23:43+00:00",
+      "resolved_at": "2026-10-13T12:32:27+00:00",
       "title": "Dispenser Details - June 2026 ",
       "url": "https://www.opendata.nhs.scot/dataset/a30fde16-1226-49b3-b13d-eb90e39c2058/resource/801b1c5a-02e9-49b7-a3c7-884a9144730f/download/dispenser_contactdetails_202606.csv",
       "version": "https://www.opendata.nhs.scot/dataset/a30fde16-1226-49b3-b13d-eb90e39c2058/resource/801b1c5a-02e9-49b7-a3c7-884a9144730f/download/dispenser_contactdetails_202606.csv"
@@ -3866,7 +3866,7 @@
       "version": "Wed, 30 Sep 2026 14:06:14 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:53+00:00",
+      "resolved_at": "2026-10-13T12:31:25+00:00",
       "url": "https://data.police.uk/data/archive/latest.zip",
       "version": "Wed, 30 Sep 2026 14:06:14 GMT"
     }
@@ -3881,7 +3881,7 @@
     },
     "resolved": {
       "release": null,
-      "resolved_at": "2026-10-11T20:23:49+00:00",
+      "resolved_at": "2026-10-13T12:30:23+00:00",
       "url": "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimatesnationalstatistics/mid2022revisednov2025tomid2024/sapelsoabroadage20222024.xlsx",
       "version": "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimatesnationalstatistics/mid2022revisednov2025tomid2024/sapelsoabroadage20222024.xlsx"
     }
@@ -3896,9 +3896,26 @@
       "version": "Mon, 28 Sep 2026 05:12:22 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:50+00:00",
+      "resolved_at": "2026-10-13T12:31:23+00:00",
       "url": "https://s3.eu-west-1.amazonaws.com/prod1.publicdata.landregistry.gov.uk/pp-complete.csv",
       "version": "Mon, 28 Sep 2026 05:12:22 GMT"
+    }
+  },
+  "ros_house_prices": {
+    "fetched": {
+      "bytes": 84374594,
+      "etag": "\"3e41e8d8c0447019f2e308f091fd2207\"",
+      "fetched_at": "2026-10-13T12:21:46.588269+00:00",
+      "last_modified": "Wed, 09 Sep 2026 15:07:39 GMT",
+      "sha256": "702c9ada0b26dad9904e97f00ea7aa3357e1bf449e724e83292b5265f0549cf2",
+      "version": "https://api.data.gov.scot/resource/3d9a31a5-4b62-436a-a537-7d9bbeba1723/download"
+    },
+    "resolved": {
+      "modified": "2026-08-20T16:46:55.242729",
+      "resolved_at": "2026-10-13T12:32:26+00:00",
+      "title": "residential-properties-sales-and-price.csv",
+      "url": "https://api.data.gov.scot/resource/3d9a31a5-4b62-436a-a537-7d9bbeba1723/download",
+      "version": "https://api.data.gov.scot/resource/3d9a31a5-4b62-436a-a537-7d9bbeba1723/download"
     }
   },
   "ruc_2021": {
@@ -3912,7 +3929,7 @@
     "resolved": {
       "item_id": "9dbf7613cbb147b8bb8627ddb3568cff",
       "modified": "2025-08-11T08:24:30+00:00",
-      "resolved_at": "2026-10-11T20:23:49+00:00",
+      "resolved_at": "2026-10-13T12:30:22+00:00",
       "title": "Rural Urban Classification (2021) of LSOAs in EW",
       "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA21_RUC21_EW_LU/FeatureServer/0",
       "version": "2025-08-11T08:24:30+00:00"
@@ -4006,7 +4023,7 @@
       "version": "Tue, 21 Jul 2026 06:54:05 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:23:09+00:00",
+      "resolved_at": "2026-10-13T12:32:25+00:00",
       "url": "https://www.scotlandscensus.gov.uk/media/zz8620251217_10_04_asdfsfgbsdtbbjutiui465in/Datazone2022.zip",
       "version": "Tue, 21 Jul 2026 06:54:05 GMT"
     }
@@ -4120,7 +4137,7 @@
       "version": "Thu, 30 Jan 2025 15:50:35 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:25:17+00:00",
+      "resolved_at": "2026-10-13T12:32:28+00:00",
       "url": "https://map.sepa.org.uk/atom/flood/SEPA_Coastal_Flood_Maps_v3_0.zip",
       "version": "Thu, 30 Jan 2025 15:50:35 GMT"
     }
@@ -4283,7 +4300,7 @@
       "version": "Thu, 30 Jan 2025 15:50:34 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:25:26+00:00",
+      "resolved_at": "2026-10-13T12:32:28+00:00",
       "url": "https://map.sepa.org.uk/atom/flood/SEPA_River_Flood_Maps_v3_0.zip",
       "version": "Thu, 30 Jan 2025 15:50:34 GMT"
     }
@@ -4355,7 +4372,7 @@
       "version": "Thu, 30 Jan 2025 15:50:45 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:26:17+00:00",
+      "resolved_at": "2026-10-13T12:32:28+00:00",
       "url": "https://map.sepa.org.uk/atom/flood/SEPA_Surface_Water_Flood_Maps_EXTENT_v3_0.zip",
       "version": "Thu, 30 Jan 2025 15:50:45 GMT"
     }
@@ -4373,7 +4390,7 @@
       "version": "Tue, 04 Mar 2025 14:09:48 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:24:46+00:00",
+      "resolved_at": "2026-10-13T12:32:28+00:00",
       "url": "https://map.sepa.org.uk/atom/noise/Noise_Consolidated_LDEN.zip",
       "version": "Tue, 04 Mar 2025 14:09:48 GMT"
     }
@@ -4392,7 +4409,7 @@
       "version": "Tue, 30 Jul 2024 08:44:20 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:24:43+00:00",
+      "resolved_at": "2026-10-13T12:32:28+00:00",
       "url": "https://map.sepa.org.uk/atom/noise/Noise_Industry_LDEN.zip",
       "version": "Tue, 30 Jul 2024 08:44:20 GMT"
     }
@@ -4408,7 +4425,7 @@
     },
     "resolved": {
       "modified": "2026-08-18T09:23:35.543491",
-      "resolved_at": "2026-10-13T11:23:21+00:00",
+      "resolved_at": "2026-10-13T12:32:26+00:00",
       "title": "attainment-for-all.csv",
       "url": "https://api.data.gov.scot/resource/564b1561-b422-46c3-9522-5fa11f7dde33/download",
       "version": "https://api.data.gov.scot/resource/564b1561-b422-46c3-9522-5fa11f7dde33/download"
@@ -4424,9 +4441,16 @@
       "version": "Thu, 26 Mar 2026 12:12:07 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:23:18+00:00",
+      "resolved_at": "2026-10-13T12:32:26+00:00",
       "url": "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2019/04/council-tax-datasets/documents/average-council-tax-per-dwelling/council-tax-by-band-2026-27/council-tax-by-band-2026-27/govscot%3Adocument/CTAS%2B2026%2B-%2BCouncil%2BTax%2BAssumptions%2B-%2BCouncil%2BTax%2Bby%2BBand%2B-%2B2026-27.xlsx",
       "version": "Thu, 26 Mar 2026 12:12:07 GMT"
+    }
+  },
+  "sg_dz11_boundaries": {
+    "resolved": {
+      "resolved_at": "2026-10-13T12:32:25+00:00",
+      "url": "https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneBdry_2011.zip",
+      "version": "Wed, 06 Oct 2021 10:13:58 GMT"
     }
   },
   "sg_dz22_boundaries": {
@@ -4446,7 +4470,7 @@
       "version": "Thu, 23 Oct 2025 14:51:29 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:13:51+00:00",
+      "resolved_at": "2026-10-13T12:32:24+00:00",
       "url": "https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneBdry_2022.zip",
       "version": "Thu, 23 Oct 2025 14:51:29 GMT"
     }
@@ -4468,7 +4492,7 @@
       "version": "Thu, 23 Oct 2025 15:06:16 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:13:58+00:00",
+      "resolved_at": "2026-10-13T12:32:24+00:00",
       "url": "https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneCent_2022.zip",
       "version": "Thu, 23 Oct 2025 15:06:16 GMT"
     }
@@ -4484,7 +4508,7 @@
     },
     "resolved": {
       "modified": "2026-08-19T14:01:41.989746",
-      "resolved_at": "2026-10-13T11:10:08+00:00",
+      "resolved_at": "2026-10-13T12:32:24+00:00",
       "title": "DataZone2022lookup_2026-05-07.csv",
       "url": "https://api.data.gov.scot/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download",
       "version": "https://api.data.gov.scot/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download"
@@ -4512,7 +4536,7 @@
       "version": "Fri, 13 Dec 2024 11:38:35 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:13:53+00:00",
+      "resolved_at": "2026-10-13T12:32:24+00:00",
       "url": "https://maps.gov.scot/ATOM/shapefiles/SG_IntermediateZoneBdry_2022.zip",
       "version": "Fri, 13 Dec 2024 11:38:35 GMT"
     }
@@ -4534,7 +4558,7 @@
       "version": "Wed, 03 Apr 2024 10:14:18 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:23:19+00:00",
+      "resolved_at": "2026-10-13T12:32:26+00:00",
       "url": "https://maps.gov.scot/ATOM/shapefiles/SG_SchoolRoll_2023.zip",
       "version": "Wed, 03 Apr 2024 10:14:18 GMT"
     }
@@ -4549,7 +4573,7 @@
       "version": "Mon, 27 Apr 2020 16:27:48 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:10:06+00:00",
+      "resolved_at": "2026-10-13T12:32:25+00:00",
       "url": "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/scottish-index-of-multiple-deprivation-2020-indicator-data/documents/simd_2020_indicators/simd_2020_indicators/govscot%3Adocument/SIMD%2B2020v2%2B-%2Bindicators.xlsx",
       "version": "Mon, 27 Apr 2020 16:27:48 GMT"
     }
@@ -4564,7 +4588,7 @@
       "version": "Mon, 27 Apr 2020 16:16:03 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:10:04+00:00",
+      "resolved_at": "2026-10-13T12:32:25+00:00",
       "url": "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/scottish-index-of-multiple-deprivation-2020-ranks-and-domain-ranks/documents/scottish-index-of-multiple-deprivation-2020-ranks-and-domain-ranks/scottish-index-of-multiple-deprivation-2020-ranks-and-domain-ranks/govscot%3Adocument/SIMD%2B2020v2%2B-%2Branks.xlsx",
       "version": "Mon, 27 Apr 2020 16:16:03 GMT"
     }
@@ -4579,7 +4603,7 @@
       "version": "Tue, 11 Feb 2025 12:28:47 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-13T11:09:58+00:00",
+      "resolved_at": "2026-10-13T12:32:25+00:00",
       "url": "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/scottish-index-of-multiple-deprivation-2020-postcode-look-up-file/documents/simd-2020-postcode-lookup-v5/simd-2020-postcode-lookup-v5/govscot%3Adocument/SIMD%2B2020v2%2B-%2Bpostcode%2Blookup%2B-%2Bupdated%2B2025.xlsx",
       "version": "Tue, 11 Feb 2025 12:28:47 GMT"
     }
@@ -4592,7 +4616,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:53+00:00",
+      "resolved_at": "2026-10-13T12:31:26+00:00",
       "url": "https://data.dft.gov.uk/road-accidents-safety-data/dft-road-casualty-statistics-collision-last-5-years.csv",
       "version": null
     }
@@ -4626,7 +4650,7 @@
     },
     "resolved": {
       "modified": "2026-09-24T09:30:08+01:00",
-      "resolved_at": "2026-10-11T20:25:09+00:00",
+      "resolved_at": "2026-10-13T12:31:40+00:00",
       "title": "CTSOP4.1: number of properties by Council Tax band, property build period, local authority district and lower and middle layer super output area at 31 March 2026",
       "url": "https://assets.publishing.service.gov.uk/media/6aa93b422f29b388848184b8/CTSOP_4_1.zip",
       "version": "https://assets.publishing.service.gov.uk/media/6aa93b422f29b388848184b8/CTSOP_4_1.zip"
@@ -4643,7 +4667,7 @@
     },
     "resolved": {
       "release": "2027-03-01",
-      "resolved_at": "2026-10-11T20:25:46+00:00",
+      "resolved_at": "2026-10-13T12:32:22+00:00",
       "url": "https://www.gov.wales/sites/default/files/statistics-and-research/2026-03/council-tax-levels-april-2026-march-2027-153478.xlsx",
       "version": "https://www.gov.wales/sites/default/files/statistics-and-research/2026-03/council-tax-levels-april-2026-march-2027-153478.xlsx"
     }
@@ -4659,7 +4683,7 @@
     },
     "resolved": {
       "release": "2025-08-01",
-      "resolved_at": "2026-10-11T20:25:47+00:00",
+      "resolved_at": "2026-10-13T12:32:24+00:00",
       "url": "https://www.gov.wales/sites/default/files/statistics-and-research/2025-12/examination-results-september-2024-august-2025-081.ods",
       "version": "https://www.gov.wales/sites/default/files/statistics-and-research/2025-12/examination-results-september-2024-august-2025-081.ods"
     }
@@ -4674,7 +4698,7 @@
       "version": "Thu, 03 Aug 2023 14:46:12 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:56+00:00",
+      "resolved_at": "2026-10-13T12:31:28+00:00",
       "url": "https://dmwproductionblob.blob.core.windows.net/cogs/cog_WG_RL_LDEN_All.tif",
       "version": "Thu, 03 Aug 2023 14:46:12 GMT"
     }
@@ -4689,7 +4713,7 @@
       "version": "Thu, 03 Aug 2023 14:29:15 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:24:56+00:00",
+      "resolved_at": "2026-10-13T12:31:28+00:00",
       "url": "https://dmwproductionblob.blob.core.windows.net/cogs/cog_WG_RD_LDEN_All.tif",
       "version": "Thu, 03 Aug 2023 14:29:15 GMT"
     }
@@ -4702,7 +4726,7 @@
       "version": null
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:11+00:00",
+      "resolved_at": "2026-10-13T12:31:42+00:00",
       "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Amaintained_schools_wg&outputFormat=csv&srs=EPSG%3A27700",
       "version": null
     }
@@ -4717,7 +4741,7 @@
       "version": "Wed, 26 Nov 2025 09:26:20 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:11+00:00",
+      "resolved_at": "2026-10-13T12:31:41+00:00",
       "url": "https://www.gov.wales/sites/default/files/statistics-and-research/2025-11/wimd-2025-index-and-domain-ranks-by-small-area.ods",
       "version": "Wed, 26 Nov 2025 09:26:20 GMT"
     }
@@ -4732,7 +4756,7 @@
       "version": "Tue, 09 Dec 2025 10:32:04 GMT"
     },
     "resolved": {
-      "resolved_at": "2026-10-11T20:25:11+00:00",
+      "resolved_at": "2026-10-13T12:31:41+00:00",
       "url": "https://www.gov.wales/sites/default/files/statistics-and-research/2025-12/wimd-2025-index-and-domain-scores-by-small-area.ods",
       "version": "Tue, 09 Dec 2025 10:32:04 GMT"
     }

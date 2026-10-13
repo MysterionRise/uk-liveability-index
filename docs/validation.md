@@ -6,19 +6,19 @@ population-weighted, with the default (balanced) weights. Expectations are in
 [config/validation_places.yaml](../config/validation_places.yaml); regenerate this
 page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
-**85 of 87 checks pass** (53 of 54 anchors) across 38 places.
+**88 of 88 checks pass** (54 of 54 anchors) across 38 places.
 
 ## Scores
 
 | Place | Neighbourhood | Overall | Amenities | Community | Education | Environment | Health | Housing | Safety | Transport |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Morningside | Morningside West and Craighouse, City of Edinburgh | 77 | 56 | 87 | 86 | 93 | 100 | – | 69 | 50 |
-| Niddrie | Niddrie, City of Edinburgh | 57 | 52 | 7 | 59 | 90 | 100 | – | 36 | 56 |
-| Bearsden | Kilmardinny West, East Dunbartonshire | 77 | 48 | 83 | 86 | 94 | 96 | – | 83 | 49 |
-| Govan | Govan and Linthouse, Glasgow City | 57 | 55 | 7 | 48 | 82 | 100 | – | 30 | 80 |
-| Fort William | Fort William South, Highland | 53 | 51 | 45 | 23 | 93 | 81 | – | 52 | 26 |
-| Lerwick | Lerwick North, Shetland Islands | 58 | 52 | 53 | 53 | 75 | 95 | – | 48 | 31 |
-| St Andrews | St Andrews Central, Fife | 72 | 64 | 88 | 75 | 87 | 79 | – | 62 | 47 |
+| Morningside | Morningside West and Craighouse, City of Edinburgh | 71 | 56 | 87 | 86 | 93 | 100 | 29 | 69 | 50 |
+| Niddrie | Niddrie, City of Edinburgh | 54 | 52 | 7 | 59 | 90 | 100 | 32 | 36 | 56 |
+| Bearsden | Kilmardinny West, East Dunbartonshire | 71 | 48 | 83 | 86 | 94 | 96 | 28 | 83 | 49 |
+| Govan | Govan and Linthouse, Glasgow City | 57 | 55 | 7 | 48 | 82 | 100 | 52 | 30 | 80 |
+| Fort William | Fort William South, Highland | 52 | 51 | 45 | 23 | 93 | 81 | 46 | 52 | 26 |
+| Lerwick | Lerwick North, Shetland Islands | 57 | 52 | 53 | 53 | 75 | 95 | 50 | 48 | 31 |
+| St Andrews | St Andrews Central, Fife | 65 | 64 | 88 | 75 | 87 | 79 | 15 | 62 | 47 |
 | Pontcanna | Pontcanna, Cardiff | 72 | 83 | 80 | 96 | 81 | 87 | 29 | 32 | 86 |
 | Rhyl | Rhyl North, Denbighshire | 54 | 70 | 11 | 27 | 72 | 98 | 62 | 18 | 71 |
 | Merthyr Tydfil | Gelli-deg & Town, Merthyr Tydfil | 56 | 68 | 18 | 57 | 80 | 84 | 60 | 17 | 65 |
@@ -65,12 +65,13 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 - ✅ amenities score ≥ 50: 56.3 ⚓
 - ✅ community score ≥ 60: 86.9 ⚓
-- ❌ housing score ≤ 50: –
+- ✅ housing score ≤ 50: 29.5
 
-**Niddrie** (Niddrie). Among Edinburgh's most deprived neighbourhoods; cheap homes. Flags: broadcast_lad, imputed, not_available.
+**Niddrie** (Niddrie). Among Edinburgh's most deprived neighbourhoods: homes well under the city's prices, many in poor condition. Flags: broadcast_lad, imputed, low_n, not_available.
 
 - ✅ community score ≤ 35: 6.5 ⚓
-- ❌ housing score ≥ 50: – ⚓
+- ✅ house_price ≤ 240,000: 214,004.3 ⚓
+- ✅ housing_condition ≥ 75: 86.0
 - ✅ flag not_available: care_homes, claimant_rate, connectivity_cycling, connectivity_overall, connectivity_public_transport, connectivity_walking, crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence, gp_quality, household_income, iod_outdoors, leisure_facilities, life_expectancy, lower_band_homes, new_builds, patients_per_gp, period_homes, price_to_income, primary_results, primary_school_quality, road_rail_noise, secondary_results, swimming_pool_distance ⚓
 
 **Bearsden** (Kilmardinny West). Prosperous suburb north of Glasgow, low crime, strong schools. Flags: broadcast_lad, imputed, not_available.
@@ -78,17 +79,17 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≥ 60: 83.4 ⚓
 - ✅ safety score ≥ 55: 83.1 ⚓
 
-**Govan** (Govan and Linthouse). Deprived inner Glasgow by the Clyde; the subway and the hospital nearby. Flags: broadcast_lad, imputed, not_available.
+**Govan** (Govan and Linthouse). Deprived inner Glasgow by the Clyde; the subway and the hospital nearby. Flags: broadcast_lad, imputed, low_n, not_available.
 
 - ✅ community score ≤ 35: 7.4 ⚓
 - ✅ hospital_ae_distance ≤ 3,000: 1,168.8 ⚓
 
-**Fort William** (Fort William South). Highland town under Ben Nevis: clean air, trees, a small hospital with an A&E. Flags: broadcast_lad, imputed, not_available.
+**Fort William** (Fort William South). Highland town under Ben Nevis: clean air, trees, a small hospital with an A&E. Flags: broadcast_lad, imputed, low_n, not_available.
 
 - ✅ environment score ≥ 50: 92.8 ⚓
 - ✅ hospital_ae_distance ≤ 5,000: 951.8 ⚓
 
-**Lerwick** (Lerwick North). Remote island capital: no railway anywhere near, clean air, its own A&E. Flags: broadcast_lad, imputed, not_available.
+**Lerwick** (Lerwick North). Remote island capital: no railway anywhere near, clean air, its own A&E. Flags: broadcast_lad, imputed, low_n, not_available.
 
 - ✅ station_distance ≥ 40,000: 50,000.0 ⚓
 - ✅ hospital_ae_distance ≤ 5,000: 963.3 ⚓

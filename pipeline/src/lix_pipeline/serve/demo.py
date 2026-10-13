@@ -89,7 +89,7 @@ def build_demo(lads: list[str], out: Path, source: Path | None = None) -> dict[s
             name: {"sha256": _sha256(p), "bytes": p.stat().st_size} for name, p in files.items()
         },
     )
-    (serve / "manifest.json").write_text(json.dumps(manifest, indent=2))
+    (serve / "manifest.json").write_text(json.dumps(manifest, indent=2, allow_nan=False))
     total = sum(p.stat().st_size for p in serve.rglob("*") if p.is_file())
     logger.info(f"Demo dataset: {features.height} LSOAs in {lads}, {total / 1e6:.1f} MB at {serve}")
     return files

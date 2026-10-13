@@ -236,8 +236,9 @@ deprivation (still on the 2011 Data Zones: every rank becomes a within-Scotland 
 and crosses to the 2022 zones as a population-weighted mean through postcodes, using the
 SIMD postcode lookup, the NSPL and NRS's output-area populations; 94% of 2022 zones
 are mostly one 2011 zone and the mixing moves ranks little, Spearman 0.99), Registers
-of Scotland's annual small-area prices (median per zone, suppressed under five sales,
-when the Intermediate Zone's median stands in), the Scottish Government's council tax
+of Scotland's annual small-area prices (on the 2011 zones through the crosswalk; the
+latest calendar year, suppressed under five sales, when the Intermediate Zone's median
+stands in), the Scottish Government's council tax
 by band and school roll (no inspection grades or primary attainment in open data: a
 secondary's quality is its leavers' average tariff as a percentile within Scotland,
 primaries count as present but ungraded), the Care Inspectorate's register of day care

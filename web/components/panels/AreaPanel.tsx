@@ -21,7 +21,7 @@ export function AreaPanel() {
   const locale = useLocale();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const code = state.map.selected;
-  const key = `${code}|${state.preset}`;
+  const key = `${code}|${state.preset}|${locale}`;
 
   useEffect(() => {
     if (!code) return;
@@ -34,7 +34,7 @@ export function AreaPanel() {
     return () => {
       cancelled = true;
     };
-  }, [code, state.preset, key]);
+  }, [code, state.preset, key, locale]);
 
   if (!code) {
     return (

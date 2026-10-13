@@ -43,7 +43,7 @@ def test_refuses_another_schema_version(tmp_path: Path):
     manifest["schema_version"] = 1
     (out / "manifest.json").write_text(json.dumps(manifest))
     (problem,) = validate_serve(out)
-    assert problem.startswith("manifest schema_version 1; this code reads v2")
+    assert problem.startswith(f"manifest schema_version 1; this code reads v{SERVE_SCHEMA_VERSION}")
 
 
 def test_flags_a_file_changed_after_the_manifest(demo_copy):

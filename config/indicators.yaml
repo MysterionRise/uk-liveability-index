@@ -814,7 +814,7 @@ indicators:
     sources: [price_paid, nspl, ros_house_prices]
     builder: housing:median_price
     weight: 2.0
-    caveats: Lower prices score as more affordable; the scale reflects price, not value. In Scotland the Registers of Scotland publish annual medians per data zone, suppressed under five sales (then the intermediate zone's median stands in).
+    caveats: Lower prices score as more affordable; the scale reflects price, not value. In Scotland the Registers of Scotland publish annual medians per 2011 data zone (the latest calendar year, about two years behind the Land Registry file), suppressed under five sales; they come onto the 2022 zones through the postcode crosswalk, and a zone without a price takes its intermediate zone's.
 
   - id: housing_condition
     theme: housing
@@ -840,7 +840,7 @@ indicators:
     builder: common:column
     params: {slug: price_paid, column: yoy_change_pct}
     role: context
-    caveats: Noisy where sales are few.
+    caveats: Noisy where sales are few; in Scotland the change is between calendar years.
 
   - id: council_tax
     theme: housing

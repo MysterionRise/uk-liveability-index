@@ -120,7 +120,11 @@ export interface Manifest {
   /** Checksums of the build's files, used to version their URLs */
   files?: Record<string, { sha256: string; bytes: number }>;
   /** Spearman correlations between scored indicators, ordered by theme */
-  correlations?: { ids: string[]; themes: string[]; rho: number[][] } | null;
+  correlations?: {
+    ids: string[];
+    themes: string[];
+    rho: (number | null)[][];
+  } | null;
 }
 
 export interface ScoreData {

@@ -1435,23 +1435,21 @@ scotland_census_2022:
 
 ros_house_prices:
   coverage: [S]
-  title: Registers of Scotland small area house price statistics
+  title: Residential property sales and prices by Data Zone (Registers of Scotland)
   theme: housing
   access:
-    type: manual
-    instructions: >-
-      Open https://www.ros.gov.uk/data-and-statistics/property-market-statistics/small-area-statistics
-      and download the latest small area statistics spreadsheet (the one with 2022 Data Zone
-      and Intermediate Zone sheets).
-    expect: ["*.xlsx"]
-  format: xlsx
-  landing_page: https://www.ros.gov.uk/data-and-statistics/property-market-statistics/small-area-statistics
-  description: Residential sales per calendar year by Data Zone 2022 and Intermediate Zone 2022 (count, mean, median and quartile prices), with areas under five sales suppressed.
+    type: ckan
+    api: https://api.data.gov.scot/api/3/action
+    package: house_prices___residential_properties_sales_and_price
+    resource_regex: '^residential-properties-sales-and-price'
+  format: csv
+  landing_page: https://data.gov.scot/dataset/house_prices___residential_properties_sales_and_price
+  description: Residential sales per calendar year since 2004 by 2011 Data Zone and Intermediate Zone (count, mean, median and quartile prices), prices suppressed where sales are under five; brought onto the 2022 Data Zones through the postcode crosswalk (dz11_dz22).
   licence: OGL-3.0
-  attribution: "Registers of Scotland, Small area statistics, licensed under the Open Government Licence v3.0."
+  attribution: "Registers of Scotland, Residential properties sales and price, licensed under the Open Government Licence v3.0."
   cadence: annual
-  size_hint: 10MB
-  notes: The website refuses automated downloads (HTTP 403), so the file is fetched by hand like the night-lights raster; the Scottish price branch skips when it is absent.
+  size_hint: 100MB
+  notes: The Registers of Scotland website refuses automated downloads, so the series is read from the Scottish Government's open data portal, which carries it on the 2011 zones; the latest calendar year lags HM Land Registry's monthly file by about two years.
 
 sg_council_tax:
   coverage: [S]
