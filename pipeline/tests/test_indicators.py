@@ -310,3 +310,18 @@ def test_optional_column_is_empty_without_the_staged_table(tmp_path, monkeypatch
     (tmp_path / "staged").mkdir()
     ctx.tables["night_lights"].write_parquet(tmp_path / "staged" / "night_lights.parquet")
     assert optional_column(ctx, "night_lights", "radiance")["value"].to_list() == [3.5]
+
+
+def test_nearest_beyond_the_cap_can_count_as_the_cap():
+    from lix_pipeline.indicators.common import nearest
+
+    origins = pl.DataFrame(
+        {"lsoa21cd": ["E01000001", "E01000002"], "east1m": [0.0, 300_000.0], "north1m": [0.0, 0.0]}
+    )
+    sites = pl.DataFrame({"type": ["type1"], "x": [1000.0], "y": [0.0]})
+    ctx = FakeContext(origins=origins, ae_sites=sites)
+    plain = nearest(ctx, "ae_sites", "type", ["type1"]).sort("lsoa21cd")
+    assert plain["value"].to_list()[0] == pytest.approx(1000.0)
+    assert plain["value"].to_list()[1] is None  # nothing within 50 km
+    capped = nearest(ctx, "ae_sites", "type", ["type1"], beyond_cap=50_000).sort("lsoa21cd")
+    assert capped["value"].to_list() == pytest.approx([1000.0, 50_000.0])

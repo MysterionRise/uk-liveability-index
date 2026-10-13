@@ -6,43 +6,50 @@ population-weighted, with the default (balanced) weights. Expectations are in
 [config/validation_places.yaml](../config/validation_places.yaml); regenerate this
 page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
-**70 of 70 checks pass** (39 of 39 anchors) across 31 places.
+**85 of 87 checks pass** (53 of 54 anchors) across 38 places.
 
 ## Scores
 
 | Place | Neighbourhood | Overall | Amenities | Community | Education | Environment | Health | Housing | Safety | Transport |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Pontcanna | Pontcanna, Cardiff | 77 | 100 | 80 | 96 | 81 | 100 | 29 | 33 | 97 |
-| Rhyl | Rhyl North, Denbighshire | 58 | 84 | 11 | 27 | 72 | 99 | 62 | 19 | 91 |
-| Merthyr Tydfil | Gelli-deg & Town, Merthyr Tydfil | 62 | 82 | 18 | 57 | 80 | 97 | 60 | 18 | 85 |
-| Abergavenny | Abergavenny South & Crucorney, Monmouthshire | 58 | 55 | 75 | 56 | 82 | 70 | 24 | 39 | 63 |
-| Penarth | Penarth, Vale of Glamorgan | 78 | 92 | 83 | 77 | 90 | 100 | 35 | 51 | 97 |
-| Blaenau Ffestiniog | Blaenau Ffestiniog & Trawsfynydd, Gwynedd | 52 | 39 | 47 | 33 | 68 | 64 | 60 | 52 | 56 |
-| Hampstead | Hampstead Town, Camden | 72 | 99 | 88 | 88 | 67 | 86 | 17 | 29 | 99 |
-| Shoreditch | Shoreditch, Hackney | 59 | 100 | 44 | 90 | 29 | 71 | 28 | 10 | 96 |
-| Whitechapel | Spitalfields, Tower Hamlets | 56 | 100 | 26 | 81 | 34 | 71 | 36 | 8 | 91 |
-| Kensington | Kensington Abingdon, Kensington and Chelsea | 68 | 100 | 91 | 96 | 49 | 71 | 18 | 23 | 99 |
-| Manchester | Castlefield & Deansgate, Manchester | 64 | 100 | 63 | 58 | 50 | 73 | 55 | 19 | 97 |
-| Salford | Weaste & Seedley, Salford | 58 | 62 | 21 | 51 | 64 | 85 | 54 | 31 | 98 |
-| Jesmond | South Jesmond & Sandyford, Newcastle upon Tyne | 74 | 99 | 70 | 71 | 78 | 87 | 46 | 43 | 97 |
-| Headingley | Headingley, Leeds | 71 | 99 | 62 | 62 | 78 | 87 | 49 | 30 | 100 |
-| Harrogate | Central Harrogate, North Yorkshire | 70 | 98 | 67 | 65 | 79 | 79 | 34 | 41 | 97 |
-| Winchester | Winchester East, Winchester | 70 | 91 | 42 | 78 | 84 | 93 | 41 | 46 | 87 |
-| St Albans | St Albans Central, St Albans | 73 | 100 | 73 | 94 | 74 | 84 | 30 | 28 | 98 |
-| Royal Sutton Coldfield | Sutton Coldfield South & Central, Birmingham | 71 | 83 | 62 | 82 | 74 | 82 | 44 | 42 | 98 |
-| Cambridge | Central & West Cambridge, Cambridge | 71 | 92 | 95 | 84 | 79 | 85 | 13 | 33 | 85 |
-| Chipping Campden | Willersey, Chipping Campden & Blockley, Cotswold | 54 | 34 | 78 | 41 | 73 | 68 | 29 | 59 | 48 |
-| Holsworthy | Holsworthy, Bradworthy & Welcombe, Torridge | 49 | 35 | 53 | 23 | 80 | 62 | 34 | 76 | 27 |
-| Sidmouth | Sidmouth Town, East Devon | 65 | 81 | 78 | 40 | 84 | 89 | 26 | 70 | 54 |
-| Jaywick Sands | Tendring 018A (Jaywick & St Osyth), Tendring | 43 | 38 | 0 | 30 | 58 | 68 | 67 | 20 | 65 |
-| Blackpool | North Shore, Blackpool | 56 | 91 | 5 | 29 | 74 | 83 | 60 | 7 | 97 |
-| Middlesbrough | Middlesbrough Central, Middlesbrough | 58 | 96 | 8 | 49 | 64 | 82 | 66 | 8 | 95 |
-| Burnley | Central Burnley & Daneshouse, Burnley | 56 | 64 | 8 | 41 | 78 | 68 | 60 | 33 | 96 |
-| Spalding | Spalding North, South Holland | 68 | 75 | 59 | 63 | 60 | 67 | 76 | 56 | 90 |
-| Wisbech | Wisbech South & Peckover, Fenland | 55 | 71 | 25 | 44 | 70 | 68 | 65 | 28 | 67 |
-| Milton Keynes | Central Milton Keynes & Newlands, Milton Keynes | 64 | 90 | 29 | 52 | 83 | 78 | 74 | 18 | 90 |
-| Clifton | Clifton East, Bristol, City of | 73 | 100 | 90 | 84 | 70 | 86 | 18 | 37 | 100 |
-| Bexhill-on-Sea | Bexhill Central, Rother | 62 | 99 | 25 | 55 | 69 | 69 | 51 | 31 | 96 |
+| Morningside | Morningside West and Craighouse, City of Edinburgh | 77 | 56 | 87 | 86 | 93 | 100 | – | 69 | 50 |
+| Niddrie | Niddrie, City of Edinburgh | 57 | 52 | 7 | 59 | 90 | 100 | – | 36 | 56 |
+| Bearsden | Kilmardinny West, East Dunbartonshire | 77 | 48 | 83 | 86 | 94 | 96 | – | 83 | 49 |
+| Govan | Govan and Linthouse, Glasgow City | 57 | 55 | 7 | 48 | 82 | 100 | – | 30 | 80 |
+| Fort William | Fort William South, Highland | 53 | 51 | 45 | 23 | 93 | 81 | – | 52 | 26 |
+| Lerwick | Lerwick North, Shetland Islands | 58 | 52 | 53 | 53 | 75 | 95 | – | 48 | 31 |
+| St Andrews | St Andrews Central, Fife | 72 | 64 | 88 | 75 | 87 | 79 | – | 62 | 47 |
+| Pontcanna | Pontcanna, Cardiff | 72 | 83 | 80 | 96 | 81 | 87 | 29 | 32 | 86 |
+| Rhyl | Rhyl North, Denbighshire | 54 | 70 | 11 | 27 | 72 | 98 | 62 | 18 | 71 |
+| Merthyr Tydfil | Gelli-deg & Town, Merthyr Tydfil | 56 | 68 | 18 | 57 | 80 | 84 | 60 | 17 | 65 |
+| Abergavenny | Abergavenny South & Crucorney, Monmouthshire | 56 | 46 | 75 | 56 | 82 | 75 | 24 | 37 | 50 |
+| Penarth | Penarth, Vale of Glamorgan | 72 | 79 | 83 | 77 | 90 | 84 | 35 | 49 | 77 |
+| Blaenau Ffestiniog | Blaenau Ffestiniog & Trawsfynydd, Gwynedd | 48 | 32 | 47 | 33 | 68 | 51 | 60 | 50 | 40 |
+| Hampstead | Hampstead Town, Camden | 69 | 85 | 88 | 88 | 67 | 88 | 17 | 28 | 94 |
+| Shoreditch | Shoreditch, Hackney | 58 | 90 | 44 | 90 | 29 | 76 | 28 | 10 | 96 |
+| Whitechapel | Spitalfields, Tower Hamlets | 55 | 87 | 26 | 81 | 34 | 75 | 36 | 8 | 91 |
+| Kensington | Kensington Abingdon, Kensington and Chelsea | 66 | 84 | 91 | 96 | 49 | 76 | 18 | 23 | 93 |
+| Manchester | Castlefield & Deansgate, Manchester | 63 | 86 | 63 | 58 | 50 | 78 | 55 | 19 | 97 |
+| Salford | Weaste & Seedley, Salford | 53 | 45 | 21 | 51 | 64 | 85 | 54 | 30 | 75 |
+| Jesmond | South Jesmond & Sandyford, Newcastle upon Tyne | 69 | 83 | 70 | 71 | 78 | 89 | 46 | 42 | 75 |
+| Headingley | Headingley, Leeds | 67 | 83 | 62 | 62 | 78 | 89 | 49 | 30 | 81 |
+| Harrogate | Central Harrogate, North Yorkshire | 67 | 85 | 67 | 65 | 79 | 82 | 34 | 40 | 82 |
+| Winchester | Winchester East, Winchester | 67 | 74 | 42 | 78 | 84 | 94 | 41 | 45 | 78 |
+| St Albans | St Albans Central, St Albans | 69 | 83 | 73 | 94 | 74 | 81 | 30 | 28 | 92 |
+| Royal Sutton Coldfield | Sutton Coldfield South & Central, Birmingham | 67 | 69 | 62 | 82 | 74 | 85 | 44 | 41 | 80 |
+| Cambridge | Central & West Cambridge, Cambridge | 68 | 78 | 95 | 84 | 79 | 87 | 13 | 32 | 77 |
+| Chipping Campden | Willersey, Chipping Campden & Blockley, Cotswold | 51 | 25 | 78 | 41 | 73 | 60 | 29 | 57 | 42 |
+| Holsworthy | Holsworthy, Bradworthy & Welcombe, Torridge | 47 | 30 | 53 | 23 | 80 | 53 | 34 | 74 | 27 |
+| Sidmouth | Sidmouth Town, East Devon | 63 | 70 | 78 | 40 | 84 | 81 | 26 | 69 | 54 |
+| Jaywick Sands | Tendring 018A (Jaywick & St Osyth), Tendring | 41 | 37 | 0 | 30 | 58 | 62 | 67 | 18 | 55 |
+| Blackpool | North Shore, Blackpool | 52 | 75 | 5 | 29 | 74 | 86 | 60 | 7 | 81 |
+| Middlesbrough | Middlesbrough Central, Middlesbrough | 55 | 79 | 8 | 49 | 64 | 85 | 66 | 7 | 79 |
+| Burnley | Central Burnley & Daneshouse, Burnley | 52 | 48 | 8 | 41 | 78 | 73 | 60 | 32 | 75 |
+| Spalding | Spalding North, South Holland | 63 | 60 | 59 | 63 | 60 | 60 | 76 | 55 | 68 |
+| Wisbech | Wisbech South & Peckover, Fenland | 51 | 55 | 25 | 44 | 70 | 59 | 65 | 27 | 67 |
+| Milton Keynes | Central Milton Keynes & Newlands, Milton Keynes | 61 | 74 | 29 | 52 | 83 | 81 | 74 | 17 | 80 |
+| Clifton | Clifton East, Bristol, City of | 69 | 84 | 90 | 84 | 70 | 88 | 18 | 37 | 81 |
+| Bexhill-on-Sea | Bexhill Central, Rother | 57 | 83 | 25 | 55 | 69 | 65 | 51 | 31 | 80 |
 
 ## Observations
 
@@ -54,9 +61,47 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 ## Checks
 
+**Morningside** (Morningside West and Craighouse). Affluent south Edinburgh, cafés, Bruntsfield Links, good schools, expensive. Flags: broadcast_lad, imputed, not_available.
+
+- ✅ amenities score ≥ 50: 56.3 ⚓
+- ✅ community score ≥ 60: 86.9 ⚓
+- ❌ housing score ≤ 50: –
+
+**Niddrie** (Niddrie). Among Edinburgh's most deprived neighbourhoods; cheap homes. Flags: broadcast_lad, imputed, not_available.
+
+- ✅ community score ≤ 35: 6.5 ⚓
+- ❌ housing score ≥ 50: – ⚓
+- ✅ flag not_available: care_homes, claimant_rate, connectivity_cycling, connectivity_overall, connectivity_public_transport, connectivity_walking, crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence, gp_quality, household_income, iod_outdoors, leisure_facilities, life_expectancy, lower_band_homes, new_builds, patients_per_gp, period_homes, price_to_income, primary_results, primary_school_quality, road_rail_noise, secondary_results, swimming_pool_distance ⚓
+
+**Bearsden** (Kilmardinny West). Prosperous suburb north of Glasgow, low crime, strong schools. Flags: broadcast_lad, imputed, not_available.
+
+- ✅ community score ≥ 60: 83.4 ⚓
+- ✅ safety score ≥ 55: 83.1 ⚓
+
+**Govan** (Govan and Linthouse). Deprived inner Glasgow by the Clyde; the subway and the hospital nearby. Flags: broadcast_lad, imputed, not_available.
+
+- ✅ community score ≤ 35: 7.4 ⚓
+- ✅ hospital_ae_distance ≤ 3,000: 1,168.8 ⚓
+
+**Fort William** (Fort William South). Highland town under Ben Nevis: clean air, trees, a small hospital with an A&E. Flags: broadcast_lad, imputed, not_available.
+
+- ✅ environment score ≥ 50: 92.8 ⚓
+- ✅ hospital_ae_distance ≤ 5,000: 951.8 ⚓
+
+**Lerwick** (Lerwick North). Remote island capital: no railway anywhere near, clean air, its own A&E. Flags: broadcast_lad, imputed, not_available.
+
+- ✅ station_distance ≥ 40,000: 50,000.0 ⚓
+- ✅ hospital_ae_distance ≤ 5,000: 963.3 ⚓
+- ✅ environment score ≥ 50: 75.3
+
+**St Andrews** (St Andrews Central). University town, cafés and pubs, a well-off population. Flags: broadcast_lad, imputed, not_available.
+
+- ✅ amenities score ≥ 60: 64.5 ⚓
+- ✅ community score ≥ 55: 87.8 ⚓
+
 **Pontcanna** (Pontcanna). Affluent inner Cardiff, cafés and parks, expensive. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
-- ✅ amenities score ≥ 80: 99.9 ⚓
+- ✅ amenities score ≥ 80: 83.2 ⚓
 - ✅ community score ≥ 60: 79.8 ⚓
 - ✅ housing score ≤ 45: 29.0
 
@@ -65,7 +110,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≤ 25: 11.1 ⚓
 - ✅ housing score ≥ 50: 61.8 ⚓
 - ✅ flag broadcast_lad: council_tax, secondary_school_quality ⚓
-- ✅ flag not_available: care_homes, gp_quality, leisure, life_expectancy, patients_per_gp, primary_results, primary_school_quality, secondary_results, swimming_pool_distance ⚓
+- ✅ flag not_available: access_deprivation, care_homes, gp_quality, leisure_facilities, life_expectancy, patients_per_gp, primary_results, primary_school_quality, recorded_crime, secondary_results, swimming_pool_distance ⚓
 
 **Merthyr Tydfil** (Gelli-deg & Town). Valleys town, high deprivation, cheap homes. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
@@ -84,135 +129,135 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 **Blaenau Ffestiniog** (Blaenau Ffestiniog & Trawsfynydd). Remote slate town, cheap but with few amenities. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
 - ✅ housing score ≥ 50: 60.0 ⚓
-- ✅ amenities score ≤ 50: 38.5
+- ✅ amenities score ≤ 50: 32.1
 
-**Hampstead** (Hampstead Town). Affluent, expensive, well connected. Flags: broadcast_lad, broadcast_msoa.
+**Hampstead** (Hampstead Town). Affluent, expensive, well connected. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ housing score ≤ 30: 16.6 ⚓
-- ✅ transport score ≥ 75: 98.6 ⚓
-- ✅ overall score ≥ 55: 71.6
+- ✅ transport score ≥ 75: 94.0 ⚓
+- ✅ overall score ≥ 55: 69.4
 - ✅ tree_canopy ≥ 30: 55.5 ⚓
 
-**Shoreditch** (Shoreditch). Nightlife hub with high crime per resident and expensive homes. Flags: broadcast_lad, broadcast_msoa.
+**Shoreditch** (Shoreditch). Nightlife hub with high crime per resident and expensive homes. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ amenities score ≥ 80: 100.0 ⚓
+- ✅ amenities score ≥ 80: 89.7 ⚓
 - ✅ safety score ≤ 30: 10.0 ⚓
 - ✅ transport score ≥ 85: 96.4
-- ✅ road_rail_noise ≥ 40: 60.0 ⚓
+- ✅ noise_exposure ≥ 40: 60.0 ⚓
 - ✅ light_pollution ≥ 50: 83.0 ⚓
 
-**Whitechapel** (Spitalfields). Dense, central, high income deprivation. Flags: broadcast_lad, broadcast_msoa.
+**Whitechapel** (Spitalfields). Dense, central, high income deprivation. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ transport score ≥ 85: 90.6 ⚓
 - ✅ community score ≤ 40: 25.7
 
-**Kensington** (Kensington Abingdon). Among the most expensive places in England. Flags: broadcast_lad, broadcast_msoa.
+**Kensington** (Kensington Abingdon). Among the most expensive places in England. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ housing score ≤ 25: 17.9 ⚓
-- ✅ amenities score ≥ 70: 100.0
+- ✅ amenities score ≥ 70: 83.6
 
-**Manchester** (Castlefield & Deansgate). City centre; Greater Manchester crime is estimated (no police.uk data). Flags: broadcast_lad, broadcast_msoa, imputed.
-
-- ✅ flag imputed: crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence ⚓
-- ✅ safety score ≤ 25: 18.8 ⚓
-- ✅ transport score ≥ 85: 97.1
-- ✅ road_rail_noise ≥ 50: 72.9 ⚓
-
-**Salford** (Weaste & Seedley). Greater Manchester, so crime is estimated. Flags: broadcast_lad, broadcast_msoa, imputed.
+**Manchester** (Castlefield & Deansgate). City centre; Greater Manchester crime is estimated (no police.uk data). Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
 - ✅ flag imputed: crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence ⚓
+- ✅ safety score ≤ 25: 18.6 ⚓
+- ✅ transport score ≥ 85: 97.0
+- ✅ noise_exposure ≥ 50: 72.9 ⚓
 
-**Jesmond** (South Jesmond & Sandyford). Popular inner suburb with bars and restaurants. Flags: broadcast_lad, broadcast_msoa.
+**Salford** (Weaste & Seedley). Greater Manchester, so crime is estimated. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
-- ✅ amenities score ≥ 70: 99.4
-- ✅ overall score ≥ 50: 73.8
+- ✅ flag imputed: crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence ⚓
 
-**Headingley** (Headingley). Student suburb: lively, but high burglary and theft. Flags: broadcast_lad, broadcast_msoa, low_n.
+**Jesmond** (South Jesmond & Sandyford). Popular inner suburb with bars and restaurants. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ amenities score ≥ 70: 99.4
-- ✅ safety score ≤ 45: 29.9
+- ✅ amenities score ≥ 70: 82.7
+- ✅ overall score ≥ 50: 69.1
 
-**Harrogate** (Central Harrogate). Affluent spa town. Flags: broadcast_lad, broadcast_msoa.
+**Headingley** (Headingley). Student suburb: lively, but high burglary and theft. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
-- ✅ overall score ≥ 55: 70.1 ⚓
+- ✅ amenities score ≥ 70: 82.7
+- ✅ safety score ≤ 45: 29.7
+
+**Harrogate** (Central Harrogate). Affluent spa town. Flags: broadcast_lad, broadcast_msoa, not_available.
+
+- ✅ overall score ≥ 55: 66.9 ⚓
 - ✅ community score ≥ 60: 66.7
 
-**Winchester** (Winchester East). Affluent cathedral city with strong schools. Flags: broadcast_lad, broadcast_msoa.
+**Winchester** (Winchester East). Affluent cathedral city with strong schools. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ overall score ≥ 55: 70.3
+- ✅ overall score ≥ 55: 67.0
 - ✅ education score ≥ 55: 78.0
 
-**St Albans** (St Albans Central). London commuter city, expensive. Flags: broadcast_lad, broadcast_msoa.
+**St Albans** (St Albans Central). London commuter city, expensive. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ housing score ≤ 35: 29.7 ⚓
 - ✅ community score ≥ 65: 73.1
 
-**Royal Sutton Coldfield** (Sutton Coldfield South & Central). Affluent suburb of Birmingham. Flags: broadcast_lad, broadcast_msoa.
+**Royal Sutton Coldfield** (Sutton Coldfield South & Central). Affluent suburb of Birmingham. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ community score ≥ 55: 62.2
-- ✅ overall score ≥ 50: 71.0
+- ✅ overall score ≥ 50: 67.3
 
-**Cambridge** (Central & West Cambridge). Expensive university city, cycling and rail. Flags: broadcast_lad, broadcast_msoa, low_n.
+**Cambridge** (Central & West Cambridge). Expensive university city, cycling and rail. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
 - ✅ housing score ≤ 30: 13.4 ⚓
 - ✅ gigabit_broadband ≥ 80: 87.1
 
-**Chipping Campden** (Willersey, Chipping Campden & Blockley). Cotswolds market town: green, remote from rail. Flags: broadcast_lad, broadcast_msoa.
+**Chipping Campden** (Willersey, Chipping Campden & Blockley). Cotswolds market town: green, remote from rail. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ transport score ≤ 55: 48.2 ⚓
+- ✅ transport score ≤ 55: 42.1 ⚓
 - ✅ station_distance ≥ 5,000: 5,473.1 ⚓
 - ✅ no2 ≤ 8: 3.7
 
-**Holsworthy** (Holsworthy, Bradworthy & Welcombe). Remote north Devon town: no railway, patchy broadband. Flags: broadcast_lad, broadcast_msoa.
+**Holsworthy** (Holsworthy, Bradworthy & Welcombe). Remote north Devon town: no railway, patchy broadband. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ station_distance ≥ 15,000: 26,209.3 ⚓
 - ✅ transport score ≤ 35: 26.7 ⚓
 - ✅ gigabit_broadband ≤ 85: 44.5
 - ✅ light_pollution ≤ 3: 0.7 ⚓
 
-**Sidmouth** (Sidmouth Town). Seaside retirement town. Flags: broadcast_lad, broadcast_msoa.
+**Sidmouth** (Sidmouth Town). Seaside retirement town. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ aged_65_plus ≥ 35: 50.3 ⚓
 - ✅ no2 ≤ 8: 3.7
 
-**Jaywick Sands** (Tendring 018A (Jaywick & St Osyth)). Among the most deprived neighbourhoods in England, with cheap homes. Flags: broadcast_lad, broadcast_msoa.
+**Jaywick Sands** (Tendring 018A (Jaywick & St Osyth)). Among the most deprived neighbourhoods in England, with cheap homes. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ community score ≤ 15: 0.2 ⚓
 - ✅ housing score ≥ 60: 67.3
 
-**Blackpool** (North Shore). Deprived seaside town centre. Flags: broadcast_lad, broadcast_msoa.
+**Blackpool** (North Shore). Deprived seaside town centre. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ community score ≤ 15: 5.3 ⚓
 - ✅ housing score ≥ 50: 59.5
 - ✅ tree_canopy ≤ 8: 2.5 ⚓
 
-**Middlesbrough** (Middlesbrough Central). Post-industrial town centre with high deprivation. Flags: broadcast_lad, broadcast_msoa, low_n.
+**Middlesbrough** (Middlesbrough Central). Post-industrial town centre with high deprivation. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
 - ✅ community score ≤ 20: 8.0 ⚓
 
-**Burnley** (Central Burnley & Daneshouse). Among the cheapest homes in England. Flags: broadcast_lad, broadcast_msoa.
+**Burnley** (Central Burnley & Daneshouse). Among the cheapest homes in England. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ house_price ≤ 150,000: 92,577.3 ⚓
 - ✅ housing score ≥ 55: 60.3
 
-**Spalding** (Spalding North). Fenland town, much of it at risk from rivers and the sea. Flags: broadcast_lad, broadcast_msoa.
+**Spalding** (Spalding North). Fenland town, much of it at risk from rivers and the sea. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ flood_risk ≥ 25: 76.6 ⚓
 
-**Wisbech** (Wisbech South & Peckover). Fenland town on the tidal Nene. Flags: broadcast_lad, broadcast_msoa.
+**Wisbech** (Wisbech South & Peckover). Fenland town on the tidal Nene. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ flood_risk ≥ 10: 36.5
 
-**Milton Keynes** (Central Milton Keynes & Newlands). New town: almost no homes from before 1919; grid roads kept away from homes. Flags: broadcast_lad, broadcast_msoa, low_n.
+**Milton Keynes** (Central Milton Keynes & Newlands). New town: almost no homes from before 1919; grid roads kept away from homes. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
 - ✅ period_homes ≤ 5: 0.0 ⚓
-- ✅ road_rail_noise ≤ 10: 2.6 ⚓
+- ✅ noise_exposure ≤ 10: 2.6 ⚓
 
-**Clifton** (Clifton East). Affluent inner suburb of Bristol, expensive, lots nearby. Flags: broadcast_lad, broadcast_msoa.
+**Clifton** (Clifton East). Affluent inner suburb of Bristol, expensive, lots nearby. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ amenities score ≥ 70: 100.0
+- ✅ amenities score ≥ 70: 83.5
 - ✅ housing score ≤ 40: 17.8
 
-**Bexhill-on-Sea** (Bexhill Central). Older seaside town. Flags: broadcast_lad, broadcast_msoa.
+**Bexhill-on-Sea** (Bexhill Central). Older seaside town. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ aged_65_plus ≥ 30: 30.6

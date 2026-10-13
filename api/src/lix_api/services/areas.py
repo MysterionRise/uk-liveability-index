@@ -34,9 +34,9 @@ FLAG_TEXT = {
     "low_n": "Few homes sold here in the last year, so the price is steadied towards the "
     "surrounding area.",
     "broadcast_lad": "Secondary school quality comes from the council's exam results, because "
-    "Wales publishes no per-school results or inspection grades.",
-    "not_available": "Some indicators are not available in Wales yet; the theme uses the ones "
-    "it has.",
+    "this nation publishes no per-school results or inspection grades.",
+    "not_available": "Some indicators are not available in this nation yet; the theme uses "
+    "the ones it has.",
 }
 
 

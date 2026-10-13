@@ -49,8 +49,8 @@ units:
 flags:
   imputed: "Mae'r ffigurau troseddu yma'n amcangyfrifon: nid yw Heddlu Manceinion Fwyaf yn cyhoeddi data ar lefel stryd."
   low_n: "Ychydig o gartrefi a werthwyd yma yn y flwyddyn ddiwethaf, felly mae'r pris wedi'i sefydlogi tuag at yr ardal o gwmpas."
-  broadcast_lad: "Mae ansawdd ysgolion uwchradd yn dod o ganlyniadau arholiadau'r cyngor cyfan, gan nad yw Cymru'n cyhoeddi canlyniadau na graddau arolygu fesul ysgol."
-  not_available: "Nid yw rhai dangosyddion ar gael yng Nghymru eto; mae'r thema'n defnyddio'r rhai sydd ganddi."
+  broadcast_lad: "Mae ansawdd ysgolion uwchradd yn dod o ganlyniadau arholiadau'r cyngor cyfan, gan nad yw'r genedl hon yn cyhoeddi canlyniadau na graddau arolygu fesul ysgol."
+  not_available: "Nid yw rhai dangosyddion ar gael yn y genedl hon eto; mae'r thema'n defnyddio'r rhai sydd ganddi."
 
 indicators:
   recorded_crime: {label: Troseddau a gofnodwyd (SIMD), description: "Troseddau a gofnodwyd fesul 1,000 o drigolion y flwyddyn ym Mynegai Amddifadedd Lluosog yr Alban 2020, wedi'u trosglwyddo i barthau data 2022."}

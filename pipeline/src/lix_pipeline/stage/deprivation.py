@@ -106,6 +106,19 @@ def rank_to_score(rank: pl.Expr, n: pl.Expr) -> pl.Expr:
     return (n - rank + 1) / n * 100
 
 
+def _interpolate(df: pl.DataFrame, by: str, column: str) -> pl.Expr:
+    """``column`` with its nulls filled by linear interpolation along ``by`` over the rows
+    that have both (a monotone relation such as a rate against its domain rank)."""
+    import numpy as np
+
+    known = df.filter(pl.col(by).is_not_null() & pl.col(column).is_not_null()).sort(by)
+    if known.height < 2:
+        return pl.col(column)
+    xs, ys = known[by].to_numpy(), known[column].to_numpy()
+    filled = np.interp(df[by].fill_null(float("nan")).to_numpy(), xs, ys)
+    return pl.coalesce(pl.col(column), pl.Series(filled).fill_nan(None)).alias(column)
+
+
 def _scotland() -> pl.DataFrame:
     """SIMD 2020v2 on the 2022 Data Zones: every rank becomes a within-Scotland score and
     the income and employment rates stay rates; values cross from the 2011 zones as
@@ -135,6 +148,10 @@ def _scotland() -> pl.DataFrame:
     )
     columns = [*SIMD_RANKS.values(), "income_score", "employment_score", "crime_rate_1000"]
     values = scores.join(rates, on="dz11cd", how="full", coalesce=True)
+    # The SIMD suppresses the crime rate in about 5% of zones; the crime domain rank is
+    # published for every zone, so a missing rate takes the rate zones of the same rank
+    # have (interpolated along the rank)
+    values = values.with_columns(_interpolate(values, "crime_score", "crime_rate_1000"))
     weights = pl.read_parquet(data_dir("staged") / "dz11_dz22.parquet")
     out = crosswalk(values, weights, columns, how="mean")
     # Rank and decile within Scotland, 1 = most deprived, on the new zones

@@ -4,6 +4,69 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-10-14
+
+### Added
+
+- **Scotland.** The 7,392 Data Zones 2022 join the map and the assistant beside England
+  and Wales (43,064 areas in all), grouped into 1,334 Intermediate Zones and 32 council
+  areas. Nation is still configuration: each nation names its boundary, centroid, lookup
+  and population files (`geo:` in `config/nations.yaml`) and the words the interface uses
+  for its tiers, so the backbone, the point-in-polygon joins and the tiles read whichever
+  files the active nations need (#46 #47).
+- **Scottish sources** (#48): Scotland's Census 2022 mapped onto the Census 2021
+  columns; the Scottish Index of Multiple Deprivation 2020v2, brought from the 2011 to
+  the 2022 zones through postcodes (`dz11_dz22`: every zone weighted, 94% mostly one
+  2011 zone, Spearman 0.99 on the rest); NRS population estimates and dwellings by band;
+  Registers of Scotland prices (an annual workbook downloaded by hand); the Scottish
+  Government's council tax by band and school roll with leaver tariffs; the Care
+  Inspectorate's day care of children with its grades; Public Health Scotland's GP,
+  dispenser, dental and emergency-department lists; SEPA's flood maps and Scotland's
+  Round 4 noise grids; the Bus Open Data Service's Scotland timetable; the OpenStreetMap
+  Scotland extract; FHIS hygiene outcomes. Two SIMD measures stand in for sources
+  Scotland lacks: `recorded_crime` for the police.uk crimes and `access_deprivation` for
+  the DfT connectivity metric.
+- **Substitutes and theme gaps** (#89). An indicator may name the scored indicators it
+  stands in for; the coverage gate counts it against what it replaces, a profile shows
+  one row and no "not available" for the pair, and `lix validate config` runs in
+  `make validate` and CI. Scoring takes each nation's coverage into account, in Python
+  and the browser alike: a theme's weight is what the area's nation can have, and a
+  theme a nation declares it cannot cover (`theme_gaps`) is null and left out of its
+  overall.
+- **Noise engine** (#76): any number of grids per nation by kind (road, rail, air,
+  industry, all); `noise_exposure` (the share of homes at 60 dB Lden or more from any
+  mapped source) is the scored indicator everywhere, `road_rail_noise` stays as context.
+- **Rail service** (#33) from ORR's station usage placed by its station attributes;
+  **leisure** (#73) from OpenStreetMap in every nation, with Active Places as the
+  English cross-check; **A&E distance** (#39) from a curated list of emergency departments
+  (Public Health Scotland's list, OpenStreetMap's emergency tag elsewhere), the first
+  **curated** registry source (#88): a file kept under `config/data` with a source and a
+  check date on every row, copied and checksummed like a download.
+- **Names in every language** (#66): Welsh and Gaelic forms of areas and places travel
+  through the pack; the search matches every form and returns the English beside it;
+  profiles and rankings name areas in the interface language. **Gàidhlig** (#69): a draft
+  interface and data labels, Gaelic council names from Wikidata, the assistant replies in
+  Gaelic when asked to. Level words ("data zone", "intermediate zone", "council area")
+  come from the manifest (#50).
+- Evals: Edinburgh is ranked and Hyndland profiled; Belfast takes the out-of-scope case;
+  two Gaelic cases. Anchors for Morningside, Niddrie, Bearsden, Govan, Fort William,
+  Lerwick and St Andrews.
+
+### Changed
+
+- Serve schema 3: the pack carries `name_cy`/`name_gd` columns, each tier's words and
+  the theme gaps in the manifest, and the indicators' `substitute_for`. The demo fixture
+  gains Edinburgh.
+- The retiree preset's noise multiplier moves to `noise_exposure`; `leisure` keeps its id
+  but reads OpenStreetMap; `station_distance` becomes context beside `rail_service`.
+- CKAN sources are picked by the date in their name (July 2026 beats January 2026).
+- The plural check requires every category a language uses rather than "other" alone.
+
+### Fixed
+
+- Welsh LSOA names are built from the council's Welsh name, since the ONS file misspells
+  Ynys Môn.
+
 ## [0.3.3] - 2026-10-12
 
 ### Added
@@ -205,6 +268,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.4.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.4.0
 [0.3.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.3
 [0.3.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.2
 [0.3.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.1

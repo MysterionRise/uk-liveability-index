@@ -113,7 +113,7 @@ export interface Manifest {
   data_to?: string | null;
   /** The data release this pack shipped in (data-YYYY-MM), if any */
   data_release?: string | null;
-  /** Areas in this build (35,672 for England and Wales; fewer in a demo cut) */
+  /** Areas in this build (43,064 for England, Wales and Scotland; fewer in a demo cut) */
   lsoa_count?: number;
   /** A small cut of the full build (CI and quick starts): see `lix demo-data` */
   demo?: boolean;
@@ -203,7 +203,7 @@ export async function loadScores(manifest: Manifest): Promise<ScoreData> {
 }
 
 /**
- * The nations in this build for copy: "England and Wales"; all four read as "the UK".
+ * The nations in this build for copy: "England, Wales and Scotland"; all four read as "the UK".
  * `name` translates a nation code (the "Nations" catalogue) and `list` joins names in
  * the interface language; without them the manifest's English names are used.
  */

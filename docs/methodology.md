@@ -1,17 +1,22 @@
 # Methodology
 
-How the UK Liveability Index turns open data into a score for each of the 35,672
-neighbourhoods of England and Wales (LSOAs, 2021 boundaries). The indicator list
+How the UK Liveability Index turns open data into a score for each of the 43,064
+neighbourhoods of England, Wales and Scotland (2021 LSOAs; 2022 Data Zones in
+Scotland). The indicator list
 itself lives in [`config/indicators.yaml`](../config/indicators.yaml), the presets in
 [`config/weights.yaml`](../config/weights.yaml), the nations in
 [`config/nations.yaml`](../config/nations.yaml), and the sources in
 [data-sources.md](data-sources.md).
 
-## 1. Unit: the LSOA
+## 1. Unit: the small area
 
-Lower Layer Super Output Areas have 1,000–3,000 residents (1,600 on average), are
-stable between censuses and are the smallest unit most official statistics use.
-Scores describe an LSOA as a whole, not any one street or household in it.
+In England and Wales the unit is the Lower Layer Super Output Area (1,000–3,000
+residents, 1,600 on average); in Scotland the Data Zone 2022 (500–1,000, 750 on
+average). Both are stable between censuses and the smallest unit most official
+statistics use, and the code column is `lsoa21cd` throughout whatever a nation calls its
+areas. Scores describe an area as a whole, not any one street or household in it; the
+interface calls them small areas, data zones and neighbourhoods according to the nation
+(`levels` in `config/nations.yaml`).
 
 ## 2. Indicators
 
@@ -134,7 +139,7 @@ on the map and in profiles). Scores themselves do not change with the comparison
 - **Percentiles** of each theme and of the overall score are reported alongside
   ("better than 72% of neighbourhoods in the index"), and again within the nation. The
   consumer view shows a band of 1–5 (quintiles of every scored neighbourhood) rather
-  than a rank: a "#1 of 35,672" would claim far more precision than the data have.
+  than a rank: a "#1 of 43,064" would claim far more precision than the data have.
 - **Coverage** is the share of the weight that was available; it is shown when below 70%.
 
 ### Presets and custom weights
@@ -158,8 +163,8 @@ with the same maths as the pipeline; both are tested against the same golden cas
 | Nurseries never inspected | Count as average (0.6), as do school nursery classes, which share their school's grade | — |
 | Childminders' addresses are withheld by Ofsted | Only nurseries and pre-schools on non-domestic premises are located | — |
 | Flood-risk file includes pseudo-postcodes that aren't in NSPL | Dropped; they hold under 0.1% of the homes at high or medium risk | — |
-| An indicator is not built for a nation (Active Places, OHID life expectancy, Ofsted childcare and GP capacity are England-only) | No value; the profile says "not available in Wales" and the theme uses the indicators it has | `not_available` |
-| Wales publishes no per-school results or inspection grades | Secondary school quality takes the local authority's Capped 9 points score, as a percentile among Welsh authorities, copied to its neighbourhoods; primary school quality has no Welsh value | `broadcast_lad` |
+| An indicator is not built for a nation (OHID life expectancy, Ofsted childcare, GP capacity and ratings and primary school quality are England-only; the DfT connectivity metric and police.uk crime stop at Scotland, where SIMD measures stand in) | No value; the profile says "not available in this nation" unless a substitute stands in, and the theme uses the indicators it has | `not_available` |
+| Wales publishes no per-school results or inspection grades | Secondary school quality takes the local authority's Capped 9 points score, as a percentile among Welsh authorities, copied to its neighbourhoods; primary school quality has no Welsh value (Scotland publishes per-school leaver tariffs, so its secondaries are scored one by one, without grades) | `broadcast_lad` |
 
 ### School quality across Ofsted's framework changes
 
@@ -188,7 +193,9 @@ otherwise the nearest pub, restaurant or hotel within 75m whose name is similar 
 19,959 pubs qualify: 18,193 of the 33,188 in OpenStreetMap and 1,766 of the 7,809 that
 only Overture lists. Pubs tagged with real ale, food, outdoor seating or a microbrewery
 count up to 30% more. Hygiene ratings say how well a pub is run, not how good the beer
-is, hence the name.
+is, hence the name. Scotland's Food Hygiene Information Scheme grades Pass or
+Improvement Required rather than 0–5, so there a pub counts when it passed within the
+last three years.
 
 ## 6. Nations
 
@@ -217,6 +224,52 @@ from OpenStreetMap, since neither CIW nor NWSSP publishes a machine-readable lis
 count as "expected standard" and carry no opening hours. Population for both nations is
 the ONS mid-year estimate (mid-2024).
 
+Scotland (v0.4.0): the unit is the 2022 Data Zone (7,392), grouped into Intermediate
+Zones and council areas; the backbone, point-in-polygon joins and map tiles read each
+nation's own boundary files (`geo:` in `config/nations.yaml`), with NRS's mid-2024
+population estimates. Sources shared with England and Wales already covered Scotland
+(Defra air quality, OS Open Greenspace, ESA WorldCover, VIIRS, NaPTAN, STATS19, Ofcom,
+the FSA's hygiene scheme, OS Open UPRN). Scottish sources: Scotland's Census 2022 for
+the census indicators (the tables map onto the 2021 columns; density is the census
+count over the zone's area), the Scottish Index of Multiple Deprivation 2020v2 for
+deprivation (still on the 2011 Data Zones: every rank becomes a within-Scotland score
+and crosses to the 2022 zones as a population-weighted mean through postcodes, using the
+SIMD postcode lookup, the NSPL and NRS's output-area populations; 94% of 2022 zones
+are mostly one 2011 zone and the mixing moves ranks little, Spearman 0.99), Registers
+of Scotland's annual small-area prices (median per zone, suppressed under five sales,
+when the Intermediate Zone's median stands in), the Scottish Government's council tax
+by band and school roll (no inspection grades or primary attainment in open data: a
+secondary's quality is its leavers' average tariff as a percentile within Scotland,
+primaries count as present but ungraded), the Care Inspectorate's register of day care
+of children (its grades, 1–6, on the 0–1 scale), Public Health Scotland's GP, dispenser,
+dental and emergency-department lists, SEPA's Flood Maps (the share of property points
+touching the high and medium extents, like Wales; SEPA's medium band is 1 in 200 a year,
+looser than the EA's 1 in 100), Scotland's Round 4 noise maps (one consolidated grid of
+road, rail, aircraft and industry, so the scored noise indicator reads "any mapped
+source" everywhere and the road-and-rail measure is context), NRS's dwelling counts, the
+Bus Open Data Service's Scotland timetable (publishing is voluntary there) and the
+OpenStreetMap Scotland extract. Two indicators stand in for sources Scotland lacks:
+recorded crime from the SIMD for the four police.uk measures, and the SIMD's geographic
+access domain for the DfT connectivity metric (`substitute_for` in the catalogue).
+
+How much of each theme's scored weight a nation can have, counting a substitute against
+what it replaces (the coverage gate, `lix validate config`):
+
+| Theme | England | Wales | Scotland |
+|---|---|---|---|
+| Safety | 100% | 100% | 52% |
+| Environment | 100% | 100% | 100% |
+| Health | 100% | 56% | 63% |
+| Education | 100% | 67% | 67% |
+| Transport | 100% | 100% | 100% |
+| Amenities | 100% | 100% | 100% |
+| Housing | 100% | 100% | 100% |
+| Community | 100% | 100% | 100% |
+
+An area's theme score is the weighted mean of the indicators its nation has, so a thinner
+theme is not a lower one; a theme a nation declares it cannot cover (`theme_gaps`, none
+so far) would show as limited data and stay out of that nation's overall.
+
 ## 7. Known limitations
 
 - **Urban bias in access measures.** Access indicators rise with density, so rural
@@ -230,7 +283,9 @@ the ONS mid-year estimate (mid-2024).
   connectivity scores.
 - **Flood risk** allows for flood defences and leaves out groundwater and sewer
   flooding. In England the counts are addresses rather than homes, so a flood-prone
-  high street's shops count alongside its flats.
+  high street's shops count alongside its flats. In Scotland the SEPA coastal extent
+  touches very few property points, so coastal risk there is under-counted until the
+  layer is understood better; surface water dominates the Scottish figures.
 - **Crime rates per resident** overstate risk in town centres, where visitors
   outnumber residents.
 - **Correlated measures.** Two scored pairs within a theme correlate at or above

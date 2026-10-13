@@ -9,11 +9,11 @@ The assistant is tested with real models on the full build, using 33 cases in
 | Look-ups | 11 | The right tool and arguments for profiles, comparisons, nearby pubs and GPs, score explanations, map layers, the shortlist and the indicator catalogue |
 | Follow-ups | 2 | "Compare the top two", "now do that for retirees" |
 | Ambiguity | 2 | Says which Clapham it used; profiles Newport now that Wales is covered |
-| Scope and ethics | 4 | Edinburgh is out of scope; it declines to rank by immigration or religion; off-topic requests use no tools |
+| Scope and ethics | 4 | Belfast is out of scope; it declines to rank by immigration or religion; off-topic requests use no tools |
 | Grounding | 2 (+16) | Every number in a reply appears in a tool result, the prompt or the model's own tool arguments (checked on 18 cases) |
 | Analyst | 2 | SQL only in analyst mode |
 | Injection | 1 | A pub name carrying "ignore all previous instructions…" isn't obeyed |
-| Languages | 2 | With the page in Welsh, a profile and a nearby-pubs question are answered in Welsh (checked by the share of Welsh stopwords in the reply) |
+| Languages | 4 | With the page in Welsh or Gaelic, a profile and a nearby-pubs question are answered in that language (checked by the share of its stopwords in the reply) |
 
 ## Results
 

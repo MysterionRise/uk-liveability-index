@@ -109,7 +109,7 @@ STAGE_INPUTS: dict[str, list[str]] = {
 STAGE_READS: dict[str, list[str]] = {
     "geo_lsoa": ["nspl", "population"],
     "dz11_dz22": ["nspl"],
-    "price_paid": ["nspl"],
+    "price_paid": ["nspl", "geo_lsoa"],  # Scotland: the Intermediate Zone fallback
     "defra_pcm_no2": ["nspl"],
     "defra_pcm_pm25": ["nspl"],
     "defra_pcm_pm10": ["nspl"],

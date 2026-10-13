@@ -32,14 +32,14 @@ Datasets ingested so far (full list with licences: [docs/data-sources.md](data-s
 
 | Theme | Sources |
 |-------|---------|
-| Geography | NSPL postcode lookup, LSOA/MSOA/local authority boundaries, population-weighted centroids, OA and 2011→2021 lookups, rural–urban class, House of Commons Library MSOA names, OS Open Names |
-| Community | English Indices of Deprivation 2025; Census 2021 (population, density, age, households, health, accommodation, cars, tenure, commuting, qualifications); Nomis claimant count (monthly); OHID life expectancy by MSOA |
-| Housing | HM Land Registry Price Paid (LSOA medians); ONS small-area income; council tax by billing authority; VOA housing stock by council tax band and build period |
-| Safety | police.uk street crime, 36 months (Greater Manchester Police publishes none; flagged); DfT road collisions (STATS19, 5 years) |
-| Environment | Defra modelled NO₂ and PM2.5 (1km, population-weighted to LSOAs); OS Open Greenspace; Environment Agency flood risk by postcode (rivers, sea and surface water) and NRW's risk areas in Wales; Defra and Welsh Government strategic noise maps; ESA WorldCover tree cover; VIIRS night-time lights (manual download) |
-| Health | NHS GP practices, patients registered by LSOA (real catchments), GP workforce; CQC ratings of GP practices and care homes; NHS dental practices; NHSBSA community pharmacies |
-| Education | Get Information About Schools; Ofsted inspections blended across the 2024 and 2025 framework changes; Ofsted nurseries and pre-schools; DfE key stage 2 and 4 results |
-| Transport | DfT Transport Connectivity Metric; NaPTAN stations; Bus Open Data Service timetables (bus frequency); Ofcom broadband coverage |
+| Geography | NSPL postcode lookup, LSOA/MSOA/local authority boundaries, population-weighted centroids, OA and 2011→2021 lookups, rural–urban class, House of Commons Library MSOA names, OS Open Names; Scotland: Data Zone and Intermediate Zone 2022 boundaries and centroids, the Data Zone lookup, NRS output-area and small-area population estimates, the SIMD postcode lookup (the 2011→2022 crosswalk), Gaelic council names (Wikidata) |
+| Community | English Indices of Deprivation 2025, WIMD 2025, SIMD 2020v2; Census 2021 and Scotland's Census 2022 (population, density, age, households, health, accommodation, cars, tenure, commuting, qualifications); Nomis claimant count (monthly); OHID life expectancy by MSOA |
+| Housing | HM Land Registry Price Paid (LSOA medians) and Registers of Scotland small-area prices; ONS small-area income; council tax by billing authority (MHCLG, the Welsh and Scottish Governments); VOA housing stock by council tax band and build period, NRS dwellings by band |
+| Safety | police.uk street crime, 36 months (Greater Manchester Police publishes none; flagged); the SIMD crime domain in Scotland; DfT road collisions (STATS19, 5 years) |
+| Environment | Defra modelled NO₂ and PM2.5 (1km, population-weighted to LSOAs); OS Open Greenspace; Environment Agency flood risk by postcode (rivers, sea and surface water), NRW's risk areas in Wales and SEPA's flood maps in Scotland; Defra, Welsh Government and Scottish (SEPA-hosted) strategic noise maps; ESA WorldCover tree cover; VIIRS night-time lights (manual download) |
+| Health | NHS GP practices, patients registered by LSOA (real catchments), GP workforce; CQC ratings of GP practices and care homes; NHS dental practices; NHSBSA community pharmacies; Public Health Scotland's GP, dispenser and dental lists; a curated list of emergency departments (PHS and OpenStreetMap) |
+| Education | Get Information About Schools and the Welsh and Scottish school lists; Ofsted inspections blended across the 2024 and 2025 framework changes; Ofsted nurseries and pre-schools, the Care Inspectorate's day care of children; DfE key stage 2 and 4 results, Welsh authority results, Scottish leaver tariffs |
+| Transport | DfT Transport Connectivity Metric (the SIMD access domain in Scotland); NaPTAN stations and ORR station usage; Bus Open Data Service timetables (bus frequency); Ofcom broadband coverage |
 | Amenities | OpenStreetMap points of interest; Food Standards Agency hygiene ratings; Overture Maps Places (pubs OSM lacks); Sport England Active Places |
 
 ## API and assistant
@@ -119,9 +119,9 @@ checks any serve directory (CI runs the browser tests on the demo data).
 
 `web/` is a Next.js app (Node 24, see `.nvmrc`):
 
-- a MapLibre map of every neighbourhood in England and Wales from static PMTiles, coloured
-  by UK percentile; weights are recomputed in the browser, so moving a slider recolours all
-  35,672 areas in about 100 ms
+- a MapLibre map of every neighbourhood in England, Wales and Scotland from static PMTiles,
+  coloured by UK percentile; weights are recomputed in the browser, so moving a slider
+  recolours all 43,064 areas in about 100 ms
 - an assistant chat ([CopilotKit](https://copilotkit.ai) over AG-UI) whose tool calls render as
   components: ranked lists, area profiles, side-by-side comparisons, nearby places, score
   explanations and SQL results. The assistant and the page share state, so it can move the map,

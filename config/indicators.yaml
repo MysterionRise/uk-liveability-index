@@ -322,7 +322,7 @@ indicators:
     direction: lower_better
     sources: [ae_sites, nspl]
     builder: common:nearest
-    params: {slug: ae_sites, column: type, values: [type1]}
+    params: {slug: ae_sites, column: type, values: [type1], beyond_cap: 50000}
     normalise: threshold
     good: 5000
     bad: 40000
@@ -338,7 +338,7 @@ indicators:
     direction: lower_better
     sources: [ae_sites, nspl]
     builder: common:nearest
-    params: {slug: ae_sites, column: type, values: [type1, other]}
+    params: {slug: ae_sites, column: type, values: [type1, other], beyond_cap: 50000}
     role: context
 
   - id: gp_distance
@@ -602,7 +602,7 @@ indicators:
     direction: lower_better
     sources: [naptan, nspl]
     builder: common:nearest
-    params: {slug: naptan, column: mode, values: [rail, metro_tram]}
+    params: {slug: naptan, column: mode, values: [rail, metro_tram], beyond_cap: 50000}
     normalise: threshold
     good: 800
     bad: 10000

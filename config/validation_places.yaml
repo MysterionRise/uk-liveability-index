@@ -50,6 +50,62 @@ observations:
     so a place search shows the neighbourhood around the named point.
 
 places:
+  # --------------------------------------------------------------------- Scotland
+  # Scottish areas are benchmarked within Scotland for crime (the SIMD rate stands in for
+  # the police.uk measures), deprivation, schools, prices and council tax; a few
+  # indicators are not available in Scotland (flagged below)
+  - name: Morningside
+    local_authority: City of Edinburgh
+    why: "Affluent south Edinburgh, cafés, Bruntsfield Links, good schools, expensive"
+    checks:
+      - {theme: amenities, op: ge, value: 50, anchor: true}  # the leafy Craighouse side of the IZ
+      - {theme: community, op: ge, value: 60, anchor: true}
+      - {theme: housing, op: le, value: 50}
+
+  - name: Niddrie
+    local_authority: City of Edinburgh
+    why: "Among Edinburgh's most deprived neighbourhoods; cheap homes"
+    checks:
+      - {theme: community, op: le, value: 35, anchor: true}
+      - {theme: housing, op: ge, value: 50, anchor: true}
+      - {flag: not_available, anchor: true}
+
+  - name: Bearsden
+    local_authority: East Dunbartonshire
+    why: "Prosperous suburb north of Glasgow, low crime, strong schools"
+    checks:
+      - {theme: community, op: ge, value: 60, anchor: true}
+      - {theme: safety, op: ge, value: 55, anchor: true}
+
+  - name: Govan
+    local_authority: Glasgow City
+    why: "Deprived inner Glasgow by the Clyde; the subway and the hospital nearby"
+    checks:
+      - {theme: community, op: le, value: 35, anchor: true}
+      - {indicator: hospital_ae_distance, op: le, value: 3000, anchor: true}  # the Queen Elizabeth
+
+  - name: Fort William
+    local_authority: Highland
+    why: "Highland town under Ben Nevis: clean air, trees, a small hospital with an A&E"
+    checks:
+      - {theme: environment, op: ge, value: 50, anchor: true}
+      - {indicator: hospital_ae_distance, op: le, value: 5000, anchor: true}  # the Belford
+
+  - name: Lerwick
+    local_authority: Shetland Islands
+    why: "Remote island capital: no railway anywhere near, clean air, its own A&E"
+    checks:
+      - {indicator: station_distance, op: ge, value: 40000, anchor: true}  # capped at 50km
+      - {indicator: hospital_ae_distance, op: le, value: 5000, anchor: true}  # the Gilbert Bain
+      - {theme: environment, op: ge, value: 50}
+
+  - name: St Andrews
+    local_authority: Fife
+    why: "University town, cafés and pubs, a well-off population"
+    checks:
+      - {theme: amenities, op: ge, value: 60, anchor: true}
+      - {theme: community, op: ge, value: 55, anchor: true}
+
   # ------------------------------------------------------------------------ Wales
   # Welsh areas are benchmarked within Wales for crime, deprivation, schools, prices
   # and council tax; a few indicators are not available in Wales (flagged below)

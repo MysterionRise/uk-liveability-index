@@ -1,16 +1,18 @@
 # UK Liveability Index
 
-Every neighbourhood in England and Wales, scored from open data. Choose what matters to you (safety,
+Every neighbourhood in England, Wales and Scotland, scored from open data. Choose what matters to you (safety,
 schools, green space, transport, pubs, prices…), see the whole country recolour, and ask an
 assistant that answers with maps, profiles and comparisons instead of walls of text.
 
 ![Choosing "family with children", raising the weight on safety, then asking the assistant where to look around Leeds on a £350k budget: it sets the weights, ranks neighbourhoods and outlines them on the map](docs/media/hero.gif)
 
-- **35,672 neighbourhoods** (2021 LSOAs, 1,000–3,000 residents each) across England and
-  Wales, scored 0–100 on eight themes from **about 60 open datasets**: police.uk, NHS,
-  Ofsted, DfE, the Welsh Government, Land Registry, ONS, Defra air quality, Environment
-  Agency and Natural Resources Wales flood risk, Ofcom broadband, bus timetables,
-  OpenStreetMap and more.
+- **43,064 neighbourhoods** (2021 LSOAs in England and Wales, 2022 Data Zones in
+  Scotland; 500–3,000 residents each), scored 0–100 on eight themes from **about 100
+  open datasets**: police.uk, NHS, Ofsted, DfE, the Welsh and Scottish Governments,
+  Land Registry and Registers of Scotland, ONS and NRS, the SIMD, Public Health
+  Scotland, Defra air quality, Environment Agency, Natural Resources Wales and SEPA
+  flood maps, strategic noise maps, Ofcom broadband, bus timetables, OpenStreetMap and
+  more.
 - **Your weights, computed in your browser**, from five ready-made personas or any
   weighting of your own, with an honest range for how much a result depends on them.
 - **An assistant that shows its working**, tested on 33 cases with three models, including
@@ -116,9 +118,12 @@ The same tools are available to Claude Desktop and other clients over
 
 ## Limitations
 
-- **England and Wales**; Scotland and Northern Ireland publish different data and are the
-  next two releases. A few indicators are England-only for now (leisure centres, life
-  expectancy, GP capacity and ratings) and say so in Welsh profiles.
+- **England, Wales and Scotland**; Northern Ireland publishes different data and is the
+  next release. A few indicators are England-only for now (life expectancy, GP capacity
+  and ratings, primary school quality) and say so in Welsh and Scottish profiles. Where a
+  nation has no source for an indicator but a comparable one of its own, that stands in:
+  Scotland's recorded crime and access to services come from the SIMD, so its safety
+  theme rests on fewer measures than England's.
 - **Neighbourhoods, not streets.** Scores describe areas of 1,000–3,000 residents, and
   distances are straight-line.
 - **Data has dates.** Each source's data period is shown on the explainer card and in
@@ -131,6 +136,10 @@ The same tools are available to Claude Desktop and other clients over
   garden trees and hedges that 10m satellite land cover cannot see. Welsh
   nurseries and pharmacies come from OpenStreetMap, and Welsh school quality from each
   council's exam results, because Wales publishes no open per-provider lists or grades.
+  Scotland's deprivation index (SIMD 2020) is still on the 2011 Data Zones and is brought
+  onto the 2022 zones through postcodes; Scottish house prices are an annual Registers of
+  Scotland file downloaded by hand; bus timetables in Scotland are published voluntarily,
+  so some operators are missing.
 
 ## Building the data yourself
 
