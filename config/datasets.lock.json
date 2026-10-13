@@ -921,6 +921,21 @@
       "version": "https://opendata.nhsbsa.net/dataset/240d142d-df82-4e97-b051-12371519e4e1/resource/ce6c7ad3-a3b5-442f-bb0a-a45d7c962944/download/consol_pharmacy_list_202606q1.csv"
     }
   },
+  "nrs_oa22_population": {
+    "fetched": {
+      "bytes": 678338,
+      "etag": "\"1db669774088142\"",
+      "fetched_at": "2026-10-13T11:10:03.951563+00:00",
+      "last_modified": "Tue, 14 Jan 2025 15:17:41 GMT",
+      "sha256": "f7af756710c56f335d9332c08f95a68a5775aec4f25f17b21ab979257ed40148",
+      "version": "Tue, 14 Jan 2025 15:17:41 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:10:00+00:00",
+      "url": "https://www.nrscotland.gov.uk/media/owpknvgk/outputarea2022_usualresidentpopulation.csv",
+      "version": "Tue, 14 Jan 2025 15:17:41 GMT"
+    }
+  },
   "nrw_fraw_rivers": {
     "fetched": {
       "bytes": 930791424,
@@ -3649,6 +3664,68 @@
       "title": "Rural Urban Classification (2021) of LSOAs in EW",
       "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA21_RUC21_EW_LU/FeatureServer/0",
       "version": "2025-08-11T08:24:30+00:00"
+    }
+  },
+  "sg_dz22_lookup": {
+    "fetched": {
+      "bytes": 3333484,
+      "etag": "\"3edd86f59e227a0249eb3ec9981e10b0\"",
+      "fetched_at": "2026-10-13T11:10:09.826913+00:00",
+      "last_modified": "Wed, 19 Aug 2026 14:01:38 GMT",
+      "sha256": "41f51a4c0e6edbd30f81c3d8d79c37f3f557a3c1d887a10b75c07f0bc01e0891",
+      "version": "https://api.data.gov.scot/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download"
+    },
+    "resolved": {
+      "modified": "2026-08-19T14:01:41.989746",
+      "resolved_at": "2026-10-13T11:10:08+00:00",
+      "title": "DataZone2022lookup_2026-05-07.csv",
+      "url": "https://api.data.gov.scot/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download",
+      "version": "https://api.data.gov.scot/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download"
+    }
+  },
+  "simd_2020_indicators": {
+    "fetched": {
+      "bytes": 2499212,
+      "etag": "\"1603385587648\"",
+      "fetched_at": "2026-10-13T11:10:07.451016+00:00",
+      "last_modified": "Mon, 27 Apr 2020 16:27:48 GMT",
+      "sha256": "a90b4078e1af13cf48d540f324defaa01effb9043af3ed2cb3d2f11eefc3e365",
+      "version": "Mon, 27 Apr 2020 16:27:48 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:10:06+00:00",
+      "url": "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/scottish-index-of-multiple-deprivation-2020-indicator-data/documents/simd_2020_indicators/simd_2020_indicators/govscot%3Adocument/SIMD%2B2020v2%2B-%2Bindicators.xlsx",
+      "version": "Mon, 27 Apr 2020 16:27:48 GMT"
+    }
+  },
+  "simd_2020_ranks": {
+    "fetched": {
+      "bytes": 513811,
+      "etag": "\"1601105992776\"",
+      "fetched_at": "2026-10-13T11:10:05.671302+00:00",
+      "last_modified": "Mon, 27 Apr 2020 16:16:03 GMT",
+      "sha256": "9904aa957a8177853564415e848e08553c17491d1578ff631a5074cacc9fb296",
+      "version": "Mon, 27 Apr 2020 16:16:03 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:10:04+00:00",
+      "url": "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/scottish-index-of-multiple-deprivation-2020-ranks-and-domain-ranks/documents/scottish-index-of-multiple-deprivation-2020-ranks-and-domain-ranks/scottish-index-of-multiple-deprivation-2020-ranks-and-domain-ranks/govscot%3Adocument/SIMD%2B2020v2%2B-%2Branks.xlsx",
+      "version": "Mon, 27 Apr 2020 16:16:03 GMT"
+    }
+  },
+  "simd_postcode_lookup": {
+    "fetched": {
+      "bytes": 7815572,
+      "etag": "\"1741452266062\"",
+      "fetched_at": "2026-10-13T11:09:59.636618+00:00",
+      "last_modified": "Tue, 11 Feb 2025 12:28:47 GMT",
+      "sha256": "c086df17f5493d1f730070356f6e4a0367c6ce17a10cbebe812eba2982c396ce",
+      "version": "Tue, 11 Feb 2025 12:28:47 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:09:58+00:00",
+      "url": "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/scottish-index-of-multiple-deprivation-2020-postcode-look-up-file/documents/simd-2020-postcode-lookup-v5/simd-2020-postcode-lookup-v5/govscot%3Adocument/SIMD%2B2020v2%2B-%2Bpostcode%2Blookup%2B-%2Bupdated%2B2025.xlsx",
+      "version": "Tue, 11 Feb 2025 12:28:47 GMT"
     }
   },
   "stats19": {

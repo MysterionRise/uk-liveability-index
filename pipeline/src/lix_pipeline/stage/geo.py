@@ -75,6 +75,41 @@ def stage_lsoa11_lsoa21() -> pl.LazyFrame:
     )
 
 
+def stage_dz11_dz22() -> pl.LazyFrame:
+    """Data Zone 2011 → 2022 weights for Scotland (see lix_pipeline.geo.crosswalk).
+
+    SIMD's postcode lookup gives each postcode's 2011 zone, the NSPL its 2022 zone and
+    output area, and NRS's output-area populations weight the postcodes.
+    """
+    import fastexcel
+
+    from lix_pipeline.geo.crosswalk import build_dz11_dz22, crosswalk_problems, summary
+    from lix_pipeline.geo.nspl import load_nspl
+
+    simd = (
+        fastexcel.read_excel(raw_file("simd_postcode_lookup", "xlsx"))
+        .load_sheet_by_name("All postcodes")
+        .to_polars()
+        .select(
+            pl.col("Postcode").str.replace_all(r"\s", "").str.to_uppercase().alias("postcode_norm"),
+            pl.col("DZ").alias("dz11cd"),
+        )
+        .filter(pl.col("dz11cd").str.starts_with("S01"))
+    )
+    oa_population = pl.read_csv(raw_file("nrs_oa22_population", "csv")).select(
+        pl.col("OutputArea2022").alias("oa21cd"),
+        pl.col("UsualResidentPopulation").cast(pl.Int64).alias("population"),
+    )
+    nspl = load_nspl(nations=("S",), live_only=False)
+    weights = build_dz11_dz22(simd, nspl, oa_population)
+    zones = set(nspl.filter(pl.col("live")).select("lsoa21cd").unique().collect()["lsoa21cd"])
+    problems = crosswalk_problems(weights, zones)
+    if problems:
+        raise ValueError("Data Zone crosswalk: " + "; ".join(problems))
+    logger.info(f"Data Zone 2011 → 2022 crosswalk: {summary(weights)}")
+    return weights.lazy()
+
+
 # OS Open Names LOCAL_TYPE values that are places people search for
 PLACE_TYPES = ["City", "Town", "Village", "Hamlet", "Suburban Area", "Other Settlement"]
 

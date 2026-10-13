@@ -154,3 +154,50 @@ def test_every_unit_has_a_code():
     codes = {i.unit_code for i in load_indicators().indicators}
     assert codes <= set(UNIT_CODES.values())
     assert len(set(UNIT_CODES.values())) == len(UNIT_CODES)
+
+
+def test_substitutes_count_towards_their_targets_at_the_gate():
+    registry = _registry(a=["E", "W"], b=["S"])
+    cat = _catalogue(
+        {"id": "x", "weight": 1.0},
+        {"id": "y", "weight": 3.0},
+        {"id": "z", "weight": 2.0, "sources": ["b"], "substitute_for": ["y"]},
+    )
+    assert catalogue_problems(cat, registry) == []
+    # S has z (2, capped at y's 3) of the canonical 4 → 50 %, enough; x stays uncovered
+    assert coverage_problems(cat, registry, ("E", "S")) == []
+    cat = _catalogue(
+        {"id": "x", "weight": 1.0},
+        {"id": "y", "weight": 3.0},
+        {"id": "z", "weight": 1.5, "sources": ["b"], "substitute_for": "y"},
+    )
+    (problem,) = coverage_problems(cat, registry, ("S",))
+    assert problem.startswith("safety keeps 38% of its weight in Scotland")
+    assert "['x']" in problem and "'y'" not in problem
+    # A declared gap passes
+    assert coverage_problems(cat, registry, ("S",), {"S": ["safety"]}) == []
+
+
+def test_substitute_validation():
+    registry = _registry(a=["E", "W"], b=["S"])
+    cat = _catalogue({"id": "x"}, {"id": "z", "sources": ["b"], "substitute_for": ["nope"]})
+    assert catalogue_problems(cat, registry) == ["z: substitute_for unknown indicator 'nope'"]
+    # Both must be scored in the same theme
+    cat = _catalogue(
+        {"id": "x", "role": "context"}, {"id": "z", "sources": ["b"], "substitute_for": ["x"]}
+    )
+    assert catalogue_problems(cat, registry) == [
+        "z: substitute_for x needs both scored in one theme"
+    ]
+    # And never cover the same nation
+    cat = _catalogue({"id": "x"}, {"id": "z", "substitute_for": ["x"]})
+    assert catalogue_problems(cat, registry) == ["z: substitutes for x but both cover ['E', 'W']"]
+
+
+def test_level_words_are_catalogue_gaps_when_nations_are_given():
+    from lix_core.config import catalogue_gaps, load_nations, load_weights
+
+    labels = {"levels": {"E": {"low": {"one": "a", "other": "b"}}}}
+    gaps = catalogue_gaps(load_indicators(), load_weights(), labels, load_nations().nations)
+    assert "levels.E.low" not in gaps
+    assert "levels.E.mid" in gaps and "levels.W.low" in gaps

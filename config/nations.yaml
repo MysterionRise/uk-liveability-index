@@ -1,7 +1,12 @@
 # Which nations the index covers and what their geography looks like. Nation is data:
 # stagers filter with lix_core.codes.in_scope(), validation reads the expected counts
 # here, and LIX_NATIONS=E,W narrows the active set (tests, CI and demo builds use a
-# subset). Nation codes are the first letter of ONS GSS codes (E01…, W01…).
+# subset). Nation codes are the first letter of ONS GSS codes (E01…, W01…, S01…).
+#
+# `levels` name each tier's regex, the publisher's term, the expected count and the words
+# the interface uses (translated in config/i18n/*.yaml under `levels`). `geo` names the
+# registry sources the backbone, the point-in-polygon joins and the map tiles read, so a
+# nation with its own files (Scotland) needs no code in those places.
 
 country:
   code: UK
@@ -21,15 +26,23 @@ nations:
     bbox: [-6.5, 49.8, 1.8, 55.9]
     population: [55000000, 60000000]
     levels:
-      oa: {regex: '^E00\d{6}$', official: Output Area}
-      low: {regex: '^E01\d{6}$', official: LSOA, count: 33755}
-      mid: {regex: '^E02\d{6}$', official: MSOA, count: 6856}
-      upper: {regex: '^E0[6-9]\d{6}$', official: Local authority}
+      oa: {regex: '^E00\d{6}$', official: Output Area, label: output area, labels: output areas}
+      low: {regex: '^E01\d{6}$', official: LSOA, count: 33755, label: small area, labels: small areas}
+      mid: {regex: '^E02\d{6}$', official: MSOA, count: 6856, label: neighbourhood, labels: neighbourhoods}
+      upper: {regex: '^E0[6-9]\d{6}$', official: Local authority, label: council, labels: councils}
     geo_builder: geo_ew
+    geo:
+      low_boundaries: lsoa_boundaries
+      mid_boundaries: msoa_boundaries
+      centroids: lsoa_centroids
+      oa_lookup: oa_lookup
+      population: pop_lsoa_mye
+      extra: [msoa_names, ruc_2021]
     places_country: England  # OS Open Names COUNTRY value
     # Rural Urban Classification 2021: urban · larger rural (towns) · smaller rural
     ruc_map: {UN1: urban, UF1: urban, RLN1: town, RLF1: town, RSN1: rural, RSF1: rural}
     demo_upper: [E08000035, E06000043]  # Leeds; Brighton and Hove
+    theme_gaps: []
   W:
     name: Wales
     ctry_cd: W92000004
@@ -37,12 +50,48 @@ nations:
     bbox: [-5.4, 51.3, -2.6, 53.5]
     population: [3000000, 3300000]
     levels:
-      oa: {regex: '^W00\d{6}$', official: Output Area}
-      low: {regex: '^W01\d{6}$', official: LSOA, count: 1917}
-      mid: {regex: '^W02\d{6}$', official: MSOA, count: 408}
-      upper: {regex: '^W06\d{6}$', official: Local authority}
+      oa: {regex: '^W00\d{6}$', official: Output Area, label: output area, labels: output areas}
+      low: {regex: '^W01\d{6}$', official: LSOA, count: 1917, label: small area, labels: small areas}
+      mid: {regex: '^W02\d{6}$', official: MSOA, count: 408, label: neighbourhood, labels: neighbourhoods}
+      upper: {regex: '^W06\d{6}$', official: Local authority, label: council, labels: councils}
     geo_builder: geo_ew
+    geo:
+      low_boundaries: lsoa_boundaries
+      mid_boundaries: msoa_boundaries
+      centroids: lsoa_centroids
+      oa_lookup: oa_lookup
+      population: pop_lsoa_mye
+      extra: [msoa_names, ruc_2021]
     places_country: Wales
     ruc_map: {UN1: urban, UF1: urban, RLN1: town, RLF1: town, RSN1: rural, RSF1: rural}
     pseudo_region: true  # NSPL gives Wales one pseudo region (W99999999): the nation is its region
     demo_upper: [W06000015]  # Cardiff
+    theme_gaps: []
+  S:
+    name: Scotland
+    ctry_cd: S92000003
+    input_crs: 27700
+    bbox: [-7.7, 54.6, -0.7, 60.9]
+    population: [5300000, 5700000]
+    levels:
+      oa: {regex: '^S00\d{6}$', official: Output Area 2022, label: output area, labels: output areas}
+      low: {regex: '^S01\d{6}$', official: Data Zone 2022, count: 7392, label: data zone, labels: data zones}
+      mid: {regex: '^S02\d{6}$', official: Intermediate Zone 2022, count: 1334, label: intermediate zone, labels: intermediate zones}
+      upper: {regex: '^S12\d{6}$', official: Council area, count: 32, label: council area, labels: council areas}
+    geo_builder: geo_scotland
+    geo:
+      low_boundaries: sg_dz22_boundaries
+      mid_boundaries: sg_iz22_boundaries
+      centroids: sg_dz22_centroids
+      oa_lookup: nrs_oa22_lookup
+      population: nrs_sape
+      code_column: DZCode  # the boundary file's attribute (checked on first fetch)
+      extra: [sg_dz22_lookup]
+    places_country: Scotland
+    # Scottish Government urban rural classification 2022, 6-fold (UR6 in the Data Zone
+    # lookup): large urban · other urban · accessible small towns · remote small towns ·
+    # accessible rural · remote rural. Quoted so the keys stay strings.
+    ruc_map: {"1": urban, "2": urban, "3": town, "4": town, "5": rural, "6": rural}
+    pseudo_region: true  # NSPL gives Scotland one pseudo region (S99999999)
+    demo_upper: [S12000036]  # City of Edinburgh
+    theme_gaps: []

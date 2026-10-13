@@ -120,7 +120,7 @@ def build_serve_dir(path) -> None:
                                   for lv, s in n.levels.items()}}
                 for code, n in nations.nations.items()
             },
-            "active": list(nations.nations),
+            "active": ["E", "W"],  # Edinburgh rows arrive with the Scottish store (v0.4.0 phase 3),
             "area_counts": {"E": 6, "W": 2},
         },
         "quality_levels": list(QUALITY_LEVELS),

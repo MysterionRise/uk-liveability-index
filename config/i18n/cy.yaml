@@ -53,6 +53,11 @@ flags:
   not_available: "Nid yw rhai dangosyddion ar gael yng Nghymru eto; mae'r thema'n defnyddio'r rhai sydd ganddi."
 
 indicators:
+  recorded_crime: {label: Troseddau a gofnodwyd (SIMD), description: "Troseddau a gofnodwyd fesul 1,000 o drigolion y flwyddyn ym Mynegai Amddifadedd Lluosog yr Alban 2020, wedi'u trosglwyddo i barthau data 2022."}
+  access_deprivation: {label: Mynediad at wasanaethau (SIMD), description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol)."}
+  noise_exposure: {label: Cartrefi mewn sŵn trafnidiaeth neu ddiwydiant, description: "Cyfran y cartrefi lle mae'r sŵn a fapiwyd yn cyfartalu 60 dB Lden neu fwy (ffyrdd a rheilffyrdd yng Nghymru a Lloegr; pob ffynhonnell a fapiwyd yn yr Alban)."}
+  rail_service: {label: Gwasanaeth rheilffordd gerllaw, description: "Mynediadau ac allanfeydd blynyddol gorsafoedd (ORR) o fewn 2km i gartrefi, wedi'u pwysoli yn ôl pellter, fel bod gorsaf brysur gerllaw yn cyfrif mwy nag arhosfan."}
+  leisure_facilities: {label: Cyfleusterau chwaraeon (Active Places), description: "Neuaddau chwaraeon, campfeydd, pyllau, stiwdios, cyrtiau a chaeau sy'n agored i'r cyhoedd o fewn 2km yng nghofrestr Active Places Sport England, wedi'u pwysoli yn ôl pellter."}
   crime_violence: {label: Troseddau treisgar a rhywiol, description: Troseddau treisgar a rhywiol a gofnodwyd fesul 1,000 o drigolion y flwyddyn (cyfartaledd 36 mis).}
   crime_burglary: {label: Byrgleriaeth, description: Byrgleriaethau a gofnodwyd fesul 1,000 o drigolion y flwyddyn.}
   crime_asb: {label: Ymddygiad gwrthgymdeithasol, description: Digwyddiadau ymddygiad gwrthgymdeithasol a adroddwyd fesul 1,000 o drigolion y flwyddyn.}
@@ -121,3 +126,18 @@ indicators:
   owner_occupied: {label: Cartrefi perchen-feddianwyr, description: Cyfran yr aelwydydd sy'n berchen ar eu cartref yn llwyr neu â morgais (Cyfrifiad 2021).}
   no_car: {label: Aelwydydd heb gar, description: Cyfran yr aelwydydd heb gar na fan (Cyfrifiad 2021).}
   sustainable_commute: {label: "Cerdded, beicio neu drafnidiaeth gyhoeddus i'r gwaith", description: "Cyfran y gweithwyr sy'n cymudo ar droed, ar feic neu ar drafnidiaeth gyhoeddus (Cyfrifiad 2021, yn ystod cyfyngiadau COVID-19)."}
+
+# What the interface calls each nation's areas (one, several)
+levels:
+  E:
+    low: {one: ardal fach, other: ardaloedd bach}
+    mid: {one: cymdogaeth, other: cymdogaethau}
+    upper: {one: cyngor, other: cynghorau}
+  W:
+    low: {one: ardal fach, other: ardaloedd bach}
+    mid: {one: cymdogaeth, other: cymdogaethau}
+    upper: {one: cyngor, other: cynghorau}
+  S:
+    low: {one: parth data, other: parthau data}
+    mid: {one: parth canolradd, other: parthau canolradd}
+    upper: {one: ardal cyngor, other: ardaloedd cyngor}

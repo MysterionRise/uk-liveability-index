@@ -31,6 +31,8 @@ jobs:
 
       - name: Test
         run: uv run pytest -v
+      - name: Coverage gate (every theme keeps half its weight in every nation)
+        run: uv run lix validate config
 
       - name: API contracts are up to date
         run: |

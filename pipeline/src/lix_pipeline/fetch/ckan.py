@@ -5,6 +5,12 @@ import re
 import requests
 
 from lix_core.config import CkanAccess
+from lix_pipeline.fetch.dates import find_date
+
+
+def _dated(resource: dict):
+    found = find_date(resource.get("url") or "") or find_date(resource.get("name") or "")
+    return found.isoformat() if found else ""
 
 
 def resolve_resource(access: CkanAccess, session: requests.Session) -> dict:
@@ -26,7 +32,9 @@ def resolve_resource(access: CkanAccess, session: requests.Session) -> dict:
             f"No resource of CKAN package {access.package!r} matches "
             f"{access.resource_regex!r}. Resources: {names[:20]}"
         )
-    latest = max(matches, key=lambda r: r.get("name") or "")
+    # Newest by the date in the file name or title (July 2026 beats January 2026, which
+    # alphabetical order would not), then by name
+    latest = max(matches, key=lambda r: (_dated(r), r.get("name") or ""))
     return {
         "url": latest["url"],
         "title": latest.get("name"),

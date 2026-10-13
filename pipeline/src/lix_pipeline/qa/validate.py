@@ -268,14 +268,17 @@ def validate_config() -> list[str]:
         catalogue_gaps,
         coverage_problems,
         load_label_catalogues,
+        load_nations,
         load_registry,
         load_weights,
     )
 
     catalogue, weights = load_indicators(), load_weights()
-    problems = coverage_problems(catalogue, load_registry(), active_nations())
+    nations = {n: load_nations().nations[n] for n in active_nations()}
+    gaps_declared = {n: list(spec.theme_gaps) for n, spec in nations.items()}
+    problems = coverage_problems(catalogue, load_registry(), active_nations(), gaps_declared)
     for locale, labels in load_label_catalogues().items():
-        gaps = catalogue_gaps(catalogue, weights, labels)
+        gaps = catalogue_gaps(catalogue, weights, labels, nations)
         status = (labels.get("_meta") or {}).get("status")
         if gaps and status == "reviewed":
             problems.append(f"config/i18n/{locale}.yaml is reviewed but lacks {gaps[:5]}…")

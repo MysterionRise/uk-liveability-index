@@ -615,9 +615,10 @@ esa_worldcover:
   access:
     type: http
     url: https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_{tile}_Map.tif
-    # 3° tiles named by their south-west corner; England and Wales for now (Scotland and
-    # Northern Ireland add N54W009, N57W009, N57W006, N57W003 and N60W003)
-    tiles: [N48W009, N48W006, N48W003, N48E000, N51W006, N51W003, N51E000, N54W006, N54W003]
+    # 3° tiles named by their south-west corner: Great Britain from the Scillies to
+    # Shetland (Northern Ireland sits in N54W009 too)
+    tiles: [N48W009, N48W006, N48W003, N48E000, N51W006, N51W003, N51E000, N54W009, N54W006,
+            N54W003, N57W009, N57W006, N57W003, N60W003]
   format: tif
   landing_page: https://esa-worldcover.org/en/data-access
   description: Land cover on a 10m grid from Sentinel-1 and Sentinel-2 imagery of 2021 (tree cover, shrubland, grassland, cropland, built-up, bare, water and more).
@@ -625,7 +626,7 @@ esa_worldcover:
   attribution: "© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium"
   cadence: static
   period: "2021"
-  size_hint: 900MB in 8 tiles
+  size_hint: 1.2GB in 14 tiles
 
 viirs_vnl:
   coverage: [E, W, S, N]
@@ -936,14 +937,14 @@ osm_england:
   size_hint: 1.6GB
 
 overture_pubs:
-  coverage: [E, W]
-  title: Overture Maps places, bars and pubs (England area)
+  coverage: [E, W, S]
+  title: Overture Maps places, bars and pubs (Great Britain)
   theme: amenities
   access:
     type: overture
     theme: places
     kind: place
-    bbox: [-6.5, 49.8, 1.9, 55.9]
+    bbox: [-8.7, 49.8, 1.9, 60.9]
     where: "basic_category = 'bar'"
     select:
       - id
@@ -984,7 +985,7 @@ active_places:
   size_hint: 10MB
 
 fsa_fhrs:
-  coverage: [E, W, N]
+  coverage: [E, W, S, N]
   title: Food Standards Agency food hygiene ratings (all establishments)
   theme: amenities
   access: {type: http, url: "https://safhrsprodstorage.blob.core.windows.net/opendatafileblobstorage/FHRS_All_en-GB.csv"}
@@ -1224,3 +1225,538 @@ wg_ks4_la:
   attribution: "Welsh Government, Examination results, licensed under the Open Government Licence v3.0."
   cadence: annual
   size_hint: 80KB
+
+
+# --------------------------------------------------------------- Scotland (v0.4.0)
+# Data Zones 2022 (S01), Intermediate Zones 2022 (S02) and council areas (S12). The
+# attribution the Scottish Government prescribes for its boundary products is kept
+# verbatim. SIMD is still on 2011 Data Zones: see the crosswalk (stage/dz11_dz22).
+
+x-sg-boundary-attribution: &sg_boundary_attribution "Copyright Scottish Government, contains Ordnance Survey data © Crown copyright and database right 2024; licensed under the Open Government Licence v3.0."
+
+sg_dz22_boundaries:
+  coverage: [S]
+  title: Data Zone boundaries 2022, Scotland
+  theme: geography
+  access:
+    type: http
+    url: https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneBdry_2022.zip
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj", "*.cpg"]
+  landing_page: https://spatialdata.gov.scot/geonetwork/srv/api/records/f6656adf-b720-4612-ad5c-1d13eae94c8b
+  description: The 7,392 Data Zones drawn after Scotland's Census 2022 (500–1,000 household residents each), with their names, in British National Grid.
+  licence: OGL-3.0
+  attribution: *sg_boundary_attribution
+  cadence: static
+  period: "2022"
+  size_hint: 26MB
+
+sg_iz22_boundaries:
+  coverage: [S]
+  title: Intermediate Zone boundaries 2022, Scotland
+  theme: geography
+  access:
+    type: http
+    url: https://maps.gov.scot/ATOM/shapefiles/SG_IntermediateZoneBdry_2022.zip
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj", "*.cpg"]
+  landing_page: https://spatialdata.gov.scot/geonetwork/srv/api/records/2978ed67-dade-42ec-b8e1-644e0b1f8cd8
+  description: The 1,334 Intermediate Zones of 2022 (2,500–6,000 household residents), built from Data Zones, with their names.
+  licence: OGL-3.0
+  attribution: *sg_boundary_attribution
+  cadence: static
+  period: "2022"
+  size_hint: 46MB
+
+sg_dz22_centroids:
+  coverage: [S]
+  title: Data Zone population-weighted centroids 2022, Scotland
+  theme: geography
+  access:
+    type: http
+    url: https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneCent_2022.zip
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj", "*.cpg"]
+  landing_page: https://spatialdata.gov.scot/geonetwork/srv/api/records/6755b5a3-5d99-4ca3-bd19-33d5454774ac
+  description: One point per Data Zone 2022 at the population-weighted centre of its output areas.
+  licence: OGL-3.0
+  attribution: *sg_boundary_attribution
+  cadence: static
+  period: "2022"
+  size_hint: 330KB
+
+sg_dz22_lookup:
+  coverage: [S]
+  title: Data Zone 2022 lookup (Intermediate Zone, council, urban rural classification)
+  theme: geography
+  access:
+    type: ckan
+    api: https://api.data.gov.scot/api/3/action
+    package: 2022_data_zone_lookup
+    resource_regex: '^DataZone2022lookup'
+  format: csv
+  landing_page: https://data.gov.scot/dataset/2022_data_zone_lookup
+  description: Every Data Zone 2022 with its Intermediate Zone, council area, wards, health board and the Scottish Government urban rural classification 2022 (2-, 3-, 6- and 8-fold).
+  licence: OGL-3.0
+  attribution: "Scottish Government, 2022 Data Zone Lookup, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 3MB
+
+nrs_oa22_lookup:
+  coverage: [S]
+  title: Output Area 2022 to Data Zone and Intermediate Zone lookup (NRS)
+  theme: geography
+  access:
+    type: http
+    url: https://www.nrscotland.gov.uk/media/iz3evrqt/oa22_dz22_iz22.zip
+  format: zip
+  extract: ["*.csv"]
+  landing_page: https://www.nrscotland.gov.uk/publications/2022-census-geography-products
+  description: The 46,000 Census 2022 output areas with their Data Zone and Intermediate Zone, plus the code-to-name lists of both.
+  licence: OGL-3.0
+  attribution: "National Records of Scotland, 2022 census geography products, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2022"
+  size_hint: 240KB
+
+nrs_oa22_population:
+  coverage: [S]
+  title: Output Area 2022 usual resident population (NRS)
+  theme: geography
+  access:
+    type: http
+    url: https://www.nrscotland.gov.uk/media/owpknvgk/outputarea2022_usualresidentpopulation.csv
+  format: csv
+  landing_page: https://www.nrscotland.gov.uk/publications/2022-census-geography-products
+  description: Census 2022 usual residents of every output area, the weights behind the Data Zone 2011 → 2022 crosswalk.
+  licence: OGL-3.0
+  attribution: "National Records of Scotland, Scotland's Census 2022, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2022"
+  size_hint: 1MB
+
+nrs_sape:
+  coverage: [S]
+  title: Small area population estimates mid-2011 to mid-2024, 2022 Data Zones (NRS)
+  theme: geography
+  access:
+    type: http
+    url: https://www.nrscotland.gov.uk/media/yqqbrvbw/small-area-population-estimates-mid-2011-to-mid-2024-2022-dz.zip
+  format: zip
+  landing_page: https://www.nrscotland.gov.uk/publications/small-area-population-estimates-for-mid-2011-to-mid-2024-2022-data-zones/
+  description: Mid-year population estimates by single year of age and sex for every Data Zone 2022, rebased on Census 2022.
+  licence: OGL-3.0
+  attribution: "National Records of Scotland, Small area population estimates, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 100MB
+
+sg_dz11_boundaries:
+  coverage: [S]
+  priority: P2
+  title: Data Zone boundaries 2011, Scotland
+  theme: geography
+  access:
+    type: http
+    url: https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneBdry_2011.zip
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj", "*.cpg"]
+  landing_page: https://spatialdata.gov.scot/geonetwork/srv/api/records/7d3e8709-98fa-4d71-867c-d5c8293823f2
+  description: The 6,976 Data Zones of 2011, the geography SIMD 2020 is published on.
+  licence: OGL-3.0
+  attribution: *sg_boundary_attribution
+  cadence: static
+  period: "2011"
+  size_hint: 19MB
+  notes: The fallback for the 2011 → 2022 crosswalk (an areal overlay with output-area population points) should the SIMD postcode lookup disappoint; not read by the build.
+
+simd_2020_ranks:
+  coverage: [S]
+  title: Scottish Index of Multiple Deprivation 2020v2, ranks and domain ranks
+  theme: community
+  access:
+    type: http
+    url: https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/scottish-index-of-multiple-deprivation-2020-ranks-and-domain-ranks/documents/scottish-index-of-multiple-deprivation-2020-ranks-and-domain-ranks/scottish-index-of-multiple-deprivation-2020-ranks-and-domain-ranks/govscot%3Adocument/SIMD%2B2020v2%2B-%2Branks.xlsx
+  format: xlsx
+  landing_page: https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/
+  description: SIMD 2020v2 overall rank and the seven domain ranks (income, employment, health, education, geographic access, crime, housing) for the 6,976 Data Zones of 2011, 1 = most deprived.
+  licence: OGL-3.0
+  attribution: "Scottish Government, Scottish Index of Multiple Deprivation 2020, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2020"
+  size_hint: 520KB
+
+simd_2020_indicators:
+  coverage: [S]
+  title: Scottish Index of Multiple Deprivation 2020v2, indicator data
+  theme: community
+  access:
+    type: http
+    url: https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/scottish-index-of-multiple-deprivation-2020-indicator-data/documents/simd_2020_indicators/simd_2020_indicators/govscot%3Adocument/SIMD%2B2020v2%2B-%2Bindicators.xlsx
+  format: xlsx
+  landing_page: https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/
+  description: The indicators behind SIMD 2020v2 per Data Zone 2011, among them the income and employment deprivation rates, recorded crimes per 10,000 people, drive and public transport times to services, overcrowding and homes without central heating.
+  licence: OGL-3.0
+  attribution: "Scottish Government, Scottish Index of Multiple Deprivation 2020, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2020"
+  size_hint: 2.5MB
+
+simd_postcode_lookup:
+  coverage: [S]
+  title: Scottish Index of Multiple Deprivation 2020v2, postcode lookup
+  theme: geography
+  access:
+    type: http
+    url: https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/scottish-index-of-multiple-deprivation-2020-postcode-look-up-file/documents/simd-2020-postcode-lookup-v5/simd-2020-postcode-lookup-v5/govscot%3Adocument/SIMD%2B2020v2%2B-%2Bpostcode%2Blookup%2B-%2Bupdated%2B2025.xlsx
+  format: xlsx
+  landing_page: https://www.gov.scot/collections/scottish-index-of-multiple-deprivation-2020/
+  description: Every Scottish postcode with its Data Zone 2011 and SIMD 2020v2 rank; joined to the NSPL (postcode to Data Zone 2022) it gives the 2011 → 2022 crosswalk.
+  licence: OGL-3.0
+  attribution: "Scottish Government, Scottish Index of Multiple Deprivation 2020, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2020 (postcodes as of 2025)"
+  size_hint: 8MB
+
+scotland_census_2022:
+  coverage: [S]
+  title: Scotland's Census 2022, topic tables at Data Zone 2022
+  theme: community
+  access:
+    type: http
+    url: https://www.scotlandscensus.gov.uk/media/zz8620251217_10_04_asdfsfgbsdtbbjutiui465in/Datazone2022.zip
+  format: zip
+  landing_page: https://www.scotlandscensus.gov.uk/documents/2022-data-zone-area-data
+  description: Every Census 2022 univariate topic table at Data Zone level (demography, households, housing, tenure, cars, travel to work, general health, qualifications) in one archive; the counterpart of the Census 2021 bulk tables in England and Wales.
+  licence: OGL-3.0
+  attribution: "National Records of Scotland, Scotland's Census 2022, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2022"
+  size_hint: 90MB
+
+ros_house_prices:
+  coverage: [S]
+  title: Registers of Scotland small area house price statistics
+  theme: housing
+  access:
+    type: manual
+    instructions: >-
+      Open https://www.ros.gov.uk/data-and-statistics/property-market-statistics/small-area-statistics
+      and download the latest small area statistics spreadsheet (the one with 2022 Data Zone
+      and Intermediate Zone sheets).
+    expect: ["*.xlsx"]
+  format: xlsx
+  landing_page: https://www.ros.gov.uk/data-and-statistics/property-market-statistics/small-area-statistics
+  description: Residential sales per calendar year by Data Zone 2022 and Intermediate Zone 2022 (count, mean, median and quartile prices), with areas under five sales suppressed.
+  licence: OGL-3.0
+  attribution: "Registers of Scotland, Small area statistics, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 10MB
+  notes: The website refuses automated downloads (HTTP 403), so the file is fetched by hand like the night-lights raster; the Scottish price branch skips when it is absent.
+
+sg_council_tax:
+  coverage: [S]
+  title: Council tax by band and council, Scotland
+  theme: housing
+  access:
+    type: http
+    url: https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2019/04/council-tax-datasets/documents/average-council-tax-per-dwelling/council-tax-by-band-2026-27/council-tax-by-band-2026-27/govscot%3Adocument/CTAS%2B2026%2B-%2BCouncil%2BTax%2BAssumptions%2B-%2BCouncil%2BTax%2Bby%2BBand%2B-%2B2026-27.xlsx
+  format: xlsx
+  landing_page: https://www.gov.scot/publications/council-tax-datasets/
+  description: The council tax charge for every band (A–H) in each of the 32 councils for the current year.
+  licence: OGL-3.0
+  attribution: "Scottish Government, Council Tax datasets, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2026-27"
+  size_hint: 20KB
+
+nrs_dwellings_by_band:
+  coverage: [S]
+  title: Dwellings by council tax band, 2022 Data Zones (NRS)
+  theme: housing
+  access:
+    type: ckan
+    api: https://api.data.gov.scot/api/3/action
+    package: dwellings_by_council_tax_band_summary__2022_data_zones_
+    resource_regex: '^dwellings-by-council-tax-band'
+  format: csv
+  landing_page: https://data.gov.scot/dataset/dwellings_by_council_tax_band_summary__2022_data_zones_
+  description: Dwellings in each council tax band per Data Zone 2022 from the assessors' portal, Scotland's counterpart of the VOA stock tables (no build-period breakdown).
+  licence: OGL-3.0
+  attribution: "National Records of Scotland, Small area statistics on households and dwellings, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 10MB
+
+sg_school_roll:
+  coverage: [S]
+  title: Scottish school roll and locations
+  theme: education
+  access:
+    type: http
+    url: https://maps.gov.scot/ATOM/shapefiles/SG_SchoolRoll_2023.zip
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj", "*.cpg"]
+  landing_page: https://spatialdata.gov.scot/geonetwork/srv/api/records/5fa510db-88c8-40ef-bbf2-2989210b7167
+  description: Every publicly funded primary, secondary and special school as a geocoded point with its SEED code, roll, teacher numbers and denomination.
+  licence: OGL-3.0
+  attribution: "Copyright Scottish Government, contains Ordnance Survey data © Crown copyright and database right 2024; school data created and maintained by Scottish Local Government (Local Government Information House Limited); licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2023"
+  size_hint: 600KB
+
+sg_attainment:
+  coverage: [S]
+  title: School leaver attainment (Attainment for All), Scotland
+  theme: education
+  access:
+    type: ckan
+    api: https://api.data.gov.scot/api/3/action
+    package: schools___attainment_for_all
+    resource_regex: '^attainment-for-all'
+  format: csv
+  landing_page: https://data.gov.scot/dataset/schools___attainment_for_all
+  description: Average total tariff score of senior-phase leavers for every secondary school (lowest 20%, middle 60%, highest 20% and all), with a virtual comparator; small cohorts suppressed.
+  licence: OGL-3.0
+  attribution: "Scottish Government, Schools - Attainment for All, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 3MB
+
+care_inspectorate:
+  coverage: [S]
+  title: Care Inspectorate datastore (registered care services)
+  theme: education
+  access:
+    type: html_link
+    page: https://www.careinspectorate.scot/resources-data/data-and-statistics/datastore
+    steps:
+      - pattern: 'href="(/resources-data/publications-and-statistics/library/datastore-[^"]+)"'
+        order: page
+      - pattern: 'href="(https://ci-web-media-production-bucket\.s3\.eu-west-2\.amazonaws\.com/[^"]+datastoreexternal\.csv)"'
+  format: csv
+  landing_page: https://www.careinspectorate.scot/resources-data/data-and-statistics/datastore
+  description: Every registered care service with its type, postcode, council, registered places and the latest grades (1–6) on the key questions; the "Day Care of Children" services stand in for Ofsted's early-years register.
+  licence: OGL-3.0
+  attribution: "Care Inspectorate, Datastore, licensed under the Open Government Licence v3.0."
+  cadence: monthly
+  size_hint: 15MB
+
+phs_gp_practices:
+  coverage: [S]
+  title: GP practices and list sizes, Scotland (Public Health Scotland)
+  theme: health
+  access:
+    type: ckan
+    api: https://www.opendata.nhs.scot/api/3/action
+    package: gp-practice-contact-details-and-list-sizes
+    resource_regex: 'practice_contact_details_\d{8}_opendata\.csv$'
+  format: csv
+  landing_page: https://www.opendata.nhs.scot/dataset/gp-practice-contact-details-and-list-sizes
+  description: Every GP practice with its address, postcode, health board and registered list size, quarterly.
+  licence: OGL-3.0
+  attribution: "Public Health Scotland, GP Practice Contact Details and List Sizes, licensed under the Open Government Licence v3.0."
+  cadence: quarterly
+  size_hint: 200KB
+
+phs_pharmacies:
+  coverage: [S]
+  title: Community pharmacies (dispenser locations), Scotland (Public Health Scotland)
+  theme: health
+  access:
+    type: ckan
+    api: https://www.opendata.nhs.scot/api/3/action
+    package: dispenser-location-contact-details
+    resource_regex: 'dispenser_contactdetails_\d{6}\.csv$'
+  format: csv
+  landing_page: https://www.opendata.nhs.scot/dataset/dispenser-location-contact-details
+  description: Every dispensing contractor (community pharmacies and dispensing doctors) with its address and postcode, monthly.
+  licence: OGL-3.0
+  attribution: "Public Health Scotland, Dispenser Location Contact Details, licensed under the Open Government Licence v3.0."
+  cadence: monthly
+  size_hint: 300KB
+
+phs_dentists:
+  coverage: [S]
+  title: NHS dental practices, Scotland (Public Health Scotland)
+  theme: health
+  access:
+    type: ckan
+    api: https://www.opendata.nhs.scot/api/3/action
+    package: dental-practices-and-patient-registrations
+    resource_regex: 'nhs-dental-practices-and-nhs-dental-registrations-as-at-'
+  format: csv
+  landing_page: https://www.opendata.nhs.scot/dataset/dental-practices-and-patient-registrations
+  description: Every NHS dental practice with its address, postcode and registered patients, quarterly.
+  licence: OGL-3.0
+  attribution: "Public Health Scotland, Dental Practices and Patient Registrations, licensed under the Open Government Licence v3.0."
+  cadence: quarterly
+  size_hint: 200KB
+
+phs_ae_sites:
+  coverage: [S]
+  priority: P1
+  title: Accident and emergency sites, Scotland (Public Health Scotland)
+  theme: health
+  access:
+    type: ckan
+    api: https://www.opendata.nhs.scot/api/3/action
+    package: nhs-scotland-accident-emergency-sites
+    resource_regex: 'ae_hospital_site_list'
+  format: csv
+  landing_page: https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites
+  description: Every emergency department, minor injury unit and other site reporting emergency activity, with its postcode and whether it is a consultant-led emergency department.
+  licence: OGL-3.0
+  attribution: "Public Health Scotland, Accident & Emergency Sites, licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  size_hint: 20KB
+  notes: The Scottish rows of the curated emergency-department list (config/data/ae_sites.csv, #39) are compiled from it; kept so the nightly check notices a new edition.
+
+sepa_noise_all_lden:
+  coverage: [S]
+  title: Noise mapping Scotland round 4, consolidated all sources (Lden)
+  theme: environment
+  access:
+    type: http
+    url: https://map.sepa.org.uk/atom/noise/Noise_Consolidated_LDEN.zip
+  format: zip
+  extract: ["*.tif", "*.tfw"]
+  landing_page: https://www.data.gov.uk/dataset/c335ebaa-304a-427a-873b-4adc264e976b/noise-mapping-scotland-round-4-consolidated-all-sources-lden
+  description: Modelled annual average day-evening-night noise (Lden, dB) from roads, railways, airports and industry together on a 10m grid for 2021, across Scotland.
+  licence: OGL-3.0
+  attribution: "© Scottish Government, contains Ordnance Survey data © Crown copyright and database right 2024; Noise Mapping Scotland round 4, licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  period: "Round 4 (2021)"
+  size_hint: 850MB
+
+sepa_noise_industry_lden:
+  coverage: [S]
+  title: Noise mapping Scotland round 4, industry (Lden)
+  theme: environment
+  access:
+    type: http
+    url: https://map.sepa.org.uk/atom/noise/Noise_Industry_LDEN.zip
+  format: zip
+  extract: ["*.tif", "*.tfw"]
+  landing_page: https://spatialdata.gov.scot/geonetwork/srv/api/records/c03a1917-83ec-425b-8af8-8ba8c6b1b4f6
+  description: Modelled industrial noise (Lden, dB) on a 10m grid for 2021 in the five agglomerations (Aberdeen, Dundee, Edinburgh, Falkirk, Glasgow).
+  licence: OGL-3.0
+  attribution: "© Scottish Government, contains Ordnance Survey data © Crown copyright and database right 2024; Noise Mapping Scotland round 4, licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  period: "Round 4 (2021)"
+  size_hint: 17MB
+
+x-sepa-flood-attribution: &sepa_flood_attribution "© SEPA 2025; SEPA Flood Maps, licensed under the Open Government Licence v3.0; contains Ordnance Survey data © Crown copyright and database right."
+
+sepa_flood_river:
+  coverage: [S]
+  title: SEPA river flood maps v3.0
+  theme: environment
+  access:
+    type: http
+    url: https://map.sepa.org.uk/atom/flood/SEPA_River_Flood_Maps_v3_0.zip
+  format: zip
+  extract: ["*.gdb/*"]
+  landing_page: https://www.sepa.org.uk/environment/environmental-data/
+  description: Modelled extents of river flooding at high (1 in 10 a year), medium (1 in 200) and low (1 in 1,000) likelihood, allowing for defences, as a file geodatabase.
+  licence: OGL-3.0
+  attribution: *sepa_flood_attribution
+  cadence: adhoc
+  period: "Flood Maps v3.0 (2025)"
+  size_hint: 1.2GB (8GB unpacked)
+
+sepa_flood_coastal:
+  coverage: [S]
+  title: SEPA coastal flood maps v3.0
+  theme: environment
+  access:
+    type: http
+    url: https://map.sepa.org.uk/atom/flood/SEPA_Coastal_Flood_Maps_v3_0.zip
+  format: zip
+  extract: ["*.gdb/*"]
+  landing_page: https://www.sepa.org.uk/environment/environmental-data/
+  description: Modelled extents of flooding from the sea at high, medium and low likelihood, as a file geodatabase.
+  licence: OGL-3.0
+  attribution: *sepa_flood_attribution
+  cadence: adhoc
+  period: "Flood Maps v3.0 (2025)"
+  size_hint: 160MB (1GB unpacked)
+
+sepa_flood_surface_extent:
+  coverage: [S]
+  title: SEPA surface water and small watercourses flood maps v3.0, extents
+  theme: environment
+  access:
+    type: http
+    url: https://map.sepa.org.uk/atom/flood/SEPA_Surface_Water_Flood_Maps_EXTENT_v3_0.zip
+  format: zip
+  extract: ["*.gdb/*"]
+  landing_page: https://www.sepa.org.uk/environment/environmental-data/
+  description: Modelled extents of surface water and small watercourse flooding at high, medium and low likelihood, as a file geodatabase.
+  licence: OGL-3.0
+  attribution: *sepa_flood_attribution
+  cadence: adhoc
+  period: "Flood Maps v3.0 (2025)"
+  size_hint: 2.1GB (12GB unpacked)
+
+bods_gtfs_scotland:
+  coverage: [S]
+  title: Bus Open Data Service timetables (GTFS, Scotland)
+  theme: transport
+  access:
+    type: http
+    url: https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/scotland/
+  format: zip
+  extract: [stops.txt, stop_times.txt, trips.txt, calendar.txt, calendar_dates.txt, routes.txt, agency.txt]
+  landing_page: https://data.bus-data.dft.gov.uk/timetable/download/
+  description: The bus timetables Scottish operators publish to the DfT's service, converted to GTFS.
+  licence: OGL-3.0
+  attribution: "Department for Transport, Bus Open Data Service, licensed under the Open Government Licence v3.0."
+  cadence: weekly
+  size_hint: 150MB
+  notes: Publishing is voluntary in Scotland (mandatory only in England), so some operators are missing; Transport Scotland's own open data regime is being phased in from 2026.
+
+orr_station_usage:
+  coverage: [E, W, S]
+  title: Estimates of station usage (ORR), entries and exits by station
+  theme: transport
+  access:
+    type: http
+    url: https://dataportal.orr.gov.uk/media/1909/table-1410-passenger-entries-and-exits-and-interchanges-by-station.csv
+  format: csv
+  landing_page: https://dataportal.orr.gov.uk/station-usage
+  description: Annual passenger entries and exits and interchanges at every mainline station in Great Britain (Table 1410), with the station's NLC and three-letter code.
+  licence: OGL-3.0
+  licence_verified: false
+  attribution: "Office of Rail and Road, Estimates of station usage, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 400KB
+  notes: The data portal shows no licence line on the table; ORR's site-wide statement is OGL v3 (confirmation requested).
+
+orr_station_attributes:
+  coverage: [E, W, S]
+  title: Station attributes for all mainline stations (ORR Table 6329)
+  theme: transport
+  access:
+    type: http
+    url: https://dataportal.orr.gov.uk/media/ootlf0cn/table-6329-station-attributes-for-all-mainline-stations.ods
+  format: ods
+  landing_page: https://dataportal.orr.gov.uk/statistics/infrastructure-and-environment/rail-infrastructure-and-assets/table-6329-station-attributes-for-all-mainline-stations/
+  description: Every mainline station with its NLC, three-letter code, operator and grid reference, used to place the usage estimates.
+  licence: OGL-3.0
+  licence_verified: false
+  attribution: "Office of Rail and Road, Station attributes, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 300KB
+
+osm_scotland:
+  coverage: [S]
+  title: OpenStreetMap Scotland extract (Geofabrik)
+  theme: amenities
+  access:
+    type: http
+    url: https://download.geofabrik.de/europe/united-kingdom/scotland-latest.osm.pbf
+  format: pbf
+  landing_page: https://download.geofabrik.de/europe/united-kingdom/scotland.html
+  description: Every OpenStreetMap feature in Scotland, read for pubs, shops, cafés, supermarkets, culture, leisure, nurseries, pharmacies and other points of interest.
+  licence: ODbL-1.0
+  attribution: "© OpenStreetMap contributors, Open Database Licence (ODbL) 1.0."
+  cadence: daily
+  size_hint: 330MB

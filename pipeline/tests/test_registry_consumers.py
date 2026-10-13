@@ -2,13 +2,15 @@
 
 from lix_core.config import load_indicators, load_registry
 from lix_pipeline.stage import BACKBONE_INPUTS, STAGE_INPUTS, stagers
+from lix_pipeline.stage.graph import expand_inputs
 
 
 def _consumed() -> set[str]:
     catalogue = load_indicators()
+    registry = load_registry()
     return (
         set(stagers())
-        | {s for inputs in STAGE_INPUTS.values() for s in inputs}
+        | {s for inputs in STAGE_INPUTS.values() for s in expand_inputs(inputs, registry)}
         | {s for i in catalogue.indicators for s in i.sources}
         | set(BACKBONE_INPUTS)
     )

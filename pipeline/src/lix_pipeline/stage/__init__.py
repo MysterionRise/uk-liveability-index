@@ -15,8 +15,8 @@ logger = setup_logging("stage")
 # stager reads are declared in STAGE_READS below and bring their own raw inputs along;
 # ``graph.raw_inputs`` closes over both and a test keeps both honest against the code.
 STAGE_INPUTS: dict[str, list[str]] = {
-    "price_paid": ["price_paid", "nspl"],
-    "population": ["pop_lsoa_mye"],
+    "price_paid": ["price_paid", "ros_house_prices", "nspl"],
+    "population": ["pop_lsoa_mye", "nrs_sape"],
     "geo_lsoa": [
         "oa_lookup",
         "msoa_names",
@@ -26,25 +26,52 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "lsoa_centroids",
         "pop_lsoa_mye",
         "lsoa_boundaries",
+        # Scotland (geo_scotland): zones, their lookup, centroids and population
+        "sg_dz22_boundaries",
+        "sg_dz22_lookup",
+        "sg_dz22_centroids",
+        "nrs_oa22_lookup",
+        "nrs_sape",
     ],
-    "places": ["os_open_names", "lsoa_boundaries"],
+    "oa_lookup": ["oa_lookup", "nrs_oa22_lookup"],
+    "dz11_dz22": ["simd_postcode_lookup", "nrs_oa22_population", "nspl"],
+    "places": ["os_open_names", "lsoa_boundaries", "sg_dz22_boundaries"],
     "defra_pcm_no2": ["defra_pcm_no2", "nspl"],
     "defra_pcm_pm25": ["defra_pcm_pm25", "nspl"],
     "defra_pcm_pm10": ["defra_pcm_pm10", "nspl"],
-    "ods_gp": ["ods_gp", "nspl"],
+    "ods_gp": ["ods_gp", "phs_gp_practices", "nspl"],
     "gias": ["gias", "lsoa_boundaries"],
     "fsa_fhrs": ["fsa_fhrs", "nspl", "lsoa_boundaries"],
     "overture_pubs": ["overture_pubs", "lsoa_boundaries"],
     "osm_pois": ["osm_*"],
-    "ods_dentists": ["ods_dentists", "nspl"],
+    "ods_dentists": ["ods_dentists", "phs_dentists", "nspl"],
     "nhsbsa_pharmacies": ["nhsbsa_pharmacies", "nspl"],
     "ofsted_childcare": ["ofsted_childcare", "nspl"],
     "ea_flood_postcodes": ["ea_flood_postcodes", "nspl"],
     "ofcom_broadband": ["ofcom_broadband", "oa_lookup"],
     "wg_schools": ["wg_schools", "lsoa_boundaries"],
-    "schools": ["gias", "wg_schools", "lsoa_boundaries"],
-    "childcare": ["ofsted_childcare", "nspl", "lsoa_boundaries"],
-    "pharmacies": ["nhsbsa_pharmacies", "nspl", "lsoa_boundaries"],
+    "schools": [
+        "gias",
+        "wg_schools",
+        "sg_school_roll",
+        "sg_attainment",
+        "lsoa_boundaries",
+        "sg_dz22_boundaries",
+    ],
+    "childcare": [
+        "ofsted_childcare",
+        "care_inspectorate",
+        "nspl",
+        "lsoa_boundaries",
+        "sg_dz22_boundaries",
+    ],
+    "pharmacies": [
+        "nhsbsa_pharmacies",
+        "phs_pharmacies",
+        "nspl",
+        "lsoa_boundaries",
+        "sg_dz22_boundaries",
+    ],
     "ea_flood_all_postcodes": ["ea_flood_postcode_tool", "nspl"],
     "flood": [
         "ea_flood_postcodes",
@@ -52,27 +79,31 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nrw_fraw_rivers",
         "nrw_fraw_sea",
         "nrw_fraw_surface_water",
+        "sepa_flood_river",
+        "sepa_flood_coastal",
+        "sepa_flood_surface_extent",
         "nspl",
     ],
     "tree_cover": ["esa_worldcover", "nspl"],
     "os_open_uprn": ["os_open_uprn", "lsoa_boundaries"],
     "night_lights": ["viirs_vnl", "nspl"],
-    "noise": [
-        "defra_noise_road_lden",
-        "defra_noise_rail_lden",
-        "wg_noise_road_lden",
-        "wg_noise_rail_lden",
-        "nspl",
-    ],
-    "deprivation": ["iod_2025", "wimd_*"],
-    "council_tax": ["council_tax", "wg_council_tax"],
+    "noise": ["*_noise_*_lden", "nspl"],
+    "deprivation": ["iod_2025", "wimd_*", "simd_*", "nrs_oa22_population", "nspl"],
+    "voa_ctsop": ["voa_ctsop", "nrs_dwellings_by_band"],
+    "council_tax": ["council_tax", "wg_council_tax", "sg_council_tax"],
     "bods_gtfs": ["bods_gtfs*"],
     "wg_ks4_la": ["wg_ks4_la"],
+    # Census 2021 tables gain Scotland's Census 2022 counterparts (stage/census.py)
+    **{
+        f"census_ts{t}": [f"census_ts{t}", "scotland_census_2022"]
+        for t in ("003", "006", "007a", "037", "045", "054", "061")
+    },
 }
 
 # Staged tables each stager reads (the stager → staged-table edges of the graph)
 STAGE_READS: dict[str, list[str]] = {
     "geo_lsoa": ["nspl", "population"],
+    "dz11_dz22": ["nspl"],
     "price_paid": ["nspl"],
     "defra_pcm_no2": ["nspl"],
     "defra_pcm_pm25": ["nspl"],
@@ -102,7 +133,9 @@ STAGE_READS: dict[str, list[str]] = {
 # names and the boundaries the tiles are cut from. The manifest credits them alongside
 # the indicators' sources.
 BACKBONE_INPUTS: list[str] = sorted(
-    set(STAGE_INPUTS["geo_lsoa"]) | set(STAGE_INPUTS["places"]) | {"msoa_boundaries"}
+    set(STAGE_INPUTS["geo_lsoa"])
+    | set(STAGE_INPUTS["places"])
+    | {"msoa_boundaries", "sg_iz22_boundaries"}
 )
 
 
@@ -161,6 +194,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "population": stage_population,
         "oa_lookup": geo.stage_oa_lookup,
         "lsoa11_lsoa21": geo.stage_lsoa11_lsoa21,
+        "dz11_dz22": geo.stage_dz11_dz22,  # Scotland: needs staged nspl
         "geo_lsoa": geo.stage_geo_lsoa,  # needs staged nspl and population
         "places": geo.stage_places,
         "price_paid": stage_price_paid,

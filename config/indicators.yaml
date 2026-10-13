@@ -128,14 +128,31 @@ indicators:
     unit: score
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # IoD in England, WIMD in Wales (see stage/deprivation.py)
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks]
+    coverage: [E, W, S]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
     builder: common:deprivation
     params: {column: crime_score}
     role: diagnostic
     overlap_group: crime
 
   # ------------------------------------------------------------------ environment
+  - id: recorded_crime
+    theme: safety
+    label: Recorded crime (SIMD)
+    description: Recorded crimes per 1,000 residents a year in the Scottish Index of Multiple Deprivation 2020, brought onto 2022 data zones.
+    unit: per 1,000 residents a year
+    direction: lower_better
+    benchmark: nation
+    coverage: [S]
+    sources: [simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nspl]
+    builder: common:deprivation
+    params: {column: crime_rate_1000}
+    log1p: true
+    weight: 2.0
+    overlap_group: crime
+    substitute_for: [crime_violence, crime_burglary, crime_asb, crime_theft]
+    caveats: Police Scotland publishes no open street-level data, so the SIMD rate stands in for the four crime indicators; it covers all recorded crime (violence, sexual offences, housebreaking, vandalism, drugs and common assault) and is older than the police.uk window used elsewhere.
+
   - id: no2
     theme: environment
     label: Nitrogen dioxide (NO₂)
@@ -196,15 +213,15 @@ indicators:
     description: Share of homes at high or medium risk of flooding from rivers, the sea or surface water (at least a 1% chance a year).
     unit: "% of homes"
     direction: lower_better
-    coverage: [E, W]  # EA postcode counts in England, NRW risk areas in Wales
-    sources: [ea_flood_postcode_tool, nrw_fraw_rivers, nrw_fraw_sea, nrw_fraw_surface_water, os_open_uprn, voa_ctsop, nspl]
+    coverage: [E, W, S]  # EA counts in England, NRW risk areas in Wales, SEPA flood maps in Scotland
+    sources: [ea_flood_postcode_tool, nrw_fraw_rivers, nrw_fraw_sea, nrw_fraw_surface_water, os_open_uprn, voa_ctsop, nspl, sepa_flood_river, sepa_flood_coastal, sepa_flood_surface_extent, nrs_dwellings_by_band]
     builder: environment:flood_risk
     params: {bands: [high, medium], prefix: any}
     normalise: threshold
     good: 0
     bad: 25
     overlap_group: flooding
-    caveats: Each home is rated by the higher of the rivers-and-sea and surface-water assessments, which allow for flood defences; groundwater and sewer flooding are not included. England's counts are addresses, so shops on a flood-prone high street count too. In Wales, NRW publishes risk areas rather than counts, so homes at risk are estimated from the share of an area's property points inside the high and medium areas.
+    caveats: Each home is rated by the higher of the rivers-and-sea and surface-water assessments, which allow for flood defences; groundwater and sewer flooding are not included. England's counts are addresses, so shops on a flood-prone high street count too. In Wales, NRW publishes risk areas rather than counts, so homes at risk are estimated from the share of an area's property points inside the high and medium areas. Scotland's SEPA maps are read the same way, with the medium band at 1 in 200 a year (looser than the EA's 1 in 100).
 
   - id: flood_rivers_sea
     theme: environment
@@ -212,8 +229,8 @@ indicators:
     description: Share of homes at high or medium risk of flooding from rivers or the sea alone (at least a 1% chance a year).
     unit: "% of homes"
     direction: lower_better
-    coverage: [E, W]
-    sources: [ea_flood_postcodes, nrw_fraw_rivers, nrw_fraw_sea, os_open_uprn, voa_ctsop, nspl]
+    coverage: [E, W, S]
+    sources: [ea_flood_postcodes, nrw_fraw_rivers, nrw_fraw_sea, os_open_uprn, voa_ctsop, nspl, sepa_flood_river, sepa_flood_coastal, nrs_dwellings_by_band]
     builder: environment:flood_risk
     params: {bands: [high, medium], prefix: res}
     normalise: threshold
@@ -223,19 +240,37 @@ indicators:
     overlap_group: flooding
     caveats: The part of flood risk that comes from rivers and the sea; surface water is the rest. Flood defences are taken into account.
 
+  - id: noise_exposure
+    theme: environment
+    label: Homes in transport or industrial noise
+    description: Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road and rail in England and Wales; every mapped source in Scotland).
+    unit: "% of homes"
+    direction: lower_better
+    coverage: [E, W, S]
+    sources: [defra_noise_road_lden, defra_noise_rail_lden, wg_noise_road_lden, wg_noise_rail_lden, sepa_noise_all_lden, nspl]
+    builder: environment:percent
+    params: {slug: noise, column: share_any_60}
+    normalise: threshold
+    good: 0
+    bad: 40
+    overlap_group: noise
+    caveats: Each home is read from the 10m noise grid at its postcode. England's and Wales's maps hold road and rail only; Scotland's consolidated map adds airports and industry. The cut-off is 60 dB Lden, a busy road's level, because minor roads are mapped only inside the larger towns in England.
+
   - id: road_rail_noise
     theme: environment
     label: Homes in road or rail noise
     description: Share of homes where road or rail noise averages 60 dB Lden or more over the day, evening and night, from the strategic noise maps.
     unit: "% of homes"
     direction: lower_better
-    coverage: [E, W]
+    coverage: [E, W]  # Scotland publishes one consolidated map (see noise_exposure)
     sources: [defra_noise_road_lden, defra_noise_rail_lden, wg_noise_road_lden, wg_noise_rail_lden, nspl]
     builder: environment:percent
     params: {slug: noise, column: share_any_60}
     normalise: threshold
     good: 0
     bad: 40
+    role: context
+    overlap_group: noise
     caveats: Each home is read from the 10m noise grid at its postcode. England's maps cover every road inside the larger towns and cities and only major roads elsewhere, while Wales's cover every road, so the cut-off is 60 dB Lden, a busy road's level, rather than the 55 dB at which the Environmental Noise Directive counts people as exposed and at which ordinary streets would count only where they were mapped. Aircraft and industry are not included.
 
   - id: tree_canopy
@@ -285,7 +320,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest GP practice.
     unit: metres
     direction: lower_better
-    sources: [ods_gp, nspl]
+    coverage: [E, W, S]
+    sources: [ods_gp, nspl, phs_gp_practices]
     builder: health:nearest_gp
     normalise: threshold
     good: 1000
@@ -339,8 +375,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest NHS community pharmacy.
     unit: metres
     direction: lower_better
-    coverage: [E, W]  # NHSBSA in England, OpenStreetMap in Wales
-    sources: [nhsbsa_pharmacies, osm_wales, nspl]
+    coverage: [E, W, S]  # NHSBSA in England, OpenStreetMap in Wales, PHS dispenser list in Scotland
+    sources: [nhsbsa_pharmacies, osm_wales, nspl, phs_pharmacies]
     builder: common:nearest
     params: {slug: pharmacies}
     normalise: threshold
@@ -356,7 +392,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest dental practice with an NHS contract.
     unit: metres
     direction: lower_better
-    sources: [ods_dentists, nspl]
+    coverage: [E, W, S]
+    sources: [ods_dentists, nspl, phs_dentists]
     builder: common:nearest
     params: {slug: ods_dentists}
     normalise: threshold
@@ -391,15 +428,15 @@ indicators:
     unit: quality 0–1
     direction: higher_better
     benchmark: nation
-    coverage: [E, W]  # Wales: the authority's Capped 9 score, broadcast
-    sources: [gias, wg_schools, ofsted_schools, ks4_results, wg_ks4_la, nspl]
+    coverage: [E, W, S]  # Wales: the authority's Capped 9 score, broadcast; Scotland: leaver tariff
+    sources: [gias, wg_schools, ofsted_schools, ks4_results, wg_ks4_la, nspl, sg_school_roll, sg_attainment]
     builder: education:school_quality_nearby
     params: {phases: [Secondary, All-through, Middle deemed secondary], results_slug: ks4_results, results_column: attainment8, k: 3, sigma_m: 4000, max_m: 15000, la_results_slug: wg_ks4_la, la_results_column: capped9}
     normalise: threshold
     good: 0.8
     bad: 0.4
     weight: 1.5
-    caveats: Quality blends Ofsted (60%) and Attainment 8 as a percentile (40%); Progress 8 isn't published for 2024/25. In Wales, where no per-school results or inspection grades are published, the local authority's Capped 9 points score stands in for every school in it (flagged broadcast_lad).
+    caveats: Quality blends Ofsted (60%) and Attainment 8 as a percentile (40%); Progress 8 isn't published for 2024/25. In Wales, where no per-school results or inspection grades are published, the local authority's Capped 9 points score stands in for every school in it (flagged broadcast_lad). In Scotland quality is each school's average leaver tariff score as a percentile within Scotland; no inspection grades are published as open data.
 
   - id: school_choice
     theme: education
@@ -408,8 +445,8 @@ indicators:
     unit: index 0–1
     direction: higher_better
     benchmark: nation
-    coverage: [E, W]  # Welsh schools count as present but ungraded
-    sources: [gias, wg_schools, ofsted_schools, nspl]
+    coverage: [E, W, S]  # Welsh and Scottish schools count as present but ungraded
+    sources: [gias, wg_schools, ofsted_schools, nspl, sg_school_roll]
     builder: education:school_choice
     params: {cap: 4}
     normalise: scale
@@ -447,12 +484,12 @@ indicators:
     description: Nurseries, pre-schools and school nursery classes within 1km, each weighted by its Ofsted grade and distance.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W]  # Ofsted in England, OpenStreetMap nurseries in Wales
-    sources: [ofsted_childcare, osm_wales, gias, wg_schools, nspl]
+    coverage: [E, W, S]  # Ofsted in England, OpenStreetMap in Wales, the Care Inspectorate in Scotland
+    sources: [ofsted_childcare, osm_wales, gias, wg_schools, nspl, care_inspectorate, sg_school_roll]
     builder: education:nursery_access
     params: {radius_m: 1000, cap: 3}
     normalise: scale
-    caveats: Childminders aren't located (Ofsted withholds their addresses). In Wales nurseries come from OpenStreetMap (CIW publishes no provider list) and count as average quality; school nursery classes are included from the Welsh schools list.
+    caveats: Childminders aren't located (Ofsted withholds their addresses). In Wales nurseries come from OpenStreetMap (CIW publishes no provider list) and count as average quality; school nursery classes are included from the Welsh schools list. In Scotland each nursery is weighted by its Care Inspectorate grades.
 
   # -------------------------------------------------------------------- transport
   - id: connectivity_overall
@@ -514,6 +551,22 @@ indicators:
     role: context
     overlap_group: connectivity
 
+  - id: access_deprivation
+    theme: transport
+    label: Access to services (SIMD)
+    description: Geographic access domain of the Scottish Index of Multiple Deprivation 2020 (drive and public transport times to GPs, schools, shops, post offices and petrol stations), brought onto 2022 data zones.
+    unit: score 0–100
+    direction: lower_better
+    benchmark: nation
+    coverage: [S]
+    sources: [simd_2020_ranks, simd_postcode_lookup, nrs_oa22_population, nspl]
+    builder: common:deprivation
+    params: {column: access_score}
+    weight: 1.5
+    overlap_group: connectivity
+    substitute_for: [connectivity_overall]
+    caveats: Stands in for the DfT connectivity metric, which covers England and Wales only; a rank-based score within Scotland, so it says how an area compares with the rest of Scotland.
+
   - id: station_distance
     theme: transport
     label: Distance to nearest station
@@ -528,6 +581,22 @@ indicators:
     bad: 10000
     log1p: true
     weight: 0.75
+    role: context
+    overlap_group: rail_access
+
+  - id: rail_service
+    theme: transport
+    label: Rail service nearby
+    description: Annual station entries and exits (ORR) within 2km of homes, weighted by distance and saturating, so a busy station nearby counts more than a halt.
+    unit: index 0–1
+    direction: higher_better
+    sources: [orr_station_usage, orr_station_attributes, nspl]
+    builder: common:access
+    params: {slug: orr_stations, radius_m: 2000, cap: 10, weight: entries_exits_m}
+    normalise: scale
+    weight: 0.75
+    overlap_group: rail_access
+    caveats: Mainline stations only (metro and tram stops count in the distance measure); usage is a proxy for service frequency, which the timetable licence does not allow us to compute.
 
   - id: bus_frequency
     theme: transport
@@ -535,8 +604,8 @@ indicators:
     description: Buses an hour (weekdays, 07:00–19:00) at the busiest stop within 400m of homes.
     unit: buses an hour
     direction: higher_better
-    coverage: [E, W]
-    sources: [bods_gtfs, bods_gtfs_wales, nspl]
+    coverage: [E, W, S]
+    sources: [bods_gtfs, bods_gtfs_wales, nspl, bods_gtfs_scotland]
     builder: common:nearby_max
     params: {slug: bods_gtfs, column: per_hour, radius_m: 400}
     normalise: threshold
@@ -545,7 +614,7 @@ indicators:
     log1p: true
     role: context
     overlap_group: connectivity
-    caveats: Timetabled buses on a normal Tuesday. Shown, not scored, because DfT's connectivity score (scored) already covers bus access (ρ ≈ 0.82).
+    caveats: Timetabled buses on a normal Tuesday. Shown, not scored, because DfT's connectivity score (scored) already covers bus access (ρ ≈ 0.82). Publishing to the Bus Open Data Service is voluntary in Scotland, so some Scottish operators are missing.
 
   - id: gigabit_broadband
     theme: transport
@@ -578,12 +647,12 @@ indicators:
     description: Pubs within a 15-minute walk that hold a food hygiene rating of 4 or 5 from the last three years, weighted by distance, with a small bonus for real ale, food or outdoor seating.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W]  # one OpenStreetMap extract per nation
-    sources: [osm_england, osm_wales, overture_pubs, fsa_fhrs, nspl]
+    coverage: [E, W, S]
+    sources: [osm_england, osm_wales, overture_pubs, fsa_fhrs, nspl, osm_scotland]
     builder: pubs:well_run_pub_access
     params: {radius_m: 1200, cap: 3}
     normalise: scale
-    caveats: Hygiene ratings measure how well a pub is run, not the beer or the atmosphere.
+    caveats: Hygiene ratings measure how well a pub is run, not the beer or the atmosphere. Scotland's hygiene scheme grades Pass or Improvement Required rather than 0–5, so there a pub counts as well run when it passed within the last three years.
 
   - id: food_and_drink
     theme: amenities
@@ -591,8 +660,8 @@ indicators:
     description: Cafés and restaurants within 800m, weighted by distance.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W]  # one OpenStreetMap extract per nation
-    sources: [osm_england, osm_wales, nspl]
+    coverage: [E, W, S]
+    sources: [osm_england, osm_wales, nspl, osm_scotland]
     builder: amenities:osm_access
     params: {values: [cafe, restaurant], radius_m: 800, cap: 6}
     normalise: scale
@@ -604,8 +673,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest supermarket.
     unit: metres
     direction: lower_better
-    coverage: [E, W]  # one OpenStreetMap extract per nation
-    sources: [osm_england, osm_wales, nspl]
+    coverage: [E, W, S]
+    sources: [osm_england, osm_wales, nspl, osm_scotland]
     builder: amenities:osm_nearest
     params: {values: [supermarket]}
     normalise: threshold
@@ -619,8 +688,8 @@ indicators:
     description: Shops of every kind within 800m, weighted by distance.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W]  # one OpenStreetMap extract per nation
-    sources: [osm_england, osm_wales, nspl]
+    coverage: [E, W, S]
+    sources: [osm_england, osm_wales, nspl, osm_scotland]
     builder: amenities:osm_access
     params: {key: shop, radius_m: 800, cap: 30}
     normalise: scale
@@ -631,15 +700,30 @@ indicators:
   - id: leisure
     theme: amenities
     label: Sports and fitness facilities
-    description: Sports halls, gyms, pools, studios, courts and pitches open to the public within 2km, weighted by distance.
+    description: Sports centres, gyms and swimming pools open to the public within 2km, weighted by distance (OpenStreetMap).
+    unit: index 0–1
+    direction: higher_better
+    coverage: [E, W, S]
+    sources: [osm_england, osm_wales, osm_scotland, nspl]
+    builder: amenities:osm_access
+    params: {values: [sports_centre, fitness_centre, swimming_pool], radius_m: 2000, cap: 10, exclude: {access: [private]}}
+    normalise: scale
+    weight: 0.75
+    overlap_group: leisure
+    caveats: Mapped facilities, so a town's leisure centre counts once however many halls it has; Sport England's Active Places register (leisure_facilities) is the cross-check in England.
+
+  - id: leisure_facilities
+    theme: amenities
+    label: Sports facilities (Active Places)
+    description: Sports halls, gyms, pools, studios, courts and pitches open to the public within 2km in Sport England's Active Places register, weighted by distance.
     unit: index 0–1
     direction: higher_better
     sources: [active_places, nspl]
     builder: common:access
-    # Sites rather than facilities would favour big centres less; facilities count choice
     params: {slug: active_places, radius_m: 2000, cap: 10}
     normalise: scale
-    weight: 0.75
+    role: context
+    overlap_group: leisure
 
   - id: swimming_pool_distance
     theme: amenities
@@ -658,8 +742,8 @@ indicators:
     description: Libraries, cinemas, theatres, arts centres, museums and galleries within 2km.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W]  # one OpenStreetMap extract per nation
-    sources: [osm_england, osm_wales, nspl]
+    coverage: [E, W, S]
+    sources: [osm_england, osm_wales, nspl, osm_scotland]
     builder: amenities:osm_access
     params: {values: [library, cinema, theatre, arts_centre, museum, gallery], radius_m: 2000, cap: 3}
     normalise: scale
@@ -671,8 +755,8 @@ indicators:
     description: Fast-food outlets within 800m.
     unit: index 0–1
     direction: lower_better
-    coverage: [E, W]  # one OpenStreetMap extract per nation
-    sources: [osm_england, osm_wales, nspl]
+    coverage: [E, W, S]
+    sources: [osm_england, osm_wales, nspl, osm_scotland]
     builder: amenities:osm_access
     params: {values: [fast_food], radius_m: 800, cap: 15}
     normalise: scale
@@ -684,8 +768,8 @@ indicators:
     description: Betting shops, gambling venues and casinos within 800m.
     unit: index 0–1
     direction: lower_better
-    coverage: [E, W]  # one OpenStreetMap extract per nation
-    sources: [osm_england, osm_wales, nspl]
+    coverage: [E, W, S]
+    sources: [osm_england, osm_wales, nspl, osm_scotland]
     builder: amenities:osm_access
     params: {values: [gambling, casino, bookmaker, lottery], radius_m: 800, cap: 5}
     normalise: scale
@@ -699,20 +783,21 @@ indicators:
     unit: £
     direction: lower_better
     benchmark: nation
-    sources: [price_paid, nspl]
+    coverage: [E, W, S]
+    sources: [price_paid, nspl, ros_house_prices]
     builder: housing:median_price
     weight: 2.0
-    caveats: Lower prices score as more affordable; the scale reflects price, not value.
+    caveats: Lower prices score as more affordable; the scale reflects price, not value. In Scotland the Registers of Scotland publish annual medians per data zone, suppressed under five sales (then the intermediate zone's median stands in).
 
   - id: housing_condition
     theme: housing
     label: Housing condition
-    description: IoD 2025 indoors sub-domain (homes in poor condition or without central heating).
+    description: Housing domain of the deprivation index (homes in poor condition or without central heating; in Scotland, overcrowding and no central heating).
     unit: score
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # IoD in England, WIMD in Wales (see stage/deprivation.py)
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks]
+    coverage: [E, W, S]  # IoD in England, WIMD in Wales, SIMD in Scotland (see stage/deprivation.py)
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
     builder: common:deprivation
     params: {column: housing_score}
 
@@ -723,7 +808,8 @@ indicators:
     unit: "%"
     direction: higher_better
     benchmark: nation
-    sources: [price_paid]
+    coverage: [E, W, S]
+    sources: [price_paid, ros_house_prices]
     builder: common:column
     params: {slug: price_paid, column: yoy_change_pct}
     role: context
@@ -736,8 +822,8 @@ indicators:
     unit: £ a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]
-    sources: [council_tax, wg_council_tax]
+    coverage: [E, W, S]
+    sources: [council_tax, wg_council_tax, sg_council_tax]
     builder: housing:council_tax
     params: {band: d}
     weight: 0.5
@@ -783,7 +869,8 @@ indicators:
     description: Share of homes in the two lowest council tax bands (the cheapest homes in 1991 values).
     unit: "% of homes"
     direction: higher_better
-    sources: [voa_ctsop]
+    coverage: [E, W, S]
+    sources: [voa_ctsop, nrs_dwellings_by_band]
     builder: common:share
     params: {slug: voa_ctsop, numerator: [band_a, band_b], denominator: dwellings}
     role: context
@@ -796,8 +883,8 @@ indicators:
     unit: rate
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # IoD in England, WIMD in Wales (see stage/deprivation.py)
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks]
+    coverage: [E, W, S]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
     builder: common:deprivation
     params: {column: income_score}
     overlap_group: income_work
@@ -809,8 +896,8 @@ indicators:
     unit: rate
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # IoD in England, WIMD in Wales (see stage/deprivation.py)
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks]
+    coverage: [E, W, S]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
     builder: common:deprivation
     params: {column: employment_score}
     role: context
@@ -848,8 +935,8 @@ indicators:
     unit: score
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # IoD in England, WIMD in Wales (see stage/deprivation.py)
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks]
+    coverage: [E, W, S]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
     builder: common:deprivation
     params: {column: health_score}
     overlap_group: population_health
@@ -874,7 +961,8 @@ indicators:
     description: Residents describing their health as good or very good (Census 2021).
     unit: "%"
     direction: higher_better
-    sources: [census_ts037]
+    coverage: [E, W, S]
+    sources: [census_ts037, scotland_census_2022]
     builder: community:census_share
     params: {table: census_ts037, numerator: [very_good_health, good_health]}
     role: context
@@ -888,8 +976,8 @@ indicators:
     unit: score
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # IoD in England, WIMD in Wales (see stage/deprivation.py)
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks]
+    coverage: [E, W, S]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
     builder: common:deprivation
     params: {column: imd_score}
     role: context
@@ -897,10 +985,11 @@ indicators:
   - id: population_density
     theme: community
     label: Population density
-    description: Residents per square kilometre (Census 2021).
+    description: Residents per square kilometre (Census 2021; Scotland from the 2024 mid-year estimates).
     unit: people per km²
     direction: lower_better
-    sources: [census_ts006]
+    coverage: [E, W, S]
+    sources: [census_ts006, nrs_sape, sg_dz22_boundaries]
     builder: common:column
     params: {slug: census_ts006, column: persons_per_square_kilometre}
     role: context
@@ -911,7 +1000,8 @@ indicators:
     description: Share of households with dependent children (Census 2021).
     unit: "%"
     direction: higher_better
-    sources: [census_ts003]
+    coverage: [E, W, S]
+    sources: [census_ts003, scotland_census_2022]
     builder: community:census_share
     params:
       table: census_ts003
@@ -928,7 +1018,8 @@ indicators:
     description: Share of residents aged 65 or over (Census 2021).
     unit: "%"
     direction: higher_better
-    sources: [census_ts007a]
+    coverage: [E, W, S]
+    sources: [census_ts007a, scotland_census_2022]
     builder: community:census_share
     params:
       table: census_ts007a
@@ -941,7 +1032,8 @@ indicators:
     description: Share of households that own their home outright or with a mortgage (Census 2021).
     unit: "%"
     direction: higher_better
-    sources: [census_ts054]
+    coverage: [E, W, S]
+    sources: [census_ts054, scotland_census_2022]
     builder: community:census_share
     params: {table: census_ts054, numerator: [owned]}
     role: context
@@ -952,7 +1044,8 @@ indicators:
     description: Share of households with no car or van (Census 2021).
     unit: "%"
     direction: higher_better
-    sources: [census_ts045]
+    coverage: [E, W, S]
+    sources: [census_ts045, scotland_census_2022]
     builder: community:census_share
     params: {table: census_ts045, numerator: [no_cars_or_vans_in_household]}
     role: context
@@ -963,7 +1056,8 @@ indicators:
     description: Share of workers commuting on foot, by bike or by public transport (Census 2021, during COVID-19 restrictions).
     unit: "%"
     direction: higher_better
-    sources: [census_ts061]
+    coverage: [E, W, S]
+    sources: [census_ts061, scotland_census_2022]
     builder: community:census_share
     params:
       table: census_ts061

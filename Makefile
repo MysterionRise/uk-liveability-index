@@ -80,6 +80,7 @@ dev:
 	($(if $(ENV_FILE),,LIX_MODEL=test) uv run $(ENV_FILE) lix-api &) && cd web && npm run dev
 
 validate:
+	uv run lix validate config
 	uv run lix validate geo
 	uv run lix validate serve
 	uv run lix validate places

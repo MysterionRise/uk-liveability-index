@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
 from lix_core.paths import get_project_root
 
@@ -358,6 +358,15 @@ class IndicatorSpec(_Strict):
     role: Literal["scored", "context", "diagnostic"] = "scored"
     overlap_group: str | None = None
     caveats: str | None = None
+    # Scored ids this indicator stands in for where they are not available (the profile
+    # shows one row, and at the coverage gate its weight counts towards theirs, capped);
+    # it never covers a nation any of them covers
+    substitute_for: list[str] = Field(default_factory=list)
+
+    @field_validator("substitute_for", mode="before")
+    @classmethod
+    def _one_or_many(cls, value):
+        return [value] if isinstance(value, str) else value
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -424,29 +433,69 @@ def catalogue_problems(
             scored_here = [iid for iid, cov in members if nation in cov]
             if len(scored_here) > 1:
                 problems.append(f"overlap group {group} scores {scored_here} in {nation}")
+    # A substitute stands in for scored indicators of its theme where they are absent
+    by_id = catalogue.by_id()
+    known = {i.id for i in catalogue.indicators if all(s in registry for s in i.sources)}
+    for ind in catalogue.indicators:
+        for target_id in ind.substitute_for:
+            target = by_id.get(target_id)
+            if target is None:
+                problems.append(f"{ind.id}: substitute_for unknown indicator {target_id!r}")
+            elif ind.role != "scored" or target.role != "scored" or target.theme != ind.theme:
+                problems.append(
+                    f"{ind.id}: substitute_for {target_id} needs both scored in one theme"
+                )
+            elif ind.id in known and target_id in known:
+                both = set(indicator_coverage(ind, registry)) & set(
+                    indicator_coverage(target, registry)
+                )
+                if both:
+                    problems.append(
+                        f"{ind.id}: substitutes for {target_id} but both cover {sorted(both)}"
+                    )
     return problems
 
 
 def coverage_problems(
-    catalogue: IndicatorCatalogue, registry: dict[str, DatasetSpec], nations: tuple[str, ...]
+    catalogue: IndicatorCatalogue,
+    registry: dict[str, DatasetSpec],
+    nations: tuple[str, ...],
+    gaps: dict[str, list[str]] | None = None,
 ) -> list[str]:
     """Every theme must keep at least MIN_THEME_COVERAGE of its scored weight in each nation.
 
-    Run by ``lix validate config``; a nation whose sources are still being added fails
-    here until enough of its indicators exist.
+    The theme's weight is that of its ordinary scored indicators; a substitute covering a
+    nation adds its own weight there, capped at the weight of what it replaces, so a thinner
+    stand-in reads as thinner. A theme listed in a nation's ``theme_gaps`` (``gaps``) is a
+    declared gap and passes. Run by ``lix validate config``; a nation whose sources are
+    still being added fails here until enough of its indicators exist.
     """
     from lix_core.scoring import MIN_THEME_COVERAGE
 
     problems = []
+    gaps = gaps or {}
     for theme in catalogue.themes:
         members = [i for i in catalogue.scored() if i.theme == theme]
-        total = sum(i.weight for i in members)
+        canonical = [i for i in members if not i.substitute_for]
+        substitutes = [i for i in members if i.substitute_for]
+        total = sum(i.weight for i in canonical)
         if total <= 0:
             continue
+        weight_of = {i.id: i.weight for i in canonical}
         for nation in nations:
-            here = sum(i.weight for i in members if nation in indicator_coverage(i, registry))
+            if theme in gaps.get(nation, []):
+                continue
+            covered = {i.id for i in canonical if nation in indicator_coverage(i, registry)}
+            here = sum(weight_of[i] for i in covered)
+            replaced: set[str] = set()
+            for sub_ in substitutes:
+                if nation not in indicator_coverage(sub_, registry):
+                    continue
+                targets = [t for t in sub_.substitute_for if t in weight_of and t not in covered]
+                here += min(sub_.weight, sum(weight_of[t] for t in targets))
+                replaced.update(targets)
             if here / total < MIN_THEME_COVERAGE:
-                missing = [i.id for i in members if nation not in indicator_coverage(i, registry)]
+                missing = [i.id for i in canonical if i.id not in covered and i.id not in replaced]
                 problems.append(
                     f"{theme} keeps {here / total:.0%} of its weight in {NATION_NAMES[nation]} "
                     f"(< {MIN_THEME_COVERAGE:.0%}); not covered: {missing}"
@@ -503,6 +552,20 @@ class LevelSpec(_Strict):
     regex: str  # anchored, starting with the nation letter, e.g. ^E01\d{6}$
     official: str  # what the publisher calls it (LSOA, Data Zone, Super Data Zone...)
     count: int | None = None  # expected number of areas, checked by ``lix validate geo``
+    label: str  # what the interface calls one, in English ("data zone")
+    labels: str  # and several ("data zones"); translations live in config/i18n/*.yaml
+
+
+class GeoSources(_Strict):
+    """The registry slugs a nation's backbone, point joins and map tiles read."""
+
+    low_boundaries: str  # polygons of the low level (LSOA, Data Zone...)
+    mid_boundaries: str  # polygons of the mid level (MSOA, Intermediate Zone...)
+    centroids: str  # population-weighted centroids of the low level
+    oa_lookup: str  # output area → low → mid lookup
+    population: str  # mid-year population estimates at the low level
+    code_column: str | None = None  # the boundaries' code attribute, when not *CD
+    extra: list[str] = Field(default_factory=list)  # other files the builder reads
 
 
 class NationSpec(_Strict):
@@ -519,6 +582,10 @@ class NationSpec(_Strict):
     ruc_map: dict[str, RucClass]  # the nation's urban/rural codes → urban | town | rural
     pseudo_region: bool = False  # NSPL has no real regions here; the nation is its region
     demo_upper: list[str] = Field(default_factory=list)  # upper-tier areas in the demo cut
+    geo: GeoSources
+    # Themes the nation's open data cannot cover: shown as "limited data" and left out
+    # of its overall score instead of failing the coverage gate
+    theme_gaps: list[ScoredTheme] = Field(default_factory=list)
 
 
 class CountrySpec(_Strict):
@@ -537,11 +604,43 @@ class NationsConfig(_Strict):
     nations: dict[str, NationSpec]
 
 
+# The API's level names → the tiers of nations.yaml
+LEVEL_KEYS = {"lsoa": "low", "msoa": "mid", "lad": "upper"}
+
+
+def geo_slugs(nation: NationSpec) -> list[str]:
+    """Every registry slug a nation's ``geo`` block names, in order."""
+    geo = nation.geo
+    slugs = [geo.low_boundaries, geo.mid_boundaries, geo.centroids, geo.oa_lookup, geo.population]
+    return list(dict.fromkeys(slugs + geo.extra))
+
+
+def backbone_slugs(nations: tuple[str, ...] | None = None) -> list[str]:
+    """The geography sources of ``nations`` (default: every configured one), unique."""
+    cfg = load_nations().nations
+    out: list[str] = []
+    for code in nations or tuple(cfg):
+        out.extend(s for s in geo_slugs(cfg[code]) if s not in out)
+    return out
+
+
+def boundary_slugs(level: str = "low", nations: tuple[str, ...] | None = None) -> list[str]:
+    """The polygon sources of one tier ("low" or "mid") across ``nations``, unique."""
+    cfg = load_nations().nations
+    attr = {"low": "low_boundaries", "mid": "mid_boundaries"}[level]
+    out: list[str] = []
+    for code in nations or tuple(cfg):
+        slug = getattr(cfg[code].geo, attr)
+        if slug not in out:
+            out.append(slug)
+    return out
+
+
 # ---------------------------------------------------------------------------------------
 # Data-label catalogues (config/i18n/<locale>.yaml)
 # ---------------------------------------------------------------------------------------
 
-CATALOGUE_SECTIONS = ("themes", "presets", "units", "flags", "indicators")
+CATALOGUE_SECTIONS = ("themes", "presets", "units", "flags", "indicators", "levels")
 
 
 def load_label_catalogues() -> dict[str, dict]:
@@ -559,10 +658,19 @@ def load_label_catalogues() -> dict[str, dict]:
 
 
 def catalogue_gaps(
-    catalogue: IndicatorCatalogue, weights: "WeightsConfig", labels: dict
+    catalogue: IndicatorCatalogue,
+    weights: "WeightsConfig",
+    labels: dict,
+    nations: dict[str, NationSpec] | None = None,
 ) -> list[str]:
-    """Ids a label catalogue lacks (reviewed catalogues must have none)."""
+    """Ids a label catalogue lacks (reviewed catalogues must have none); with ``nations``,
+    the level words of each nation too (``levels.S.low: {one, other}``)."""
     gaps = []
+    for code, nation in (nations or {}).items():
+        for level in ("low", "mid", "upper"):
+            entry = ((labels.get("levels") or {}).get(code) or {}).get(level) or {}
+            if not (entry.get("one") and entry.get("other")):
+                gaps.append(f"levels.{code}.{level}")
     for theme in catalogue.themes:
         if theme not in (labels.get("themes") or {}):
             gaps.append(f"themes.{theme}")
@@ -583,6 +691,7 @@ def catalogue_gaps(
 def load_nations() -> NationsConfig:
     """Load and validate config/nations.yaml (cached: it is static for a process)."""
     cfg = NationsConfig.model_validate(get_config("nations"))
+    registry = load_registry()
     problems = []
     for code, nation in cfg.nations.items():
         if not (len(code) == 1 and code.isupper()):
@@ -595,6 +704,9 @@ def load_nations() -> NationsConfig:
         for level, spec in nation.levels.items():
             if not (spec.regex.startswith(f"^{code}") and spec.regex.endswith("$")):
                 problems.append(f"{code}.{level}: regex {spec.regex!r} must be ^{code}...$")
+        unknown = [slug for slug in geo_slugs(nation) if slug not in registry]
+        if unknown:
+            problems.append(f"{code}: geo names sources missing from the registry: {unknown}")
     if problems:
         raise ValueError("Invalid config/nations.yaml: " + "; ".join(problems))
     return cfg
