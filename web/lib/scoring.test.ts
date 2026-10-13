@@ -17,18 +17,29 @@ describe("golden cases match the Python scorer", () => {
   const norms = Object.fromEntries(
     golden.indicators.map((i: { id: string }) => [i.id, toArray(golden.normalised[`n__${i.id}`])]),
   );
-  const indicators = golden.indicators.map((i: { id: string; theme: string; weight: number }) => ({
-    id: i.id,
-    theme: i.theme,
-    weight: i.weight,
-  }));
+  const indicators = golden.indicators.map(
+    (i: { id: string; theme: string; weight: number; coverage?: string[] }) => ({
+      id: i.id,
+      theme: i.theme,
+      weight: i.weight,
+      coverage: i.coverage,
+    }),
+  );
 
   // The Python side scores with group="nation", so every percentile also comes within nation
   const groups: string[] = golden.groups.nation;
 
   for (const [name, c] of Object.entries(golden.cases) as [string, any][]) {
     it(name, () => {
-      const r = scoreLsoas(norms, indicators, c.themes, c.indicators, MIN_THEME_COVERAGE, groups);
+      const r = scoreLsoas(
+        norms,
+        indicators,
+        c.themes,
+        c.indicators,
+        MIN_THEME_COVERAGE,
+        groups,
+        golden.theme_gaps,
+      );
       const expected = golden.expected[name];
       for (const [col, values] of Object.entries(expected) as [string, (number | null)[]][]) {
         let got: Float64Array | undefined;

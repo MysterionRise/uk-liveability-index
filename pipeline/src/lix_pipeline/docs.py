@@ -31,6 +31,8 @@ def _link(spec: DatasetSpec) -> str:
     url = (
         spec.landing_page or getattr(spec.access, "url", None) or getattr(spec.access, "page", None)
     )
+    if url is None and spec.access.type == "curated":
+        url = f"../{spec.access.path}"  # the list lives in the repository
     return f"[{_cell(spec.title)}]({url})" if url else _cell(spec.title)
 
 

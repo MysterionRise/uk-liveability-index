@@ -8,18 +8,29 @@ import { usePanel } from "@/components/PanelContext";
 import { searchPlaces } from "@/lib/api";
 import type { Place } from "@/lib/contracts.gen";
 import { useCoverageName } from "@/lib/copy";
+import { nationOf, useLevelWords } from "@/lib/levels";
 
-const KINDS = ["postcode", "place", "lsoa", "msoa", "lad", "region", "nation"] as const;
+// Kinds with a word of their own; an area tier takes its nation's word (lib/levels)
+const KINDS = ["postcode", "place", "region", "nation"] as const;
+const TIERS = ["lsoa", "msoa", "lad"];
+
+function capitalise(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
 
 /** Postcode or place search: opens an area's profile without going through the chat. */
 export function SearchBox() {
   const t = useTranslations("Search");
   const coverage = useCoverageName();
+  const level = useLevelWords();
   const { update } = useLiveability();
   const { setTab } = usePanel();
   const [query, setQuery] = useState("");
   // Results remember the query they answer, so Enter never picks a stale one
-  const [found, setFound] = useState<{ query: string; places: Place[] }>({ query: "", places: [] });
+  const [found, setFound] = useState<{ query: string; places: Place[] }>({
+    query: "",
+    places: [],
+  });
   const results = found.query === query.trim() ? found.places : [];
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
@@ -48,12 +59,12 @@ export function SearchBox() {
     const box = place.bbox
       ? ([...place.bbox] as [number, number, number, number])
       : place.centre
-        ? ([place.centre.lon - 0.02, place.centre.lat - 0.012, place.centre.lon + 0.02, place.centre.lat + 0.012] as [
-            number,
-            number,
-            number,
-            number,
-          ])
+        ? ([
+            place.centre.lon - 0.02,
+            place.centre.lat - 0.012,
+            place.centre.lon + 0.02,
+            place.centre.lat + 0.012,
+          ] as [number, number, number, number])
         : null;
     update((s) => ({
       ...s,
@@ -61,7 +72,11 @@ export function SearchBox() {
         ...s.map,
         bbox: box ?? s.map.bbox,
         selected: place.lsoa21cd ?? s.map.selected,
-        highlighted: place.lsoa21cd ? [] : place.code ? [place.code] : s.map.highlighted,
+        highlighted: place.lsoa21cd
+          ? []
+          : place.code
+            ? [place.code]
+            : s.map.highlighted,
       },
     }));
     if (place.lsoa21cd) setTab("area");
@@ -79,7 +94,9 @@ export function SearchBox() {
         role="combobox"
         aria-expanded={open}
         aria-controls="search-results"
-        aria-activedescendant={open && results[active] ? `search-${active}` : undefined}
+        aria-activedescendant={
+          open && results[active] ? `search-${active}` : undefined
+        }
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -89,7 +106,8 @@ export function SearchBox() {
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         onKeyDown={(e) => {
           if (!open || !results.length) return;
-          if (e.key === "ArrowDown") setActive((a) => Math.min(a + 1, results.length - 1));
+          if (e.key === "ArrowDown")
+            setActive((a) => Math.min(a + 1, results.length - 1));
           else if (e.key === "ArrowUp") setActive((a) => Math.max(a - 1, 0));
           else if (e.key === "Enter") choose(results[active]);
           else if (e.key === "Escape") setOpen(false);
@@ -105,7 +123,9 @@ export function SearchBox() {
         >
           {results.length === 0 && (
             <li className="px-3 py-2 text-[var(--text-muted)]">
-              {found.query === query.trim() ? t("noMatches", { coverage }) : t("searching")}
+              {found.query === query.trim()
+                ? t("noMatches", { coverage })
+                : t("searching")}
             </li>
           )}
           {results.map((p, i) => (
@@ -123,14 +143,22 @@ export function SearchBox() {
             >
               <span className="shrink-0 font-medium">{p.name}</span>
               <span className="truncate text-xs text-[var(--text-muted)]">
-                {(KINDS as readonly string[]).includes(p.kind) ? t(`kinds.${p.kind as (typeof KINDS)[number]}`) : p.kind}
+                {TIERS.includes(p.kind)
+                  ? capitalise(level(nationOf(p.code ?? p.lsoa21cd), p.kind))
+                  : (KINDS as readonly string[]).includes(p.kind)
+                    ? t(`kinds.${p.kind as (typeof KINDS)[number]}`)
+                    : p.kind}
                 {p.detail ? ` · ${p.detail}` : ""}
               </span>
             </li>
           ))}
         </ul>
       )}
-      {error && <p className="absolute top-full mt-1 text-xs text-[var(--critical)]">{error}</p>}
+      {error && (
+        <p className="absolute top-full mt-1 text-xs text-[var(--critical)]">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

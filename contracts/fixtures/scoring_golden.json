@@ -6,7 +6,11 @@
    "weight": 1.5,
    "direction": "lower_better",
    "normalise": "rank",
-   "log1p": true
+   "log1p": true,
+   "coverage": [
+    "E",
+    "W"
+   ]
   },
   {
    "id": "theft",
@@ -15,7 +19,11 @@
    "direction": "lower_better",
    "normalise": "rank",
    "log1p": true,
-   "benchmark": "nation"
+   "benchmark": "nation",
+   "coverage": [
+    "E",
+    "W"
+   ]
   },
   {
    "id": "no2",
@@ -24,7 +32,11 @@
    "direction": "lower_better",
    "normalise": "threshold",
    "good": 10,
-   "bad": 30
+   "bad": 30,
+   "coverage": [
+    "E",
+    "W"
+   ]
   },
   {
    "id": "parks",
@@ -32,7 +44,10 @@
    "weight": 0.5,
    "direction": "higher_better",
    "normalise": "scale",
-   "scale_max": 1.0
+   "scale_max": 1.0,
+   "coverage": [
+    "E"
+   ]
   },
   {
    "id": "gp_m",
@@ -42,7 +57,10 @@
    "normalise": "threshold",
    "good": 1000,
    "bad": 8000,
-   "log1p": true
+   "log1p": true,
+   "coverage": [
+    "E"
+   ]
   }
  ],
  "raw": {
@@ -95,6 +113,11 @@
    "E",
    "W",
    "W"
+  ]
+ },
+ "theme_gaps": {
+  "W": [
+   "safety"
   ]
  },
  "normalised": {
@@ -174,16 +197,16 @@
     55.00000000000001,
     40.0,
     33.333333333333336,
-    60.0,
-    85.0
+    90.0,
+    100.0
    ],
    "theme_pct__environment": [
-    100.0,
+    80.0,
     40.0,
     20.0,
     0.0,
     60.00000000000001,
-    80.0
+    100.0
    ],
    "theme_pct_nation__environment": [
     100.0,
@@ -196,7 +219,7 @@
    "theme_coverage__environment": [
     1.0,
     1.0,
-    0.6666666666666666,
+    1.0,
     1.0,
     1.0,
     1.0
@@ -204,82 +227,82 @@
    "theme__health": [
     100.0,
     80.50906967242449,
-    0.0,
+    null,
     100.0,
     null,
-    47.17774079876894
+    null
    ],
    "theme_pct__health": [
-    87.5,
-    50.0,
+    75.0,
     0.0,
-    87.5,
     null,
-    25.0
+    75.0,
+    null,
+    null
    ],
    "theme_pct_nation__health": [
     75.0,
     0.0,
-    0.0,
+    null,
     75.0,
     null,
-    100.0
+    null
    ],
    "theme_coverage__health": [
     1.0,
     1.0,
-    1.0,
+    0.0,
     1.0,
     0.0,
-    1.0
+    0.0
    ],
    "theme__safety": [
     45.0,
     75.0,
     null,
     0.0,
-    50.0,
-    100.0
+    null,
+    null
    ],
    "theme_pct__safety": [
-    25.0,
-    75.0,
+    50.0,
+    100.0,
     null,
     0.0,
-    50.0,
-    100.0
+    null,
+    null
    ],
    "theme_pct_nation__safety": [
     50.0,
     100.0,
     null,
     0.0,
-    0.0,
-    100.0
+    null,
+    null
    ],
    "theme_coverage__safety": [
     1.0,
     1.0,
-    0.4,
+    0.0,
     1.0,
-    0.6000000000000001,
-    1.0
+    0.0,
+    0.0
    ],
    "overall": [
     80.55555555555556,
     70.16968989080816,
-    20.0,
+    40.0,
     44.44444444444445,
-    55.0,
-    77.3925802662563
+    90.0,
+    100.0
    ],
    "overall_pct": [
-    100.0,
     60.00000000000001,
+    40.0,
     0.0,
     20.0,
-    40.0,
-    80.0
+    80.0,
+    100.0
    ],
    "overall_pct_nation": [
     100.0,
@@ -292,9 +315,9 @@
    "coverage": [
     1.0,
     1.0,
-    0.6666666666666666,
     1.0,
-    0.6666666666666666,
+    1.0,
+    1.0,
     1.0
    ]
   },
@@ -304,16 +327,16 @@
     46.25000000000001,
     40.0,
     50.0,
-    45.0,
-    77.5
+    90.0,
+    100.0
    ],
    "theme_pct__environment": [
-    100.0,
-    40.0,
-    0.0,
-    60.00000000000001,
+    80.0,
     20.0,
-    80.0
+    0.0,
+    40.0,
+    60.00000000000001,
+    100.0
    ],
    "theme_pct_nation__environment": [
     100.0,
@@ -326,7 +349,7 @@
    "theme_coverage__environment": [
     1.0,
     1.0,
-    0.5,
+    1.0,
     1.0,
     1.0,
     1.0
@@ -334,81 +357,81 @@
    "theme__health": [
     100.0,
     80.50906967242449,
-    0.0,
+    null,
     100.0,
     null,
-    47.17774079876894
+    null
    ],
    "theme_pct__health": [
-    87.5,
-    50.0,
+    75.0,
     0.0,
-    87.5,
     null,
-    25.0
+    75.0,
+    null,
+    null
    ],
    "theme_pct_nation__health": [
     75.0,
     0.0,
-    0.0,
+    null,
     75.0,
     null,
-    100.0
+    null
    ],
    "theme_coverage__health": [
     1.0,
     1.0,
-    1.0,
+    0.0,
     1.0,
     0.0,
-    1.0
+    0.0
    ],
    "theme__safety": [
     45.0,
     75.0,
     null,
     0.0,
-    50.0,
-    100.0
+    null,
+    null
    ],
    "theme_pct__safety": [
-    25.0,
-    75.0,
+    50.0,
+    100.0,
     null,
     0.0,
-    50.0,
-    100.0
+    null,
+    null
    ],
    "theme_pct_nation__safety": [
     50.0,
     100.0,
     null,
     0.0,
-    0.0,
-    100.0
+    null,
+    null
    ],
    "theme_coverage__safety": [
     1.0,
     1.0,
-    0.4,
+    0.0,
     1.0,
-    0.6000000000000001,
-    1.0
+    0.0,
+    0.0
    ],
    "overall": [
     70.625,
     64.90738370905306,
-    30.0,
+    40.0,
     31.25,
-    47.857142857142854,
-    84.95971759984612
+    90.0,
+    100.0
    ],
    "overall_pct": [
-    80.0,
     60.00000000000001,
-    0.0,
-    20.0,
     40.0,
+    20.0,
+    0.0,
+    80.0,
     100.0
    ],
    "overall_pct_nation": [
@@ -422,9 +445,9 @@
    "coverage": [
     1.0,
     1.0,
-    0.5,
     1.0,
-    0.875,
+    1.0,
+    1.0,
     1.0
    ]
   },
@@ -434,16 +457,16 @@
     55.00000000000001,
     40.0,
     33.333333333333336,
-    60.0,
-    85.0
+    90.0,
+    100.0
    ],
    "theme_pct__environment": [
-    100.0,
+    80.0,
     40.0,
     20.0,
     0.0,
     60.00000000000001,
-    80.0
+    100.0
    ],
    "theme_pct_nation__environment": [
     100.0,
@@ -456,7 +479,7 @@
    "theme_coverage__environment": [
     1.0,
     1.0,
-    0.6666666666666666,
+    1.0,
     1.0,
     1.0,
     1.0
@@ -464,98 +487,98 @@
    "theme__health": [
     100.0,
     80.50906967242449,
-    0.0,
+    null,
     100.0,
     null,
-    47.17774079876894
+    null
    ],
    "theme_pct__health": [
-    87.5,
-    50.0,
+    75.0,
     0.0,
-    87.5,
     null,
-    25.0
+    75.0,
+    null,
+    null
    ],
    "theme_pct_nation__health": [
     75.0,
     0.0,
-    0.0,
+    null,
     75.0,
     null,
-    100.0
+    null
    ],
    "theme_coverage__health": [
     1.0,
     1.0,
-    1.0,
+    0.0,
     1.0,
     0.0,
-    1.0
+    0.0
    ],
    "theme__safety": [
     45.0,
     75.0,
     null,
     0.0,
-    50.0,
-    100.0
+    null,
+    null
    ],
    "theme_pct__safety": [
-    25.0,
-    75.0,
+    50.0,
+    100.0,
     null,
     0.0,
-    50.0,
-    100.0
+    null,
+    null
    ],
    "theme_pct_nation__safety": [
     50.0,
     100.0,
     null,
     0.0,
-    0.0,
-    100.0
+    null,
+    null
    ],
    "theme_coverage__safety": [
     1.0,
     1.0,
-    0.4,
+    0.0,
     1.0,
-    0.6000000000000001,
-    1.0
+    0.0,
+    0.0
    ],
    "overall": [
     45.0,
     75.0,
     null,
     0.0,
-    50.0,
-    100.0
+    null,
+    null
    ],
    "overall_pct": [
-    25.0,
-    75.0,
+    50.0,
+    100.0,
     null,
     0.0,
-    50.0,
-    100.0
+    null,
+    null
    ],
    "overall_pct_nation": [
     50.0,
     100.0,
     null,
     0.0,
-    0.0,
-    100.0
+    null,
+    null
    ],
    "coverage": [
     1.0,
     1.0,
     0.0,
     1.0,
-    1.0,
-    1.0
+    0.0,
+    0.0
    ]
   }
  }

@@ -15,7 +15,7 @@ import requests
 
 from lix_core.config import DatasetSpec, HttpAccess, load_registry
 from lix_core.log import setup_logging
-from lix_core.paths import data_dir
+from lix_core.paths import data_dir, get_project_root
 from lix_pipeline.fetch import arcgis, ckan, govuk, html, nomis, overture, wcs, wfs
 from lix_pipeline.fetch.http import _read_meta, _write_meta, download, download_set
 from lix_pipeline.fetch.lock import read_lock, update_entry
@@ -115,9 +115,48 @@ def resolve(slug: str, spec: DatasetSpec, session: requests.Session) -> dict:
         resolved = wcs.resolve_coverage(access, session)
     elif access.type == "wfs":
         resolved = wfs.resolve_layer(access, session)
+    elif access.type == "curated":
+        path = _curated_path(access.path)
+        # The file's own checksum is its version, so an edited list is a new edition
+        resolved = {"url": None, "version": _sha256(path)[:16], "path": access.path}
     else:  # manual
         resolved = {"url": None, "version": None, "instructions": access.instructions}
     return {**resolved, "resolved_at": _now()}
+
+
+def _curated_path(path: str) -> Path:
+    """A curated list's file: ``path`` is relative to the project root (absolute in tests)."""
+    file = Path(path)
+    if not file.is_absolute():
+        file = get_project_root() / file
+    if not file.is_file():
+        raise FileNotFoundError(f"Curated list {path} is missing")
+    return file
+
+
+def _fetch_curated(slug: str, spec: DatasetSpec) -> dict:
+    """Copy a curated list under data/raw/<slug>/ like a download, with its checksum."""
+    import shutil
+
+    source = _curated_path(spec.access.path)
+    dest_dir = data_dir("raw") / slug
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest = dest_dir / f"{slug}.{spec.format}"
+    shutil.copyfile(source, dest)
+    sha = _sha256(dest)
+    _write_meta(
+        dest_dir,
+        {
+            "slug": slug,
+            "url": None,
+            "version": sha[:16],
+            "downloaded_at": _now(),
+            "bytes": dest.stat().st_size,
+            "sha256": sha,
+            "completed": True,
+        },
+    )
+    return {"sha256": sha, "bytes": dest.stat().st_size, "version": sha[:16], "fetched_at": _now()}
 
 
 def resolve_and_lock(slug: str, spec: DatasetSpec, session: requests.Session) -> dict:
@@ -207,6 +246,13 @@ def fetch(
         fetched = _fetch_manual(slug, spec)
         changed = entry.get("fetched", {}).get("files") != fetched["files"]
         update_entry(slug, "fetched", fetched)
+        return {**fetched, "changed": changed}
+    if spec.access.type == "curated":
+        resolve_and_lock(slug, spec, session)
+        fetched = _fetch_curated(slug, spec)
+        changed = entry.get("fetched", {}).get("sha256") != fetched["sha256"]
+        update_entry(slug, "fetched", fetched)
+        logger.info(f"[{slug}] Copied the curated list ({fetched['bytes']:,} bytes)")
         return {**fetched, "changed": changed}
 
     resolved = entry.get("resolved") or {}
@@ -369,9 +415,11 @@ def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dic
     except Exception as e:  # report every failure, keep checking the rest
         return done("fail", f"resolve failed: {e}")
     out["version"] = resolved.get("version")
+    new_version = bool(locked) and locked.get("version") != resolved["version"]
+    if spec.access.type == "curated":
+        return done("ok", "curated list" + (" (edited)" if new_version else ""), new_version)
     if resolved["url"] is None:
         return done("ok", "manual download")
-    new_version = bool(locked) and locked.get("version") != resolved["version"]
 
     plain = spec.access.type in PLAIN_FILE_TYPES and not getattr(spec.access, "tiles", None)
     validators = {k: fetched.get(k) for k in ("etag", "last_modified")} if plain else None

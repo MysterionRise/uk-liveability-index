@@ -10,8 +10,15 @@ import { UseAgentUpdate, useAgent } from "@copilotkit/react-core/v2";
 import { useLocale, useTranslations } from "next-intl";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import { type Manifest, type ScoreData, loadManifest, loadScores, scoredIndicators } from "@/lib/data";
-import { type ScoreResult, aggregate, percentileRank, percentileWithin, scoreLsoas } from "@/lib/scoring";
+import { type Manifest, type ScoreData, loadManifest, loadScores, scoredIndicators, themeGaps } from "@/lib/data";
+import {
+  MIN_THEME_COVERAGE,
+  type ScoreResult,
+  aggregate,
+  percentileRank,
+  percentileWithin,
+  scoreLsoas,
+} from "@/lib/scoring";
 import type { LiveabilityState as WireState } from "@/lib/contracts.gen";
 import { DEFAULT_STATE, type LiveabilityState, effectiveWeights, normaliseState } from "@/lib/state";
 import { labelsFor } from "@/lib/labels";
@@ -140,7 +147,17 @@ export function useScores(state: LiveabilityState): LayerValues | null {
   const result = useMemo(() => {
     if (!manifest || !scores || !weights) return null;
     performance.mark("lix-score-start");
-    const r = scoreLsoas(scores.indicators, scoredIndicators(manifest), weights.themes, weights.indicators);
+    // Each area's nation says which indicators apply to it and which themes it cannot
+    // have, so a Scottish area is scored from what Scotland publishes (lix_core.scoring)
+    const r = scoreLsoas(
+      scores.indicators,
+      scoredIndicators(manifest),
+      weights.themes,
+      weights.indicators,
+      MIN_THEME_COVERAGE,
+      scores.nation,
+      themeGaps(manifest),
+    );
     performance.measure("lix-score", "lix-score-start");
     return r;
   }, [manifest, scores, weights]);

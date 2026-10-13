@@ -23,7 +23,7 @@ mean of theme scores. Both are 0–100 scores; percentiles ("better than N% of
 England's neighbourhoods") are reported alongside, not instead.
 """
 
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 
 import polars as pl
 
@@ -86,23 +86,41 @@ def weighted_score(
     df: pl.DataFrame,
     weights: Mapping[str, float],
     min_coverage: float = MIN_THEME_COVERAGE,
+    applicable: Mapping[str, pl.Series] | None = None,
 ) -> tuple[pl.Series, pl.Series]:
     """Weighted mean of 0–100 columns, ignoring nulls; returns (score, coverage).
 
     ``score`` is null where the available weight share is below ``min_coverage``.
-    Zero-weight columns are ignored entirely.
+    Zero-weight columns are ignored entirely. ``applicable`` gives, per column, which
+    rows it applies to (a nation's sources): the row's total weight counts only those
+    columns, so an area is not marked thin for indicators its nation cannot have. A row
+    with no applicable weight scores null with coverage 0.
     """
     active = {c: w for c, w in weights.items() if w > 0}
     if not active:
         raise ValueError("At least one weight must be positive")
-    total = sum(active.values())
-    num = pl.sum_horizontal(pl.col(c).fill_null(0) * w for c, w in active.items())
-    avail = pl.sum_horizontal(
-        pl.col(c).is_not_null().cast(pl.Float64) * w for c, w in active.items()
+    masks = applicable or {}
+    frame = df.with_columns(
+        [
+            pl.Series(f"__applies_{c}", masks[c])
+            if c in masks
+            else pl.lit(True).alias(f"__applies_{c}")
+            for c in active
+        ]
     )
-    out = df.select(
-        pl.when(avail / total >= min_coverage).then(num / avail).alias("score"),
-        (avail / total).alias("coverage"),
+
+    def applies(c: str) -> pl.Expr:
+        return pl.col(f"__applies_{c}").cast(pl.Float64)
+
+    total = pl.sum_horizontal(applies(c) * w for c, w in active.items())
+    num = pl.sum_horizontal(pl.col(c).fill_null(0) * applies(c) * w for c, w in active.items())
+    avail = pl.sum_horizontal(
+        pl.col(c).is_not_null().cast(pl.Float64) * applies(c) * w for c, w in active.items()
+    )
+    share = pl.when(total > 0).then(avail / total).otherwise(0.0)
+    out = frame.select(
+        pl.when((total > 0) & (share >= min_coverage)).then(num / avail).alias("score"),
+        share.alias("coverage"),
     )
     return out["score"], out["coverage"]
 
@@ -127,6 +145,9 @@ def score_lsoas(
     indicator_multipliers: Mapping[str, float] | None = None,
     min_coverage: float = MIN_THEME_COVERAGE,
     group: str | None = None,
+    applicable: Mapping[str, Collection[str]] | None = None,
+    theme_gaps: Mapping[str, Collection[str]] | None = None,
+    nation: str = "nation",
 ) -> pl.DataFrame:
     """Theme and overall scores from per-indicator 0–100 scores.
 
@@ -136,16 +157,47 @@ def score_lsoas(
     ``theme_coverage__{t}``; then ``overall``, ``overall_pct`` and ``coverage``.
     With ``group`` (a column of ``norms``, e.g. ``nation``), each percentile is also
     taken within the group: ``theme_pct_{group}__{t}`` and ``overall_pct_{group}``.
+
+    ``applicable`` (indicator id → the nations it is built for) makes each row's theme
+    total the weight its nation can have, read from the ``nation`` column, so a Scottish
+    area scores its safety from the indicators Scotland has rather than reading as thin;
+    a theme with no applicable weight is null and left out of the row's overall, and so is
+    a theme listed in ``theme_gaps`` (nation → themes the nation declares it cannot cover).
     """
     mult = indicator_multipliers or {}
     within = norms[group] if group else None
+    nations = norms[nation] if (applicable or theme_gaps) else None
+    if (applicable or theme_gaps) and nations is None:
+        raise ValueError(f"applicable/theme_gaps need the {nation!r} column")
     columns: dict[str, pl.Series] = {}
+    theme_masks: dict[str, pl.Series] = {}
     themes = sorted({theme for _, theme, _ in indicators})
     for theme in themes:
         weights = {f"n__{iid}": w * mult.get(iid, 1.0) for iid, t, w in indicators if t == theme}
         if not any(w > 0 for w in weights.values()):
             continue
-        score, coverage = weighted_score(norms, weights, min_coverage)
+        masks = None
+        if applicable:
+            masks = {
+                f"n__{iid}": nations.is_in(list(applicable[iid]))
+                for iid, t, _ in indicators
+                if t == theme and iid in applicable
+            }
+        score, coverage = weighted_score(norms, weights, min_coverage, masks)
+        gap = None
+        if theme_gaps:
+            gapped = [n for n, ts in theme_gaps.items() if theme in ts]
+            if gapped:
+                gap = nations.is_in(gapped)
+                score = pl.DataFrame({"s": score, "g": gap}).select(
+                    pl.when(pl.col("g")).then(None).otherwise(pl.col("s")).alias("s")
+                )["s"]
+                coverage = pl.DataFrame({"c": coverage, "g": gap}).select(
+                    pl.when(pl.col("g")).then(0.0).otherwise(pl.col("c")).alias("c")
+                )["c"]
+        # The theme counts towards a row's overall only where it can exist
+        has_weight = coverage > 0
+        theme_masks[f"theme__{theme}"] = has_weight if gap is None else (has_weight & ~gap)
         columns[f"theme__{theme}"] = score
         columns[f"theme_pct__{theme}"] = percentile_of(score)
         if group:
@@ -156,6 +208,7 @@ def score_lsoas(
         themes_df,
         {f"theme__{t}": theme_weights.get(t, 0.0) for t in themes if f"theme__{t}" in columns},
         min_coverage,
+        theme_masks if (applicable or theme_gaps) else None,
     )
     out = themes_df.with_columns(overall=overall, overall_pct=percentile_of(overall))
     if group:

@@ -180,6 +180,14 @@ class OvertureAccess(_Strict):
     release: str | None = None
 
 
+class CuratedAccess(_Strict):
+    """A list kept in the repository (config/data/<slug>.csv) because no publisher offers
+    it as one file: every row names its source and when it was checked."""
+
+    type: Literal["curated"]
+    path: str  # relative to the project root
+
+
 class ManualAccess(_Strict):
     """A file the user downloads by hand (e.g. behind a free login) into data/manual/{slug}/."""
 
@@ -198,7 +206,8 @@ Access = Annotated[
     | OvertureAccess
     | WcsAccess
     | WfsAccess
-    | ManualAccess,
+    | ManualAccess
+    | CuratedAccess,
     Field(discriminator="type"),
 ]
 

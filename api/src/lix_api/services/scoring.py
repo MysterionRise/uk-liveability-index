@@ -92,6 +92,14 @@ def scores_for(store: Store, themes: ThemeWeights, multipliers: dict[str, float]
         if len(cache) >= MAX_CACHED:
             cache.pop(next(iter(cache)))
         scored = [(i.id, i.theme, i.weight) for i in store.scored]
-        out = score_lsoas(store.features, scored, themes, multipliers, group="nation")
+        out = score_lsoas(
+            store.features,
+            scored,
+            themes,
+            multipliers,
+            group="nation",
+            applicable=store.applicable,
+            theme_gaps=store.theme_gaps,
+        )
         cache[key] = pl.concat([store.features.select("lsoa21cd"), out], how="horizontal")
     return cache[key]

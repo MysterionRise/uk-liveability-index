@@ -15,18 +15,22 @@ from lix_core.scoring import normalise, score_lsoas
 
 GOLDEN = get_project_root() / "contracts" / "fixtures" / "scoring_golden.json"
 
+# ``coverage``: the nations an indicator is built for; a row's theme total counts only the
+# indicators its nation has (parks and gp_m are England-only here)
 INDICATORS = [
     {"id": "crime", "theme": "safety", "weight": 1.5, "direction": "lower_better",
-     "normalise": "rank", "log1p": True},
+     "normalise": "rank", "log1p": True, "coverage": ["E", "W"]},
     {"id": "theft", "theme": "safety", "weight": 1.0, "direction": "lower_better",
-     "normalise": "rank", "log1p": True, "benchmark": "nation"},
+     "normalise": "rank", "log1p": True, "benchmark": "nation", "coverage": ["E", "W"]},
     {"id": "no2", "theme": "environment", "weight": 1.0, "direction": "lower_better",
-     "normalise": "threshold", "good": 10, "bad": 30},
+     "normalise": "threshold", "good": 10, "bad": 30, "coverage": ["E", "W"]},
     {"id": "parks", "theme": "environment", "weight": 0.5, "direction": "higher_better",
-     "normalise": "scale", "scale_max": 1.0},
+     "normalise": "scale", "scale_max": 1.0, "coverage": ["E"]},
     {"id": "gp_m", "theme": "health", "weight": 1.0, "direction": "lower_better",
-     "normalise": "threshold", "good": 1000, "bad": 8000, "log1p": True},
+     "normalise": "threshold", "good": 1000, "bad": 8000, "log1p": True, "coverage": ["E"]},
 ]  # fmt: skip
+# Themes a nation declares it cannot cover: null there and left out of its overall
+THEME_GAPS = {"W": ["safety"]}
 RAW = {
     "crime": [12.0, 3.0, None, 40.0, 7.5, 0.0],
     "theft": [5.0, 5.0, 2.0, 30.0, None, 1.0],
@@ -64,12 +68,15 @@ def compute() -> dict:
             case["themes"],
             case["indicators"],
             group="nation",
+            applicable={i["id"]: i["coverage"] for i in INDICATORS},
+            theme_gaps=THEME_GAPS,
         )
         expected[name] = {c: out[c].to_list() for c in out.columns}
     return {
         "indicators": INDICATORS,
         "raw": RAW,
         "groups": GROUPS,
+        "theme_gaps": THEME_GAPS,
         "normalised": {c: norms[c].to_list() for c in norms.columns},
         "cases": CASES,
         "expected": expected,

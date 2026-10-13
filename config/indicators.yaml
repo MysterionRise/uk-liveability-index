@@ -314,6 +314,33 @@ indicators:
     role: diagnostic
 
   # ----------------------------------------------------------------------- health
+  - id: hospital_ae_distance
+    theme: health
+    label: Distance to nearest A&E
+    description: Average straight-line distance from homes to the nearest consultant-led emergency department.
+    unit: metres
+    direction: lower_better
+    sources: [ae_sites, nspl]
+    builder: common:nearest
+    params: {slug: ae_sites, column: type, values: [type1]}
+    normalise: threshold
+    good: 5000
+    bad: 40000
+    log1p: true
+    weight: 0.75
+    caveats: Scotland's departments come from Public Health Scotland's list; England's and Wales's from OpenStreetMap hospitals tagged with an emergency department, which may include some minor injury units.
+
+  - id: hospital_distance
+    theme: health
+    label: Distance to nearest urgent care
+    description: Average straight-line distance from homes to the nearest emergency department or minor injury unit.
+    unit: metres
+    direction: lower_better
+    sources: [ae_sites, nspl]
+    builder: common:nearest
+    params: {slug: ae_sites, column: type, values: [type1, other]}
+    role: context
+
   - id: gp_distance
     theme: health
     label: Distance to nearest GP practice

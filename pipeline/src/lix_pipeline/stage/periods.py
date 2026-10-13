@@ -160,6 +160,21 @@ def _pcm(slug: str, lock_entry: dict) -> Period | None:
     return year(int(m.group(1))) if m else None
 
 
+def _curated(path: str) -> Period | None:
+    """A curated list is as current as its rows' ``checked_on`` dates (the latest)."""
+    import csv
+
+    from lix_core.paths import get_project_root
+
+    file = Path(path) if Path(path).is_absolute() else get_project_root() / path
+    if not file.is_file():
+        return None
+    with open(file, encoding="utf-8", newline="") as f:
+        dates = [row.get("checked_on") for row in csv.DictReader(f) if row.get("checked_on")]
+    parsed = [d for d in (find_date(x) for x in dates) if d]
+    return day(max(parsed)) if parsed else None
+
+
 STAGED_EXTRACTORS = {
     "police_crime": _police,
     "price_paid": _price_paid,
@@ -187,6 +202,10 @@ def period_of(slug: str, spec: DatasetSpec, lock_entry: dict) -> Period | None:
             return found
     if spec.period:
         return text(spec.period)
+    if spec.access.type == "curated":
+        found = _curated(spec.access.path)
+        if found:
+            return found
 
     resolved = lock_entry.get("resolved") or {}
     fetched = lock_entry.get("fetched") or {}

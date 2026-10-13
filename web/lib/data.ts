@@ -29,11 +29,22 @@ export interface IndicatorMeta extends ScoredIndicator {
   coverage: string[];
 }
 
+export interface LevelMeta {
+  /** What the publisher calls the tier (LSOA, Data Zone 2022...) */
+  official: string;
+  count: number | null;
+  /** What the interface calls one of them, in English ("data zone") and several */
+  label: string;
+  labels: string;
+}
+
 export interface NationMeta {
   name: string;
   ctry_cd: string;
   bbox: [number, number, number, number];
-  levels: Record<string, { official: string; count: number | null }>;
+  levels: Record<string, LevelMeta>;
+  /** Themes the nation's open data cannot cover: shown as limited data, left out of its overall */
+  theme_gaps?: string[];
 }
 
 export interface Geography {
@@ -68,7 +79,17 @@ export interface Manifest {
   /** Interface languages with a data-label catalogue, and whether each is reviewed */
   languages: { code: string; status: "draft" | "reviewed" }[];
   /** Translated data labels by locale (config/i18n/*.yaml), English being the manifest itself */
-  i18n: Record<string, { themes?: unknown; indicators?: unknown; presets?: unknown; units?: unknown; flags?: unknown }>;
+  i18n: Record<
+    string,
+    {
+      themes?: unknown;
+      indicators?: unknown;
+      presets?: unknown;
+      units?: unknown;
+      flags?: unknown;
+      levels?: unknown;
+    }
+  >;
   scored_indicators: string[];
   indicators: IndicatorMeta[];
   themes: Record<string, { label: string; description: string }>;
@@ -145,7 +166,10 @@ export async function loadScores(manifest: Manifest): Promise<ScoreData> {
   const version = manifest.files?.["scores.parquet"]?.sha256?.slice(0, 16);
   const url = `${DATA_URL}/scores.parquet${version ? `?v=${version}` : ""}`;
   const file = await asyncBufferFromUrl({ url });
-  const rows = (await parquetReadObjects({ file })) as Record<string, unknown>[];
+  const rows = (await parquetReadObjects({ file })) as Record<
+    string,
+    unknown
+  >[];
   const n = rows.length;
   const indicators: Record<string, Float64Array> = {};
   const quality: Record<string, Uint8Array> = {};
@@ -191,7 +215,9 @@ export function coverageName(
   const geo = manifest?.geography;
   const uk = name ? name("uk") : "the UK";
   if (!geo) return uk;
-  const names = geo.active.map((c) => (name ? name(c) : (geo.nations[c]?.name ?? c)));
+  const names = geo.active.map((c) =>
+    name ? name(c) : (geo.nations[c]?.name ?? c),
+  );
   if (names.length === 0 || names.length >= 4) return uk;
   if (names.length === 1) return names[0];
   if (list) return list(names);
@@ -199,9 +225,13 @@ export function coverageName(
 }
 
 /** West, south, east, north around every nation in this build. */
-export function activeBbox(manifest: Manifest): [number, number, number, number] {
+export function activeBbox(
+  manifest: Manifest,
+): [number, number, number, number] {
   const geo = manifest.geography;
-  const boxes = geo.active.map((c) => geo.nations[c]?.bbox).filter((b): b is NationMeta["bbox"] => !!b);
+  const boxes = geo.active
+    .map((c) => geo.nations[c]?.bbox)
+    .filter((b): b is NationMeta["bbox"] => !!b);
   if (boxes.length === 0) return geo.country.bbox;
   return [
     Math.min(...boxes.map((b) => b[0])),
@@ -215,6 +245,16 @@ export function scoredIndicators(manifest: Manifest): ScoredIndicator[] {
   const byId = new Map(manifest.indicators.map((i) => [i.id, i]));
   return manifest.scored_indicators.map((id) => {
     const i = byId.get(id)!;
-    return { id, theme: i.theme, weight: i.weight };
+    return { id, theme: i.theme, weight: i.weight, coverage: i.coverage };
   });
+}
+
+/** Nation → the themes it declares it cannot cover (manifest geography). */
+export function themeGaps(manifest: Manifest): Record<string, string[]> {
+  return Object.fromEntries(
+    Object.entries(manifest.geography.nations).map(([code, n]) => [
+      code,
+      n.theme_gaps ?? [],
+    ]),
+  );
 }

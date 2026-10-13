@@ -282,3 +282,36 @@ def stage_cqc_locations() -> pl.LazyFrame:
         f"{df['care_home'].sum():,} care homes"
     )
     return df.lazy()
+
+
+def stage_ae_sites() -> pl.LazyFrame:
+    """Emergency departments and other urgent-care sites from the curated list
+    (config/data/ae_sites.csv): placed by their coordinates, or by postcode where the row
+    has none, and located to a small area."""
+    from lix_pipeline.geo.joins import points_to_lsoa
+    from lix_pipeline.stage.geo import lonlat_to_bng
+
+    raw = pl.read_csv(
+        data_dir("raw") / "ae_sites" / "ae_sites.csv", infer_schema_length=0, encoding="utf8-lossy"
+    )
+    df = raw.select(
+        pl.col("name"),
+        pl.col("nation"),
+        pl.col("type"),
+        pl.col("postcode"),
+        pl.col("lat").cast(pl.Float64, strict=False),
+        pl.col("lon").cast(pl.Float64, strict=False),
+        pl.col("source"),
+    )
+    has_xy = df["lat"].is_not_null() & df["lon"].is_not_null()
+    x, y = lonlat_to_bng(df["lon"].fill_null(0), df["lat"].fill_null(0))
+    placed = df.filter(has_xy).with_columns(
+        x=pl.Series(x.to_numpy()[has_xy.to_numpy()]), y=pl.Series(y.to_numpy()[has_xy.to_numpy()])
+    )
+    by_postcode = geocode_postcodes(df.filter(~has_xy)).drop("lsoa21cd")
+    df = pl.concat([placed, by_postcode], how="diagonal_relaxed")
+    df = points_to_lsoa(df).filter(in_scope("lsoa21cd"))
+    logger.info(
+        f"{df.height:,} emergency sites ({df.filter(pl.col('type') == 'type1').height:,} type 1)"
+    )
+    return df.lazy()

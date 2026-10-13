@@ -80,9 +80,6 @@
     "kinds": {
       "postcode": "Cod post",
       "place": "Lle",
-      "lsoa": "Ardal fach",
-      "msoa": "Cymdogaeth",
-      "lad": "Cyngor",
       "region": "Rhanbarth",
       "nation": "Cenedl"
     }
@@ -222,8 +219,8 @@
     "note": "Pellter mewn llinell syth. Ffynhonnell: {sources}."
   },
   "Ranked": {
-    "titleMsoa": "Y {count, number} cymdogaeth orau {where}",
-    "titleLsoa": "Y {count, number} ardal fach orau {where}",
+    "title": "Y {count, number} {tier} orau {where}",
+    "areas": "ardaloedd",
     "inPlace": "yn {place}",
     "inCoverage": "yn {coverage}",
     "subtitle": "{count, number} yn cyfateb · pwysoli: {preset}",
@@ -239,7 +236,7 @@
     "title": "Ochr yn ochr",
     "subtitle": "Pwysoli: {preset}",
     "overall": "Cyffredinol",
-    "note": "Mae print trwm yn nodi'r sgôr orau ym mhob rhes. Mae cymdogaethau ac awdurdodau lleol yn gyfartaleddau wedi'u pwysoli yn ôl poblogaeth."
+    "note": "Mae print trwm yn nodi'r sgôr orau ym mhob rhes. Mae ardaloedd mwy a chynghorau yn gyfartaleddau wedi'u pwysoli yn ôl poblogaeth."
   },
   "Explainer": {
     "title": "Pam mae {name} yn sgorio {score}",

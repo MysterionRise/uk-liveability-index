@@ -57,6 +57,8 @@ indicators:
   access_deprivation: {label: Mynediad at wasanaethau (SIMD), description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol)."}
   noise_exposure: {label: Cartrefi mewn sŵn trafnidiaeth neu ddiwydiant, description: "Cyfran y cartrefi lle mae'r sŵn a fapiwyd yn cyfartalu 60 dB Lden neu fwy (ffyrdd a rheilffyrdd yng Nghymru a Lloegr; pob ffynhonnell a fapiwyd yn yr Alban)."}
   rail_service: {label: Gwasanaeth rheilffordd gerllaw, description: "Mynediadau ac allanfeydd blynyddol gorsafoedd (ORR) o fewn 2km i gartrefi, wedi'u pwysoli yn ôl pellter, fel bod gorsaf brysur gerllaw yn cyfrif mwy nag arhosfan."}
+  hospital_ae_distance: {label: Pellter i'r adran achosion brys agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r adran achosion brys agosaf dan arweiniad ymgynghorydd."}
+  hospital_distance: {label: Pellter i ofal brys agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r adran achosion brys neu'r uned mân anafiadau agosaf."}
   leisure_facilities: {label: Cyfleusterau chwaraeon (Active Places), description: "Neuaddau chwaraeon, campfeydd, pyllau, stiwdios, cyrtiau a chaeau sy'n agored i'r cyhoedd o fewn 2km yng nghofrestr Active Places Sport England, wedi'u pwysoli yn ôl pellter."}
   crime_violence: {label: Troseddau treisgar a rhywiol, description: Troseddau treisgar a rhywiol a gofnodwyd fesul 1,000 o drigolion y flwyddyn (cyfartaledd 36 mis).}
   crime_burglary: {label: Byrgleriaeth, description: Byrgleriaethau a gofnodwyd fesul 1,000 o drigolion y flwyddyn.}

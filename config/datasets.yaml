@@ -1760,3 +1760,20 @@ osm_scotland:
   attribution: "© OpenStreetMap contributors, Open Database Licence (ODbL) 1.0."
   cadence: daily
   size_hint: 330MB
+
+# ------------------------------------------------------------ curated lists (#88)
+# Lists no publisher offers as one open file, kept in config/data with a source and a
+# check date on every row; the lockfile records their checksum like any download.
+
+ae_sites:
+  coverage: [E, W, S]
+  title: Emergency departments and urgent-care sites (curated list)
+  theme: health
+  access: {type: curated, path: config/data/ae_sites.csv}
+  format: csv
+  description: Consultant-led emergency departments (type 1) and other urgent-care sites, compiled from Public Health Scotland's site list and OpenStreetMap hospitals tagged with an emergency department in England and Wales; every row names its source and when it was checked.
+  licence: OGL-3.0
+  attribution: "Contains Public Health Scotland data licensed under the Open Government Licence v3.0 and OpenStreetMap data © OpenStreetMap contributors (ODbL 1.0)."
+  cadence: adhoc
+  size_hint: 40KB
+  notes: Rebuilt with `python -m lix_pipeline.curate.ae_sites` after an OSM or PHS refresh; the English and Welsh rows rest on OpenStreetMap's emergency tag until an official site list is open.

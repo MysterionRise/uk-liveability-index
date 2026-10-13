@@ -50,6 +50,23 @@ class Store:
         return {code: n["name"] for code, n in self.geography["nations"].items()}
 
     @cached_property
+    def applicable(self) -> dict[str, list[str]]:
+        """Scored indicator → the nations it is built for (the manifest's coverage)."""
+        scored = set(self.manifest["scored_indicators"])
+        return {
+            i["id"]: list(i.get("coverage") or [])
+            for i in self.manifest["indicators"]
+            if i["id"] in scored
+        }
+
+    @cached_property
+    def theme_gaps(self) -> dict[str, list[str]]:
+        """Nation → themes it declares it cannot cover (shown as limited data)."""
+        return {
+            code: list(n.get("theme_gaps") or []) for code, n in self.geography["nations"].items()
+        }
+
+    @cached_property
     def indicators(self) -> dict[str, IndicatorSpec]:
         # The manifest dumps the computed unit_code beside the fields; the strict model
         # recomputes it

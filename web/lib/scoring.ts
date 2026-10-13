@@ -12,6 +12,8 @@ export interface ScoredIndicator {
   id: string;
   theme: string;
   weight: number;
+  /** Nations the indicator is built for (manifest `coverage`); every nation when absent. */
+  coverage?: string[];
 }
 
 export interface ThemeResult {
@@ -56,30 +58,40 @@ export function percentileRank(values: Float64Array): Float64Array {
   return out;
 }
 
-/** Weighted mean of 0–100 columns over the ones present; null below minCoverage. */
+/**
+ * Weighted mean of 0–100 columns over the ones present; NaN below minCoverage. `masks`
+ * (one per column, optional) say which rows a column applies to (its nation has it), so
+ * the row's total weight counts only those columns, as lix_core.scoring does.
+ */
 export function weightedScore(
   columns: Float64Array[],
   weights: number[],
   minCoverage = MIN_THEME_COVERAGE,
+  masks?: (Uint8Array | undefined)[],
 ): { score: Float64Array; coverage: Float64Array } {
-  const active = columns.map((c, i) => [c, weights[i]] as const).filter(([, w]) => w > 0);
+  const active = columns
+    .map((c, i) => [c, weights[i], masks?.[i]] as const)
+    .filter(([, w]) => w > 0);
   if (active.length === 0) throw new Error("At least one weight must be positive");
   const n = active[0][0].length;
-  const total = active.reduce((s, [, w]) => s + w, 0);
   const score = new Float64Array(n);
   const coverage = new Float64Array(n);
   for (let i = 0; i < n; i++) {
     let num = 0;
     let avail = 0;
-    for (const [col, w] of active) {
+    let total = 0;
+    for (const [col, w, mask] of active) {
+      if (mask && !mask[i]) continue;
+      total += w;
       const v = col[i];
       if (!Number.isNaN(v)) {
         num += v * w;
         avail += w;
       }
     }
-    coverage[i] = avail / total;
-    score[i] = avail / total >= minCoverage ? num / avail : NaN;
+    const share = total > 0 ? avail / total : 0;
+    coverage[i] = share;
+    score[i] = total > 0 && share >= minCoverage ? num / avail : NaN;
   }
   return { score, coverage };
 }
@@ -87,7 +99,9 @@ export function weightedScore(
 /**
  * Theme and overall scores for every LSOA. With `groups` (one label per row, e.g. the
  * nation) each percentile is also taken within the group, as lix_core.scoring does with
- * `group=`.
+ * `group=`; the same labels say which indicators apply to a row (`coverage` on each
+ * indicator) and which themes a nation declares it cannot cover (`themeGaps`, nation →
+ * themes), so a theme counts in a row's overall only where it can exist.
  */
 export function scoreLsoas(
   norms: Record<string, Float64Array>,
@@ -96,9 +110,17 @@ export function scoreLsoas(
   multipliers: Record<string, number> = {},
   minCoverage = MIN_THEME_COVERAGE,
   groups?: string[],
+  themeGaps?: Record<string, string[]>,
 ): ScoreResult {
   const themeNames = [...new Set(indicators.map((i) => i.theme))].sort();
   const themes: Record<string, ThemeResult> = {};
+  const themeMasks: Record<string, Uint8Array | undefined> = {};
+  const n = groups?.length ?? Object.values(norms)[0]?.length ?? 0;
+  const maskOf = (allowed: string[] | undefined): Uint8Array | undefined => {
+    if (!groups || !allowed) return undefined;
+    const ok = new Set(allowed);
+    return Uint8Array.from(groups, (g) => (ok.has(g) ? 1 : 0));
+  };
   for (const theme of themeNames) {
     const members = indicators.filter((i) => i.theme === theme);
     const weights = members.map((i) => i.weight * (multipliers[i.id] ?? 1));
@@ -107,7 +129,23 @@ export function scoreLsoas(
       members.map((i) => norms[i.id]),
       weights,
       minCoverage,
+      members.map((i) => maskOf(i.coverage)),
     );
+    const gapped = groups
+      ? Uint8Array.from(groups, (g) => (themeGaps?.[g]?.includes(theme) ? 1 : 0))
+      : undefined;
+    if (gapped) {
+      for (let i = 0; i < n; i++) {
+        if (gapped[i]) {
+          score[i] = NaN;
+          coverage[i] = 0;
+        }
+      }
+    }
+    themeMasks[theme] =
+      groups && (themeGaps || members.some((i) => i.coverage))
+        ? Uint8Array.from(coverage, (c, i) => (c > 0 && !gapped?.[i] ? 1 : 0))
+        : undefined;
     themes[theme] = { score, percentile: percentileRank(score), coverage };
     if (groups) themes[theme].percentileWithin = percentileWithin(score, groups);
   }
@@ -116,6 +154,7 @@ export function scoreLsoas(
     present.map((t) => themes[t].score),
     present.map((t) => themeWeights[t] ?? 0),
     minCoverage,
+    present.map((t) => themeMasks[t]),
   );
   const result: ScoreResult = { themes, overall, overallPercentile: percentileRank(overall), coverage };
   if (groups) result.overallPercentileWithin = percentileWithin(overall, groups);

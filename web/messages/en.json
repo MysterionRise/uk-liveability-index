@@ -80,9 +80,6 @@
     "kinds": {
       "postcode": "Postcode",
       "place": "Place",
-      "lsoa": "Small area",
-      "msoa": "Neighbourhood",
-      "lad": "Council",
       "region": "Region",
       "nation": "Nation"
     }
@@ -222,8 +219,8 @@
     "note": "Straight-line distance. Source: {sources}."
   },
   "Ranked": {
-    "titleMsoa": "Top {count, number} neighbourhoods {where}",
-    "titleLsoa": "Top {count, number} small areas {where}",
+    "title": "Top {count, number} {tier} {where}",
+    "areas": "areas",
     "inPlace": "in {place}",
     "inCoverage": "in {coverage}",
     "subtitle": "{count, number} matched · weighting: {preset}",
@@ -239,7 +236,7 @@
     "title": "Side by side",
     "subtitle": "Weighting: {preset}",
     "overall": "Overall",
-    "note": "Bold marks the best score in each row. Neighbourhoods and local authorities are population-weighted averages."
+    "note": "Bold marks the best score in each row. Larger areas and councils are population-weighted averages."
   },
   "Explainer": {
     "title": "Why {name} scores {score}",

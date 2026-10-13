@@ -80,20 +80,34 @@ def build_features() -> pl.DataFrame:
         for i in catalogue.indicators
     )
     scored = [(i.id, i.theme, i.weight) for i in catalogue.scored()]
-    scores = score_lsoas(df, scored, preset.themes, preset.indicators, group="nation")
+    nation_rules = scoring_rules(catalogue)
+    scores = score_lsoas(
+        df, scored, preset.themes, preset.indicators, group="nation", **nation_rules
+    )
     df = pl.concat([df, scores], how="horizontal").with_columns(
         band(pl.col("overall_pct")).alias("band")
     )
-    df = df.with_columns(uncertainty_columns(df, scored, weights))
+    df = df.with_columns(uncertainty_columns(df, scored, weights, nation_rules))
     return df.sort("lsoa21cd")
 
 
-def uncertainty_columns(df: pl.DataFrame, scored, weights) -> list[pl.Series]:
-    """Per preset, the 5–95% range of each LSOA's England percentile over plausible
+def scoring_rules(catalogue) -> dict:
+    """What each nation can have: the scored indicators' coverage (``applicable``) and the
+    themes a nation declares it cannot cover (``theme_gaps``), for ``score_lsoas``."""
+    registry = load_registry()
+    cfg = load_nations().nations
+    return {
+        "applicable": {i.id: indicator_coverage(i, registry) for i in catalogue.scored()},
+        "theme_gaps": {n: list(cfg[n].theme_gaps) for n in active_nations()},
+    }
+
+
+def uncertainty_columns(df: pl.DataFrame, scored, weights, nation_rules=None) -> list[pl.Series]:
+    """Per preset, the 5–95% range of each LSOA's country percentile over plausible
     weightings (each theme weight nudged by about a quarter): ``pct_lo__``/``pct_hi__``."""
     out = []
     for name, preset in weights.presets.items():
-        themes = score_lsoas(df, scored, preset.themes, preset.indicators)
+        themes = score_lsoas(df, scored, preset.themes, preset.indicators, **(nation_rules or {}))
         theme_scores = {
             c.removeprefix("theme__"): themes[c].to_numpy().astype(float)
             for c in themes.columns
@@ -193,9 +207,15 @@ def geography(area_counts: dict[str, int]) -> dict:
             "ctry_cd": spec.ctry_cd,
             "bbox": list(spec.bbox),
             "levels": {
-                level: {"official": lv.official, "count": lv.count}
+                level: {
+                    "official": lv.official,
+                    "count": lv.count,
+                    "label": lv.label,
+                    "labels": lv.labels,
+                }
                 for level, lv in spec.levels.items()
             },
+            "theme_gaps": list(spec.theme_gaps),
         }
     return {
         "country": cfg.country.model_dump(),

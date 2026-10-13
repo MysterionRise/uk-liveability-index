@@ -16,6 +16,20 @@
       "version": "2026-07-27T13:06:11+00:00"
     }
   },
+  "ae_sites": {
+    "fetched": {
+      "bytes": 42481,
+      "fetched_at": "2026-10-13T11:39:58+00:00",
+      "sha256": "86b1636e9eb653f87d5d27549a7480e4da50c679b59782591e1f63cb24e35bf8",
+      "version": "86b1636e9eb653f8"
+    },
+    "resolved": {
+      "path": "config/data/ae_sites.csv",
+      "resolved_at": "2026-10-13T11:39:58+00:00",
+      "url": null,
+      "version": "86b1636e9eb653f8"
+    }
+  },
   "bods_gtfs": {
     "fetched": {
       "bytes": 1589742753,

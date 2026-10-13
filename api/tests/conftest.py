@@ -123,8 +123,10 @@ def build_serve_dir(path) -> None:
             "country": nations.country.model_dump(),
             "nations": {
                 code: {"name": n.name, "ctry_cd": n.ctry_cd, "bbox": list(n.bbox),
-                       "levels": {lv: {"official": s.official, "count": s.count}
-                                  for lv, s in n.levels.items()}}
+                       "levels": {lv: {"official": s.official, "count": s.count,
+                                       "label": s.label, "labels": s.labels}
+                                  for lv, s in n.levels.items()},
+                       "theme_gaps": list(n.theme_gaps)}
                 for code, n in nations.nations.items()
             },
             "active": ["E", "W"],  # Edinburgh rows arrive with the Scottish store (v0.4.0 phase 3),

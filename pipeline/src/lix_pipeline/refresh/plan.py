@@ -104,6 +104,8 @@ def fetch_steps(lock: dict, registry: dict, slugs: Iterable[str]) -> list[Step]:
         resolved, fetched = entry.get("resolved") or {}, entry.get("fetched") or {}
         if spec.access.type == "manual":
             out.append(Step(slug, "manual: files checked"))
+        elif spec.access.type == "curated":
+            out.append(Step(slug, "curated: copied from the repository"))
         elif not fetched:
             out.append(Step(slug, "never fetched"))
         elif resolved.get("version") and fetched.get("version") not in (
