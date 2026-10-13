@@ -133,9 +133,25 @@ def stage_steps(
             continue
         digest, parts = graph.fingerprint(graph.inputs_for(slug, registry, nations), lock)
         reason = "forced" if force else graph.stale_reason(graph.sidecar_path(slug), digest, parts)
+        if not reason:
+            reason = nations_changed(graph.read_sidecar(graph.sidecar_path(slug)), nations)
         if reason:
             todo.append(Step(slug, reason))
     return todo, skipped
+
+
+def nations_changed(meta: dict, nations: Iterable[str]) -> str | None:
+    """A table or indicator set built for another set of nations is stale even when its
+    inputs did not move: a stager filters to the nations active when it ran (STATS19
+    staged for England and Wales has no Scottish rows). Sidecars without the field
+    (built before it was recorded) are left alone."""
+    before = meta.get("nations")
+    if before is None:
+        return None
+    now = list(nations)
+    if list(before) == now:
+        return None
+    return f"nations changed: {','.join(before)} → {','.join(now)}"
 
 
 def indicators_sidecar() -> Path:
@@ -143,11 +159,16 @@ def indicators_sidecar() -> Path:
 
 
 def indicator_steps(
-    lock: dict, indicators: Iterable[IndicatorSpec], force: bool = False
+    lock: dict,
+    indicators: Iterable[IndicatorSpec],
+    force: bool = False,
+    nations: Iterable[str] | None = None,
 ) -> list[Step]:
-    """Indicators whose sources' checksums moved since they were built."""
+    """Indicators whose sources' checksums moved since they were built, or every
+    indicator when the table was built for another set of nations."""
     meta = graph.read_sidecar(indicators_sidecar())
     built = meta.get("indicators") or {}
+    stale_nations = nations_changed(meta, nations) if nations is not None else None
     out = []
     for spec in indicators:
         digest, parts = graph.fingerprint(spec.sources, lock)
@@ -156,6 +177,8 @@ def indicator_steps(
             out.append(Step(spec.id, "forced"))
         elif not before:
             out.append(Step(spec.id, "never built"))
+        elif stale_nations:
+            out.append(Step(spec.id, stale_nations))
         elif before.get("fingerprint") != digest:
             changed = sorted(
                 s for s, c in parts.items() if (before.get("inputs") or {}).get(s) != c
@@ -236,7 +259,7 @@ def make_plan(
     plan.resolve = slugs_in_scope(registry, nations)
     plan.fetch = fetch_steps(lock, registry, plan.resolve)
     plan.stage, plan.skipped = stage_steps(lock, registry, nations, stager_order, force)
-    plan.indicators = indicator_steps(lock, indicators, force)
+    plan.indicators = indicator_steps(lock, indicators, force, nations=nations)
     plan.serve = serve_step(force, root)
     plan.tiles = tiles_step(lock, nations, force)
     return plan

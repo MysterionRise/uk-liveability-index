@@ -52,6 +52,9 @@ def _with_lonlat(df: pl.DataFrame) -> pl.DataFrame:
     return df.with_columns(lon=lon, lat=lat)
 
 
+# GP practices come from NHS England's ODS (England and Wales) or Public Health Scotland
+GP_SOURCES = {"E": "NHS England ODS", "W": "NHS England ODS", "S": "Public Health Scotland"}
+
 SCHOOL_SOURCES = {
     "gias": "DfE Get Information About Schools + Ofsted",
     "wg": "Welsh Government schools list",
@@ -100,7 +103,10 @@ def build_pois() -> pl.DataFrame:
             pl.col("y").cast(pl.Float64),
             "lon",
             "lat",
-            pl.lit("NHS England ODS").alias("source"),
+            pl.when(pl.col("lsoa21cd").str.starts_with("S"))
+            .then(pl.lit(GP_SOURCES["S"]))
+            .otherwise(pl.lit(GP_SOURCES["E"]))
+            .alias("source"),
             pl.lit(OGL).alias("licence"),
             _detail(["practice_code", "postcode"]).alias("detail"),
         )  # fmt: skip

@@ -260,7 +260,7 @@ what it replaces (the coverage gate, `lix validate config`):
 |---|---|---|---|
 | Safety | 100% | 100% | 52% |
 | Environment | 100% | 100% | 100% |
-| Health | 100% | 56% | 63% |
+| Health | 100% | 63% | 63% |
 | Education | 100% | 67% | 67% |
 | Transport | 100% | 100% | 100% |
 | Amenities | 100% | 100% | 100% |

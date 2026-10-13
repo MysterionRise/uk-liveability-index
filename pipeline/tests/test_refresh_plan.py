@@ -79,6 +79,22 @@ class TestStageSteps:
             "forced"
         ]
 
+    def test_a_table_built_for_other_nations_is_stale(self, registry, data):
+        lock = {"pop_lsoa_mye": {"fetched": {"sha256": "p1"}}}
+        _raw(data, "pop_lsoa_mye")
+        digest, parts = graph.fingerprint(graph.inputs_for("population", registry, ["E"]), lock)
+        # England and Wales share the population file, so widening from E to E,W changes
+        # no input, only the nation set
+        graph.write_sidecar(
+            graph.sidecar_path("population"), "population", digest, parts, nations=["E"]
+        )
+        assert p.stage_steps(lock, registry, ["E"], ["population"])[0] == []
+        todo, _ = p.stage_steps(lock, registry, ["E", "W"], ["population"])
+        assert [(s.name, s.reason) for s in todo] == [("population", "nations changed: E → E,W")]
+        # A sidecar from before the field was recorded is not disturbed
+        graph.write_sidecar(graph.sidecar_path("population"), "population", digest, parts)
+        assert p.stage_steps(lock, registry, ["E", "W"], ["population"])[0] == []
+
     def test_a_changed_upstream_table_restages_its_readers(self, registry, data):
         """flood reads the staged UPRN table: a new UPRN file re-stages flood too."""
         inputs = graph.raw_inputs("flood", registry)
@@ -115,6 +131,14 @@ class TestIndicatorsServeTiles:
         lock["s2"] = {"fetched": {"sha256": "2b"}}
         steps = p.indicator_steps(lock, self.SPECS)
         assert [(s.name, s.reason) for s in steps] == [("b", "sources changed: s2")]
+
+        graph.write_sidecar(
+            p.indicators_sidecar(), "indicators", "", {},
+            indicators=p.indicator_fingerprints(lock, self.SPECS), nations=["E", "W"],
+        )  # fmt: skip
+        assert p.indicator_steps(lock, self.SPECS, nations=["E", "W"]) == []
+        steps = p.indicator_steps(lock, self.SPECS, nations=["E", "W", "S"])
+        assert [s.reason for s in steps] == ["nations changed: E,W → E,W,S"] * 2
 
     def test_serve_and_tiles_steps(self, data, tmp_path):
         root = tmp_path / "repo"

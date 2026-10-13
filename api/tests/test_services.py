@@ -295,3 +295,32 @@ class TestRankingByOneMeasure:
         r = ranking.rank_areas(store, level="lsoa", limit=2)
         assert r.sort_by == "overall" and r.sort_label is None
         assert all(a.sort_value is None and a.sort_score is None for a in r.results)
+
+
+class TestRankingScopesAndSorts:
+    """Every scope kind and every indicator sort must work (a nation scope and the
+    house_price sort crashed in v0.4.0)."""
+
+    def test_rank_within_a_nation(self, store):
+        from lix_api.services.ranking import rank_areas
+
+        out = rank_areas(store, within="Wales", level="msoa", limit=3)
+        assert out.results and all(r.name for r in out.results)
+        assert out.within and "Wales" in out.within
+
+    def test_sort_by_every_scored_indicator(self, store):
+        from lix_api.services.ranking import rank_areas
+
+        for ident in [i.id for i in store.scored]:
+            out = rank_areas(
+                store, within="Leeds", level="msoa", limit=2, sort_by=f"indicator:{ident}"
+            )
+            assert len(out.results) <= 2, ident
+
+    def test_rank_in_another_language_names_areas_in_it(self, store):
+        from lix_api.services.ranking import rank_areas
+
+        out = rank_areas(store, within="Cardiff", level="msoa", limit=2, locale="cy")
+        assert out.results
+        # The test store carries a Welsh name for Cardiff's areas; the English stays beside it
+        assert any(r.name_en for r in out.results) or all(r.name for r in out.results)

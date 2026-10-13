@@ -116,15 +116,18 @@ def rank_areas(
     name, themes, multipliers = resolve_weights(store, preset, theme_weights, indicator_weights)
     measure = sort_measure(store, sort_by)
     scores = scores_for(store, themes, multipliers)
-    df = pl.concat(
-        [
-            store.features.select(
+    # Every scope column _within() may filter on (ctry_cd for a nation), and each
+    # feature column once: a sort by house_price names raw__house_price itself
+    columns = list(
+        dict.fromkeys(
+            [
                 "lsoa21cd",
                 "lsoa21nm",
                 "msoa21cd",
                 "msoa_name",
                 "lad_cd",
                 "rgn_cd",
+                "ctry_cd",
                 "lad_nm",
                 "population",
                 "pwc_lat",
@@ -132,9 +135,11 @@ def rank_areas(
                 "urban",
                 "raw__house_price",
                 *measure.feature_columns,
-            ),  # fmt: skip
-            scores.drop("lsoa21cd"),
-        ],
+            ]
+        )
+    )
+    df = pl.concat(
+        [store.features.select(columns), scores.drop("lsoa21cd")],
         how="horizontal",
     )
     where, label, bbox = _within(store, within, radius_km)
@@ -159,8 +164,9 @@ def rank_areas(
             in_locale("lad_nm").first().alias("lad_nm"),
             w.sum().alias("population"),
             *[((pl.col(c) * w).sum() / w.filter(pl.col(c).is_not_null()).sum()).alias(c)
-              for c in ["overall", *theme_cols, *measure.feature_columns]],
-            pl.col("raw__house_price").median(),
+              for c in dict.fromkeys(["overall", *theme_cols, *measure.feature_columns])
+              if c != "raw__house_price"],
+            pl.col("raw__house_price").median(),  # the price itself: a median, once
             ((pl.col("pwc_lat") * w).sum() / w.sum()).alias("pwc_lat"),
             ((pl.col("pwc_lon") * w).sum() / w.sum()).alias("pwc_lon"),
         ).rename({"msoa21cd": "code"})  # fmt: skip

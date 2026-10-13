@@ -7,7 +7,9 @@ so the sliders move and the map recolours as the assistant works.
 """
 
 import functools
+import logging
 
+import polars as pl
 from ag_ui.core import EventType, StateSnapshotEvent
 from pydantic_ai import Agent, ModelRetry, RunContext, ToolReturn
 from pydantic_ai.tools import ToolDefinition
@@ -87,6 +89,9 @@ agent = Agent(
 )
 
 
+logger = logging.getLogger(__name__)
+
+
 def _recoverable(fn):
     """Turn "couldn't find that place" style errors into a retry prompt for the model,
     instead of failing the whole turn: it can then try another spelling or explain."""
@@ -97,6 +102,11 @@ def _recoverable(fn):
             return fn(*args, **kwargs)
         except (LookupError, ValueError) as e:
             raise ModelRetry(str(e)) from e
+        except pl.exceptions.PolarsError as e:
+            # A bug in a query (a missing or duplicated column) should not end the turn:
+            # tell the model the tool failed so it can answer another way, and log it
+            logger.exception(f"{fn.__name__} failed inside Polars")
+            raise ModelRetry(f"{fn.__name__} failed on those arguments; try another way") from e
 
     return wrapper
 

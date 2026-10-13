@@ -1,6 +1,7 @@
 """Tests for registry loading and validation."""
 
 import pytest
+import yaml
 from pydantic import ValidationError
 
 from lix_core.config import (
@@ -12,6 +13,7 @@ from lix_core.config import (
     load_indicators,
     load_registry,
 )
+from lix_core.paths import get_project_root
 
 BASE = dict(
     title="T",
@@ -201,3 +203,19 @@ def test_level_words_are_catalogue_gaps_when_nations_are_given():
     gaps = catalogue_gaps(load_indicators(), load_weights(), labels, load_nations().nations)
     assert "levels.E.low" not in gaps
     assert "levels.E.mid" in gaps and "levels.W.low" in gaps
+
+
+def test_catalogue_gaps_flag_an_entry_split_by_an_unquoted_comma():
+    from lix_core.config import catalogue_gaps, load_indicators, load_weights
+
+    catalogue, weights = load_indicators(), load_weights()
+    labels = yaml.safe_load(
+        (get_project_root() / "config" / "i18n" / "cy.yaml").read_text(encoding="utf-8")
+    )
+    assert not [g for g in catalogue_gaps(catalogue, weights, labels) if "unexpected" in g]
+    broken = yaml.safe_load(
+        "presets:\n  family: {label: Teulu, description: Ysgolion da, diogelwch.}\n"
+    )
+    labels["presets"]["family"] = broken["presets"]["family"]
+    gaps = catalogue_gaps(catalogue, weights, labels)
+    assert any(g.startswith("presets.family: unexpected fields") for g in gaps)

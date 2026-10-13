@@ -667,6 +667,9 @@ def load_label_catalogues() -> dict[str, dict]:
     return out
 
 
+LABEL_FIELDS = {"label", "description", "one", "other"}
+
+
 def catalogue_gaps(
     catalogue: IndicatorCatalogue,
     weights: "WeightsConfig",
@@ -694,6 +697,14 @@ def catalogue_gaps(
         entry = (labels.get("indicators") or {}).get(ind.id) or {}
         if not entry.get("label"):
             gaps.append(f"indicators.{ind.id}.label")
+    # An unquoted comma in a flow mapping splits a description into stray keys with no
+    # value ("Ysgolion a meithrinfeydd da", "diogelwch …": null); such an entry is broken
+    for section in ("themes", "presets", "indicators", "units", "flags"):
+        for key, entry in (labels.get(section) or {}).items():
+            if isinstance(entry, dict):
+                stray = sorted(k for k, v in entry.items() if v is None or k not in LABEL_FIELDS)
+                if stray:
+                    gaps.append(f"{section}.{key}: unexpected fields {stray}")
     return gaps
 
 

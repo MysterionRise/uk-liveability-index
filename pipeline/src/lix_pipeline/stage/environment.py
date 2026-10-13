@@ -181,6 +181,17 @@ SEPA_SURFACE_WATER = ("sepa_flood_surface_extent",)
 SEPA_CHUNK = 400_000  # polygons read at a time (the surface-water extents hold millions)
 
 
+def mark_touched(out: np.ndarray, tree, polygons) -> None:
+    """Set ``out[i] = 1`` for every receptor in ``tree`` (an STRtree of the receptor
+    geometries) that intersects a part of ``polygons``. ``STRtree.query`` with an array
+    returns two rows, the input (polygon) index then the tree (receptor) index: the
+    receptor row is the one wanted."""
+    import shapely
+
+    _, hit = tree.query(shapely.get_parts(polygons), predicate="intersects")
+    out[np.unique(hit)] = 1
+
+
 def touched_by_layer(receptors, slug: str, band: str, chunk: int = SEPA_CHUNK) -> np.ndarray:
     """1 for each receptor geometry touching the polygons of one SEPA extent layer, read
     from the file geodatabase a chunk at a time."""
@@ -203,8 +214,7 @@ def touched_by_layer(receptors, slug: str, band: str, chunk: int = SEPA_CHUNK) -
         )
         if polys.crs is not None and polys.crs.to_epsg() != 27700:
             polys = polys.to_crs(27700)
-        hit, _ = tree.query(shapely.get_parts(polys.geometry.values), predicate="intersects")
-        out[np.unique(hit)] = 1
+        mark_touched(out, tree, polys.geometry.values)
     logger.info(f"{slug} {layer}: {total:,} polygons, {int(out.sum()):,} homes touched")
     return out
 

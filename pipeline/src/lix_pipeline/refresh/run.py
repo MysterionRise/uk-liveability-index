@@ -144,6 +144,7 @@ def refresh(dry_run: bool = False, force: bool = False, skip_fetch: bool = False
             "",
             {},
             indicators=planning.indicator_fingerprints(lock, catalogue.indicators),
+            nations=list(nations),
         )
     phase("indicators", t0, rebuilt=rebuilt)
 

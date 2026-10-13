@@ -72,7 +72,7 @@ A full walkthrough video comes with each
 
 ## How the scores work
 
-Each neighbourhood gets 68 indicators. The 33 that count towards the score are turned into
+Each neighbourhood gets 75 indicators. The 36 that count towards the score are turned into
 0–100 scores, averaged within eight themes (safety, environment, health services, schools
 and childcare, transport, amenities, housing and community), and the themes are weighted
 by what you choose. Measures that are the same everywhere (distances, air quality,
@@ -137,8 +137,8 @@ The same tools are available to Claude Desktop and other clients over
   nurseries and pharmacies come from OpenStreetMap, and Welsh school quality from each
   council's exam results, because Wales publishes no open per-provider lists or grades.
   Scotland's deprivation index (SIMD 2020) is still on the 2011 Data Zones and is brought
-  onto the 2022 zones through postcodes; Scottish house prices are an annual Registers of
-  Scotland file downloaded by hand; bus timetables in Scotland are published voluntarily,
+  onto the 2022 zones through postcodes; Scottish house prices are Registers of Scotland's
+  annual series on the 2011 zones, brought across the same way; bus timetables in Scotland are published voluntarily,
   so some operators are missing.
 
 ## Building the data yourself
