@@ -68,6 +68,7 @@ def _raw_value(ind_id: str, i: int) -> float:
 
 def build_serve_dir(path) -> None:
     catalogue, weights = load_indicators(), load_weights()
+    registry = load_registry()
     rows = []
     for i, (code, name, msoa, msoa_nm, lad, lad_nm, rgn, lat, lon, urban, _) in enumerate(LSOAS):
         x, y = TO_BNG.transform(lon, lat)
@@ -83,11 +84,18 @@ def build_serve_dir(path) -> None:
             "bbox_e": lon + 0.01, "bbox_n": lat + 0.005,
         }  # fmt: skip
         for ind in catalogue.indicators:
+            if code[0] not in indicator_coverage(ind, registry):
+                # As the pipeline writes it: nothing where the nation has no source
+                row[f"raw__{ind.id}"] = None
+                row[f"q__{ind.id}"] = "not_available"
+                continue
             row[f"raw__{ind.id}"] = _raw_value(ind.id, i)
             imputed = ind.id.startswith("crime_") and code == "E01000004"
             row[f"q__{ind.id}"] = "imputed" if imputed else "ok"
         rows.append(row)
-    df = pl.DataFrame(rows)
+    df = pl.DataFrame(
+        rows, schema_overrides={f"raw__{i.id}": pl.Float64 for i in catalogue.indicators}
+    )
     df = df.with_columns(
         normalise(pl.col(f"raw__{i.id}"), i.direction, method=i.normalise, log1p=i.log1p,
                   good=i.good, bad=i.bad, scale_max=i.scale_max).alias(f"n__{i.id}")
@@ -108,7 +116,6 @@ def build_serve_dir(path) -> None:
     df.write_parquet(path / "lsoa_features.parquet")
 
     nations = load_nations()
-    registry = load_registry()
     manifest = {
         "schema_version": SERVE_SCHEMA_VERSION,
         "generated_at": "2026-10-07T00:00:00+00:00",

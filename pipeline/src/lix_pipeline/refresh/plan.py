@@ -14,13 +14,22 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from lix_core.config import IndicatorSpec
+from lix_core.codes import active_nations
+from lix_core.config import IndicatorSpec, boundary_slugs
 from lix_core.paths import data_dir, get_project_root
 from lix_pipeline.stage import graph
 
 # Serve files depend on these configuration files as well as on the indicator table
 SERVE_CONFIG = ("indicators.yaml", "weights.yaml", "nations.yaml")
-TILE_INPUTS = ("lsoa_boundaries", "msoa_boundaries", "lad_boundaries")
+
+
+def tile_inputs() -> tuple[str, ...]:
+    """The boundary files the tiles are cut from: every active nation's low and mid tiers
+    and the UK local-authority file."""
+    nations = active_nations()
+    return tuple(
+        boundary_slugs("low", nations) + boundary_slugs("mid", nations) + ["lad_boundaries"]
+    )
 
 
 @dataclass
@@ -198,7 +207,7 @@ def tiles_sidecar() -> Path:
 
 
 def tiles_step(lock: dict, nations: Iterable[str], force: bool = False) -> Step | None:
-    digest, parts = graph.fingerprint(TILE_INPUTS, lock)
+    digest, parts = graph.fingerprint(tile_inputs(), lock)
     parts = {**parts, "nations": ",".join(nations)}
     digest = hashlib.sha256((digest + parts["nations"]).encode()).hexdigest()
     reason = "forced" if force else graph.stale_reason(tiles_sidecar(), digest, parts)
@@ -206,7 +215,7 @@ def tiles_step(lock: dict, nations: Iterable[str], force: bool = False) -> Step 
 
 
 def tiles_fingerprint(lock: dict, nations: Iterable[str]) -> tuple[str, dict]:
-    digest, parts = graph.fingerprint(TILE_INPUTS, lock)
+    digest, parts = graph.fingerprint(tile_inputs(), lock)
     parts = {**parts, "nations": ",".join(nations)}
     return hashlib.sha256((digest + parts["nations"]).encode()).hexdigest(), parts
 

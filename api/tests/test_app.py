@@ -26,9 +26,9 @@ def test_rest_routes(client):
     r = client.post("/api/v1/rank", json={"within": "Leeds", "level": "lsoa", "limit": 2})
     assert len(r.json()["results"]) == 2
     quiet = client.post(
-        "/api/v1/rank", json={"within": "Leeds", "limit": 2, "sort_by": "indicator:road_rail_noise"}
+        "/api/v1/rank", json={"within": "Leeds", "limit": 2, "sort_by": "indicator:noise_exposure"}
     ).json()
-    assert quiet["sort_by"] == "indicator:road_rail_noise" and quiet["sort_label"]
+    assert quiet["sort_by"] == "indicator:noise_exposure" and quiet["sort_label"]
     assert client.post("/api/v1/rank", json={"sort_by": "indicator:nope"}).status_code == 404
     assert (
         client.get(
@@ -370,9 +370,9 @@ def test_run_cost_prefers_what_the_provider_billed():
 def test_a_question_about_one_measure_ranks_by_it_and_colours_the_map(client):
     events = _agui(client, "Which neighbourhoods have the least noise in Leeds?")
     args = next(json.loads(e["delta"]) for e in events if e["type"] == "TOOL_CALL_ARGS")
-    assert args["sort_by"] == "indicator:road_rail_noise"
+    assert args["sort_by"] == "indicator:noise_exposure"
     result = json.loads(next(e for e in events if e["type"] == "TOOL_CALL_RESULT")["content"])
-    assert result["sort_by"] == "indicator:road_rail_noise" and result["sort_label"]
+    assert result["sort_by"] == "indicator:noise_exposure" and result["sort_label"]
     snapshot = next(e for e in events if e["type"] == "STATE_SNAPSHOT")["snapshot"]
-    assert snapshot["map"]["layer"] == "indicator:road_rail_noise"
+    assert snapshot["map"]["layer"] == "indicator:noise_exposure"
     assert snapshot["map"]["highlighted"] == [r["code"] for r in result["results"]]

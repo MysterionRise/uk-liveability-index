@@ -23,9 +23,9 @@ Builder = Callable[[tuple[str, ...]], pl.DataFrame]
 
 
 def _builders() -> dict[str, Builder]:
-    from lix_pipeline.stage import geo_ew
+    from lix_pipeline.stage import geo_ew, geo_scotland
 
-    return {"geo_ew": geo_ew.build}
+    return {"geo_ew": geo_ew.build, "geo_scotland": geo_scotland.build}
 
 
 def stage_geo_lsoa() -> pl.LazyFrame:
@@ -46,16 +46,30 @@ def stage_geo_lsoa() -> pl.LazyFrame:
 
 
 def stage_oa_lookup() -> pl.LazyFrame:
-    """Output areas → LSOA → MSOA for the active nations (for OA-level sources such as Ofcom)."""
-    return (
-        pl.scan_parquet(raw_file("oa_lookup", "parquet"))
-        .filter(in_scope("LSOA21CD"))
-        .select(
-            pl.col("OA21CD").alias("oa21cd"),
-            pl.col("LSOA21CD").alias("lsoa21cd"),
-            pl.col("MSOA21CD").alias("msoa21cd"),
-        )
-    )
+    """Output areas → small area → mid area for the active nations (for OA-level sources
+    such as Ofcom): the ONS lookup for England and Wales, NRS's for Scotland."""
+    cfg = load_nations().nations
+    frames = []
+    for slug in dict.fromkeys(cfg[n].geo.oa_lookup for n in active_nations()):
+        if slug == "oa_lookup":
+            frames.append(
+                pl.scan_parquet(raw_file("oa_lookup", "parquet")).select(
+                    pl.col("OA21CD").alias("oa21cd"),
+                    pl.col("LSOA21CD").alias("lsoa21cd"),
+                    pl.col("MSOA21CD").alias("msoa21cd"),
+                )
+            )
+        elif slug == "nrs_oa22_lookup":
+            frames.append(
+                pl.scan_csv(data_dir("raw") / "nrs_oa22_lookup" / "OA22_DZ22_IZ22.csv").select(
+                    pl.col("OA22").alias("oa21cd"),
+                    pl.col("DZ22").alias("lsoa21cd"),
+                    pl.col("IZ22").alias("msoa21cd"),
+                )
+            )
+        else:
+            raise ValueError(f"No reader for the output-area lookup {slug!r}")
+    return pl.concat(frames).filter(in_scope("lsoa21cd")).sort("oa21cd")
 
 
 def stage_lsoa11_lsoa21() -> pl.LazyFrame:
@@ -110,6 +124,17 @@ def stage_dz11_dz22() -> pl.LazyFrame:
     return weights.lazy()
 
 
+def _name_in(lang: str) -> pl.Expr:
+    """The OS Open Names form in ``lang`` (``cym``, ``gla``), if the place has one."""
+    return (
+        pl.when(pl.col("NAME1_LANG") == lang)
+        .then(pl.col("NAME1"))
+        .when(pl.col("NAME2_LANG") == lang)
+        .then(pl.col("NAME2"))
+        .otherwise(None)
+    )
+
+
 # OS Open Names LOCAL_TYPE values that are places people search for
 PLACE_TYPES = ["City", "Town", "Village", "Hamlet", "Suburban Area", "Other Settlement"]
 
@@ -137,16 +162,15 @@ def stage_places() -> pl.LazyFrame:
         )
         .select(
             pl.col("ID").str.strip_chars_start("﻿").alias("place_id"),
-            # Bilingual places list the Welsh or Gaelic form first; until the search
-            # matches every name (#66), keep the English one as the name people type
+            # Bilingual places list the Welsh or Gaelic form first; ``name`` is the English
+            # one, and each language's form sits in its own column for the search and
+            # the interface (#66)
             pl.when(pl.col("NAME2_LANG") == "eng")
             .then(pl.col("NAME2"))
             .otherwise(pl.col("NAME1"))
             .alias("name"),
-            pl.when(pl.col("NAME2_LANG") == "eng")
-            .then(pl.col("NAME1"))
-            .otherwise(pl.col("NAME2"))
-            .alias("name_alt"),
+            _name_in("cym").alias("name_cy"),
+            _name_in("gla").alias("name_gd"),
             pl.col("LOCAL_TYPE").alias("place_type"),
             pl.col("GEOMETRY_X").cast(pl.Float64).alias("x"),
             pl.col("GEOMETRY_Y").cast(pl.Float64).alias("y"),
@@ -163,7 +187,8 @@ def stage_places() -> pl.LazyFrame:
         .collect()
     )
     lon, lat = bng_to_lonlat(places["x"], places["y"])
-    places = places.with_columns(lon=lon, lat=lat)
+    # Until the search reads every name column (#66), the other-language form is ``name_alt``
+    places = places.with_columns(lon=lon, lat=lat, name_alt=pl.coalesce("name_cy", "name_gd"))
 
     from lix_pipeline.geo.joins import points_to_lsoa
 

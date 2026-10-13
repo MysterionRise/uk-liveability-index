@@ -921,6 +921,26 @@
       "version": "https://opendata.nhsbsa.net/dataset/240d142d-df82-4e97-b051-12371519e4e1/resource/ce6c7ad3-a3b5-442f-bb0a-a45d7c962944/download/consol_pharmacy_list_202606q1.csv"
     }
   },
+  "nrs_oa22_lookup": {
+    "fetched": {
+      "bytes": 237841,
+      "etag": "\"1dc4cb8ee4e8891\"",
+      "extracted": [
+        "OA22_DZ22_IZ22.csv",
+        "DZ22_Lookup.csv",
+        "IZ22_Lookup.csv"
+      ],
+      "fetched_at": "2026-10-13T11:14:01.007411+00:00",
+      "last_modified": "Mon, 03 Nov 2025 11:56:47 GMT",
+      "sha256": "3565794561306479b6c618aaa3915f1f29fdce31ee798fdcdab45f880a7ba4aa",
+      "version": "Mon, 03 Nov 2025 11:56:47 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:13:59+00:00",
+      "url": "https://www.nrscotland.gov.uk/media/iz3evrqt/oa22_dz22_iz22.zip",
+      "version": "Mon, 03 Nov 2025 11:56:47 GMT"
+    }
+  },
   "nrs_oa22_population": {
     "fetched": {
       "bytes": 678338,
@@ -934,6 +954,37 @@
       "resolved_at": "2026-10-13T11:10:00+00:00",
       "url": "https://www.nrscotland.gov.uk/media/owpknvgk/outputarea2022_usualresidentpopulation.csv",
       "version": "Tue, 14 Jan 2025 15:17:41 GMT"
+    }
+  },
+  "nrs_sape": {
+    "fetched": {
+      "bytes": 100278452,
+      "etag": "\"1dd3932bc2cc8b4\"",
+      "extracted": [
+        "SAPE 2011.xlsx",
+        "SAPE 2012.xlsx",
+        "SAPE 2013.xlsx",
+        "SAPE 2014.xlsx",
+        "SAPE 2015.xlsx",
+        "SAPE 2016.xlsx",
+        "SAPE 2017.xlsx",
+        "SAPE 2018.xlsx",
+        "SAPE 2019.xlsx",
+        "SAPE 2020.xlsx",
+        "SAPE 2021.xlsx",
+        "SAPE 2022.xlsx",
+        "SAPE 2023.xlsx",
+        "SAPE 2024.xlsx"
+      ],
+      "fetched_at": "2026-10-13T11:14:13.375387+00:00",
+      "last_modified": "Mon, 31 Aug 2026 10:23:12 GMT",
+      "sha256": "9f5df6c607d926942322bd2d5f9f7ca75011a63a6d16097eceb666bce2a46059",
+      "version": "Mon, 31 Aug 2026 10:23:12 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:14:01+00:00",
+      "url": "https://www.nrscotland.gov.uk/media/yqqbrvbw/small-area-population-estimates-mid-2011-to-mid-2024-2022-dz.zip",
+      "version": "Mon, 31 Aug 2026 10:23:12 GMT"
     }
   },
   "nrw_fraw_rivers": {
@@ -3666,6 +3717,50 @@
       "version": "2025-08-11T08:24:30+00:00"
     }
   },
+  "sg_dz22_boundaries": {
+    "fetched": {
+      "bytes": 26251513,
+      "etag": "\"a93ada832c44dc1:0\"",
+      "extracted": [
+        "SG_DataZone_Bdry_2022.cpg",
+        "SG_DataZone_Bdry_2022.dbf",
+        "SG_DataZone_Bdry_2022.prj",
+        "SG_DataZone_Bdry_2022.shp",
+        "SG_DataZone_Bdry_2022.shx"
+      ],
+      "fetched_at": "2026-10-13T11:13:52.888933+00:00",
+      "last_modified": "Thu, 23 Oct 2025 14:51:29 GMT",
+      "sha256": "421c648480c7d51e32934de9f1b9f6cbbf86c6d8d382aab30a7bb4d2049ef0ec",
+      "version": "Thu, 23 Oct 2025 14:51:29 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:13:51+00:00",
+      "url": "https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneBdry_2022.zip",
+      "version": "Thu, 23 Oct 2025 14:51:29 GMT"
+    }
+  },
+  "sg_dz22_centroids": {
+    "fetched": {
+      "bytes": 326108,
+      "etag": "\"122e4e942e44dc1:0\"",
+      "extracted": [
+        "SG_DataZone_Cent_2022.cpg",
+        "SG_DataZone_Cent_2022.dbf",
+        "SG_DataZone_Cent_2022.prj",
+        "SG_DataZone_Cent_2022.shp",
+        "SG_DataZone_Cent_2022.shx"
+      ],
+      "fetched_at": "2026-10-13T11:13:59.055473+00:00",
+      "last_modified": "Thu, 23 Oct 2025 15:06:16 GMT",
+      "sha256": "cc19bcaf4053993ecbc7fae2040109b1a30ca85c1a5cb115f84815816d7fe7ba",
+      "version": "Thu, 23 Oct 2025 15:06:16 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:13:58+00:00",
+      "url": "https://maps.gov.scot/ATOM/shapefiles/SG_DataZoneCent_2022.zip",
+      "version": "Thu, 23 Oct 2025 15:06:16 GMT"
+    }
+  },
   "sg_dz22_lookup": {
     "fetched": {
       "bytes": 3333484,
@@ -3681,6 +3776,33 @@
       "title": "DataZone2022lookup_2026-05-07.csv",
       "url": "https://api.data.gov.scot/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download",
       "version": "https://api.data.gov.scot/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download"
+    }
+  },
+  "sg_iz22_boundaries": {
+    "fetched": {
+      "bytes": 46399742,
+      "etag": "\"37df578b534ddb1:0\"",
+      "extracted": [
+        "SG_IntermediateZoneBdry_2022_EoR.cpg",
+        "SG_IntermediateZoneBdry_2022_EoR.dbf",
+        "SG_IntermediateZoneBdry_2022_EoR.prj",
+        "SG_IntermediateZoneBdry_2022_EoR.shp",
+        "SG_IntermediateZoneBdry_2022_EoR.shx",
+        "SG_IntermediateZoneBdry_2022_MHW.cpg",
+        "SG_IntermediateZoneBdry_2022_MHW.dbf",
+        "SG_IntermediateZoneBdry_2022_MHW.prj",
+        "SG_IntermediateZoneBdry_2022_MHW.shp",
+        "SG_IntermediateZoneBdry_2022_MHW.shx"
+      ],
+      "fetched_at": "2026-10-13T11:13:56.923926+00:00",
+      "last_modified": "Fri, 13 Dec 2024 11:38:35 GMT",
+      "sha256": "6ceb76cabe73b819493bc08cfa27c80b00dce0fd673eb2c3c98e869e247e1c62",
+      "version": "Fri, 13 Dec 2024 11:38:35 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-13T11:13:53+00:00",
+      "url": "https://maps.gov.scot/ATOM/shapefiles/SG_IntermediateZoneBdry_2022.zip",
+      "version": "Fri, 13 Dec 2024 11:38:35 GMT"
     }
   },
   "simd_2020_indicators": {

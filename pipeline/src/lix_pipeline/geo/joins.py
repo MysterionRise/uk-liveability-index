@@ -11,15 +11,16 @@ from typing import Literal
 import geopandas as gpd
 import polars as pl
 
-from lix_core.codes import area_code_regex
+from lix_core.codes import active_nations, area_code_regex
 from lix_core.paths import data_dir
-from lix_pipeline.geo.boundaries import load_lsoa_boundaries
+from lix_pipeline.geo.boundaries import tier_polygons
 
 
 @lru_cache(maxsize=2)
 def _lsoa_polygons(code_regex: str) -> gpd.GeoDataFrame:
-    """LSOA polygons whose code matches ``code_regex`` (the active nations')."""
-    gdf = load_lsoa_boundaries("lsoa_boundaries")
+    """The active nations' small-area polygons (each nation's own file), with codes
+    matching ``code_regex``."""
+    gdf = tier_polygons("low", active_nations())
     gdf = gdf[gdf.index.str.match(code_regex)]
     return gdf[["geometry"]].reset_index()
 

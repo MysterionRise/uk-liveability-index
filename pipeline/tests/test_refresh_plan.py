@@ -131,7 +131,7 @@ class TestIndicatorsServeTiles:
         (root / "config" / "weights.yaml").write_text("weights: 2\n")
         assert p.serve_step(root=root).reason == "inputs changed: config/weights.yaml"
 
-        lock = {s: {"fetched": {"sha256": "b"}} for s in p.TILE_INPUTS}
+        lock = {s: {"fetched": {"sha256": "b"}} for s in p.tile_inputs()}
         assert p.tiles_step(lock, ["E"]).reason == "never built"
         digest, parts = p.tiles_fingerprint(lock, ["E"])
         graph.write_sidecar(p.tiles_sidecar(), "tiles", digest, parts)

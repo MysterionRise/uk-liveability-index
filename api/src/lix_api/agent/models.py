@@ -132,7 +132,7 @@ _RULES: list[tuple[str, str, callable]] = [
     (r"\b(?:least|lowest|quietest|less)\b.*\bnois\w*\b.*\b(?:in|near|around)\b ([A-Za-z][\w' -]+?)[?.]?$",
      "rank_areas",
      lambda m: {"within": m.group(1).strip(), "level": "msoa", "limit": 5,
-                "sort_by": "indicator:road_rail_noise"}),
+                "sort_by": "indicator:noise_exposure"}),
     (r"\b(?:best|top|rank)\b.*\b(?:in|near|around)\b ([A-Za-z][\w' -]+?)(?: under £?([\d,]+)k?)?[?.]?$",
      "rank_areas",
      lambda m: {"within": m.group(1).strip(), "level": "msoa", "limit": 5,

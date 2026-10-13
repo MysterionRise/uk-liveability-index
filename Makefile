@@ -85,9 +85,10 @@ validate:
 	uv run lix validate serve
 	uv run lix validate places
 
-# Small dataset (Leeds + Brighton) cut from a full build, for CI end-to-end tests
+# Small dataset (each nation's demo_upper in config/nations.yaml: Leeds, Brighton, Cardiff,
+# Edinburgh) cut from a full build, for CI end-to-end tests
 demo-data:
-	uv run lix demo-data --lad E08000035 E06000043 W06000015 --out fixtures/demo
+	uv run lix demo-data --out fixtures/demo
 
 # Regenerate docs/data-sources.md and ATTRIBUTION.md from config/datasets.yaml
 docs:

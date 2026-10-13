@@ -25,6 +25,7 @@ from collections.abc import Callable, Iterable
 from datetime import datetime, timezone
 from pathlib import Path
 
+from lix_core.config import boundary_slugs
 from lix_core.paths import data_dir
 
 STAGED_READ = re.compile(r'data_dir\("staged"\)\s*/\s*f?"([a-z0-9_]+)\.parquet"')
@@ -39,7 +40,11 @@ HELPER_STAGED = {
     "broadcast": "geo_lsoa",
 }
 # Helpers that read a raw dataset on the caller's behalf
-HELPER_RAW = {"points_to_lsoa": "lsoa_boundaries", "nspl_document": "nspl"}
+# (points_to_lsoa reads every active nation's boundaries: see config/nations.yaml geo:)
+HELPER_RAW: dict[str, tuple[str, ...]] = {
+    "points_to_lsoa": tuple(boundary_slugs("low")),
+    "nspl_document": ("nspl",),
+}
 
 
 def _unwrap(fn: Callable) -> Callable:
@@ -119,7 +124,7 @@ def derived_reads(stager: Callable) -> tuple[set[str], set[str]]:
                 if name in HELPER_STAGED:
                     staged.add(HELPER_STAGED[name])
                 if name in HELPER_RAW:
-                    raw.add(HELPER_RAW[name])
+                    raw.update(HELPER_RAW[name])
         todo.extend(_referenced_functions(fn, tree))
     return staged, raw
 

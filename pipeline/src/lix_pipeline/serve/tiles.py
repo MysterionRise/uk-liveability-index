@@ -1,8 +1,9 @@
 """Vector map tiles (PMTiles) for the browser map, written with GDAL's PMTiles driver.
 
-    data/serve/tiles/lsoa.pmtiles   LSOAs of the active nations, zoom 8–14 (lsoa21cd)
-    data/serve/tiles/msoa.pmtiles   MSOAs, zoom 6–12 (msoa21cd)
-    data/serve/tiles/lad.pmtiles    local authorities, zoom 4–10 (lad_cd, name)
+    data/serve/tiles/lsoa.pmtiles   small areas of the active nations (LSOAs, Data Zones),
+                                    zoom 8–14 (lsoa21cd)
+    data/serve/tiles/msoa.pmtiles   mid areas (MSOAs, Intermediate Zones), zoom 6–12 (msoa21cd)
+    data/serve/tiles/lad.pmtiles    local authorities and councils, zoom 4–10 (lad_cd, name)
 
 Polygons carry only their code (and a name for labels): the browser colours them from
 scores.parquet via feature-state, so reweighting never needs new tiles. PMTiles is a
@@ -17,6 +18,7 @@ import pyogrio
 from lix_core.codes import area_code_regex
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
+from lix_pipeline.geo.boundaries import tier_polygons
 
 logger = setup_logging("serve.tiles")
 
@@ -24,6 +26,13 @@ logger = setup_logging("serve.tiles")
 def _read(slug: str) -> gpd.GeoDataFrame:
     path = data_dir("raw") / slug / f"{slug}.gpkg"
     return gpd.read_file(path)
+
+
+def _tier(level: str, code: str) -> gpd.GeoDataFrame:
+    """One tier's polygons across the active nations (each nation's own file, simplified
+    where the nation asks for it), with the code column named ``code``."""
+    gdf = tier_polygons(level, simplify=True).reset_index().rename(columns={"lsoa21cd": code})
+    return gdf[[code, "geometry"]]
 
 
 def write_layer(gdf: gpd.GeoDataFrame, out: Path, layer: str, minzoom: int, maxzoom: int) -> Path:
@@ -57,14 +66,12 @@ def build_tiles(
     out_dir.mkdir(parents=True, exist_ok=True)
     outputs = []
 
-    lsoa = _read("lsoa_boundaries").rename(columns={"LSOA21CD": "lsoa21cd"})
-    lsoa = lsoa[lsoa["lsoa21cd"].str.match(area_code_regex())][["lsoa21cd", "geometry"]]
+    lsoa = _tier("low", "lsoa21cd")
     if lsoas is not None:
         lsoa = lsoa[lsoa["lsoa21cd"].isin(lsoas)]
     outputs.append(write_layer(lsoa, out_dir / "lsoa.pmtiles", "lsoa", 8, 14))
 
-    msoa = _read("msoa_boundaries").rename(columns={"MSOA21CD": "msoa21cd"})
-    msoa = msoa[msoa["msoa21cd"].str.match(area_code_regex("mid"))][["msoa21cd", "geometry"]]
+    msoa = _tier("mid", "msoa21cd")
     if lsoas is not None:
         # MSOAs nest in local authorities, so keep those overlapping the chosen LSOAs
         msoa = msoa[msoa.intersects(lsoa.to_crs(msoa.crs).union_all().buffer(-1))]

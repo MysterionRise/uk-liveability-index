@@ -5,6 +5,7 @@ from pathlib import Path
 
 import polars as pl
 
+from lix_core.config import boundary_slugs
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
 
@@ -14,6 +15,9 @@ logger = setup_logging("stage")
 # every registry slug it matches (``osm_*``: one extract per nation). Staged tables a
 # stager reads are declared in STAGE_READS below and bring their own raw inputs along;
 # ``graph.raw_inputs`` closes over both and a test keeps both honest against the code.
+# Every active nation's small-area polygons: what points_to_lsoa reads
+LOW_BOUNDARIES = boundary_slugs("low")
+
 STAGE_INPUTS: dict[str, list[str]] = {
     "price_paid": ["price_paid", "ros_house_prices", "nspl"],
     "population": ["pop_lsoa_mye", "nrs_sape"],
@@ -35,42 +39,39 @@ STAGE_INPUTS: dict[str, list[str]] = {
     ],
     "oa_lookup": ["oa_lookup", "nrs_oa22_lookup"],
     "dz11_dz22": ["simd_postcode_lookup", "nrs_oa22_population", "nspl"],
-    "places": ["os_open_names", "lsoa_boundaries", "sg_dz22_boundaries"],
+    "places": ["os_open_names", *LOW_BOUNDARIES],
     "defra_pcm_no2": ["defra_pcm_no2", "nspl"],
     "defra_pcm_pm25": ["defra_pcm_pm25", "nspl"],
     "defra_pcm_pm10": ["defra_pcm_pm10", "nspl"],
     "ods_gp": ["ods_gp", "phs_gp_practices", "nspl"],
-    "gias": ["gias", "lsoa_boundaries"],
-    "fsa_fhrs": ["fsa_fhrs", "nspl", "lsoa_boundaries"],
-    "overture_pubs": ["overture_pubs", "lsoa_boundaries"],
+    "gias": ["gias", *LOW_BOUNDARIES],
+    "fsa_fhrs": ["fsa_fhrs", "nspl", *LOW_BOUNDARIES],
+    "overture_pubs": ["overture_pubs", *LOW_BOUNDARIES],
     "osm_pois": ["osm_*"],
     "ods_dentists": ["ods_dentists", "phs_dentists", "nspl"],
     "nhsbsa_pharmacies": ["nhsbsa_pharmacies", "nspl"],
     "ofsted_childcare": ["ofsted_childcare", "nspl"],
     "ea_flood_postcodes": ["ea_flood_postcodes", "nspl"],
     "ofcom_broadband": ["ofcom_broadband", "oa_lookup"],
-    "wg_schools": ["wg_schools", "lsoa_boundaries"],
+    "wg_schools": ["wg_schools", *LOW_BOUNDARIES],
     "schools": [
         "gias",
         "wg_schools",
         "sg_school_roll",
         "sg_attainment",
-        "lsoa_boundaries",
-        "sg_dz22_boundaries",
+        *LOW_BOUNDARIES,
     ],
     "childcare": [
         "ofsted_childcare",
         "care_inspectorate",
         "nspl",
-        "lsoa_boundaries",
-        "sg_dz22_boundaries",
+        *LOW_BOUNDARIES,
     ],
     "pharmacies": [
         "nhsbsa_pharmacies",
         "phs_pharmacies",
         "nspl",
-        "lsoa_boundaries",
-        "sg_dz22_boundaries",
+        *LOW_BOUNDARIES,
     ],
     "ea_flood_all_postcodes": ["ea_flood_postcode_tool", "nspl"],
     "flood": [
@@ -85,7 +86,7 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nspl",
     ],
     "tree_cover": ["esa_worldcover", "nspl"],
-    "os_open_uprn": ["os_open_uprn", "lsoa_boundaries"],
+    "os_open_uprn": ["os_open_uprn", *LOW_BOUNDARIES],
     "night_lights": ["viirs_vnl", "nspl"],
     "noise": ["*_noise_*_lden", "nspl"],
     "deprivation": ["iod_2025", "wimd_*", "simd_*", "nrs_oa22_population", "nspl"],
@@ -133,9 +134,7 @@ STAGE_READS: dict[str, list[str]] = {
 # names and the boundaries the tiles are cut from. The manifest credits them alongside
 # the indicators' sources.
 BACKBONE_INPUTS: list[str] = sorted(
-    set(STAGE_INPUTS["geo_lsoa"])
-    | set(STAGE_INPUTS["places"])
-    | {"msoa_boundaries", "sg_iz22_boundaries"}
+    set(STAGE_INPUTS["geo_lsoa"]) | set(STAGE_INPUTS["places"]) | set(boundary_slugs("mid"))
 )
 
 

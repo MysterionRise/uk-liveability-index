@@ -85,7 +85,8 @@ nations:
       centroids: sg_dz22_centroids
       oa_lookup: nrs_oa22_lookup
       population: nrs_sape
-      code_column: DZCode  # the boundary file's attribute (checked on first fetch)
+      code_column: dzcode  # the boundary file's code attribute
+      simplify_m: 10  # the shapefiles are full resolution; ONS's E/W files are generalised to 20m
       extra: [sg_dz22_lookup]
     places_country: Scotland
     # Scottish Government urban rural classification 2022, 6-fold (UR6 in the Data Zone

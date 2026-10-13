@@ -162,10 +162,10 @@ cases:
     expect:
       tools: [rank_areas]
       args:
-        - {tool: rank_areas, arg: sort_by, op: contains, value: road_rail_noise}
+        - {tool: rank_areas, arg: sort_by, op: contains, value: noise_exposure}
         - {tool: rank_areas, arg: within, op: contains, value: london}
       state:
-        - {path: map.layer, op: contains, value: road_rail_noise}
+        - {path: map.layer, op: contains, value: noise_exposure}
       grounded: true
 
   - name: map_layer_air

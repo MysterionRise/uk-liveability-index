@@ -203,7 +203,7 @@ Access = Annotated[
 ]
 
 # Layout of data/serve/ (manifest, parquet columns). Readers refuse other versions.
-SERVE_SCHEMA_VERSION = 2
+SERVE_SCHEMA_VERSION = 3
 
 # The UK's nations, by the first letter of their ONS codes. config/nations.yaml configures
 # the ones a build can include; coverage declarations may name any of them.
@@ -565,6 +565,7 @@ class GeoSources(_Strict):
     oa_lookup: str  # output area → low → mid lookup
     population: str  # mid-year population estimates at the low level
     code_column: str | None = None  # the boundaries' code attribute, when not *CD
+    simplify_m: float = 0.0  # simplify full-resolution polygons for the map tiles (metres)
     extra: list[str] = Field(default_factory=list)  # other files the builder reads
 
 

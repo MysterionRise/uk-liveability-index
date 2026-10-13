@@ -114,7 +114,7 @@ places:
       - {theme: amenities, op: ge, value: 80, anchor: true}
       - {theme: safety, op: le, value: 30, anchor: true}
       - {theme: transport, op: ge, value: 85}
-      - {indicator: road_rail_noise, op: ge, value: 40, anchor: true}  # Old Street, the A10
+      - {indicator: noise_exposure, op: ge, value: 40, anchor: true}  # Old Street, the A10
       - {indicator: light_pollution, op: ge, value: 50, anchor: true}  # 83 nW/cm²/sr: Old Street, the City's lights
 
   - name: Whitechapel
@@ -139,7 +139,7 @@ places:
       - {flag: imputed, anchor: true}
       - {theme: safety, op: le, value: 25, anchor: true}
       - {theme: transport, op: ge, value: 85}
-      - {indicator: road_rail_noise, op: ge, value: 50, anchor: true}  # Mancunian Way, Deansgate
+      - {indicator: noise_exposure, op: ge, value: 50, anchor: true}  # Mancunian Way, Deansgate
 
   - name: Salford
     local_authority: Salford
@@ -273,7 +273,7 @@ places:
     why: "New town: almost no homes from before 1919; grid roads kept away from homes"
     checks:
       - {indicator: period_homes, op: le, value: 5, anchor: true}
-      - {indicator: road_rail_noise, op: le, value: 10, anchor: true}  # 2.6% at 60 dB
+      - {indicator: noise_exposure, op: le, value: 10, anchor: true}  # 2.6% at 60 dB
 
   - name: Clifton
     local_authority: Bristol

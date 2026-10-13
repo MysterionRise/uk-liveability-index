@@ -7,7 +7,23 @@ from lix_api.services.scoring import ThemeWeights, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
 
-KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "road_rail_noise",
+
+def _covered(store: Store, values: list[IndicatorValue]) -> set[str]:
+    """Indicators absent here but stood in for: a substitute with a value covers the
+    indicators it replaces, and a replaced indicator with a value covers its substitute
+    (the SIMD crime rate for the police.uk crimes in Scotland, and the reverse elsewhere)."""
+    present = {v.id for v in values if v.quality != "not_available"}
+    covered: set[str] = set()
+    for spec in store.scored:
+        for target in spec.substitute_for:
+            if spec.id in present:
+                covered.add(target)
+            if target in present:
+                covered.add(spec.id)
+    return covered
+
+
+KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_exposure",
              "flood_risk", "tree_canopy", "gp_distance", "station_distance",
              "gigabit_broadband", "well_run_pubs", "households_with_children"]  # fmt: skip
 
@@ -74,6 +90,9 @@ def area_profile(
     ]
     scored = [indicator_value(store, row, i.id) for i in store.scored]
     ranked = sorted((v for v in scored if v.score is not None), key=lambda v: v.score)
+    unavailable = [
+        v for v in scored if v.quality == "not_available" and v.id not in _covered(store, scored)
+    ]
     # Each caveat is tied to the indicator it is about: council tax is council-wide
     # everywhere by nature and needs no caveat, Welsh school quality does
     flag_codes = sorted(
@@ -88,7 +107,7 @@ def area_profile(
             if row.get("q__secondary_school_quality") == "broadcast_lad"
             else set()
         )
-        | ({"not_available"} if any(v.quality == "not_available" for v in scored) else set())
+        | ({"not_available"} if unavailable else set())
     )
     flags = [FLAG_TEXT[c] for c in flag_codes if c in FLAG_TEXT]
     pct = scores.get("overall_pct")

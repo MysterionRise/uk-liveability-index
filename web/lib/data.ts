@@ -11,7 +11,7 @@ import type { ScoredIndicator } from "./scoring";
 
 export const MISSING_U16 = 65535;
 /** Layout of the data pack this app reads (lix_core.config.SERVE_SCHEMA_VERSION) */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export interface IndicatorMeta extends ScoredIndicator {
   label: string;

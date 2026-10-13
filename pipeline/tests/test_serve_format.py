@@ -3,7 +3,7 @@
 import polars as pl
 import pytest
 
-from lix_core.config import IndicatorSpec, load_indicators
+from lix_core.config import SERVE_SCHEMA_VERSION, IndicatorSpec, load_indicators
 from lix_core.quality import QUALITY_CODE
 from lix_pipeline import indicators as ind
 from lix_pipeline.qa.validate import indicator_coverage_problems
@@ -115,7 +115,7 @@ def test_manifest_has_geography_and_quality_levels():
     from lix_pipeline.serve.scores import manifest
 
     m = manifest({}, lsoa_count=4, area_counts={"E": 2, "W": 2})
-    assert m["schema_version"] == 2
+    assert m["schema_version"] == SERVE_SCHEMA_VERSION
     assert m["geography"]["active"] == ["E", "W"]
     assert m["geography"]["area_counts"] == {"E": 2, "W": 2}
     assert m["geography"]["nations"]["W"]["levels"]["low"]["count"] == 1917

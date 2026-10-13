@@ -10,7 +10,7 @@ lix validate serve             # check data/serve (or --dir another serve direct
 lix validate places            # anchor checks of the face-validity review
 lix qa places                  # write docs/validation.md
 lix refresh --dry-run          # what a refresh would rebuild; lix refresh does it
-lix demo-data --lad E08000035 E06000043 --out fixtures/demo   # small dataset for CI/demos
+lix demo-data --out fixtures/demo   # small dataset for CI/demos (nations.yaml demo_upper)
 """
 
 import argparse
@@ -148,11 +148,15 @@ def _validate(args: argparse.Namespace) -> int:
 def _demo_data(args: argparse.Namespace) -> int:
     from pathlib import Path
 
+    from lix_core.codes import active_nations
+    from lix_core.config import load_nations
     from lix_pipeline.qa.validate import validate_serve
     from lix_pipeline.serve.demo import build_demo
 
+    cfg = load_nations().nations
+    lads = args.lad or [c for n in active_nations() for c in cfg[n].demo_upper]
     out = Path(args.out)
-    build_demo(args.lad, out)
+    build_demo(lads, out)
     problems = validate_serve(out / "serve")
     for p in problems:
         print(f"FAIL {p}")
@@ -299,7 +303,11 @@ def main(argv: list[str] | None = None) -> None:
     qa.set_defaults(func=_qa)
 
     demo = sub.add_parser("demo-data", help="Cut a small serve dataset from a full build")
-    demo.add_argument("--lad", nargs="+", required=True, help="Local authority codes to keep")
+    demo.add_argument(
+        "--lad",
+        nargs="+",
+        help="Upper-tier area codes to keep (default: each active nation's demo_upper)",
+    )
     demo.add_argument("--out", default="fixtures/demo", help="Writes <out>/serve/")
     demo.set_defaults(func=_demo_data)
 

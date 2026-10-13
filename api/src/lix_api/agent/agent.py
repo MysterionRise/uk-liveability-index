@@ -209,7 +209,7 @@ def rank_areas(
         urban: True for towns and cities only, False for rural areas only
         limit: how many to return (max 20)
         sort_by: "overall" (the weighted score) or one measure: "theme:<id>" (e.g.
-            "theme:safety") or "indicator:<id>" (e.g. "indicator:road_rail_noise" for the
+            "theme:safety") or "indicator:<id>" (e.g. "indicator:noise_exposure" for the
             quietest areas, "indicator:house_price" for the cheapest); the map is then
             coloured by that measure and the weights are left alone
     """
