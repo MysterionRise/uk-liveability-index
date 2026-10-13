@@ -12,3 +12,4 @@ that. Cutting one: `make refresh`, commit the lockfile, `make data-release`
 | Release | Built | Data to | Serve schema |
 |---|---|---|---|
 | [data-2026-10](https://github.com/MysterionRise/uk-liveability-index/releases/tag/data-2026-10) | 2026-10-11 | 2026-10-11 | 2 |
+| [data-2026-10.1](https://github.com/MysterionRise/uk-liveability-index/releases/tag/data-2026-10.1) | 2026-10-13 | 2026-10-13 | 3 |
