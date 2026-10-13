@@ -1,6 +1,6 @@
 [project]
 name = "lix-api"
-version = "0.4.0"
+version = "0.4.1"
 description = "UK Liveability Index: REST API, AI agent (AG-UI) and MCP server"
 requires-python = ">=3.11"
 dependencies = [

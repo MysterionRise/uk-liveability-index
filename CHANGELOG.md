@@ -4,6 +4,25 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.1] - 2026-10-13
+
+### Fixed
+
+- Scottish flood risk flagged the wrong homes: the SEPA query took the polygon index
+  where the receptor index was needed (#99). Scottish road danger was zero because the
+  collisions table had been staged before Scotland was switched on and the refresh planner
+  saw no reason to re-stage it; a table or indicator set built for another set of nations
+  is stale now (#100). Both ship in data release data-2026-10.2.
+- Ranking within a nation ("Scotland", "Wales") and ranking by house price returned 500,
+  and the assistant's turn died with them; a Polars failure inside a tool is a retry for
+  the model now (#101).
+- Welsh catalogue entries were split at an unquoted comma, so preset and theme
+  descriptions were cut in the app; the catalogue check flags such entries (#106).
+- GP practices in Scotland are credited to Public Health Scotland, not NHS England (#109).
+- The README, development and methodology numbers the pack contradicted (#107).
+- The release smoke test follows the serve schema and the workflow can run the test code
+  from another ref (#97).
+
 ## [0.4.0] - 2026-10-13
 
 ### Added
@@ -269,6 +288,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.4.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.4.1
 [0.4.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.4.0
 [0.3.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.3
 [0.3.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.2
