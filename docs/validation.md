@@ -12,13 +12,13 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 | Place | Neighbourhood | Overall | Amenities | Community | Education | Environment | Health | Housing | Safety | Transport |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Morningside | Morningside West and Craighouse, City of Edinburgh | 71 | 56 | 87 | 86 | 93 | 100 | 29 | 69 | 50 |
+| Morningside | Morningside West and Craighouse, City of Edinburgh | 73 | 71 | 87 | 86 | 93 | 100 | 29 | 69 | 50 |
 | Niddrie | Niddrie, City of Edinburgh | 54 | 52 | 7 | 59 | 90 | 100 | 32 | 36 | 56 |
-| Bearsden | Kilmardinny West, East Dunbartonshire | 71 | 48 | 83 | 86 | 94 | 96 | 28 | 83 | 49 |
-| Govan | Govan and Linthouse, Glasgow City | 57 | 55 | 7 | 48 | 82 | 100 | 52 | 30 | 80 |
-| Fort William | Fort William South, Highland | 52 | 51 | 45 | 23 | 93 | 81 | 46 | 52 | 26 |
+| Bearsden | Kilmardinny West, East Dunbartonshire | 72 | 57 | 83 | 86 | 94 | 96 | 28 | 83 | 49 |
+| Govan | Govan and Linthouse, Glasgow City | 58 | 67 | 7 | 48 | 82 | 100 | 52 | 30 | 80 |
+| Fort William | Fort William South, Highland | 53 | 56 | 45 | 23 | 93 | 81 | 46 | 52 | 26 |
 | Lerwick | Lerwick North, Shetland Islands | 57 | 52 | 53 | 53 | 75 | 95 | 50 | 48 | 31 |
-| St Andrews | St Andrews Central, Fife | 65 | 64 | 88 | 75 | 87 | 79 | 15 | 62 | 47 |
+| St Andrews | St Andrews Central, Fife | 68 | 87 | 88 | 75 | 87 | 79 | 15 | 62 | 47 |
 | Pontcanna | Pontcanna, Cardiff | 72 | 83 | 80 | 96 | 81 | 87 | 29 | 32 | 86 |
 | Rhyl | Rhyl North, Denbighshire | 54 | 70 | 11 | 27 | 72 | 98 | 62 | 18 | 71 |
 | Merthyr Tydfil | Gelli-deg & Town, Merthyr Tydfil | 56 | 68 | 18 | 57 | 80 | 84 | 60 | 17 | 65 |
@@ -36,7 +36,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 | Harrogate | Central Harrogate, North Yorkshire | 67 | 85 | 67 | 65 | 79 | 82 | 34 | 40 | 82 |
 | Winchester | Winchester East, Winchester | 67 | 74 | 42 | 78 | 84 | 94 | 41 | 45 | 78 |
 | St Albans | St Albans Central, St Albans | 69 | 83 | 73 | 94 | 74 | 81 | 30 | 28 | 92 |
-| Royal Sutton Coldfield | Sutton Coldfield South & Central, Birmingham | 67 | 69 | 62 | 82 | 74 | 85 | 44 | 41 | 80 |
+| Royal Sutton Coldfield | Sutton Coldfield South & Central, Birmingham | 67 | 69 | 62 | 83 | 74 | 85 | 44 | 41 | 80 |
 | Cambridge | Central & West Cambridge, Cambridge | 68 | 78 | 95 | 84 | 79 | 87 | 13 | 32 | 77 |
 | Chipping Campden | Willersey, Chipping Campden & Blockley, Cotswold | 51 | 25 | 78 | 41 | 73 | 60 | 29 | 57 | 42 |
 | Holsworthy | Holsworthy, Bradworthy & Welcombe, Torridge | 47 | 30 | 53 | 23 | 80 | 53 | 34 | 74 | 27 |
@@ -63,7 +63,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Morningside** (Morningside West and Craighouse). Affluent south Edinburgh, cafés, Bruntsfield Links, good schools, expensive. Flags: broadcast_lad, imputed, not_available.
 
-- ✅ amenities score ≥ 50: 56.3 ⚓
+- ✅ amenities score ≥ 50: 71.4 ⚓
 - ✅ community score ≥ 60: 86.9 ⚓
 - ✅ housing score ≤ 50: 29.5
 
@@ -97,7 +97,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **St Andrews** (St Andrews Central). University town, cafés and pubs, a well-off population. Flags: broadcast_lad, imputed, not_available.
 
-- ✅ amenities score ≥ 60: 64.5 ⚓
+- ✅ amenities score ≥ 60: 86.7 ⚓
 - ✅ community score ≥ 55: 87.8 ⚓
 
 **Pontcanna** (Pontcanna). Affluent inner Cardiff, cafés and parks, expensive. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.

@@ -4,7 +4,9 @@ A pub counts as well run when:
 
 - it is mapped in OpenStreetMap as ``amenity=pub`` (so nightclubs and bars, which share
   the FSA's "Pub/bar/nightclub" type, are left out), and
-- it matches an FSA record rated 4 or 5 at an inspection in the last three years.
+- it matches an FSA record rated 4 or 5 at an inspection in the last three years (in
+  Scotland, where the Food Hygiene Information Scheme grades Pass or Improvement
+  Required rather than 0–5, a Pass in the last three years).
 
 Matching uses the OSM ``fhrs:id`` tag where mappers added one (about 63% of pubs),
 whatever the FSA business type (food-led pubs often register as restaurants and inns
@@ -36,6 +38,8 @@ PUB_LIKE_TYPES = [PUB_BAR_NIGHTCLUB, 1, 7842]  # + Restaurant/Cafe/Canteen, Hote
 MATCH_RADIUS_M = 75
 NAME_SIMILARITY = 80
 RATING_MAX_AGE_DAYS = 3 * 365
+# Scotland's Food Hygiene Information Scheme outcomes that count as well run
+FHIS_PASS = ["Pass", "Pass and Eat Safe"]
 OVERTURE_MIN_CONFIDENCE = 0.8
 DUPLICATE_RADIUS_M = 60
 DUPLICATE_ANY_NAME_M = 20  # this close, a different name is still the same pub
@@ -67,10 +71,11 @@ def match_pubs(
     """Attach the matching FSA record to each OSM pub (by fhrs:id, else near + similar name).
 
     ``osm``: osm_id, name, x, y, fhrs_id (string, may hold several ids separated by ";").
-    ``fsa``: fhrs_id (int), name, x, y, rating, rating_date — every business, since an
-    explicit fhrs:id link is trusted whatever the business type.
+    ``fsa``: fhrs_id (int), name, x, y, rating, rating_status, rating_date — every
+    business, since an explicit fhrs:id link is trusted whatever the business type.
     ``spatial_fsa``: the subset eligible for name + distance matching (default ``fsa``).
-    Returns ``osm`` with fsa_id, rating, rating_date and match ("fhrs_id", "spatial", None).
+    Returns ``osm`` with fsa_id, rating, rating_status, rating_date and match ("fhrs_id",
+    "spatial", None).
     """
     spatial_fsa = fsa if spatial_fsa is None else spatial_fsa
     # 1. Explicit links from OSM's fhrs:id tag
@@ -78,7 +83,7 @@ def match_pubs(
         osm.select("osm_id", pl.col("fhrs_id").str.split(";"))
         .explode("fhrs_id")
         .with_columns(pl.col("fhrs_id").str.strip_chars().cast(pl.Int64, strict=False))
-        .join(fsa.select(pl.col("fhrs_id"), "rating", "rating_date"), on="fhrs_id")
+        .join(fsa.select(pl.col("fhrs_id"), "rating", "rating_status", "rating_date"), on="fhrs_id")
         .sort("rating_date", descending=True, nulls_last=True)
         .unique("osm_id", keep="first")
         .rename({"fhrs_id": "fsa_id"})
@@ -98,7 +103,7 @@ def match_pubs(
             np.column_stack([todo["x"].to_numpy(), todo["y"].to_numpy()]), r=MATCH_RADIUS_M
         )
         cand_norm = cand["_norm"].to_list()
-        found = {"osm_id": [], "fsa_id": [], "rating": [], "rating_date": []}
+        found = {"osm_id": [], "fsa_id": [], "rating": [], "rating_status": [], "rating_date": []}
         for osm_id, name, idx in zip(todo["osm_id"].to_list(), names, near):
             if not name or not idx:
                 continue
@@ -111,6 +116,7 @@ def match_pubs(
                 found["osm_id"].append(osm_id)
                 found["fsa_id"].append(row["fhrs_id"])
                 found["rating"].append(row["rating"])
+                found["rating_status"].append(row["rating_status"])
                 found["rating_date"].append(row["rating_date"])
         spatial = pl.DataFrame(
             found,
@@ -118,6 +124,7 @@ def match_pubs(
                 "osm_id": pl.Int64,
                 "fsa_id": pl.Int64,
                 "rating": pl.Int8,
+                "rating_status": pl.Utf8,
                 "rating_date": pl.Date,
             },
         ).with_columns(pl.lit("spatial").alias("match"))
@@ -166,13 +173,15 @@ def build_pubs(ctx, as_of: date | None = None) -> pl.DataFrame:
     # Ids are unique per source only; key on a row number while matching
     keyed = candidates.with_row_index("_key").with_columns(pl.col("_key").cast(pl.Int64))
     fsa = ctx.staged("fsa_fhrs").select(
-        "fhrs_id", "name", "x", "y", "rating", "rating_date", "business_type_id"
+        "fhrs_id", "name", "x", "y", "rating", "rating_status", "rating_date", "business_type_id"
     )
     matched = match_pubs(
         keyed.select(pl.col("_key").alias("osm_id"), "name", "x", "y", "fhrs_id"),
         fsa,
         spatial_fsa=fsa.filter(pl.col("business_type_id").is_in(PUB_LIKE_TYPES)),
-    ).select(pl.col("osm_id").alias("_key"), "fsa_id", "rating", "rating_date", "match")
+    ).select(
+        pl.col("osm_id").alias("_key"), "fsa_id", "rating", "rating_status", "rating_date", "match"
+    )
 
     pubs = keyed.join(matched, on="_key", how="left").drop("_key")
     recent = pl.col("rating_date") >= pl.lit(as_of - timedelta(days=RATING_MAX_AGE_DAYS))
@@ -180,8 +189,10 @@ def build_pubs(ctx, as_of: date | None = None) -> pl.DataFrame:
         pl.col(t).is_in(["yes", "only", "real_ale"]).fill_null(False).cast(pl.Int8)
         for t in CHARACTER_TAGS
     )
+    # A 0–5 rating of 4 or 5 (FHRS), or a Pass under Scotland's FHIS, which has no numbers
+    good = (pl.col("rating") >= 4) | pl.col("rating_status").is_in(FHIS_PASS)
     pubs = pubs.with_columns(
-        ((pl.col("rating") >= 4) & recent).fill_null(False).alias("well_run"),
+        (good & recent).fill_null(False).alias("well_run"),
         (1 + (character * CHARACTER_BONUS).clip(0, MAX_BONUS)).alias("weight"),
         pl.col("source").replace_strict({k: v[0] for k, v in SOURCES.items()}).alias("source_name"),
         pl.col("source").replace_strict({k: v[1] for k, v in SOURCES.items()}).alias("licence"),

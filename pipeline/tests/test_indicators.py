@@ -152,6 +152,7 @@ class TestPubMatching:
             "y": [0.0, 0.0, 0.0, 0.0],
             "rating": [5, 4, 5, 5],
             "rating_date": [date(2025, 1, 1)] * 4,
+            "rating_status": ["5", "4", "Pass", "3"],
         })  # fmt: skip
         out = match_pubs(osm, fsa).sort("osm_id")
         assert out["match"].to_list() == ["fhrs_id", "spatial", None, None]
@@ -325,3 +326,58 @@ def test_nearest_beyond_the_cap_can_count_as_the_cap():
     assert plain["value"].to_list()[1] is None  # nothing within 50 km
     capped = nearest(ctx, "ae_sites", "type", ["type1"], beyond_cap=50_000).sort("lsoa21cd")
     assert capped["value"].to_list() == pytest.approx([1000.0, 50_000.0])
+
+
+def test_well_run_counts_a_recent_scottish_pass_like_a_high_rating():
+    from lix_pipeline.indicators.pubs import build_pubs
+
+    osm = pl.DataFrame(
+        {
+            "osm_type": ["node"] * 3,
+            "osm_id": [1, 2, 3],
+            "name": ["The Crown", "The Thistle", "The Anchor"],
+            "x": [0.0, 1000.0, 2000.0],
+            "y": [0.0, 0.0, 0.0],
+            "lon": [0.0, 0.0, 0.0],
+            "lat": [50.0, 50.0, 50.0],
+            "fhrs_id": ["1", "2", "3"],
+            "value": ["pub"] * 3,
+            "real_ale": [None] * 3,
+            "food": [None] * 3,
+            "outdoor_seating": [None] * 3,
+            "beer_garden": [None] * 3,
+            "microbrewery": [None] * 3,
+        }
+    )
+    fsa = pl.DataFrame(
+        {
+            "fhrs_id": [1, 2, 3],
+            "name": ["The Crown", "The Thistle", "The Anchor"],
+            "x": [0.0, 1000.0, 2000.0],
+            "y": [0.0, 0.0, 0.0],
+            "rating": [5, None, None],
+            "rating_status": ["5", "Pass", "Improvement Required"],
+            "rating_date": [date(2025, 6, 1)] * 3,
+            "business_type_id": [7843] * 3,
+        }
+    )
+    overture = pl.DataFrame(
+        {"id": [], "name": [], "x": [], "y": [], "lon": [], "lat": [], "confidence": []},
+        schema={
+            "id": pl.Utf8,
+            "name": pl.Utf8,
+            "x": pl.Float64,
+            "y": pl.Float64,
+            "lon": pl.Float64,
+            "lat": pl.Float64,
+            "confidence": pl.Float64,
+        },
+    )
+    pubs = build_pubs(
+        FakeContext(osm_pois=osm, fsa_fhrs=fsa, overture_pubs=overture), as_of=date(2026, 1, 1)
+    )
+    assert dict(zip(pubs["name"].to_list(), pubs["well_run"].to_list())) == {
+        "The Crown": True,
+        "The Thistle": True,
+        "The Anchor": False,
+    }
