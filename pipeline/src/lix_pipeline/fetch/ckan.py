@@ -38,7 +38,7 @@ def resolve_resource(access: CkanAccess, session: requests.Session) -> dict:
     if access.all_matches:
         # One edition for the set: the newest resource's change date; the files are
         # downloaded together and named by their last URL segment
-        urls = {r["url"].rsplit("/", 1)[-1]: r["url"] for r in matches}
+        urls = {r["url"].rsplit("/", 1)[-1].rsplit(".", 1)[0]: r["url"] for r in matches}
         modified = max((r.get("last_modified") or r.get("created") or "") for r in matches)
         return {
             "url": latest["url"],

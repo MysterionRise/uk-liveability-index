@@ -199,7 +199,16 @@ def build_areas(features: pl.DataFrame) -> pl.DataFrame:
     none = pl.lit(None, pl.Utf8)
     # level, code, English name, Welsh name, Gaelic name, which rows
     levels = [
-        ("msoa", "msoa21cd", pl.col("msoa_name"), other("msoa_name_cy"), none, pl.lit(True)),
+        # A nation whose small areas are their own mid tier (Northern Ireland's Super
+        # Data Zones) gets no second search row for the same code
+        (
+            "msoa",
+            "msoa21cd",
+            pl.col("msoa_name"),
+            other("msoa_name_cy"),
+            none,
+            pl.col("msoa21cd") != pl.col("lsoa21cd"),
+        ),
         ("lad", "lad_cd", pl.col("lad_nm"), other("lad_nm_cy"), other("lad_nm_gd"), pl.lit(True)),
         ("region", "rgn_cd", pl.col("rgn_nm"), none, none, pl.col("rgn_cd") != pl.col("ctry_cd")),
         ("nation", "ctry_cd", pl.col("nation_name"), none, none, pl.lit(True)),

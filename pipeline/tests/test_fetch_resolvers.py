@@ -468,6 +468,40 @@ class TestCkan:
         resolved = ckan.resolve_resource(access, make_session())
         assert resolved["url"] == "https://x/q1.csv"
 
+    def test_all_matches_returns_every_file_as_one_edition(self, httpserver):
+        httpserver.expect_request("/api/3/action/package_show").respond_with_json(
+            {
+                "result": {
+                    "resources": [
+                        {
+                            "name": "Belfast",
+                            "url": "https://x/belfast_all-sales.csv",
+                            "last_modified": "2025-08-22T00:00:00",
+                        },
+                        {
+                            "name": "Derry",
+                            "url": "https://x/derry_all-sales.csv",
+                            "last_modified": "2025-08-21T00:00:00",
+                        },
+                        {"name": "Belfast detached", "url": "https://x/belfast_det.csv"},
+                    ]
+                }
+            }  # fmt: skip
+        )
+        access = CkanAccess(
+            type="ckan",
+            api=httpserver.url_for("/api/3/action"),
+            package="prices",
+            resource_regex="_all-sales\\.csv$",
+            all_matches=True,
+        )
+        resolved = ckan.resolve_resource(access, make_session())
+        assert resolved["urls"] == {
+            "belfast_all-sales": "https://x/belfast_all-sales.csv",
+            "derry_all-sales": "https://x/derry_all-sales.csv",
+        }
+        assert resolved["modified"] == "2025-08-22T00:00:00"
+
     def test_no_match_is_an_error(self, httpserver):
         httpserver.expect_request("/api/3/action/package_show").respond_with_json(
             {"result": {"resources": [{"name": "other", "url": "u"}]}}

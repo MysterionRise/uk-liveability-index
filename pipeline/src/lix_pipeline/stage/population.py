@@ -145,11 +145,60 @@ def _england_wales() -> pl.DataFrame:
     return out
 
 
+def tidy_mye(flat: pl.DataFrame) -> pl.DataFrame:
+    """NISRA's ``Flat`` sheet (area, year, sex, age band, count) → one row per Super Data
+    Zone for the latest year: persons, children under 16 and people 65 and over. The
+    bands are broad, so there is no median age."""
+
+    def col(name: str) -> str:
+        return next(c for c in flat.columns if c.strip().lower() == name.lower())
+
+    df = flat.select(
+        pl.col(col("Area_code")).cast(pl.Utf8).str.strip_chars().alias("lsoa21cd"),
+        pl.col(col("Year")).cast(pl.Int64, strict=False).alias("year"),
+        pl.col(col("Sex")).cast(pl.Utf8).str.strip_chars().alias("sex"),
+        pl.col(col("Age")).cast(pl.Utf8).str.strip_chars().str.replace(r"^00-", "0-").alias("age"),
+        pl.col(col("MYE")).cast(pl.Float64, strict=False).round().cast(pl.Int32).alias("n"),
+    ).filter(pl.col("lsoa21cd").str.starts_with("N21") & (pl.col("sex") == "All Persons"))
+    year = int(df["year"].max())
+    latest = df.filter(pl.col("year") == year)
+
+    def band(label: str) -> pl.DataFrame:
+        return latest.filter(pl.col("age") == label).select("lsoa21cd", pl.col("n").alias(label))
+
+    return (
+        band("All ages")
+        .join(band("0-15"), on="lsoa21cd", how="left")
+        .join(band("65+"), on="lsoa21cd", how="left")
+        .select(
+            "lsoa21cd",
+            pl.col("All ages").alias("population"),
+            pl.col("0-15").alias("pop_children_0_15"),
+            pl.col("65+").alias("pop_65_plus"),
+            pl.lit(year, dtype=pl.Int16).alias("pop_year"),
+            pl.lit(None, pl.Float32).alias("median_age"),
+        )
+        .sort("lsoa21cd")
+    )
+
+
+def _northern_ireland() -> pl.DataFrame:
+    reader = fastexcel.read_excel(raw_file("nisra_sdz_mye", "xlsx"))
+    out = tidy_mye(reader.load_sheet_by_name("Flat").to_polars())
+    logger.info(
+        f"Population mid-{out['pop_year'][0]}: {out.height:,} Super Data Zones, "
+        f"{out['population'].sum():,} people"
+    )
+    return out
+
+
 def stage_population() -> pl.LazyFrame:
     frames = []
     if any(n in active_nations() for n in ("E", "W")):
         frames.append(_england_wales())
     if "S" in active_nations():
         frames.append(_scotland())
+    if "N" in active_nations():
+        frames.append(_northern_ireland())
     out = pl.concat(frames, how="diagonal_relaxed").filter(in_scope("lsoa21cd")).sort("lsoa21cd")
     return out.lazy()

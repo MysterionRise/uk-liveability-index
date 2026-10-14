@@ -96,6 +96,57 @@
       "version": null
     }
   },
+  "bso_dental": {
+    "fetched": {
+      "bytes": 37145,
+      "etag": "\"940c42c16723a402e9b18e370a2a0d1e\"",
+      "fetched_at": "2026-10-14T15:48:05.494085+00:00",
+      "last_modified": "Thu, 30 Jul 2026 08:42:45 GMT",
+      "sha256": "8a17ef1888a3d32268f3ca34012963fb917f0a5b52eac0ec64fcab67c3184e82",
+      "version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/bbfa77f8-444d-49f3-bed3-ae2e50514b08/download/dental-surgery-list-as-at-30th-june-2026.csv"
+    },
+    "resolved": {
+      "modified": "2026-07-30T08:42:44.845473",
+      "resolved_at": "2026-10-14T15:48:04+00:00",
+      "title": "Dental Surgery List June 2026",
+      "url": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/bbfa77f8-444d-49f3-bed3-ae2e50514b08/download/dental-surgery-list-as-at-30th-june-2026.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/bbfa77f8-444d-49f3-bed3-ae2e50514b08/download/dental-surgery-list-as-at-30th-june-2026.csv"
+    }
+  },
+  "bso_dispensing": {
+    "fetched": {
+      "bytes": 4617559,
+      "etag": "\"261deaef276f16ea26972d14f811b121\"",
+      "fetched_at": "2026-10-14T15:48:07.850892+00:00",
+      "last_modified": "Tue, 06 Oct 2026 09:33:47 GMT",
+      "sha256": "fa98ca4aec4a3e52d1af0776d3bf3de7af3eeeea381df6f78df7c6e5ef10511f",
+      "version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/ea21e150-a87d-463e-9af7-05848426eea5/download/05.-dispensed-items-by-gp-and-pharmacy-aug-2026.csv"
+    },
+    "resolved": {
+      "modified": "2026-10-06T09:33:45.576724",
+      "resolved_at": "2026-10-14T15:48:06+00:00",
+      "title": "Dispensed Items by GP and Pharmacy - August 2026",
+      "url": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/ea21e150-a87d-463e-9af7-05848426eea5/download/05.-dispensed-items-by-gp-and-pharmacy-aug-2026.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/ea21e150-a87d-463e-9af7-05848426eea5/download/05.-dispensed-items-by-gp-and-pharmacy-aug-2026.csv"
+    }
+  },
+  "bso_gp_list_sizes": {
+    "fetched": {
+      "bytes": 38264,
+      "etag": "\"806462502c3488af9222cf9dd1cef33b\"",
+      "fetched_at": "2026-10-14T15:48:03.647580+00:00",
+      "last_modified": "Tue, 25 Aug 2026 07:47:59 GMT",
+      "sha256": "4abd38615f378a1762ce4caceb1d360d7880aaade94ed33002c0c7f213a1149b",
+      "version": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv"
+    },
+    "resolved": {
+      "modified": "2026-08-25T07:47:58.413182",
+      "resolved_at": "2026-10-14T15:48:02+00:00",
+      "title": "GP Practice Reference File - July 2026",
+      "url": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv"
+    }
+  },
   "care_inspectorate": {
     "fetched": {
       "bytes": 9859714,
@@ -302,6 +353,20 @@
       "version": "August 2026"
     }
   },
+  "council_names_ga": {
+    "fetched": {
+      "bytes": 1311,
+      "fetched_at": "2026-10-14T15:47:33+00:00",
+      "sha256": "9c8c1364f0532226a3687965991aceb803c82dc17e142441bda6a8e594c3526f",
+      "version": "9c8c1364f0532226"
+    },
+    "resolved": {
+      "path": "config/data/council_names_ga.csv",
+      "resolved_at": "2026-10-14T15:47:33+00:00",
+      "url": null,
+      "version": "9c8c1364f0532226"
+    }
+  },
   "council_names_gd": {
     "fetched": {
       "bytes": 3876,
@@ -346,6 +411,309 @@
       "resolved_at": "2026-10-13T13:19:55+00:00",
       "url": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods",
       "version": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods"
+    }
+  },
+  "daera_noise_r3": {
+    "fetched": {
+      "bytes": 94223212,
+      "etag": "\"5cdd02e1ee5dc0c6f495798da404b881-6\"",
+      "extracted": [
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_l16h.dbf",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_l16h.prj",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_l16h.shp",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_l16h.shx",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lday.dbf",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lday.prj",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lday.shp",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lday.shx",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lden.dbf",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lden.prj",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lden.shp",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lden.shx",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_leve.dbf",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_leve.prj",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_leve.shp",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_leve.shx",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lngt.dbf",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lngt.prj",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lngt.shp",
+        "END_NoiseData_Round3/Agglomeration/BCA/R3_bca_lngt.shx",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_l16h.dbf",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_l16h.prj",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_l16h.shp",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_l16h.shx",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lday.dbf",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lday.prj",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lday.shp",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lday.shx",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lden.dbf",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lden.prj",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lden.shp",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lden.shx",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_leve.dbf",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_leve.prj",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_leve.shp",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_leve.shx",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lngt.dbf",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lngt.prj",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lngt.shp",
+        "END_NoiseData_Round3/Agglomeration/Consolidated/R3_con_lngt.shx",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_l16h.dbf",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_l16h.prj",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_l16h.shp",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_l16h.shx",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lday.dbf",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lday.prj",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lday.shp",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lday.shx",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lden.dbf",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lden.prj",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lden.shp",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lden.shx",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_leve.dbf",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_leve.prj",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_leve.shp",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_leve.shx",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lngt.dbf",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lngt.prj",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lngt.shp",
+        "END_NoiseData_Round3/Agglomeration/Industry/R3_agg_ind_lngt.shx",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l16h.dbf",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l16h.prj",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l16h.shp",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l16h.shx",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l18hr.dbf",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l18hr.prj",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l18hr.shp",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l18hr.shx",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l6hr.dbf",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l6hr.prj",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l6hr.shp",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_l6hr.shx",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lday.dbf",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lday.prj",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lday.shp",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lday.shx",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lden.dbf",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lden.prj",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lden.shp",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lden.shx",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_leve.dbf",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_leve.prj",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_leve.shp",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_leve.shx",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lnight.dbf",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lnight.prj",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lnight.shp",
+        "END_NoiseData_Round3/Agglomeration/Rail/R3_agg_rail_lnight.shx",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_l16h.dbf",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_l16h.prj",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_l16h.shp",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_l16h.shx",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_l18h.dbf",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_l18h.prj",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_l18h.shp",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_l18h.shx",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lday.dbf",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lday.prj",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lday.shp",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lday.shx",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lden.dbf",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lden.prj",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lden.shp",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lden.shx",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_leve.dbf",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_leve.prj",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_leve.shp",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_leve.shx",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lngt.dbf",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lngt.prj",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lngt.shp",
+        "END_NoiseData_Round3/Agglomeration/Roads/R3_agg_road_lngt.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_l16h_all.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_l16h_all.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_l16h_all.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_l16h_all.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_l16h_nom.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_l16h_nom.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_l16h_nom.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_l16h_nom.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lday_all.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lday_all.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lday_all.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lday_all.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lday_nom.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lday_nom.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lday_nom.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lday_nom.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lden_all.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lden_all.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lden_all.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lden_all.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lden_nom.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lden_nom.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lden_nom.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lden_nom.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_leve_all.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_leve_all.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_leve_all.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_leve_all.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_leve_nom.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_leve_nom.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_leve_nom.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_leve_nom.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lngt_all.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lngt_all.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lngt_all.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lngt_all.shx",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lngt_nom.dbf",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lngt_nom.prj",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lngt_nom.shp",
+        "END_NoiseData_Round3/Major_Airports/BIA/R3_bia_lngt_nom.shx",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l16h.dbf",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l16h.prj",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l16h.shp",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l16h.shx",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l18h.dbf",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l18h.prj",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l18h.shp",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l18h.shx",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l6h.dbf",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l6h.prj",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l6h.shp",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_l6h.shx",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lday.dbf",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lday.prj",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lday.shp",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lday.shx",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lden.dbf",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lden.prj",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lden.shp",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lden.shx",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_leve.dbf",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_leve.prj",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_leve.shp",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_leve.shx",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lnight.dbf",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lnight.prj",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lnight.shp",
+        "END_NoiseData_Round3/Major_Rail/R3_mrail_lnight.shx",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_l16h.dbf",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_l16h.prj",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_l16h.shp",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_l16h.shx",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_l18h.dbf",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_l18h.prj",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_l18h.shp",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_l18h.shx",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lday.dbf",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lday.prj",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lday.shp",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lday.shx",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lden.dbf",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lden.prj",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lden.shp",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lden.shx",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_leve.dbf",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_leve.prj",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_leve.shp",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_leve.shx",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lngt.dbf",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lngt.prj",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lngt.shp",
+        "END_NoiseData_Round3/Major_Roads/R3_mroad_lngt.shx"
+      ],
+      "fetched_at": "2026-10-14T15:48:38.236269+00:00",
+      "last_modified": "Mon, 01 Jan 2024 09:12:43 GMT",
+      "sha256": "d8a47666054079c1291b323c3efc12717949e9fe47e0fb574acd28a890c71e5b",
+      "version": "https://admin.opendatani.gov.uk/dataset/c8501ea9-3dbd-4a06-8f7f-7e3f10a31fe3/resource/0942e115-574c-4ba2-8889-0e465cae091e/download/end_noisedata_round3.zip"
+    },
+    "resolved": {
+      "modified": "2018-06-28T15:11:12.030285",
+      "resolved_at": "2026-10-14T15:48:34+00:00",
+      "title": "END Noise Data (Round 3)",
+      "url": "https://admin.opendatani.gov.uk/dataset/c8501ea9-3dbd-4a06-8f7f-7e3f10a31fe3/resource/0942e115-574c-4ba2-8889-0e465cae091e/download/end_noisedata_round3.zip",
+      "version": "https://admin.opendatani.gov.uk/dataset/c8501ea9-3dbd-4a06-8f7f-7e3f10a31fe3/resource/0942e115-574c-4ba2-8889-0e465cae091e/download/end_noisedata_round3.zip"
+    }
+  },
+  "de_schools_nursery": {
+    "fetched": {
+      "bytes": 65575,
+      "etag": "\"6a6a2513-10027\"",
+      "fetched_at": "2026-10-14T15:48:10.877048+00:00",
+      "last_modified": "Wed, 29 Jul 2026 16:06:43 GMT",
+      "sha256": "44727e6b4e7e01c89f1c6883d78192e4f25e1192c8eafe9b6192f4f47870fd27",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20nursery%20schools%20202526%20supp_1.xlsx"
+    },
+    "resolved": {
+      "release": null,
+      "resolved_at": "2026-10-14T15:48:10+00:00",
+      "url": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20nursery%20schools%20202526%20supp_1.xlsx",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20nursery%20schools%20202526%20supp_1.xlsx"
+    }
+  },
+  "de_schools_post_primary": {
+    "fetched": {
+      "bytes": 113722,
+      "etag": "\"6a6a255f-1bc3a\"",
+      "fetched_at": "2026-10-14T15:48:09.872474+00:00",
+      "last_modified": "Wed, 29 Jul 2026 16:07:59 GMT",
+      "sha256": "be812c06d556f61db05ff018863ccb60d109d850df732b4ab8a013c56c7d1e18",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20post%20primary%20schools%20202526%20supp_1.xlsx"
+    },
+    "resolved": {
+      "release": null,
+      "resolved_at": "2026-10-14T15:48:09+00:00",
+      "url": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20post%20primary%20schools%20202526%20supp_1.xlsx",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20post%20primary%20schools%20202526%20supp_1.xlsx"
+    }
+  },
+  "de_schools_preschool": {
+    "fetched": {
+      "bytes": 108844,
+      "etag": "\"69de38d0-1a92c\"",
+      "fetched_at": "2026-10-14T15:48:11.912596+00:00",
+      "last_modified": "Tue, 14 Apr 2026 12:53:36 GMT",
+      "sha256": "acc653f43b5423027156816f6e59d096417d1f9be8f60e51a659fa9a0fc6ea8d",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-04/School%20level%20-%20preschools%20202526.xlsx"
+    },
+    "resolved": {
+      "release": null,
+      "resolved_at": "2026-10-14T15:48:11+00:00",
+      "url": "https://www.education-ni.gov.uk/sites/default/files/2026-04/School%20level%20-%20preschools%20202526.xlsx",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-04/School%20level%20-%20preschools%20202526.xlsx"
+    }
+  },
+  "de_schools_primary": {
+    "fetched": {
+      "bytes": 391949,
+      "etag": "\"6a6a253a-5fb0d\"",
+      "fetched_at": "2026-10-14T15:48:08.884390+00:00",
+      "last_modified": "Wed, 29 Jul 2026 16:07:22 GMT",
+      "sha256": "572751cfb1365b16bd2f7159032d706d5c50ef258a97616deeaf0400d3eecd7f",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20primary%20schools%20202526%20supp_1.xlsx"
+    },
+    "resolved": {
+      "release": null,
+      "resolved_at": "2026-10-14T15:48:08+00:00",
+      "url": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20primary%20schools%20202526%20supp_1.xlsx",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20primary%20schools%20202526%20supp_1.xlsx"
+    }
+  },
+  "de_schools_special": {
+    "fetched": {
+      "bytes": 44406,
+      "etag": "\"69b2e2ad-ad76\"",
+      "fetched_at": "2026-10-14T15:48:12.871304+00:00",
+      "last_modified": "Thu, 12 Mar 2026 15:58:37 GMT",
+      "sha256": "3cb042bbd9014016ccbd8fc51e6e86060abedf632280e623beef4c02f2d5ab4c",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-03/School%20level%20-%20special%20schools%20202526.xlsx"
+    },
+    "resolved": {
+      "release": null,
+      "resolved_at": "2026-10-14T15:48:12+00:00",
+      "url": "https://www.education-ni.gov.uk/sites/default/files/2026-03/School%20level%20-%20special%20schools%20202526.xlsx",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-03/School%20level%20-%20special%20schools%20202526.xlsx"
     }
   },
   "defra_noise_rail_lden": {
@@ -845,6 +1213,64 @@
       "version": null
     }
   },
+  "lps_capital_value_bands": {
+    "fetched": {
+      "bytes": 302386,
+      "etag": "\"67f78d241217d5c9f8ac47d564796d66\"",
+      "fetched_at": "2026-10-14T15:48:01.686841+00:00",
+      "last_modified": "Mon, 01 Jan 2024 08:58:31 GMT",
+      "sha256": "ac2a07395da09e31a300ef7e5e76d8605ef94ecbd82589432ded7465b68f9693",
+      "version": "https://admin.opendatani.gov.uk/dataset/3ce743c4-345e-4720-89c6-8dd97ebe24de/resource/5ee621bf-dd42-4b80-9b11-f152188e1879/download/soa-by-council-tax-band-april-2016.csv"
+    },
+    "resolved": {
+      "modified": "2016-12-19T15:14:50.476038",
+      "resolved_at": "2026-10-14T15:48:00+00:00",
+      "title": "Northern Ireland Capital Value Bands",
+      "url": "https://admin.opendatani.gov.uk/dataset/3ce743c4-345e-4720-89c6-8dd97ebe24de/resource/5ee621bf-dd42-4b80-9b11-f152188e1879/download/soa-by-council-tax-band-april-2016.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/3ce743c4-345e-4720-89c6-8dd97ebe24de/resource/5ee621bf-dd42-4b80-9b11-f152188e1879/download/soa-by-council-tax-band-april-2016.csv"
+    }
+  },
+  "lps_house_prices_ward": {
+    "fetched": {
+      "bytes": 730014,
+      "fetched_at": "2026-10-14T15:47:59.971308+00:00",
+      "files": {
+        "antrim-and-newtownabbey_all-sales.csv": "40d0a7d43a98379c6cf1b7922c84e728a49826c8d661833bc78d609aa93a07bb",
+        "ards-and-north-down_all-sales.csv": "286ae65faf7800736e8712be04f0294cdef0acc391fa884b54a60f8a8718c812",
+        "armagh-city-banbridge-and-craigavon_all-sales.csv": "58234e5bba4b7436c9b29429a198e15e0894e2e41fb69f38ce7731d6cc55b368",
+        "belfast_all-sales.csv": "4a5242e5ec74c804709b202ea542cbe30f2b7ae1ff1de82309d3630b4846a5f0",
+        "causeway-coast-and-glens_all-sales.csv": "2bfa7d9f6799cafb5df55ce221b19e24c26d6e9f4fcf191f4b680bf840b25fe3",
+        "derry-city-and-strabane_all-sales.csv": "64c079b005fcd528e5d9799f3829574fd094647963e32796c7f29daed02ec631",
+        "fermanagh-and-omagh_all-sales.csv": "cdcd637ffd360abe31e5608033b9066f5853205abc6f997fc89888f6009bece4",
+        "lisburn-and-castlereagh_all-sales.csv": "c866ce73e96d6ccc9afab4aaf35da336ab7f16d93ebafb27d3ea2b9c970f273c",
+        "mid-and-east-antrim_all-sales.csv": "0c9873cd1253a3c2b6811c94758050174d6f411c7b790f0678cb305d39102f1d",
+        "mid-ulster_all-sales.csv": "95a4766c763d2a7b5ded69f2b8dd94e7317d576ba2960cb66e209b1331568b28",
+        "newry-mourne-and-down_all-sales.csv": "d65f775d21ffdb92af8640772344bcc8f1a9f1399c15350813f5a31760004e69"
+      },
+      "sha256": "d8a496ae0cb8f5501bb5e8d66d866118f1dff934bb137129cf43c555c77ad91a",
+      "version": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/70e841ab-142e-4595-96a5-ffe70c55a5a1/download/newry-mourne-and-down_all-sales.csv"
+    },
+    "resolved": {
+      "modified": "2025-08-22T09:26:51.782984",
+      "resolved_at": "2026-10-14T15:47:48+00:00",
+      "title": "All Sales in Newry, Mourne and Down Council",
+      "url": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/70e841ab-142e-4595-96a5-ffe70c55a5a1/download/newry-mourne-and-down_all-sales.csv",
+      "urls": {
+        "antrim-and-newtownabbey_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/9a811056-4542-43a5-82e4-7c1651974136/download/antrim-and-newtownabbey_all-sales.csv",
+        "ards-and-north-down_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/d3106ad3-902f-414d-a72f-e40067e2a68b/download/ards-and-north-down_all-sales.csv",
+        "armagh-city-banbridge-and-craigavon_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/c178917e-c3da-455f-b522-c84f8c96f1ec/download/armagh-city-banbridge-and-craigavon_all-sales.csv",
+        "belfast_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/e87d095c-1b9b-4a6c-912f-be02acae17ba/download/belfast_all-sales.csv",
+        "causeway-coast-and-glens_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/11114f5f-7ad3-4e9a-988d-32954db5aaf6/download/causeway-coast-and-glens_all-sales.csv",
+        "derry-city-and-strabane_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/84fe5b3f-c176-4a80-a88d-5a3835a64588/download/derry-city-and-strabane_all-sales.csv",
+        "fermanagh-and-omagh_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/07c4e637-198e-4ea4-92eb-38616f0530af/download/fermanagh-and-omagh_all-sales.csv",
+        "lisburn-and-castlereagh_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/48f0919e-bb14-44e1-b7e5-19c1f115e33a/download/lisburn-and-castlereagh_all-sales.csv",
+        "mid-and-east-antrim_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/ed499b91-97be-4298-9042-d412f2c85e20/download/mid-and-east-antrim_all-sales.csv",
+        "mid-ulster_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/5e983c25-8b7e-4339-9359-ac19d7e85a47/download/mid-ulster_all-sales.csv",
+        "newry-mourne-and-down_all-sales.csv": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/70e841ab-142e-4595-96a5-ffe70c55a5a1/download/newry-mourne-and-down_all-sales.csv"
+      },
+      "version": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/70e841ab-142e-4595-96a5-ffe70c55a5a1/download/newry-mourne-and-down_all-sales.csv"
+    }
+  },
   "lsoa11_lsoa21": {
     "fetched": {
       "bytes": 212593,
@@ -990,6 +1416,253 @@
       "title": "CONSOL_PHARMACY_LIST_202606Q1",
       "url": "https://opendata.nhsbsa.net/dataset/240d142d-df82-4e97-b051-12371519e4e1/resource/ce6c7ad3-a3b5-442f-bb0a-a45d7c962944/download/consol_pharmacy_list_202606q1.csv",
       "version": "https://opendata.nhsbsa.net/dataset/240d142d-df82-4e97-b051-12371519e4e1/resource/ce6c7ad3-a3b5-442f-bb0a-a45d7c962944/download/consol_pharmacy_list_202606q1.csv"
+    }
+  },
+  "ni_domestic_rates": {
+    "fetched": {
+      "bytes": 1945,
+      "fetched_at": "2026-10-14T15:47:34+00:00",
+      "sha256": "f0c2e833f55a702b861f633af2b242bc5661cb2a8ceafe8c4deb28f1ac4919e0",
+      "version": "f0c2e833f55a702b"
+    },
+    "resolved": {
+      "path": "config/data/ni_domestic_rates.csv",
+      "resolved_at": "2026-10-14T15:47:34+00:00",
+      "url": null,
+      "version": "f0c2e833f55a702b"
+    }
+  },
+  "nimdm_2017": {
+    "fetched": {
+      "bytes": 374845,
+      "etag": "\"dbf11d7624ebd3fac591d5cdf723fd95\"",
+      "fetched_at": "2026-10-14T15:47:42.183336+00:00",
+      "last_modified": "Mon, 01 Jan 2024 08:58:31 GMT",
+      "sha256": "a3a4bf6b00474db1b976a3aa62e6ee99301c569adbc8ea806bfaba78a04ffa20",
+      "version": "https://admin.opendatani.gov.uk/dataset/e202fde9-7f0b-4d88-8711-e18a8817cff8/resource/60f31f62-53e7-424c-8fb5-d3b1c66ea277/download/nimdm2017-soa.csv"
+    },
+    "resolved": {
+      "modified": "2017-11-23T15:06:47.966919",
+      "resolved_at": "2026-10-14T15:47:40+00:00",
+      "title": "NIMDM 2017 - SOA",
+      "url": "https://admin.opendatani.gov.uk/dataset/e202fde9-7f0b-4d88-8711-e18a8817cff8/resource/60f31f62-53e7-424c-8fb5-d3b1c66ea277/download/nimdm2017-soa.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/e202fde9-7f0b-4d88-8711-e18a8817cff8/resource/60f31f62-53e7-424c-8fb5-d3b1c66ea277/download/nimdm2017-soa.csv"
+    }
+  },
+  "nisra_census_2021_p1": {
+    "fetched": {
+      "bytes": 28171341,
+      "extracted": [
+        "Census 2021 main statistics phase 1 table list.xlsx",
+        "census-2021-ms-a01.xlsx",
+        "census-2021-ms-a02.xlsx",
+        "census-2021-ms-a03.xlsx",
+        "census-2021-ms-a04.xlsx",
+        "census-2021-ms-a05.xlsx",
+        "census-2021-ms-a06.xlsx",
+        "census-2021-ms-a07.xlsx",
+        "census-2021-ms-a08.xlsx",
+        "census-2021-ms-a09.xlsx",
+        "census-2021-ms-a10.xlsx",
+        "census-2021-ms-a11.xlsx",
+        "census-2021-ms-a12.xlsx",
+        "census-2021-ms-a13.xlsx",
+        "census-2021-ms-a14.xlsx",
+        "census-2021-ms-a15.xlsx",
+        "census-2021-ms-a16.xlsx",
+        "census-2021-ms-a17.xlsx",
+        "census-2021-ms-a19.xlsx",
+        "census-2021-ms-a20.xlsx",
+        "census-2021-ms-a21.xlsx",
+        "census-2021-ms-a22.xlsx",
+        "census-2021-ms-b01.xlsx",
+        "census-2021-ms-b05.xlsx",
+        "census-2021-ms-b08.xlsx",
+        "census-2021-ms-b12.xlsx",
+        "census-2021-ms-b14.xlsx",
+        "census-2021-ms-b15.xlsx",
+        "census-2021-ms-b16.xlsx",
+        "census-2021-ms-b17.xlsx",
+        "census-2021-ms-b19.xlsx",
+        "census-2021-ms-b20.xlsx",
+        "census-2021-ms-b22.xlsx",
+        "census-2021-ms-b23.xlsx",
+        "census-2021-ms-b24.xlsx",
+        "census-2021-ms-e01.xlsx",
+        "census-2021-ms-e02.xlsx",
+        "census-2021-ms-e03.xlsx"
+      ],
+      "fetched_at": "2026-10-14T15:47:36.441066+00:00",
+      "last_modified": "Thu, 30 Nov 2023 08:50:43 GMT",
+      "sha256": "62ed84c012845b8c1e32d2bb38af52f69b1023fb4d39c9afca3030bd3ee37ad3",
+      "version": "Thu, 30 Nov 2023 08:50:43 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-14T15:47:35+00:00",
+      "url": "https://www.nisra.gov.uk/system/files/statistics/census-2021-main-statistics-for-northern-ireland-phase-1-all-tables.zip",
+      "version": "Thu, 30 Nov 2023 08:50:43 GMT"
+    }
+  },
+  "nisra_census_2021_p2": {
+    "fetched": {
+      "bytes": 7976814,
+      "extracted": [
+        "Census 2021 main statistics phase 2 table list.xlsx",
+        "census-2021-ms-b11.xlsx",
+        "census-2021-ms-d01.xlsx",
+        "census-2021-ms-d02.xlsx",
+        "census-2021-ms-d03.xlsx",
+        "census-2021-ms-d04.xlsx",
+        "census-2021-ms-d05.xlsx",
+        "census-2021-ms-d06.xlsx",
+        "census-2021-ms-d07.xlsx",
+        "census-2021-ms-d08.xlsx",
+        "census-2021-ms-d09.xlsx",
+        "census-2021-ms-d10.xlsx",
+        "census-2021-ms-d11.xlsx",
+        "census-2021-ms-d12.xlsx",
+        "census-2021-ms-d13.xlsx",
+        "census-2021-ms-d14.xlsx",
+        "census-2021-ms-d15.xlsx",
+        "census-2021-ms-d16.xlsx",
+        "census-2021-ms-d17.xlsx",
+        "census-2021-ms-e04.xlsx",
+        "census-2021-ms-e05.xlsx",
+        "census-2021-ms-e06.xlsx",
+        "census-2021-ms-e07.xlsx",
+        "census-2021-ms-e08.xlsx",
+        "census-2021-ms-e09.xlsx",
+        "census-2021-ms-e10.xlsx",
+        "census-2021-ms-e11.xlsx",
+        "census-2021-ms-e12.xlsx",
+        "census-2021-ms-e13.xlsx",
+        "census-2021-ms-e14.xlsx",
+        "census-2021-ms-e15.xlsx"
+      ],
+      "fetched_at": "2026-10-14T15:47:38.151807+00:00",
+      "last_modified": "Thu, 30 Nov 2023 08:51:39 GMT",
+      "sha256": "71225a9e71fc2989b9f2b728fc1ea1026cb68408b718b2680712123806a22d72",
+      "version": "Thu, 30 Nov 2023 08:51:39 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-14T15:47:37+00:00",
+      "url": "https://www.nisra.gov.uk/system/files/statistics/census-2021-main-statistics-for-northern-ireland-phase-2-all-tables.zip",
+      "version": "Thu, 30 Nov 2023 08:51:39 GMT"
+    }
+  },
+  "nisra_census_2021_p3": {
+    "fetched": {
+      "bytes": 8840144,
+      "extracted": [
+        "Census 2021 main statistics phase 3 table list.xlsx",
+        "census-2021-ms-a24.xlsx",
+        "census-2021-ms-a25.xlsx",
+        "census-2021-ms-a26.xlsx",
+        "census-2021-ms-a27.xlsx",
+        "census-2021-ms-a28.xlsx",
+        "census-2021-ms-a29.xlsx",
+        "census-2021-ms-a30.xlsx",
+        "census-2021-ms-b04.xlsx",
+        "census-2021-ms-b07.xlsx",
+        "census-2021-ms-b10.xlsx",
+        "census-2021-ms-b25.xlsx",
+        "census-2021-ms-c01.xlsx",
+        "census-2021-ms-c02.xlsx",
+        "census-2021-ms-f01.xlsx",
+        "census-2021-ms-f02.xlsx",
+        "census-2021-ms-f03.xlsx",
+        "census-2021-ms-g01.xlsx",
+        "census-2021-ms-h02.xlsx",
+        "census-2021-ms-h03.xlsx",
+        "census-2021-ms-h04.xlsx",
+        "census-2021-ms-h05.xlsx",
+        "census-2021-ms-h06.xlsx",
+        "census-2021-ms-h09.xlsx",
+        "census-2021-ms-i01.xlsx",
+        "census-2021-ms-i02.xlsx",
+        "census-2021-ms-i03.xlsx",
+        "census-2021-ms-i04.xlsx",
+        "census-2021-ms-k01.xlsx",
+        "census-2021-ms-k02.xlsx"
+      ],
+      "fetched_at": "2026-10-14T15:47:39.899964+00:00",
+      "last_modified": "Thu, 30 Nov 2023 08:52:02 GMT",
+      "sha256": "a557a84be9a58a5083830a548fb1d214a4d1c5ea035ac3d292924570d8c79454",
+      "version": "Thu, 30 Nov 2023 08:52:02 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-14T15:47:39+00:00",
+      "url": "https://www.nisra.gov.uk/system/files/statistics/census-2021-main-statistics-for-northern-ireland-phase-3-all-tables.zip",
+      "version": "Thu, 30 Nov 2023 08:52:02 GMT"
+    }
+  },
+  "nisra_dz21_lookup": {
+    "fetched": {
+      "bytes": 603543,
+      "etag": "\"67fe55a4-93597\"",
+      "fetched_at": "2026-10-14T15:47:31.074977+00:00",
+      "last_modified": "Tue, 15 Apr 2025 12:48:36 GMT",
+      "sha256": "8e2e1f6daaddd2f5b6887ccab1bf9d0bf179f6d0d2ba60ef8e0ebb495a3e1999",
+      "version": "Tue, 15 Apr 2025 12:48:36 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-14T15:47:30+00:00",
+      "url": "https://www.nisra.gov.uk/files/nisra/documents/2025-04/geography-data-zone-and-super-data-zone-lookups-v3.xlsx",
+      "version": "Tue, 15 Apr 2025 12:48:36 GMT"
+    }
+  },
+  "nisra_sdz21_boundaries": {
+    "fetched": {
+      "bytes": 11443250,
+      "etag": "\"63f396e6-ae9c32\"",
+      "extracted": [
+        "SDZ2021.cpg",
+        "SDZ2021.dbf",
+        "SDZ2021.prj",
+        "SDZ2021.shp",
+        "SDZ2021.shx"
+      ],
+      "fetched_at": "2026-10-14T15:47:28.487864+00:00",
+      "last_modified": "Mon, 20 Feb 2023 15:51:02 GMT",
+      "sha256": "cbaedd690a763e7d0cbcc1f490d8b4025bf4f04ebf45d73b5a685c0893dac101",
+      "version": "Mon, 20 Feb 2023 15:51:02 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-14T15:47:27+00:00",
+      "url": "https://www.nisra.gov.uk/files/nisra/publications/geography-sdz2021-esri-shapefile.zip",
+      "version": "Mon, 20 Feb 2023 15:51:02 GMT"
+    }
+  },
+  "nisra_sdz21_centroids": {
+    "fetched": {
+      "bytes": 56971,
+      "extracted": [
+        "census-2021-population-weighted-centroids-data-zone.csv",
+        "census-2021-population-weighted-centroids-super-data-zone.csv"
+      ],
+      "fetched_at": "2026-10-14T15:47:30.017896+00:00",
+      "last_modified": "Thu, 05 Oct 2023 13:28:39 GMT",
+      "sha256": "4822e20b4284458c692ece7e218f6924d6efa23b1cbd9571a416aa98c53b477d",
+      "version": "Thu, 05 Oct 2023 13:28:39 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-14T15:47:29+00:00",
+      "url": "https://www.nisra.gov.uk/system/files/statistics/geography-census-2021-population-weighted-centroids-csv.zip",
+      "version": "Thu, 05 Oct 2023 13:28:39 GMT"
+    }
+  },
+  "nisra_sdz_mye": {
+    "fetched": {
+      "bytes": 2619579,
+      "fetched_at": "2026-10-14T15:47:32.516556+00:00",
+      "last_modified": "Thu, 11 Dec 2025 08:32:05 GMT",
+      "sha256": "294cc821d49e7bc3f6be3557593f7e603ee5dc410962a7bdb163ee11c8e5b534",
+      "version": "Thu, 11 Dec 2025 08:32:05 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-14T15:47:32+00:00",
+      "url": "https://www.nisra.gov.uk/system/files/statistics/2025-12/MYE24_SDZ.xlsx",
+      "version": "Thu, 11 Dec 2025 08:32:05 GMT"
     }
   },
   "nrs_dwellings_by_band": {
@@ -2184,6 +2857,21 @@
       "version": "Mon, 12 Oct 2026 23:31:50 GMT"
     }
   },
+  "osm_ireland": {
+    "fetched": {
+      "bytes": 415411637,
+      "etag": "\"18c2adb5-65dc12de929e1\"",
+      "fetched_at": "2026-10-14T15:48:58.966163+00:00",
+      "last_modified": "Tue, 13 Oct 2026 23:29:00 GMT",
+      "sha256": "0990dece73f10c5db35c3ab357edc8019b219cf9a6fb77959b1443c18143cfee",
+      "version": "Tue, 13 Oct 2026 23:29:00 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-14T15:48:40+00:00",
+      "url": "https://download.geofabrik.de/europe/ireland-and-northern-ireland-latest.osm.pbf",
+      "version": "Tue, 13 Oct 2026 23:29:00 GMT"
+    }
+  },
   "osm_scotland": {
     "fetched": {
       "bytes": 327410338,
@@ -2212,6 +2900,52 @@
       "resolved_at": "2026-10-13T13:20:44+00:00",
       "url": "https://download.geofabrik.de/europe/united-kingdom/wales-latest.osm.pbf",
       "version": "Mon, 12 Oct 2026 23:31:59 GMT"
+    }
+  },
+  "osni_soa01_boundaries": {
+    "fetched": {
+      "bytes": 11518217,
+      "etag": "\"686c0a3485972ecd849ca4ce4f7b9991\"",
+      "extracted": [
+        "soa.shx",
+        "soa.dbf",
+        "soa.shp",
+        "soa.prj"
+      ],
+      "fetched_at": "2026-10-14T15:47:45.036220+00:00",
+      "last_modified": "Mon, 01 Jan 2024 08:58:31 GMT",
+      "sha256": "c5682e64515cce73a7aa5718f88a72b9effb589ed46cde98e019d80d2a23283e",
+      "version": "https://admin.opendatani.gov.uk/dataset/678697e1-ae71-41f3-abba-0ef5f3f352c2/resource/610bbf1d-eb6a-46d2-b527-58c8ee2bfcda/download/soa.zip"
+    },
+    "resolved": {
+      "modified": "2019-01-28T14:23:53.858223",
+      "resolved_at": "2026-10-14T15:47:43+00:00",
+      "title": "SOA2001 (old)",
+      "url": "https://admin.opendatani.gov.uk/dataset/678697e1-ae71-41f3-abba-0ef5f3f352c2/resource/610bbf1d-eb6a-46d2-b527-58c8ee2bfcda/download/soa.zip",
+      "version": "https://admin.opendatani.gov.uk/dataset/678697e1-ae71-41f3-abba-0ef5f3f352c2/resource/610bbf1d-eb6a-46d2-b527-58c8ee2bfcda/download/soa.zip"
+    }
+  },
+  "osni_ward12_boundaries": {
+    "fetched": {
+      "bytes": 6434576,
+      "etag": "\"30173fcd267f7bd1c1db244a9a6d82ca\"",
+      "extracted": [
+        "OSNI_Open_Data_Largescale_Boundaries_Wards_(2012).dbf",
+        "OSNI_Open_Data_Largescale_Boundaries_Wards_(2012).shp",
+        "OSNI_Open_Data_Largescale_Boundaries_Wards_(2012).shx",
+        "OSNI_Open_Data_Largescale_Boundaries_Wards_(2012).prj"
+      ],
+      "fetched_at": "2026-10-14T15:47:47.575472+00:00",
+      "last_modified": "Fri, 14 Nov 2025 15:00:07 GMT",
+      "sha256": "eb1c90b217af2a1633e0acb871cee465bffff1453f503632c460ba55c13c3eba",
+      "version": "https://admin.opendatani.gov.uk/dataset/987e16f4-19bb-4765-807c-abee92ee3439/resource/e6e5fa2a-7a74-439a-847a-d74dad7583ee/download/osni_open_data_largescale_boundaries_wards_2012.zip"
+    },
+    "resolved": {
+      "modified": "2025-11-14T15:00:07.243363",
+      "resolved_at": "2026-10-14T15:47:46+00:00",
+      "title": "Shapefile",
+      "url": "https://admin.opendatani.gov.uk/dataset/987e16f4-19bb-4765-807c-abee92ee3439/resource/e6e5fa2a-7a74-439a-847a-d74dad7583ee/download/osni_open_data_largescale_boundaries_wards_2012.zip",
+      "version": "https://admin.opendatani.gov.uk/dataset/987e16f4-19bb-4765-807c-abee92ee3439/resource/e6e5fa2a-7a74-439a-847a-d74dad7583ee/download/osni_open_data_largescale_boundaries_wards_2012.zip"
     }
   },
   "overture_pubs": {
@@ -3901,6 +4635,91 @@
       "version": "Mon, 28 Sep 2026 05:12:22 GMT"
     }
   },
+  "psni_collisions_2021": {
+    "fetched": {
+      "bytes": 359490,
+      "etag": "\"9e4cd1594b76f40351a93b711dd6cbe7\"",
+      "fetched_at": "2026-10-14T15:48:20.558764+00:00",
+      "last_modified": "Mon, 01 Jan 2024 08:58:26 GMT",
+      "sha256": "b7c01be87ad90fd4b8476d6d94bef8945081c35e2c91b41782939945c527bf14",
+      "version": "https://admin.opendatani.gov.uk/dataset/9f012abc-02bb-474f-ad1e-38af268e8743/resource/503ad2fb-b3ef-43c0-811d-6b07522f9368/download/collision2021.csv"
+    },
+    "resolved": {
+      "modified": "2022-10-21T08:38:03.734301",
+      "resolved_at": "2026-10-14T15:48:19+00:00",
+      "title": "Collisions_2021",
+      "url": "https://admin.opendatani.gov.uk/dataset/9f012abc-02bb-474f-ad1e-38af268e8743/resource/503ad2fb-b3ef-43c0-811d-6b07522f9368/download/collision2021.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/9f012abc-02bb-474f-ad1e-38af268e8743/resource/503ad2fb-b3ef-43c0-811d-6b07522f9368/download/collision2021.csv"
+    }
+  },
+  "psni_collisions_2022": {
+    "fetched": {
+      "bytes": 390913,
+      "etag": "\"e6601850a3e4d3c791f79547937eed29\"",
+      "fetched_at": "2026-10-14T15:48:23.181357+00:00",
+      "last_modified": "Mon, 01 Jan 2024 08:58:31 GMT",
+      "sha256": "99d3ac7cdcecd7186b13d9a0504e2032b67f8228c7391ddad0ed229d2b4870c3",
+      "version": "https://admin.opendatani.gov.uk/dataset/e352398b-f32c-4f0a-ad15-5bce7448780d/resource/5fe67186-5d35-49cf-89ab-39fcc364a0c9/download/collision2022.csv"
+    },
+    "resolved": {
+      "modified": "2023-07-20T14:52:37.881096",
+      "resolved_at": "2026-10-14T15:48:21+00:00",
+      "title": "Collisions_2022",
+      "url": "https://admin.opendatani.gov.uk/dataset/e352398b-f32c-4f0a-ad15-5bce7448780d/resource/5fe67186-5d35-49cf-89ab-39fcc364a0c9/download/collision2022.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/e352398b-f32c-4f0a-ad15-5bce7448780d/resource/5fe67186-5d35-49cf-89ab-39fcc364a0c9/download/collision2022.csv"
+    }
+  },
+  "psni_collisions_2023": {
+    "fetched": {
+      "bytes": 386686,
+      "etag": "\"9f19686ea664ca89d9cd96c9fdc07324\"",
+      "fetched_at": "2026-10-14T15:48:25.606986+00:00",
+      "last_modified": "Thu, 18 Apr 2024 11:58:49 GMT",
+      "sha256": "0cf09ebf9e8b88078eaacf173d0b83cf97363de6d294e8732d3ab8fc01eec2a3",
+      "version": "https://admin.opendatani.gov.uk/dataset/d484e8d7-d88a-41e5-8ccf-9ff60f637cc6/resource/2db136a3-a82e-457b-bd2a-6a46729097c7/download/collision2023.csv"
+    },
+    "resolved": {
+      "modified": "2024-04-18T11:58:48.601057",
+      "resolved_at": "2026-10-14T15:48:24+00:00",
+      "title": "Collisions_2023",
+      "url": "https://admin.opendatani.gov.uk/dataset/d484e8d7-d88a-41e5-8ccf-9ff60f637cc6/resource/2db136a3-a82e-457b-bd2a-6a46729097c7/download/collision2023.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/d484e8d7-d88a-41e5-8ccf-9ff60f637cc6/resource/2db136a3-a82e-457b-bd2a-6a46729097c7/download/collision2023.csv"
+    }
+  },
+  "psni_collisions_2024": {
+    "fetched": {
+      "bytes": 363232,
+      "etag": "\"4c4552c470d83ea23ebbc39019090473\"",
+      "fetched_at": "2026-10-14T15:48:27.860690+00:00",
+      "last_modified": "Thu, 10 Apr 2025 12:39:54 GMT",
+      "sha256": "a929ecafbdc3dc57503a449c0c53546cafd3c4c2a469dc073417b64b6509d54f",
+      "version": "https://admin.opendatani.gov.uk/dataset/bba6af11-b283-432e-8155-c6af9e0da461/resource/b9d5267a-c648-47c1-b97a-dddcf487958b/download/collision2024.csv"
+    },
+    "resolved": {
+      "modified": "2025-04-10T12:39:53.896265",
+      "resolved_at": "2026-10-14T15:48:26+00:00",
+      "title": "Collisions 2024",
+      "url": "https://admin.opendatani.gov.uk/dataset/bba6af11-b283-432e-8155-c6af9e0da461/resource/b9d5267a-c648-47c1-b97a-dddcf487958b/download/collision2024.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/bba6af11-b283-432e-8155-c6af9e0da461/resource/b9d5267a-c648-47c1-b97a-dddcf487958b/download/collision2024.csv"
+    }
+  },
+  "psni_collisions_2025": {
+    "fetched": {
+      "bytes": 383402,
+      "etag": "\"92ece94454a6ae197ece9bdd3e8afd66\"",
+      "fetched_at": "2026-10-14T15:48:30.165158+00:00",
+      "last_modified": "Fri, 17 Apr 2026 16:44:40 GMT",
+      "sha256": "5f127adc7f04eb7618db6192c916a30f93a28fac221db7d888e9dd18bea8e276",
+      "version": "https://admin.opendatani.gov.uk/dataset/e5ad2f7f-091b-4a9f-b563-e2291cadd464/resource/5828149b-b71e-40f7-ad22-2c839e8f66f4/download/collision2025.csv"
+    },
+    "resolved": {
+      "modified": "2026-04-17T16:44:40.309554",
+      "resolved_at": "2026-10-14T15:48:28+00:00",
+      "title": "Collision2025.csv",
+      "url": "https://admin.opendatani.gov.uk/dataset/e5ad2f7f-091b-4a9f-b563-e2291cadd464/resource/5828149b-b71e-40f7-ad22-2c839e8f66f4/download/collision2025.csv",
+      "version": "https://admin.opendatani.gov.uk/dataset/e5ad2f7f-091b-4a9f-b563-e2291cadd464/resource/5828149b-b71e-40f7-ad22-2c839e8f66f4/download/collision2025.csv"
+    }
+  },
   "ros_house_prices": {
     "fetched": {
       "bytes": 84374594,
@@ -4634,6 +5453,84 @@
       "resolved_at": "2026-10-13T13:19:50+00:00",
       "url": "https://data.dft.gov.uk/road-accidents-safety-data/dft-road-casualty-statistics-collision-last-5-years.csv",
       "version": null
+    }
+  },
+  "translink_metro_txc": {
+    "fetched": {
+      "bytes": 2349039,
+      "etag": "\"86927270ee17e7b6fc9817a552abd177\"",
+      "extracted": [
+        "TXC_24_2026-09-10T10-52-12_LYNSEYF.xml"
+      ],
+      "fetched_at": "2026-10-14T15:48:16.841149+00:00",
+      "last_modified": "Fri, 02 Oct 2026 09:53:59 GMT",
+      "sha256": "e283b7fb6ab159a9311557ef847a879077fd1603c1551318b90dbcfcf1f083f8",
+      "version": "https://admin.opendatani.gov.uk/dataset/6d9677cf-8d03-4851-985c-16f73f7dd5fb/resource/f2c58049-7ca9-4576-b3bd-1b3d8a8674e0/download/metro-and-glider-final-10-sept-26-1.zip"
+    },
+    "resolved": {
+      "modified": "2026-10-02T09:53:59.227500",
+      "resolved_at": "2026-10-14T15:48:15+00:00",
+      "title": "Metro & Glider timetables",
+      "url": "https://admin.opendatani.gov.uk/dataset/6d9677cf-8d03-4851-985c-16f73f7dd5fb/resource/f2c58049-7ca9-4576-b3bd-1b3d8a8674e0/download/metro-and-glider-final-10-sept-26-1.zip",
+      "version": "https://admin.opendatani.gov.uk/dataset/6d9677cf-8d03-4851-985c-16f73f7dd5fb/resource/f2c58049-7ca9-4576-b3bd-1b3d8a8674e0/download/metro-and-glider-final-10-sept-26-1.zip"
+    }
+  },
+  "translink_rail_txc": {
+    "fetched": {
+      "bytes": 111037,
+      "etag": "\"b351261e7fb4804e400c7378d4b3d85d\"",
+      "extracted": [
+        "TXC_24_2026-09-10T13-27-50_LYNSEYF.xml"
+      ],
+      "fetched_at": "2026-10-14T15:48:14.634429+00:00",
+      "last_modified": "Fri, 02 Oct 2026 09:48:43 GMT",
+      "sha256": "eebf98bb961a37a647e1829898580391fe1f3046b11fe63b27d98ca37e0a4ace",
+      "version": "https://admin.opendatani.gov.uk/dataset/e41b1057-b0bd-4419-95eb-77057c8ad6b0/resource/ff8c5dd8-dcfd-4141-a270-df242f114215/download/nir-and-enterprise-10-sept-26.zip"
+    },
+    "resolved": {
+      "modified": "2026-10-02T09:48:43.232467",
+      "resolved_at": "2026-10-14T15:48:13+00:00",
+      "title": "NIR Rail TransXchange data",
+      "url": "https://admin.opendatani.gov.uk/dataset/e41b1057-b0bd-4419-95eb-77057c8ad6b0/resource/ff8c5dd8-dcfd-4141-a270-df242f114215/download/nir-and-enterprise-10-sept-26.zip",
+      "version": "https://admin.opendatani.gov.uk/dataset/e41b1057-b0bd-4419-95eb-77057c8ad6b0/resource/ff8c5dd8-dcfd-4141-a270-df242f114215/download/nir-and-enterprise-10-sept-26.zip"
+    }
+  },
+  "translink_ulsterbus_txc": {
+    "fetched": {
+      "bytes": 3421755,
+      "etag": "\"736f20f3962b50c484b78dc0b7d08269\"",
+      "extracted": [
+        "Final Ulsterbus, Town Service and Foyle Metro Data Set 30 Sept 26.zip",
+        "Goldliner TXC 30 Sept 26.zip"
+      ],
+      "fetched_at": "2026-10-14T15:48:18.821003+00:00",
+      "last_modified": "Fri, 02 Oct 2026 09:51:08 GMT",
+      "sha256": "f52ef74d3640762822a392ec1243e2b1de5f00deb6db495c228c896b4462365e",
+      "version": "https://admin.opendatani.gov.uk/dataset/c1acee5b-a400-46bd-a795-9bf7637ff879/resource/291cbb54-7bb3-4df7-8599-0c8f49a20be6/download/ulsterbus-and-goldline.zip"
+    },
+    "resolved": {
+      "modified": "2026-10-02T09:51:08.231207",
+      "resolved_at": "2026-10-14T15:48:17+00:00",
+      "title": "Ulsterbus Timetables",
+      "url": "https://admin.opendatani.gov.uk/dataset/c1acee5b-a400-46bd-a795-9bf7637ff879/resource/291cbb54-7bb3-4df7-8599-0c8f49a20be6/download/ulsterbus-and-goldline.zip",
+      "version": "https://admin.opendatani.gov.uk/dataset/c1acee5b-a400-46bd-a795-9bf7637ff879/resource/291cbb54-7bb3-4df7-8599-0c8f49a20be6/download/ulsterbus-and-goldline.zip"
+    }
+  },
+  "ukcp_hot_days": {
+    "fetched": {
+      "bytes": 54346,
+      "fetched_at": "2026-10-14T15:48:33+00:00",
+      "rows": 8678,
+      "sha256": "581c19244bf97391a573e718454313ca43d4f7761e5f56e9def4809834b56332",
+      "version": "2026-07-21T09:42:20+00:00"
+    },
+    "resolved": {
+      "item_id": "9e4fe229900147c7a405f33724517278",
+      "modified": "2026-07-21T09:42:20+00:00",
+      "resolved_at": "2026-10-14T15:48:31+00:00",
+      "title": "Annual Count of Hot Summer Days - Projections (Sub-Local Authority) v1",
+      "url": "https://services.arcgis.com/Lq3V5RFuTBC9I7kv/arcgis/rest/services/annual_count_of_hot_summer_days_projections_sub_local_authority_v1/FeatureServer/0",
+      "version": "2026-07-21T09:42:20+00:00"
     }
   },
   "viirs_vnl": {

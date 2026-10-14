@@ -23,9 +23,9 @@ Builder = Callable[[tuple[str, ...]], pl.DataFrame]
 
 
 def _builders() -> dict[str, Builder]:
-    from lix_pipeline.stage import geo_ew, geo_scotland
+    from lix_pipeline.stage import geo_ew, geo_ni, geo_scotland
 
-    return {"geo_ew": geo_ew.build, "geo_scotland": geo_scotland.build}
+    return {"geo_ew": geo_ew.build, "geo_scotland": geo_scotland.build, "geo_ni": geo_ni.build}
 
 
 def stage_geo_lsoa() -> pl.LazyFrame:
@@ -66,6 +66,14 @@ def stage_oa_lookup() -> pl.LazyFrame:
                     pl.col("DZ22").alias("lsoa21cd"),
                     pl.col("IZ22").alias("msoa21cd"),
                 )
+            )
+        elif slug == "nisra_dz21_lookup":
+            from lix_pipeline.stage.geo_ni import read_dz_lookup
+
+            # Data Zones are the output-area tier; the Super Data Zone is both the low
+            # and the mid tier
+            frames.append(
+                read_dz_lookup().with_columns(pl.col("lsoa21cd").alias("msoa21cd")).lazy()
             )
         else:
             raise ValueError(f"No reader for the output-area lookup {slug!r}")
@@ -140,9 +148,30 @@ PLACE_TYPES = ["City", "Town", "Village", "Hamlet", "Suburban Area", "Other Sett
 
 
 def stage_places() -> pl.LazyFrame:
-    """Settlements of the active nations from OS Open Names, located to an LSOA, for search."""
+    """Settlements of the active nations, located to an LSOA, for search: OS Open Names
+    where it reaches (``places_builder: os_open_names``), the nation's OpenStreetMap
+    extract elsewhere (``osm``)."""
     cfg = load_nations().nations
-    countries = [cfg[n].places_country for n in active_nations()]
+    from_os = [n for n in active_nations() if cfg[n].places_builder == "os_open_names"]
+    from_osm = [n for n in active_nations() if cfg[n].places_builder == "osm"]
+    frames = []
+    if from_os:
+        frames.append(_os_open_names_places([cfg[n].places_country for n in from_os]))
+    if from_osm:
+        from lix_pipeline.stage.places_osm import osm_places
+
+        frames.extend(osm_places(n) for n in from_osm)
+    places = pl.concat(frames, how="diagonal_relaxed")
+
+    from lix_pipeline.geo.joins import points_to_lsoa
+
+    places = points_to_lsoa(places, x="x", y="y")
+    logger.info(f"Places: {places.height:,} settlements across {list(active_nations())}")
+    return places.lazy()
+
+
+def _os_open_names_places(countries: list[str]) -> pl.DataFrame:
+    """OS Open Names' populated places of ``countries`` (its COUNTRY values)."""
     root = data_dir("raw") / "os_open_names"
     header = (root / "Doc" / "OS_Open_Names_Header.csv").read_text(encoding="utf-8-sig")
     columns = header.strip().split(",")
@@ -188,10 +217,11 @@ def stage_places() -> pl.LazyFrame:
     )
     lon, lat = bng_to_lonlat(places["x"], places["y"])
     # Until the search reads every name column (#66), the other-language form is ``name_alt``
-    places = places.with_columns(lon=lon, lat=lat, name_alt=pl.coalesce("name_cy", "name_gd"))
-
-    from lix_pipeline.geo.joins import points_to_lsoa
-
-    places = points_to_lsoa(places, x="x", y="y")
-    logger.info(f"Places: {places.height:,} settlements in {countries}")
-    return places.lazy()
+    places = places.with_columns(
+        lon=lon,
+        lat=lat,
+        name_alt=pl.coalesce("name_cy", "name_gd"),
+        name_ga=pl.lit(None, pl.Utf8),
+    )
+    logger.info(f"OS Open Names: {places.height:,} settlements in {countries}")
+    return places
