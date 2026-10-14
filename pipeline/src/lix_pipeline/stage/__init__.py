@@ -19,8 +19,14 @@ logger = setup_logging("stage")
 LOW_BOUNDARIES = boundary_slugs("low")
 
 STAGE_INPUTS: dict[str, list[str]] = {
-    "price_paid": ["price_paid", "ros_house_prices", "nspl"],
-    "population": ["pop_lsoa_mye", "nrs_sape"],
+    "price_paid": [
+        "price_paid",
+        "ros_house_prices",
+        "lps_house_prices_ward",
+        "osni_ward12_boundaries",
+        "nspl",
+    ],
+    "population": ["pop_lsoa_mye", "nrs_sape", "nisra_sdz_mye"],
     "geo_lsoa": [
         "oa_lookup",
         "msoa_names",
@@ -37,19 +43,34 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nrs_oa22_lookup",
         "nrs_sape",
         "council_names_gd",
+        # Northern Ireland (geo_ni): zones, centroids, lookups, population, Irish names
+        "nisra_sdz21_boundaries",
+        "nisra_sdz21_centroids",
+        "nisra_dz21_lookup",
+        "nisra_sdz_mye",
+        "council_names_ga",
     ],
-    "oa_lookup": ["oa_lookup", "nrs_oa22_lookup"],
+    "oa_lookup": ["oa_lookup", "nrs_oa22_lookup", "nisra_dz21_lookup"],
+    # Super Output Area 2001 → Super Data Zone 2021 weights (NIMDM and the capital
+    # value bands are published on the 2001 areas): SOA polygons over DZ centroids
+    "soa01_sdz21": [
+        "osni_soa01_boundaries",
+        "nisra_sdz21_centroids",
+        "nisra_census_2021_p1",
+        "nisra_dz21_lookup",
+    ],
+    "ukcp_hot_days": ["ukcp_hot_days", "nisra_dz21_lookup"],
     "dz11_dz22": ["simd_postcode_lookup", "nrs_oa22_population", "nspl"],
-    "places": ["os_open_names", *LOW_BOUNDARIES],
+    "places": ["os_open_names", "osm_ireland", *LOW_BOUNDARIES],
     "defra_pcm_no2": ["defra_pcm_no2", "nspl"],
     "defra_pcm_pm25": ["defra_pcm_pm25", "nspl"],
     "defra_pcm_pm10": ["defra_pcm_pm10", "nspl"],
-    "ods_gp": ["ods_gp", "phs_gp_practices", "nspl"],
+    "ods_gp": ["ods_gp", "phs_gp_practices", "bso_gp_list_sizes", "nspl"],
     "gias": ["gias", *LOW_BOUNDARIES],
     "fsa_fhrs": ["fsa_fhrs", "nspl", *LOW_BOUNDARIES],
     "overture_pubs": ["overture_pubs", *LOW_BOUNDARIES],
     "osm_pois": ["osm_*"],
-    "ods_dentists": ["ods_dentists", "phs_dentists", "nspl"],
+    "ods_dentists": ["ods_dentists", "phs_dentists", "bso_dental", "nspl"],
     "ae_sites": ["ae_sites", "nspl", *LOW_BOUNDARIES],
     "nhsbsa_pharmacies": ["nhsbsa_pharmacies", "nspl"],
     "ofsted_childcare": ["ofsted_childcare", "nspl"],
@@ -59,16 +80,28 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "ea_flood_postcodes": ["ea_flood_postcodes", "nspl"],
     "ofcom_broadband": ["ofcom_broadband", "oa_lookup"],
     "wg_schools": ["wg_schools", *LOW_BOUNDARIES],
-    "schools": ["gias", "wg_schools", "sg_school_roll", *LOW_BOUNDARIES],
+    "schools": [
+        "gias",
+        "wg_schools",
+        "sg_school_roll",
+        "de_schools_primary",
+        "de_schools_post_primary",
+        "de_schools_special",
+        "nspl",
+        *LOW_BOUNDARIES,
+    ],
     "childcare": [
         "ofsted_childcare",
         "care_inspectorate",
+        "de_schools_nursery",
+        "de_schools_preschool",
         "nspl",
         *LOW_BOUNDARIES,
     ],
     "pharmacies": [
         "nhsbsa_pharmacies",
         "phs_pharmacies",
+        "bso_dispensing",
         "nspl",
         *LOW_BOUNDARIES,
     ],
@@ -88,18 +121,25 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "os_open_uprn": ["os_open_uprn", *LOW_BOUNDARIES],
     "night_lights": ["viirs_vnl", "nspl"],
     "climate": ["haduk_grid", "nspl"],
-    "noise": ["*_noise_*_lden", "nspl"],
-    "deprivation": ["iod_2025", "wimd_*", "simd_*", "nrs_oa22_population", "nspl"],
-    "voa_ctsop": ["voa_ctsop", "nrs_dwellings_by_band"],
-    "council_tax": ["council_tax", "wg_council_tax", "sg_council_tax"],
-    "bods_gtfs": ["bods_gtfs*"],
+    "noise": ["*_noise_*_lden", "daera_noise_r3", "nspl"],
+    "deprivation": ["iod_2025", "wimd_*", "simd_*", "nimdm_2017", "nrs_oa22_population", "nspl"],
+    "voa_ctsop": ["voa_ctsop", "nrs_dwellings_by_band", "lps_capital_value_bands"],
+    "council_tax": ["council_tax", "wg_council_tax", "sg_council_tax", "ni_domestic_rates"],
+    "bods_gtfs": ["bods_gtfs*", "translink_*_txc"],
+    "stats19": ["stats19", "psni_collisions_*"],
     "orr_stations": ["orr_station_usage", "orr_station_attributes"],
     "wg_ks4_la": ["wg_ks4_la"],
     # Census 2021 tables gain Scotland's Census 2022 counterparts (stage/census.py)
     # (every table shares the stager, so each declares the Scottish archive; only the
     # mapped ones read it: see census.SCOTLAND_TABLES)
     **{
-        f"census_ts{t}": [f"census_ts{t}", "scotland_census_2022"]
+        f"census_ts{t}": [
+            f"census_ts{t}",
+            "scotland_census_2022",
+            "nisra_census_2021_p1",
+            "nisra_census_2021_p2",
+            "nisra_census_2021_p3",
+        ]
         for t in ("001", "003", "007a", "037", "044", "045", "054", "058", "061", "067")
     },
     # Scotland's density: Census 2022 residents over the zone polygons

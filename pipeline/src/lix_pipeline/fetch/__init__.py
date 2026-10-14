@@ -310,6 +310,8 @@ def fetch(
     # A lock entry written for another access type (or an older resolver) lacks what the
     # tile and page fetchers need: resolve again rather than trust it
     needed = {"wcs": ("envelope", "res"), "wfs": ("count",)}.get(spec.access.type, ())
+    if spec.access.type == "ckan" and spec.access.all_matches:
+        needed = ("urls",)
     if not resolved or any(k not in resolved for k in needed):
         resolved = resolve_and_lock(slug, spec, session)
 
@@ -342,6 +344,10 @@ def fetch(
         )
     elif spec.access.type == "api_key":
         meta = _fetch_keyed(slug, spec, resolved, force, revalidate, session)
+    elif spec.access.type == "ckan" and spec.access.all_matches:
+        meta = download_set(
+            slug, resolved["urls"], spec.format, resolved.get("version"), force, session
+        )
     elif spec.access.type == "http" and spec.access.tiles:
         urls = {t: spec.access.url.format(tile=t) for t in spec.access.tiles}
         meta = download_set(slug, urls, spec.format, resolved.get("version"), force, session)

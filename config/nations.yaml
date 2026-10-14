@@ -96,3 +96,35 @@ nations:
     pseudo_region: true  # NSPL gives Scotland one pseudo region (S99999999)
     demo_upper: [S12000036]  # City of Edinburgh
     theme_gaps: []
+  N:
+    name: Northern Ireland
+    ctry_cd: N92000002
+    input_crs: 29902  # NSPL gives BT postcodes on the Irish Grid; stage_nspl recomputes them
+    bbox: [-8.2, 54.0, -5.4, 55.4]
+    population: [1850000, 2000000]
+    levels:
+      oa: {regex: '^N20\d{6}$', official: Data Zone 2021, label: data zone, labels: data zones}
+      low: {regex: '^N21\d{6}$', official: Super Data Zone 2021, count: 850, label: super data zone, labels: super data zones}
+      # The Super Data Zone is its own mid tier: there is no official layer between it
+      # and the council (NISRA's 80 district electoral areas are not statistical areas)
+      mid: {regex: '^N21\d{6}$', official: Super Data Zone 2021, count: 850, label: super data zone, labels: super data zones}
+      upper: {regex: '^N09\d{6}$', official: Local government district, count: 11, label: council, labels: councils}
+    geo_builder: geo_ni
+    geo:
+      low_boundaries: nisra_sdz21_boundaries
+      mid_boundaries: nisra_sdz21_boundaries
+      centroids: nisra_sdz21_centroids
+      oa_lookup: nisra_dz21_lookup
+      population: nisra_sdz_mye
+      code_column: SDZ2021_cd
+      simplify_m: 10
+      extra: [council_names_ga]
+    places_country: Northern Ireland  # OS Open Names stops at Great Britain; places come from OpenStreetMap
+    places_builder: osm
+    # NISRA's Urban/Mixed/Rural status of each Super Data Zone (Census 2021 lookups):
+    # urban when 90% or more of its people live in a settlement of band A–E, rural
+    # when under 10% do, mixed between
+    ruc_map: {Urban: urban, Mixed: town, Rural: rural}
+    pseudo_region: true  # NSPL: N99999999
+    demo_upper: [N09000003]  # Belfast
+    theme_gaps: []

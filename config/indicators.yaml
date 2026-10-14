@@ -48,7 +48,7 @@ indicators:
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # iod_2025 only imputes Greater Manchester
+    coverage: [E, W, N]  # iod_2025 only imputes Greater Manchester
     sources: [police_crime, iod_2025]
     builder: safety:crime_rate
     params: {types: ["Violence and sexual offences"]}
@@ -64,7 +64,7 @@ indicators:
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # iod_2025 only imputes Greater Manchester
+    coverage: [E, W, N]  # iod_2025 only imputes Greater Manchester
     sources: [police_crime, iod_2025]
     builder: safety:crime_rate
     params: {types: ["Burglary"]}
@@ -77,7 +77,7 @@ indicators:
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # iod_2025 only imputes Greater Manchester
+    coverage: [E, W, N]  # iod_2025 only imputes Greater Manchester
     sources: [police_crime, iod_2025]
     builder: safety:crime_rate
     params: {types: ["Anti-social behaviour"]}
@@ -90,7 +90,7 @@ indicators:
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # iod_2025 only imputes Greater Manchester
+    coverage: [E, W, N]  # iod_2025 only imputes Greater Manchester
     sources: [police_crime, iod_2025]
     builder: safety:crime_rate
     params: {types: ["Robbery", "Theft from the person", "Vehicle crime", "Bicycle theft"]}
@@ -103,7 +103,7 @@ indicators:
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W]  # iod_2025 only imputes Greater Manchester
+    coverage: [E, W, N]  # iod_2025 only imputes Greater Manchester
     sources: [police_crime, iod_2025]
     builder: safety:crime_rate
     params: {types: ["Criminal damage and arson", "Public order"]}
@@ -117,7 +117,8 @@ indicators:
     description: Road collisions in which someone was killed or seriously injured within 500m of homes, per year (5-year average).
     unit: collisions a year within 500m
     direction: lower_better
-    sources: [stats19, nspl]
+    coverage: [E, W, S, N]  # STATS19 covers Great Britain, the PSNI files Northern Ireland
+    sources: [stats19, psni_collisions_2021, psni_collisions_2022, psni_collisions_2023, psni_collisions_2024, psni_collisions_2025, nspl]
     builder: common:count_within
     params: {slug: stats19, column: severity, values: [fatal, serious], radius_m: 500, per_years: 5}
     log1p: true
@@ -614,8 +615,8 @@ indicators:
     unit: score 0–100
     direction: lower_better
     benchmark: nation
-    coverage: [S]
-    sources: [simd_2020_ranks, simd_postcode_lookup, nrs_oa22_population, nspl]
+    coverage: [S, N]
+    sources: [nimdm_2017, simd_2020_ranks, simd_postcode_lookup, nrs_oa22_population, nspl]
     builder: common:deprivation
     params: {column: access_score}
     weight: 1.5

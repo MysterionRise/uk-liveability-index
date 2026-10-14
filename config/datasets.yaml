@@ -398,7 +398,7 @@ census_ts067:
 # ---------------------------------------------------------------------------------------
 
 police_crime:
-  coverage: [E, W]
+  coverage: [E, W, N]
   title: police.uk street-level crime (latest 36 months)
   theme: safety
   access: {type: http, url: "https://data.police.uk/data/archive/latest.zip"}
@@ -955,7 +955,7 @@ osm_england:
   size_hint: 1.6GB
 
 overture_pubs:
-  coverage: [E, W, S]
+  coverage: [E, W, S, N]
   title: Overture Maps places, bars and pubs (Great Britain)
   theme: amenities
   access:
@@ -1835,3 +1835,576 @@ haduk_grid:
   period: "1991–2020 averages"
   size_hint: 300MB
   notes: The CEDA archive needs a (free) account to download, so this is a manual source; the climate indicators are skipped when the files are absent. The Met Office Climate Data Portal publishes 2km and 12km versions without a login, but no sunshine layer.
+
+# ---------------------------------------------------------------------------------------
+# Northern Ireland (v0.5.0). NISRA's sites are OGL v3 apart from LPS/OSNI mapping
+# (nisra.gov.uk/crown-copyright); the Census 2021 boundary pages add "Contains Ordnance
+# Survey of Northern Ireland information licensed under the Open Government Licence
+# v3.0"; OpenDataNI packages carry license_id uk-ogl. OpenDataNI's CKAN API is on
+# admin.opendatani.gov.uk; its resource downloads redirect to a store that refuses HEAD.
+# ---------------------------------------------------------------------------------------
+
+nisra_sdz21_boundaries:
+  coverage: [N]
+  title: Super Data Zone boundaries 2021, Northern Ireland (NISRA)
+  theme: geography
+  access: {type: http, url: "https://www.nisra.gov.uk/files/nisra/publications/geography-sdz2021-esri-shapefile.zip"}
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj", "*.cpg"]
+  landing_page: https://www.nisra.gov.uk/publications/super-data-zone-boundaries-gis-format
+  description: The 850 Super Data Zones drawn after Northern Ireland's Census 2021 (about 2,000 residents each), with their district electoral area and council, on the Irish Grid.
+  licence: OGL-3.0
+  attribution: "Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0; NISRA, Census 2021 geography."
+  cadence: static
+  period: "2021"
+  size_hint: 11MB
+
+nisra_sdz21_centroids:
+  coverage: [N]
+  title: Census 2021 population-weighted centroids, Data Zones and Super Data Zones (NISRA)
+  theme: geography
+  access: {type: http, url: "https://www.nisra.gov.uk/system/files/statistics/geography-census-2021-population-weighted-centroids-csv.zip"}
+  format: zip
+  extract: ["*.csv"]
+  landing_page: https://www.nisra.gov.uk/publications/census-2021-population-weighted-centroids-data-zones-and-super-data-zones
+  description: One point per Data Zone and per Super Data Zone at the population-weighted centre of its occupied addresses (Irish Grid metres).
+  licence: OGL-3.0
+  attribution: "NISRA, Census 2021 population-weighted centroids, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2021"
+  size_hint: 60KB
+
+nisra_dz21_lookup:
+  coverage: [N]
+  title: Census 2021 Data Zone and Super Data Zone lookups (NISRA)
+  theme: geography
+  access: {type: http, url: "https://www.nisra.gov.uk/files/nisra/documents/2025-04/geography-data-zone-and-super-data-zone-lookups-v3.xlsx"}
+  format: xlsx
+  landing_page: https://www.nisra.gov.uk/publications/census-2021-output-geography-information-papers
+  description: Every Data Zone with its Super Data Zone, district electoral area and council; each Data Zone's best-fit settlement and band; and NISRA's urban, mixed or rural status for every zone.
+  licence: OGL-3.0
+  attribution: "NISRA, Census 2021 output geography lookups, licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  period: "2021 (lookups v3, April 2025)"
+  size_hint: 600KB
+
+nisra_sdz_mye:
+  coverage: [N]
+  title: Mid-year population estimates for Super Data Zones (NISRA)
+  theme: geography
+  access: {type: http, url: "https://www.nisra.gov.uk/system/files/statistics/2025-12/MYE24_SDZ.xlsx"}
+  format: xlsx
+  landing_page: https://www.nisra.gov.uk/publications/2024-mid-year-population-estimates-small-geographical-areas-within-northern-ireland
+  description: Residents of every Super Data Zone by sex and broad age band (0–15, 16–39, 40–64, 65 and over) for mid-2021 to mid-2024.
+  licence: OGL-3.0
+  attribution: "NISRA, mid-year population estimates for small geographical areas, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "mid-2024"
+  size_hint: 2.6MB
+
+nisra_census_2021_p1:
+  coverage: [N]
+  title: Census 2021 main statistics, phase 1 (demography and households), Northern Ireland
+  theme: community
+  access: {type: http, url: "https://www.nisra.gov.uk/system/files/statistics/census-2021-main-statistics-for-northern-ireland-phase-1-all-tables.zip"}
+  format: zip
+  extract: ["*.xlsx"]
+  landing_page: https://www.nisra.gov.uk/publications/census-2021-bulk-download
+  description: Every phase 1 table (MS-A01 to A22 population, age, density; MS-B identity; MS-E01 to E03 households), each workbook with a Data Zone and a Super Data Zone sheet.
+  licence: OGL-3.0
+  attribution: "NISRA, Census 2021, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2021"
+  size_hint: 28MB
+
+nisra_census_2021_p2:
+  coverage: [N]
+  title: Census 2021 main statistics, phase 2 (health, housing), Northern Ireland
+  theme: community
+  access: {type: http, url: "https://www.nisra.gov.uk/system/files/statistics/census-2021-main-statistics-for-northern-ireland-phase-2-all-tables.zip"}
+  format: zip
+  extract: ["*.xlsx"]
+  landing_page: https://www.nisra.gov.uk/publications/census-2021-bulk-download
+  description: Every phase 2 table (MS-D01 to D17 health and disability; MS-E04 to E15 accommodation, tenure, cars).
+  licence: OGL-3.0
+  attribution: "NISRA, Census 2021, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2021"
+  size_hint: 8MB
+
+nisra_census_2021_p3:
+  coverage: [N]
+  title: Census 2021 main statistics, phase 3 (qualifications, work, travel), Northern Ireland
+  theme: community
+  access: {type: http, url: "https://www.nisra.gov.uk/system/files/statistics/census-2021-main-statistics-for-northern-ireland-phase-3-all-tables.zip"}
+  format: zip
+  extract: ["*.xlsx"]
+  landing_page: https://www.nisra.gov.uk/publications/census-2021-bulk-download
+  description: Every phase 3 table (MS-F01 to F03 qualifications; MS-H labour market; MS-I01 to I04 travel to work and study).
+  licence: OGL-3.0
+  attribution: "NISRA, Census 2021, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2021"
+  size_hint: 9MB
+
+nimdm_2017:
+  coverage: [N]
+  title: Northern Ireland Multiple Deprivation Measure 2017, Super Output Area results (NISRA)
+  theme: community
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: northern-ireland-multiple-deprivation-measures-2017
+    resource_regex: "nimdm2017-soa\\.csv$"
+  format: csv
+  landing_page: https://www.nisra.gov.uk/statistics/deprivation-and-poverty/northern-ireland-multiple-deprivation-measure-2017-nimdm2017
+  description: The overall rank and the seven domain ranks (income, employment, health, education, access to services, living environment, crime and disorder) of the 890 Super Output Areas of 2001, with the income and employment rates, 1 = most deprived.
+  licence: OGL-3.0
+  attribution: "NISRA, Northern Ireland Multiple Deprivation Measure 2017, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2017"
+  size_hint: 400KB
+  notes: Still the official measure (no funded update); published on the 2001 Super Output Areas and brought onto the 2021 Super Data Zones by overlaying the areas with the Data Zone centroids.
+
+osni_soa01_boundaries:
+  coverage: [N]
+  title: Super Output Area boundaries 2001, Northern Ireland (NISRA)
+  theme: geography
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: nisra-open-data-boundaries-super-output-areas-2011
+    resource_regex: "/soa\\.zip$"
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj"]
+  landing_page: https://admin.opendatani.gov.uk/dataset/nisra-open-data-boundaries-super-output-areas-2011
+  description: The 890 Super Output Areas of 2001 the deprivation measure is published on (Irish Grid); overlaid with the Data Zone centroids to weight the 2017 measure onto the 2021 zones.
+  licence: OGL-3.0
+  attribution: "NISRA open data boundaries, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2001"
+  size_hint: 12MB
+
+osni_ward12_boundaries:
+  coverage: [N]
+  title: Electoral ward boundaries 2012 (in force from 2014), Northern Ireland (OSNI)
+  theme: geography
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: osni-open-data-largescale-boundaries-wards-2012
+    resource_regex: "wards_2012\\.zip$"
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj"]
+  landing_page: https://admin.opendatani.gov.uk/dataset/osni-open-data-largescale-boundaries-wards-2012
+  description: The 462 electoral wards used since 2014, the geography the house price statistics are published on; each Super Data Zone takes the ward its population-weighted centroid falls in.
+  licence: OGL-3.0
+  attribution: "Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2014 wards"
+  size_hint: 10MB
+
+lps_house_prices_ward:
+  coverage: [N]
+  title: Annual descriptive house price statistics by electoral ward (Land & Property Services)
+  theme: housing
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: northern-ireland-annual-descriptive-house-price-statistics-electoral-ward-level
+    resource_regex: "_all-sales\\.csv$"
+    all_matches: true
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/northern-ireland-annual-descriptive-house-price-statistics-electoral-ward-level
+  description: Verified sales and the minimum, quartile, median, mean and maximum prices of every electoral ward for each year since 2005, one file per council (all sales); suppressed under 30 sales.
+  licence: OGL-3.0
+  attribution: "Land & Property Services, annual descriptive house price statistics, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2024"
+  size_hint: 11 files, 1MB
+
+lps_capital_value_bands:
+  coverage: [N]
+  title: Domestic properties by capital value band, Super Output Areas, April 2016 (Land & Property Services)
+  theme: housing
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: northern-ireland-capital-value-bands-april-2016
+    resource_regex: "soa-by-council-tax-band-april-2016\\.csv$"
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/northern-ireland-capital-value-bands-april-2016
+  description: Homes in each of eight capital value bands (up to £40,000 to over £320,000) per 2001 Super Output Area; the dwelling counts and the value mix behind the domestic rates figure.
+  licence: OGL-3.0
+  attribution: "Land & Property Services, capital value bands, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "April 2016"
+  size_hint: 300KB
+  notes: The file is Latin-1 encoded. Nothing newer or at Data Zone level is published.
+
+ni_domestic_rates:
+  coverage: [N]
+  title: Domestic rate poundages by council, 2026–27 (Department of Finance, curated)
+  theme: housing
+  access: {type: curated, path: config/data/ni_domestic_rates.csv}
+  format: csv
+  landing_page: https://www.finance-ni.gov.uk/articles/rate-poundages
+  description: The regional and each council's district domestic rate in the pound for 2026–27, copied from the Department of Finance's page; the rates bill is the poundage times a home's capital value.
+  licence: OGL-3.0
+  licence_verified: false
+  attribution: "Department of Finance (Northern Ireland), rate poundages, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2026–27"
+  size_hint: 1KB
+  notes: The page carries no licence line of its own (NI departmental sites publish under the OGL; confirmation requested); a web table rather than a file, so the figures are kept as a curated list with the date they were read.
+
+bso_gp_list_sizes:
+  coverage: [N]
+  title: GP practice reference file with registered patients (Business Services Organisation)
+  theme: health
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: gp-practice-list-sizes
+    resource_regex: "gp-practice-reference-file.*\\.csv$"
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/gp-practice-list-sizes
+  description: Every GP practice with its address, postcode and registered patients, quarterly.
+  licence: OGL-3.0
+  attribution: "Business Services Organisation, GP practice list sizes, licensed under the Open Government Licence v3.0."
+  cadence: quarterly
+  size_hint: 40KB
+
+bso_dental:
+  coverage: [N]
+  title: Dental surgery list (Business Services Organisation)
+  theme: health
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: general-dental-services-statistics
+    resource_regex: "dental-surgery-list.*\\.csv$"
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/general-dental-services-statistics
+  description: Every health-service dental surgery with its address and postcode, quarterly.
+  licence: OGL-3.0
+  attribution: "Business Services Organisation, general dental services statistics, licensed under the Open Government Licence v3.0."
+  cadence: quarterly
+  size_hint: 40KB
+
+bso_dispensing:
+  coverage: [N]
+  title: Dispensed items by GP practice and pharmacy, monthly (Business Services Organisation)
+  theme: health
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: dispensing-by-contractor
+    resource_regex: "dispensed-items-by-gp-and-pharmacy.*\\.csv$"
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/dispensing-by-contractor
+  description: Items dispensed in the month by every community pharmacy contractor, with the pharmacy's name, address and postcode; the only published list of active pharmacies.
+  licence: OGL-3.0
+  attribution: "Business Services Organisation, dispensing by contractor, licensed under the Open Government Licence v3.0."
+  cadence: monthly
+  size_hint: 5MB
+
+de_schools_primary:
+  coverage: [N]
+  title: Primary schools 2025/26, school-level data (Department of Education)
+  theme: education
+  access:
+    type: html_link
+    page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+    steps:
+      - {pattern: "href=\"([^\"]*School%20level%20-%20primary%20schools[^\"]*\\.xlsx)\""}
+  format: xlsx
+  landing_page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+  description: Every primary school with its reference number, address, postcode, management type, Data Zone and enrolment by year group.
+  licence: OGL-3.0
+  attribution: "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2025/26"
+  size_hint: 400KB
+
+de_schools_post_primary:
+  coverage: [N]
+  title: Post-primary schools 2025/26, school-level data (Department of Education)
+  theme: education
+  access:
+    type: html_link
+    page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+    steps:
+      - {pattern: "href=\"([^\"]*School%20level%20-%20post%20primary%20schools[^\"]*\\.xlsx)\""}
+  format: xlsx
+  landing_page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+  description: Every post-primary school with its reference number, address, postcode, management type, Data Zone and enrolment.
+  licence: OGL-3.0
+  attribution: "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2025/26"
+  size_hint: 120KB
+
+de_schools_nursery:
+  coverage: [N]
+  title: Nursery schools 2025/26, school-level data (Department of Education)
+  theme: education
+  access:
+    type: html_link
+    page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+    steps:
+      - {pattern: "href=\"([^\"]*School%20level%20-%20nursery%20schools[^\"]*\\.xlsx)\""}
+  format: xlsx
+  landing_page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+  description: Every nursery school with its address, postcode and enrolment.
+  licence: OGL-3.0
+  attribution: "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2025/26"
+  size_hint: 60KB
+
+de_schools_preschool:
+  coverage: [N]
+  title: Pre-school settings 2025/26, school-level data (Department of Education)
+  theme: education
+  access:
+    type: html_link
+    page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+    steps:
+      - {pattern: "href=\"([^\"]*School%20level%20-%20preschools[^\"]*\\.xlsx)\""}
+  format: xlsx
+  landing_page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+  description: Every funded pre-school setting (voluntary and private providers and nursery units) with its address, postcode and funded places.
+  licence: OGL-3.0
+  attribution: "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2025/26"
+  size_hint: 150KB
+
+de_schools_special:
+  coverage: [N]
+  title: Special schools 2025/26, school-level data (Department of Education)
+  theme: education
+  access:
+    type: html_link
+    page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+    steps:
+      - {pattern: "href=\"([^\"]*School%20level%20-%20special%20schools[^\"]*\\.xlsx)\""}
+  format: xlsx
+  landing_page: https://www.education-ni.gov.uk/publications/school-enrolment-school-level-data-20252026
+  description: Every special school with its address, postcode and enrolment.
+  licence: OGL-3.0
+  attribution: "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2025/26"
+  size_hint: 60KB
+
+translink_metro_txc:
+  coverage: [N]
+  title: Translink Metro and Glider timetables (TransXChange)
+  theme: transport
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: metro-timetable-data-valid-from-18-june-until-31-august-2016
+    resource_regex: "\\.zip$"
+  format: zip
+  extract: ["*.xml"]
+  landing_page: https://admin.opendatani.gov.uk/dataset/metro-timetable-data-valid-from-18-june-until-31-august-2016
+  description: Belfast's Metro and Glider services as one TransXChange 2.4 file (stops with coordinates, routes, journey patterns and every vehicle journey) for the current timetable period.
+  licence: OGL-3.0
+  attribution: "Translink timetable data via OpenDataNI, licensed under the Open Government Licence v3.0."
+  cadence: monthly
+  size_hint: 2MB zipped, 136MB
+  notes: The package keeps its 2016 name; the file is replaced with each timetable change. TransXChange, not GTFS, so the departures reader differs from the Bus Open Data Service's.
+
+translink_ulsterbus_txc:
+  coverage: [N]
+  title: Translink Ulsterbus, Goldliner, town services and Foyle Metro timetables (TransXChange)
+  theme: transport
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: ulsterbus-and-goldline-timetable-data-from-08-11-2023
+    resource_regex: "\\.zip$"
+  format: zip
+  extract: ["*.zip", "*.xml"]
+  landing_page: https://admin.opendatani.gov.uk/dataset/ulsterbus-and-goldline-timetable-data-from-08-11-2023
+  description: "Every Translink bus service outside Belfast as TransXChange 2.4 files (two zips inside the download: Ulsterbus with town services and Foyle Metro, and Goldliner)."
+  licence: OGL-3.0
+  attribution: "Translink timetable data via OpenDataNI, licensed under the Open Government Licence v3.0."
+  cadence: monthly
+  size_hint: 3.4MB zipped, 130MB
+
+translink_rail_txc:
+  coverage: [N]
+  title: Translink NI Railways and Enterprise timetables (TransXChange)
+  theme: transport
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: nir20160126v2
+    resource_regex: "\\.zip$"
+  format: zip
+  extract: ["*.xml"]
+  landing_page: https://admin.opendatani.gov.uk/dataset/nir20160126v2
+  description: Every NI Railways and Enterprise train as a TransXChange 2.4 file with the stations' coordinates; the source of Northern Ireland's stations and their service.
+  licence: OGL-3.0
+  attribution: "Translink timetable data via OpenDataNI, licensed under the Open Government Licence v3.0."
+  cadence: monthly
+  size_hint: 110KB zipped, 5.6MB
+
+psni_collisions_2021:
+  coverage: [N]
+  title: Police-recorded injury road traffic collisions 2021 (PSNI)
+  theme: safety
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2021
+    resource_regex: "(?i)^collisions?[ _]?2021(\\.csv)?$"
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2021
+  description: Every injury collision of the year with its severity, date, council and Irish Grid location.
+  licence: OGL-3.0
+  attribution: "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2021"
+  size_hint: 400KB
+
+psni_collisions_2022:
+  coverage: [N]
+  title: Police-recorded injury road traffic collisions 2022 (PSNI)
+  theme: safety
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2022
+    resource_regex: "(?i)^collisions?[ _]?2022(\\.csv)?$"
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2022
+  description: As psni_collisions_2021, for 2022.
+  licence: OGL-3.0
+  attribution: "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2022"
+  size_hint: 400KB
+
+psni_collisions_2023:
+  coverage: [N]
+  title: Police-recorded injury road traffic collisions 2023 (PSNI)
+  theme: safety
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2023
+    resource_regex: "(?i)^collisions?[ _]?2023(\\.csv)?$"
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2023
+  description: As psni_collisions_2021, for 2023.
+  licence: OGL-3.0
+  attribution: "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2023"
+  size_hint: 400KB
+
+psni_collisions_2024:
+  coverage: [N]
+  title: Police-recorded injury road traffic collisions 2024 (PSNI)
+  theme: safety
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2024
+    resource_regex: "(?i)^collisions?[ _]?2024(\\.csv)?$"
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2024
+  description: As psni_collisions_2021, for 2024.
+  licence: OGL-3.0
+  attribution: "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "2024"
+  size_hint: 400KB
+
+psni_collisions_2025:
+  coverage: [N]
+  title: Police-recorded injury road traffic collisions 2025 (PSNI)
+  theme: safety
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2025
+    resource_regex: "(?i)^collisions?[ _]?2025(\\.csv)?$"
+  format: csv
+  landing_page: https://admin.opendatani.gov.uk/dataset/police-recorded-injury-road-traffic-collision-statistics-northern-ireland-2025
+  description: As psni_collisions_2021, for 2025 (published each April for the year before).
+  licence: OGL-3.0
+  attribution: "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "2025"
+  size_hint: 400KB
+
+daera_noise_r3:
+  coverage: [N]
+  title: Environmental Noise Directive mapping round 3, noise contours (DAERA)
+  theme: environment
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: environmental-noise-directive-noise-mapping
+    resource_regex: "end_noisedata_round3\\.zip$"
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj"]
+  landing_page: https://admin.opendatani.gov.uk/dataset/environmental-noise-directive-noise-mapping
+  description: Noise contour polygons (Lden and Lnight bands) for the Belfast and Derry agglomerations by source (roads, railways, industry, Belfast City Airport, all sources together) and for major roads, major railways and Belfast International Airport, from the 2017 round.
+  licence: OGL-3.0
+  attribution: "Department of Agriculture, Environment and Rural Affairs, Environmental Noise Directive mapping, licensed under the Open Government Licence v3.0."
+  cadence: static
+  period: "Round 3 (2017)"
+  size_hint: 94MB
+  notes: Round 4 (2021) is published only as a 1 GB geodatabase of rasters and map services, not downloadable layer by layer; the round 3 contours are the open vector set until that is readable.
+
+osm_ireland:
+  coverage: [N]
+  title: OpenStreetMap Ireland and Northern Ireland extract (Geofabrik)
+  theme: amenities
+  access: {type: http, url: "https://download.geofabrik.de/europe/ireland-and-northern-ireland-latest.osm.pbf"}
+  format: pbf
+  landing_page: https://download.geofabrik.de/europe/ireland-and-northern-ireland.html
+  description: Every OpenStreetMap feature on the island of Ireland, read for Northern Ireland's places of interest, parks, nurseries, pharmacies and settlements; features south of the border fall outside every active area and drop out.
+  licence: ODbL-1.0
+  attribution: "© OpenStreetMap contributors, Open Database Licence (ODbL) 1.0."
+  cadence: daily
+  size_hint: 400MB
+
+council_names_ga:
+  coverage: [N]
+  title: Irish names of Northern Ireland's councils (curated from Wikidata)
+  theme: geography
+  access: {type: curated, path: config/data/council_names_ga.csv}
+  format: csv
+  description: The 11 local government districts with their Gaeilge names as Wikidata labels them (with the item ids), for the Irish interface; two districts without a Wikidata label carry a form derived from the council's name and are marked for review.
+  licence: CC0-1.0
+  attribution: "Irish council names from Wikidata (CC0 1.0)."
+  cadence: adhoc
+  size_hint: 2KB
+
+ukcp_hot_days:
+  coverage: [E, W, S, N]
+  title: Annual count of hot summer days, UKCP18 local projections by sub-local-authority area (Met Office)
+  theme: climate
+  access:
+    type: arcgis_item
+    pin: 9e4fe229900147c7a405f33724517278
+    mode: featureserver
+    layer: 0
+    fields: [CODE, NAME, HSD_8100_median, HSD_0120_median, HSD_15_median, HSD_2_median, HSD_3_median, HSD_4_median]
+  format: parquet
+  landing_page: https://climatedataportal.metoffice.gov.uk/datasets/9e4fe229900147c7a405f33724517278
+  description: Days a year above the local hot-summer-day threshold for the 1981–2000 and 2001–2020 baselines and at 1.5, 2, 3 and 4 °C of global warming, per MSOA, Intermediate Zone or district electoral area (the Met Office's Local Authority Climate Service).
+  licence: OGL-3.0
+  attribution: "Contains Met Office data licensed under the Open Government Licence v3.0. Contains OS and ONS data © Crown copyright and database right 2026."
+  cadence: adhoc
+  period: "UKCP18 projections (2001–2020 baseline)"
+  size_hint: 2MB
+  notes: Northern Ireland's rows are district electoral areas (N10), broadcast to the Super Data Zones inside them.

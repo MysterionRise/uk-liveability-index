@@ -10,7 +10,7 @@ from lix_core.config import NationsConfig, load_nations
 def test_real_config_loads():
     cfg = load_nations()
     assert cfg.country.area_key == "lsoa21cd"
-    assert list(cfg.nations) == ["E", "W", "S"]
+    assert list(cfg.nations) == ["E", "W", "S", "N"]
     assert cfg.nations["E"].levels["low"].count == 33_755
     assert cfg.nations["W"].levels["low"].count == 1_917
     assert cfg.nations["S"].levels["low"].count == 7_392
@@ -41,7 +41,7 @@ def test_config_rejects_bad_regex_and_code():
 class TestActiveNations:
     def test_default_is_every_configured_nation(self, monkeypatch):
         monkeypatch.delenv("LIX_NATIONS", raising=False)
-        assert codes.active_nations() == ("E", "W", "S")
+        assert codes.active_nations() == ("E", "W", "S", "N")
 
     def test_env_narrows_and_keeps_config_order(self, monkeypatch):
         monkeypatch.setenv("LIX_NATIONS", "w, e")
@@ -50,8 +50,8 @@ class TestActiveNations:
         assert codes.active_nations() == ("W",)
 
     def test_unknown_nation_is_an_error(self, monkeypatch):
-        monkeypatch.setenv("LIX_NATIONS", "E,N")
-        with pytest.raises(ValueError, match=r"\['N'\]"):
+        monkeypatch.setenv("LIX_NATIONS", "E,X")
+        with pytest.raises(ValueError, match=r"\['X'\]"):
             codes.active_nations()
 
 

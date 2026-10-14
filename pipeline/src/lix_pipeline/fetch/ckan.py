@@ -35,6 +35,17 @@ def resolve_resource(access: CkanAccess, session: requests.Session) -> dict:
     # Newest by the date in the file name or title (July 2026 beats January 2026, which
     # alphabetical order would not), then by name
     latest = max(matches, key=lambda r: (_dated(r), r.get("name") or ""))
+    if access.all_matches:
+        # One edition for the set: the newest resource's change date; the files are
+        # downloaded together and named by their last URL segment
+        urls = {r["url"].rsplit("/", 1)[-1]: r["url"] for r in matches}
+        modified = max((r.get("last_modified") or r.get("created") or "") for r in matches)
+        return {
+            "url": latest["url"],
+            "urls": urls,
+            "title": latest.get("name"),
+            "modified": modified,
+        }
     return {
         "url": latest["url"],
         "title": latest.get("name"),

@@ -148,6 +148,9 @@ class CkanAccess(_Strict):
     api: str
     package: str
     resource_regex: str
+    # Every matching resource rather than the newest one (a package that splits one
+    # dataset into a file per council)
+    all_matches: bool = False
 
 
 class NomisAccess(_Strict):
@@ -627,7 +630,10 @@ class NationSpec(_Strict):
     population: tuple[int, int]  # plausible total, checked by ``lix validate geo``
     levels: dict[LevelName, LevelSpec]
     geo_builder: str  # lix_pipeline.stage.<geo_builder> builds this nation's backbone
-    places_country: str  # OS Open Names COUNTRY value
+    places_country: str  # OS Open Names COUNTRY value (os_open_names builder)
+    # Where the nation's searchable places come from: OS Open Names (Great Britain) or
+    # the nation's OpenStreetMap extract (place=* nodes) where OS stops
+    places_builder: Literal["os_open_names", "osm"] = "os_open_names"
     ruc_map: dict[str, RucClass]  # the nation's urban/rural codes → urban | town | rural
     pseudo_region: bool = False  # NSPL has no real regions here; the nation is its region
     demo_upper: list[str] = Field(default_factory=list)  # upper-tier areas in the demo cut
