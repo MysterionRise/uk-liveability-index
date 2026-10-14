@@ -5,6 +5,7 @@ import polars as pl
 import pyogrio
 
 from lix_core.codes import in_scope
+from lix_core.geo import working_crs
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
 from lix_pipeline.stage.health import geocode_postcodes
@@ -32,8 +33,8 @@ def stage_os_greenspace() -> pl.LazyFrame:
     points = pyogrio.read_dataframe(
         gpkg, layer="access_point", columns=["access_type", "ref_to_greenspace_site"]
     )
-    if points.crs is not None and points.crs.to_epsg() != 27700:
-        points = points.to_crs(27700)
+    if points.crs is not None and points.crs.to_epsg() != working_crs():
+        points = points.to_crs(working_crs())
     access = pl.DataFrame(
         {
             "site_id": points["ref_to_greenspace_site"].to_numpy(),
@@ -79,11 +80,11 @@ def _layer_polygons(slug: str, bands: tuple[str, ...]):
         gdf = gpd.read_file(
             path, columns=["risk"], where=f"risk IN ({', '.join(repr(b) for b in bands)})"
         )
-        frames.append(gdf.to_crs(27700)[["risk", "geometry"]])
+        frames.append(gdf.to_crs(working_crs())[["risk", "geometry"]])
     out = (
-        gpd.GeoDataFrame(pd_concat(frames), crs=27700)
+        gpd.GeoDataFrame(pd_concat(frames), crs=working_crs())
         if frames
-        else gpd.GeoDataFrame(columns=["risk", "geometry"], crs=27700)
+        else gpd.GeoDataFrame(columns=["risk", "geometry"], crs=working_crs())
     )
     logger.info(f"{slug}: {len(out):,} polygons in {bands}")
     return out
@@ -130,7 +131,7 @@ def _nrw_homes_at_risk() -> pl.DataFrame:
         .collect()
     )
     points = gpd.GeoSeries(
-        gpd.points_from_xy(props["x"].to_numpy(), props["y"].to_numpy()), crs=27700
+        gpd.points_from_xy(props["x"].to_numpy(), props["y"].to_numpy()), crs=working_crs()
     ).buffer(NRW_RECEPTOR_M)
     layers = {
         slug: _layer_polygons(slug, ("High", "Medium"))
@@ -138,7 +139,7 @@ def _nrw_homes_at_risk() -> pl.DataFrame:
     }
     shares = {}
     for prefix, slugs in (("res", NRW_RIVERS_SEA), ("any", NRW_RIVERS_SEA + NRW_SURFACE_WATER)):
-        polys = gpd.GeoDataFrame(pd_concat([layers[s] for s in slugs]), crs=27700)
+        polys = gpd.GeoDataFrame(pd_concat([layers[s] for s in slugs]), crs=working_crs())
         high_or_medium = inside_share(points, polys)
         high = inside_share(points, polys[polys["risk"] == "High"])
         shares[f"{prefix}_high"] = high
@@ -212,8 +213,8 @@ def touched_by_layer(receptors, slug: str, band: str, chunk: int = SEPA_CHUNK) -
         polys = pyogrio.read_dataframe(
             gdb, layer=layer, skip_features=start, max_features=chunk, columns=[]
         )
-        if polys.crs is not None and polys.crs.to_epsg() != 27700:
-            polys = polys.to_crs(27700)
+        if polys.crs is not None and polys.crs.to_epsg() != working_crs():
+            polys = polys.to_crs(working_crs())
         mark_touched(out, tree, polys.geometry.values)
     logger.info(f"{slug} {layer}: {total:,} polygons, {int(out.sum()):,} homes touched")
     return out
@@ -236,7 +237,7 @@ def _sepa_homes_at_risk() -> pl.DataFrame:
         .collect()
     )
     points = gpd.GeoSeries(
-        gpd.points_from_xy(props["x"].to_numpy(), props["y"].to_numpy()), crs=27700
+        gpd.points_from_xy(props["x"].to_numpy(), props["y"].to_numpy()), crs=working_crs()
     ).buffer(NRW_RECEPTOR_M)
     touched = {
         (slug, band): touched_by_layer(points, slug, band)

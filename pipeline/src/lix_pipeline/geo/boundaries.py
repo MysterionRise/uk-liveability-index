@@ -8,6 +8,7 @@ import polars as pl
 
 from lix_core.codes import active_nations, area_code_regex
 from lix_core.config import load_nations
+from lix_core.geo import working_crs
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
 
@@ -34,7 +35,9 @@ def load_boundaries(
     slug: str, code_column: str | None = None, simplify_tolerance: float = 0.0
 ) -> gpd.GeoDataFrame:
     """The polygons downloaded under ``data/raw/{slug}`` (a GeoPackage or a shapefile),
-    indexed by their code as ``lsoa21cd`` whatever the publisher calls it.
+    indexed by their code as ``lsoa21cd`` whatever the publisher calls it, in the
+    working CRS whatever grid the publisher drew them on (Irish Grid files are
+    reprojected; a file without a CRS is taken to be in the working one).
 
     ``code_column`` names the code attribute when the file has no ``*CD``-style column;
     ``simplify_tolerance`` (metres) simplifies full-resolution polygons.
@@ -46,6 +49,12 @@ def load_boundaries(
     path = files[0]
     logger.info(f"Loading boundaries from {path}")
     gdf = gpd.read_file(path)
+    working = working_crs()
+    if gdf.crs is None:
+        gdf = gdf.set_crs(working)
+    elif gdf.crs.to_epsg() != working:
+        logger.info(f"{slug}: reprojecting from {gdf.crs.to_string()} to EPSG:{working}")
+        gdf = gdf.to_crs(working)
     code = _code_column(list(gdf.columns), code_column)
     if code != "lsoa21cd":
         gdf = gdf.rename(columns={code: "lsoa21cd"})
@@ -77,14 +86,17 @@ def tier_polygons(
     for slug in dict.fromkeys(getattr(cfg[n].geo, attr) for n in nations):
         users = tuple(n for n in nations if getattr(cfg[n].geo, attr) == slug)
         spec = cfg[users[0]].geo
+        # ``code_column`` names the low tier's code; it applies to the mid pass too when
+        # a nation's low areas are their own mid tier (Northern Ireland's Super Data Zones)
+        same_file = spec.mid_boundaries == spec.low_boundaries
         gdf = load_boundaries(
             slug,
-            code_column=spec.code_column if level == "low" else None,
+            code_column=spec.code_column if level == "low" or same_file else None,
             simplify_tolerance=spec.simplify_m if simplify else 0.0,
         )
         frames.append(gdf[gdf.index.str.match(area_code_regex(level, nations=users))])
     out = pd.concat(frames) if len(frames) > 1 else frames[0]
-    return gpd.GeoDataFrame(out, crs=frames[0].crs)
+    return gpd.GeoDataFrame(out, crs=working_crs())
 
 
 def bounds_table(gdf: gpd.GeoDataFrame) -> pl.DataFrame:

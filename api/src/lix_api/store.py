@@ -12,20 +12,20 @@ from pathlib import Path
 
 import numpy as np
 import polars as pl
-from pyproj import Transformer
 from scipy.spatial import cKDTree
 
 from lix_core.config import SERVE_SCHEMA_VERSION, IndicatorSpec, Preset, ThemeSpec
+from lix_core.geo import lonlat_to_working
 from lix_core.paths import data_dir
 
 # A name's English form and the other languages' forms, as the pack's columns call them
 NAME_COLUMNS = ("name", "name_cy", "name_gd")
 
-_TO_BNG = Transformer.from_crs(4326, 27700, always_xy=True)
-
 
 def to_bng(lon: float, lat: float) -> tuple[float, float]:
-    return _TO_BNG.transform(lon, lat)
+    """WGS84 → the working CRS the pack's coordinates (``pwc_x``, POI x/y) are in."""
+    x, y = lonlat_to_working([lon], [lat])
+    return float(x[0]), float(y[0])
 
 
 @dataclass

@@ -12,6 +12,7 @@ import geopandas as gpd
 import polars as pl
 
 from lix_core.codes import active_nations, area_code_regex
+from lix_core.geo import working_crs
 from lix_core.paths import data_dir
 from lix_pipeline.geo.boundaries import tier_polygons
 
@@ -29,20 +30,21 @@ def points_to_lsoa(
     df: pl.DataFrame,
     x: str = "x",
     y: str = "y",
-    crs: int = 27700,
+    crs: int | None = None,
     polygons: gpd.GeoDataFrame | None = None,
 ) -> pl.DataFrame:
     """Add ``lsoa21cd`` to point records (null outside the active nations).
 
-    Coordinates are eastings/northings by default (``crs=27700``); pass ``crs=4326``
-    with lon/lat columns. ``polygons`` (columns lsoa21cd, geometry) is for tests.
+    Coordinates are in the working CRS by default (eastings/northings); pass
+    ``crs=4326`` with lon/lat columns. ``polygons`` (columns lsoa21cd, geometry) is for
+    tests.
     """
     polys = polygons if polygons is not None else _lsoa_polygons(area_code_regex())
     valid = df[x].is_not_null() & df[y].is_not_null()
     pts = gpd.GeoDataFrame(
         {"_row": range(df.height)},
         geometry=gpd.points_from_xy(df[x].fill_null(0).to_numpy(), df[y].fill_null(0).to_numpy()),
-        crs=crs,
+        crs=crs if crs is not None else working_crs(),
     )
     pts = pts[valid.to_numpy()]
     if pts.crs.to_epsg() != polys.crs.to_epsg():

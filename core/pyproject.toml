@@ -7,6 +7,7 @@ dependencies = [
     "numpy>=1.26",
     "polars>=1.38,<2",
     "pydantic>=2.7",
+    "pyproj>=3.6",
     "pyyaml>=6.0",
     "scipy>=1.13",
 ]
