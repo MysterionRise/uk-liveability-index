@@ -76,3 +76,27 @@ class TestNoiseAtHomes:
         assert e01["mean_db"] == (70 + 70 + 0 + 58) / 4
         e02 = out.row(1, named=True)
         assert e02["share_any_60"] == 0.0 and e02["mean_db"] == 0.0
+        # Shares at 55 per kind, and the road-or-rail share (no aircraft layer here)
+        assert e01["share_road_55"] == 0.5 and e01["share_rail_55"] == 0.25
+        assert e01["share_road_rail_60"] == 0.5
+
+    def test_aircraft_counts_in_any_but_not_in_road_rail(self, tmp_path):
+        road = _tile(tmp_path / "road.tif", 0, 40, [[70, 0, 0, 0]] * 4)  # x 0–10 loud
+        air = _tile(tmp_path / "air.tif", 0, 40, [[0, 0, 57, 63]] * 4)  # x 20–40 aircraft
+        homes = pl.DataFrame(
+            {
+                "lsoa21cd": ["E01"] * 4,
+                "east1m": [5.0, 15.0, 25.0, 35.0],
+                "north1m": [20.0] * 4,
+            }
+        )
+        out = noise_at_homes(homes, {"road": [road], "air": [air]}).row(0, named=True)
+        assert out["share_air_55"] == 0.5 and out["share_air_60"] == 0.25
+        assert out["share_any_60"] == 0.5  # the loud road home and the 63 dB aircraft home
+        assert out["share_road_rail_60"] == 0.25  # aircraft left out
+
+    def test_without_surface_layers_the_road_rail_share_is_null(self, tmp_path):
+        every = _tile(tmp_path / "all.tif", 0, 40, [[70, 0, 0, 0]] * 4)
+        homes = pl.DataFrame({"lsoa21cd": ["S01"], "east1m": [5.0], "north1m": [20.0]})
+        out = noise_at_homes(homes, {"all": [every]}).row(0, named=True)
+        assert out["share_all_60"] == 1.0 and out["share_road_rail_60"] is None

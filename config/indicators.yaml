@@ -246,18 +246,18 @@ indicators:
   - id: noise_exposure
     theme: environment
     label: Homes in transport or industrial noise
-    description: Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road and rail in England and Wales; every mapped source in Scotland).
+    description: Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road, rail and aircraft in England; road and rail in Wales; every mapped source in Scotland).
     unit: "% of homes"
     direction: lower_better
     coverage: [E, W, S]
-    sources: [defra_noise_road_lden, defra_noise_rail_lden, wg_noise_road_lden, wg_noise_rail_lden, sepa_noise_all_lden, nspl]
+    sources: [defra_noise_road_lden, defra_noise_rail_lden, defra_noise_air_lden, wg_noise_road_lden, wg_noise_rail_lden, sepa_noise_all_lden, nspl]
     builder: environment:percent
     params: {slug: noise, column: share_any_60}
     normalise: threshold
     good: 0
     bad: 40
     overlap_group: noise
-    caveats: Each home is read from the 10m noise grid at its postcode. England's and Wales's maps hold road and rail only; Scotland's consolidated map adds airports and industry. The cut-off is 60 dB Lden, a busy road's level, because minor roads are mapped only inside the larger towns in England.
+    caveats: Each home is read from the 10m noise grid at its postcode and the loudest mapped source counts. England's maps hold road, rail and the sixteen mapped airports, Wales's road and rail only, Scotland's consolidated map every source including industry. The cut-off is 60 dB Lden, a busy road's level, because minor roads are mapped only inside the larger towns in England.
 
   - id: road_rail_noise
     theme: environment
@@ -268,13 +268,39 @@ indicators:
     coverage: [E, W]  # Scotland publishes one consolidated map (see noise_exposure)
     sources: [defra_noise_road_lden, defra_noise_rail_lden, wg_noise_road_lden, wg_noise_rail_lden, nspl]
     builder: environment:percent
-    params: {slug: noise, column: share_any_60}
+    params: {slug: noise, column: share_road_rail_60}
     normalise: threshold
     good: 0
     bad: 40
     role: context
     overlap_group: noise
     caveats: Each home is read from the 10m noise grid at its postcode. England's maps cover every road inside the larger towns and cities and only major roads elsewhere, while Wales's cover every road, so the cut-off is 60 dB Lden, a busy road's level, rather than the 55 dB at which the Environmental Noise Directive counts people as exposed and at which ordinary streets would count only where they were mapped. Aircraft and industry are not included.
+
+  - id: aircraft_noise
+    theme: environment
+    label: Homes in aircraft noise
+    description: Share of homes where aircraft noise averages 55 dB Lden or more over the day, evening and night, around the sixteen airports England maps.
+    unit: "% of homes"
+    direction: lower_better
+    coverage: [E]  # Scotland's consolidated map does not separate airports; Wales maps none
+    sources: [defra_noise_air_lden, nspl]
+    builder: environment:percent
+    params: {slug: noise, column: share_air_55}
+    role: context
+    caveats: The 55 dB Lden contours of Heathrow, Gatwick, Stansted, Luton, London City, Southend, Manchester, Liverpool, Birmingham, East Midlands, Leeds Bradford, Newcastle, Bristol, Bournemouth and Southampton for 2021, a year with fewer flights than usual; homes beyond those contours read 0 whatever smaller airfields they hear.
+
+  - id: industrial_noise
+    theme: environment
+    label: Homes in industrial noise
+    description: Share of homes where industrial noise averages 55 dB Lden or more over the day, evening and night, in Scotland's five mapped cities.
+    unit: "% of homes"
+    direction: lower_better
+    coverage: [S]  # England and Wales publish no industry layer
+    sources: [sepa_noise_industry_lden, nspl]
+    builder: environment:percent
+    params: {slug: noise, column: share_industry_55}
+    role: context
+    caveats: Mapped only in Aberdeen, Dundee, Edinburgh, Falkirk and Glasgow; elsewhere in Scotland the value is 0 rather than unknown.
 
   - id: tree_canopy
     theme: environment

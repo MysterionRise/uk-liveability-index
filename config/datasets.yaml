@@ -540,6 +540,24 @@ defra_noise_rail_lden:
   size_hint: 6GB in 56 tiles
   notes: As defra_noise_road_lden.
 
+defra_noise_air_lden:
+  coverage: [E]
+  title: Defra strategic noise mapping round 4, aircraft noise (Lden, all airports)
+  theme: environment
+  access:
+    type: wcs
+    url: https://environment.data.gov.uk/spatialdata/airport-noise-all-metrics-england-round-4/wcs
+    coverage_id: dac9cba4-abe7-43bd-b8e9-8a83da52edd8__Airport_Noise_ALL_Lden
+  format: tif
+  landing_page: https://environment.data.gov.uk/dataset/dac9cba4-abe7-43bd-b8e9-8a83da52edd8
+  description: Modelled annual average day-evening-night aircraft noise (Lden, dB) on a 10m grid for 2021 around the sixteen airports England maps under the Environmental Noise Directive, from Heathrow to Southend.
+  licence: OGL-3.0
+  attribution: "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4)."
+  cadence: adhoc
+  period: "Round 4 (2021 movements)"
+  size_hint: 56 tiles, mostly empty
+  notes: Fetched as 8192-pixel tiles over the WCS like the road layer; cells away from the mapped airports hold 0 dB. Night-time (Lnight) coverages exist for roads, railways and airports but are not fetched yet (three more full-England pulls).
+
 wg_noise_road_lden:
   coverage: [W]
   title: Welsh Government environmental noise mapping 2022, road traffic noise (Lden, all roads)

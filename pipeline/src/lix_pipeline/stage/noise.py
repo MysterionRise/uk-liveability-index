@@ -1,8 +1,9 @@
 """Noise at homes: the strategic noise maps sampled at residential postcodes.
 
-Each nation publishes its Round 4 maps differently: England (Defra, 2021 traffic) and
-Wales (2022) a 10m grid per source, road and rail; Scotland one consolidated grid of every
-mapped source (road, rail, airports, industry) plus an industry grid for its five cities.
+Each nation publishes its Round 4 maps differently: England (Defra, 2021 traffic) a 10m
+grid per source, road, rail and aircraft; Wales (2022) road and rail; Scotland one
+consolidated grid of every mapped source (road, rail, airports, industry) plus an
+industry grid for its five cities.
 ``NOISE_SOURCES`` lists the grids per nation by kind, and every kind is sampled where the
 nation has it; ``share_any_*`` takes the loudest kind at each home, so the scored
 indicator means the same everywhere: the share of homes in mapped noise. Cells with no
@@ -27,6 +28,7 @@ NOISE_SOURCES: dict[str, dict[str, dict[str, str]]] = {
     "E": {
         "road": {"lden": "defra_noise_road_lden"},
         "rail": {"lden": "defra_noise_rail_lden"},
+        "air": {"lden": "defra_noise_air_lden"},
     },
     "W": {
         "road": {"lden": "wg_noise_road_lden"},
@@ -55,10 +57,13 @@ def _tiles(slug: str) -> list[Path]:
 
 def noise_at_homes(homes: pl.DataFrame, layers: dict[str, list[Path]]) -> pl.DataFrame:
     """Per area: the share of residential postcodes at or above 60 dB Lden from any mapped
-    kind (and at 55 and 65), each kind's own share at 60, and the mean of the loudest kind.
+    kind (and at 55 and 65), each kind's own share at 60 and at 55, the share from road
+    or rail alone at 60, and the mean of the loudest kind.
 
     ``layers`` maps a kind (road, rail, air, industry, all) to its grid tiles; a kind with
-    no grid counts as 0 dB, like a cell no source reaches.
+    no grid counts as 0 dB, like a cell no source reaches. Aircraft and industry are
+    reported at 55 dB too: those maps cover whole contours, so the minor-road caveat
+    behind the 60 dB cut-off does not apply to them.
     """
     x = homes["east1m"].to_numpy().astype(float)
     y = homes["north1m"].to_numpy().astype(float)
@@ -71,6 +76,12 @@ def noise_at_homes(homes: pl.DataFrame, layers: dict[str, list[Path]]) -> pl.Dat
         raise ValueError("noise_at_homes needs at least one grid")
     db_columns = [pl.Series(f"{kind}_db", values) for kind, values in sampled.items()]
     loudest = pl.max_horizontal([f"{kind}_db" for kind in sampled])
+    surface = [k for k in ("road", "rail") if k in sampled]
+    road_rail = (
+        (pl.max_horizontal([f"{k}_db" for k in surface]) >= NOISY_DB).mean()
+        if surface
+        else pl.lit(None, pl.Float64)
+    )
     return (
         homes.select("lsoa21cd")
         .with_columns(*db_columns)
@@ -81,6 +92,11 @@ def noise_at_homes(homes: pl.DataFrame, layers: dict[str, list[Path]]) -> pl.Dat
                 (pl.col(f"{kind}_db") >= NOISY_DB).mean().alias(f"share_{kind}_60")
                 for kind in sampled
             ],
+            *[
+                (pl.col(f"{kind}_db") >= REPORTED_DB).mean().alias(f"share_{kind}_55")
+                for kind in sampled
+            ],
+            road_rail.alias("share_road_rail_60"),
             (loudest >= NOISY_DB).mean().alias("share_any_60"),
             (loudest >= REPORTED_DB).mean().alias("share_any_55"),
             (loudest >= LOUD_DB).mean().alias("share_any_65"),
@@ -108,9 +124,10 @@ def stage_noise() -> pl.LazyFrame:
         )
         frames.append(df)
     columns = ["lsoa21cd", "n_postcodes", *[f"share_{k}_60" for k in KINDS]]
-    columns += ["share_any_60", "share_any_55", "share_any_65", "mean_db"]
+    columns += [f"share_{k}_55" for k in KINDS]
+    columns += ["share_road_rail_60", "share_any_60", "share_any_55", "share_any_65", "mean_db"]
     out = pl.concat(frames, how="diagonal_relaxed").sort("lsoa21cd")
-    for kind in KINDS:
-        if f"share_{kind}_60" not in out.columns:
-            out = out.with_columns(pl.lit(None, pl.Float64).alias(f"share_{kind}_60"))
+    for column in columns:
+        if column not in out.columns:
+            out = out.with_columns(pl.lit(None, pl.Float64).alias(column))
     return out.select(columns).lazy()

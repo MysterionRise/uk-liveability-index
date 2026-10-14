@@ -361,3 +361,9 @@ places:
     checks:
       - {indicator: winter_mildness, op: ge, value: 3, anchor: true}
       - {indicator: snow_days, op: le, value: 3}
+
+  - name: Hounslow
+    local_authority: Hounslow
+    why: "Under Heathrow's approach: most homes inside the 55 dB Lden aircraft contour"
+    checks:
+      - {indicator: aircraft_noise, op: ge, value: 50, anchor: true}
