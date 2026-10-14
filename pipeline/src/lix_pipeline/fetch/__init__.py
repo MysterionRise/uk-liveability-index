@@ -16,7 +16,7 @@ import requests
 from lix_core.config import DatasetSpec, HttpAccess, load_registry
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir, get_project_root
-from lix_pipeline.fetch import arcgis, ckan, govuk, html, nomis, overture, wcs, wfs
+from lix_pipeline.fetch import arcgis, ckan, govuk, html, keyed, nomis, overture, wcs, wfs
 from lix_pipeline.fetch.http import _read_meta, _write_meta, download, download_set
 from lix_pipeline.fetch.lock import read_lock, update_entry
 from lix_pipeline.fetch.session import make_session
@@ -26,6 +26,10 @@ logger = setup_logging("fetch")
 
 class ManualDownloadRequired(Exception):
     """A dataset that has to be downloaded by hand is missing."""
+
+
+class KeyMissing(ManualDownloadRequired):
+    """A keyed source's environment variable is not set: skipped like a manual download."""
 
 
 def _now() -> str:
@@ -115,6 +119,10 @@ def resolve(slug: str, spec: DatasetSpec, session: requests.Session) -> dict:
         resolved = wcs.resolve_coverage(access, session)
     elif access.type == "wfs":
         resolved = wfs.resolve_layer(access, session)
+    elif access.type == "api_key":
+        # No request: the key may be absent, and the URL is the edition (checksums tell
+        # the rest); the key itself never enters the lock
+        resolved = {"url": access.url, "version": access.url}
     elif access.type == "curated":
         path = _curated_path(access.path)
         # The file's own checksum is its version, so an edited list is a new edition
@@ -214,6 +222,49 @@ def _fetch_paged(slug: str, spec: DatasetSpec, resolved: dict, force: bool, down
     return meta
 
 
+def _fetch_keyed(
+    slug: str,
+    spec: DatasetSpec,
+    resolved: dict,
+    force: bool,
+    revalidate: bool,
+    session: requests.Session,
+) -> dict:
+    """Download a keyed source: a single file, or a paged JSON API into one file."""
+    access = spec.access
+    key = keyed.key_for(access)
+    if key is None:
+        where = f" (get one at {access.signup})" if access.signup else ""
+        raise KeyMissing(
+            f"[{slug}] {spec.title} needs a free key in the environment variable "
+            f"{access.env}{where}; skipped until it is set"
+        )
+    keyed_session = keyed.keyed_session(access, session, key)
+    try:
+        if access.page_param:
+            return _fetch_paged(
+                slug,
+                spec,
+                resolved,
+                force,
+                lambda out: keyed.fetch_json_pages(access, resolved["url"], out, keyed_session),
+            )
+        return download(
+            slug,
+            resolved["url"],
+            spec.format,
+            extract=spec.extract,
+            force=force,
+            version=resolved.get("version"),
+            session=keyed_session,
+            read_timeout_s=max(300, access.timeout_s),
+            revalidate=revalidate,
+        )
+    except requests.RequestException as e:
+        # A failed request quotes its URL, which carries a query-string key
+        raise requests.RequestException(keyed.redact(str(e), key)) from None
+
+
 def fetch(
     slug: str,
     force: bool = False,
@@ -289,6 +340,8 @@ def fetch(
         meta = download_set(
             slug, urls, spec.format, resolved["version"], force, session, spec.access.timeout_s
         )
+    elif spec.access.type == "api_key":
+        meta = _fetch_keyed(slug, spec, resolved, force, revalidate, session)
     elif spec.access.type == "http" and spec.access.tiles:
         urls = {t: spec.access.url.format(tile=t) for t in spec.access.tiles}
         meta = download_set(slug, urls, spec.format, resolved.get("version"), force, session)
@@ -406,6 +459,13 @@ def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dic
     def done(status: LinkStatus, note: str, changed: bool = False) -> dict:
         return {**out, "status": status, "note": note, "changed": changed}
 
+    if spec.access.type == "api_key":
+        key = keyed.key_for(spec.access)
+        if key is None:
+            where = f" (get one at {spec.access.signup})" if spec.access.signup else ""
+            return done("warn", f"key not set: {spec.access.env}{where}")
+        session = keyed.keyed_session(spec.access, session, key)
+
     try:
         resolved = resolve(slug, spec, session)
     except requests.HTTPError as e:
@@ -421,7 +481,9 @@ def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dic
     if resolved["url"] is None:
         return done("ok", "manual download")
 
-    plain = spec.access.type in PLAIN_FILE_TYPES and not getattr(spec.access, "tiles", None)
+    plain = (spec.access.type in PLAIN_FILE_TYPES and not getattr(spec.access, "tiles", None)) or (
+        spec.access.type == "api_key" and not spec.access.page_param
+    )
     validators = {k: fetched.get(k) for k in ("etag", "last_modified")} if plain else None
     try:
         status, size = _reachable(resolved["url"], session, validators)

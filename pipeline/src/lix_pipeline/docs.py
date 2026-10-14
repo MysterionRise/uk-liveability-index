@@ -62,6 +62,11 @@ def data_sources_md(registry: dict[str, DatasetSpec]) -> str:
         lines.append("|---|---|---|---|---|---|---|")
         for slug, spec in by_theme[theme]:
             licence = spec.licence + ("" if spec.licence_verified else " (unverified)")
+            if spec.access.type == "api_key":
+                where = f" from {spec.access.signup}" if spec.access.signup else ""
+                licence += f"; free key{where} in `{spec.access.env}`"
+            elif spec.access.type == "manual":
+                licence += "; manual download (free login)"
             priority = "" if spec.priority == "P0" else f" ({spec.priority})"
             covers = ", ".join(NATION_NAMES[n] for n in spec.coverage)
             period = period_of(slug, spec, lock.get(slug, {}))

@@ -10,6 +10,7 @@ plan and the tests can exercise it without data. The sidecars are:
 """
 
 import hashlib
+import os
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -106,6 +107,8 @@ def fetch_steps(lock: dict, registry: dict, slugs: Iterable[str]) -> list[Step]:
             out.append(Step(slug, "manual: files checked"))
         elif spec.access.type == "curated":
             out.append(Step(slug, "curated: copied from the repository"))
+        elif spec.access.type == "api_key" and not os.environ.get(spec.access.env, "").strip():
+            out.append(Step(slug, f"api_key: {spec.access.env} not set, skipped"))
         elif not fetched:
             out.append(Step(slug, "never fetched"))
         elif resolved.get("version") and fetched.get("version") not in (

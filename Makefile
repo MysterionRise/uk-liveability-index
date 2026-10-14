@@ -14,11 +14,11 @@ install:
 
 # Re-resolve every source to its current upstream file (updates config/datasets.lock.json)
 resolve:
-	uv run lix resolve --all
+	uv run $(ENV_FILE) lix resolve --all
 
 # Download every dataset pinned in the lockfile into data/raw/ (Price Paid alone is 5.5 GB)
 fetch:
-	uv run lix fetch --all
+	uv run $(ENV_FILE) lix fetch --all
 
 # Stage every downloaded dataset to data/staged/*.parquet; nspl runs first (price_paid needs it)
 stage:
@@ -43,10 +43,10 @@ build-data: fetch stage indicators score tiles validate
 # the sidecars under data/); `make refresh` does it: only stale stages, indicators, scores
 # and tiles are rebuilt, then the docs, the anchor review and a fresh data pack
 refresh-plan:
-	uv run lix refresh --dry-run
+	uv run $(ENV_FILE) lix refresh --dry-run
 
 refresh:
-	uv run lix refresh
+	uv run $(ENV_FILE) lix refresh
 	uv run lix docs
 	uv run lix qa places
 	$(MAKE) data-pack

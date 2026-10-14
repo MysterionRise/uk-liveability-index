@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator, model_validator
 
 from lix_core.paths import get_project_root
 
@@ -188,6 +188,35 @@ class CuratedAccess(_Strict):
     path: str  # relative to the project root
 
 
+class ApiKeyAccess(_Strict):
+    """An open dataset behind a free registered key (Logainm's place-name API). The key is
+    read from the environment variable ``env`` and sent as ``header`` or as the query
+    parameter ``query``; it never reaches the lockfile, the docs or the logs. Without it
+    the fetch is skipped with a warning, like a manual download, so a build completes.
+
+    A paged JSON API (``page_param``) is read page by page into one JSON file of items.
+    """
+
+    type: Literal["api_key"]
+    url: str
+    env: str  # the environment variable holding the key
+    header: str | None = None  # send the key in this header ("X-Api-Key") ...
+    query: str | None = None  # ... or as this query parameter ("apiKey")
+    prefix: str = ""  # text before the key in the header ("Bearer ")
+    signup: str | None = None  # where a key is obtained (docs and warnings)
+    page_param: str | None = None  # paged JSON: the page number parameter (from 1)
+    per_page_param: str | None = None  # and the page size parameter
+    per_page: int = 1000
+    items_key: str | None = None  # the key holding a page's items (the page itself if omitted)
+    timeout_s: int = 60
+
+    @model_validator(mode="after")
+    def _one_way_in(self):
+        if bool(self.header) == bool(self.query):
+            raise ValueError("api_key access needs exactly one of header or query")
+        return self
+
+
 class ManualAccess(_Strict):
     """A file the user downloads by hand (e.g. behind a free login) into data/manual/{slug}/."""
 
@@ -206,6 +235,7 @@ Access = Annotated[
     | OvertureAccess
     | WcsAccess
     | WfsAccess
+    | ApiKeyAccess
     | ManualAccess
     | CuratedAccess,
     Field(discriminator="type"),
