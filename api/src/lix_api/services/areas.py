@@ -25,7 +25,7 @@ def _covered(store: Store, values: list[IndicatorValue]) -> set[str]:
 
 
 KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_exposure",
-             "flood_risk", "tree_canopy", "gp_distance", "station_distance",
+             "flood_risk", "tree_canopy", "sunshine", "gp_distance", "station_distance",
              "gigabit_broadband", "well_run_pubs", "households_with_children"]  # fmt: skip
 
 FLAG_TEXT = {

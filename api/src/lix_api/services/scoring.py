@@ -21,6 +21,8 @@ THEME_WORDS = {
     "amenities": "amenities", "nightlife": "amenities", "pubs": "amenities",
     "shops": "amenities", "affordability": "housing", "prices": "housing",
     "house prices": "housing", "cost": "housing", "wellbeing": "community",
+    "weather": "climate", "sunshine": "climate", "sunny": "climate", "sun": "climate",
+    "rain": "climate", "rainfall": "climate", "warm": "climate", "mild": "climate",
 }  # fmt: skip
 PRESET_WORDS = {
     "default": "balanced", "families": "family", "retired": "retiree", "retirees": "retiree",

@@ -239,6 +239,7 @@ Theme = Literal[
     "amenities",
     "housing",
     "community",
+    "climate",
 ]
 
 
@@ -251,7 +252,9 @@ class DatasetSpec(_Strict):
     coverage: list[Nation] = Field(default_factory=lambda: ["E"])
     priority: Literal["P0", "P1", "P2"] = "P0"
     access: Access
-    format: Literal["csv", "zip", "gpkg", "xlsx", "ods", "parquet", "json", "geojson", "pbf", "tif"]
+    format: Literal[
+        "csv", "zip", "gpkg", "xlsx", "ods", "parquet", "json", "geojson", "pbf", "tif", "nc"
+    ]
     # zip only: glob patterns of members to extract (everything if omitted)
     extract: list[str] | None = None
     landing_page: str | None = None
@@ -296,6 +299,7 @@ ScoredTheme = Literal[
     "amenities",
     "housing",
     "community",
+    "climate",
 ]
 
 
@@ -330,6 +334,11 @@ UNIT_CODES: dict[str, str] = {
     "years": "years",
     "people per km²": "people_km2",
     "nW/cm²/sr": "radiance",
+    "hours a year": "hours_year",
+    "days a year": "days_year",
+    "°C": "celsius",
+    "mm a year": "mm_year",
+    "m/s": "m_s",
 }
 
 

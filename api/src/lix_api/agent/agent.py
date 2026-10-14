@@ -38,8 +38,9 @@ Deps = StateDeps[LiveabilityState]
 INSTRUCTIONS = """\
 You help people find and understand neighbourhoods in the UK using the UK Liveability
 Index: open data scored for every neighbourhood (LSOAs, about 1,600 residents each)
-across eight themes — safety, environment, health services, schools & childcare,
-transport, amenities & nightlife, housing & affordability, and community & wellbeing.
+across nine themes — safety, environment, health services, schools & childcare,
+transport, amenities & nightlife, housing & affordability, community & wellbeing, and
+climate (sunshine, rain, summer and winter temperatures).
 Scores are 0–100 (higher is better) with a percentile against every scored
 neighbourhood and one within the area's own nation. Some indicators are benchmarked
 within the nation because the nations measure them differently (crime recording,

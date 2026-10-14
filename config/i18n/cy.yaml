@@ -13,12 +13,13 @@ themes:
   amenities: {label: Amwynderau a bywyd nos, description: "Siopau, caffis, tafarndai da, hamdden a diwylliant gerllaw."}
   housing: {label: Tai a fforddiadwyedd, description: Beth mae cartrefi'n ei gostio a chyflwr y stoc dai.}
   community: {label: Cymuned a lles, description: "Incwm, gwaith ac iechyd y bobl sy'n byw yno."}
+  climate: {label: Hinsawdd, description: "Heulwen, glaw a pha mor gynnes yw'r haf a pha mor dyner yw'r gaeaf, o gyfartaleddau deng mlynedd ar hugain."}
 
 presets:
   balanced: {label: Cytbwys, description: Mae pob thema'n cyfrif yn gyfartal.}
   family: {label: Teulu â phlant, description: "Ysgolion a meithrinfeydd da, diogelwch a mannau gwyrdd sy'n dod gyntaf."}
   young_professional: {label: Gweithiwr proffesiynol ifanc, description: "Cysylltiadau, pethau i'w gwneud a thafarndai da; mae ysgolion yn llai pwysig."}
-  retiree: {label: Wedi ymddeol, description: "Diogelwch, gwasanaethau iechyd, aer glân ac ardal dawelach."}
+  retiree: {label: Wedi ymddeol, description: "Diogelwch, gwasanaethau iechyd, aer glân, heulwen ac ardal dawelach."}
   commuter: {label: Cymudwr, description: "Cysylltiadau cyflym â swyddi, ar drafnidiaeth gyhoeddus yn anad dim."}
 
 units:
@@ -45,6 +46,11 @@ units:
   years: blynyddoedd
   people_km2: "pobl fesul km²"
   radiance: "nW/cm²/sr"
+  hours_year: \"oriau y flwyddyn\"
+  days_year: \"diwrnodau y flwyddyn\"
+  celsius: \"°C\"
+  mm_year: \"mm y flwyddyn\"
+  m_s: \"m/s\"
 
 flags:
   imputed: "Mae'r ffigurau troseddu yma'n amcangyfrifon: nid yw Heddlu Manceinion Fwyaf yn cyhoeddi data ar lefel stryd."
@@ -128,6 +134,16 @@ indicators:
   owner_occupied: {label: Cartrefi perchen-feddianwyr, description: Cyfran yr aelwydydd sy'n berchen ar eu cartref yn llwyr neu â morgais (Cyfrifiad 2021).}
   no_car: {label: Aelwydydd heb gar, description: Cyfran yr aelwydydd heb gar na fan (Cyfrifiad 2021).}
   sustainable_commute: {label: "Cerdded, beicio neu drafnidiaeth gyhoeddus i'r gwaith", description: "Cyfran y gweithwyr sy'n cymudo ar droed, ar feic neu ar drafnidiaeth gyhoeddus (Cyfrifiad 2021, yn ystod cyfyngiadau COVID-19)."}
+
+  sunshine: {label: Heulwen, description: "Oriau o heulwen lachar y flwyddyn, cyfartaledd 1991–2020 (HadUK-Grid, 1km)."}
+  wet_days: {label: Diwrnodau gwlyb, description: "Diwrnodau y flwyddyn ag o leiaf 1mm o law, cyfartaledd 1991–2020."}
+  summer_warmth: {label: Cynhesrwydd yr haf, description: "Tymheredd uchaf dyddiol cyfartalog Mehefin i Awst, cyfartaledd 1991–2020 (°C)."}
+  winter_mildness: {label: Tynerwch y gaeaf, description: "Tymheredd isaf dyddiol cyfartalog Rhagfyr i Chwefror, cyfartaledd 1991–2020 (°C)."}
+  rainfall: {label: Glawiad, description: "Glawiad y flwyddyn mewn milimetrau, cyfartaledd 1991–2020."}
+  air_frost_days: {label: Diwrnodau o rew yn yr aer, description: "Diwrnodau y flwyddyn pan fo tymheredd yr aer yn disgyn o dan 0°C, cyfartaledd 1991–2020."}
+  summer_days: {label: Diwrnodau o haf, description: "Diwrnodau y flwyddyn pan fo'r tymheredd yn cyrraedd 25°C, cyfartaledd 1991–2020."}
+  wind_speed: {label: Gwynt, description: "Cyflymder cyfartalog y gwynt ar 10m, cyfartaledd 1991–2020."}
+  snow_days: {label: Diwrnodau ag eira ar lawr, description: "Diwrnodau y flwyddyn ag eira ar lawr am 9am, cyfartaledd 1991–2020."}
 
 # What the interface calls each nation's areas (one, several)
 levels:

@@ -187,7 +187,7 @@ export const DIVERGING: Record<Mode, { neg: string; mid: string; pos: string }> 
 // --- One colour per theme ---------------------------------------------------------------
 
 /**
- * The eight themes in the order they appear on screen (config/indicators.yaml). The
+ * The nine themes in the order they appear on screen (config/indicators.yaml). The
  * hue order is the colour-blind-safety mechanism: it was chosen from the reference
  * palette's validated steps so that every adjacent pair stays apart under simulated
  * protan/deutan vision in both modes (see docs/design.md). Don't reorder the hues.
@@ -201,6 +201,7 @@ export const THEME_ORDER = [
   "amenities",
   "housing",
   "community",
+  "climate",
 ] as const;
 
 export type ThemeId = (typeof THEME_ORDER)[number];
@@ -215,6 +216,7 @@ export const THEME_COLORS: Record<Mode, Record<ThemeId, string>> = {
     amenities: "#eb6834", // orange
     housing: "#1baf7a", // aqua
     community: "#4a3aa7", // violet
+    climate: "#0b8fa8", // teal
   },
   dark: {
     safety: "#e66767",
@@ -225,6 +227,7 @@ export const THEME_COLORS: Record<Mode, Record<ThemeId, string>> = {
     amenities: "#d95926",
     housing: "#199e70",
     community: "#9085e9",
+    climate: "#2aa7bf",
   },
 };
 

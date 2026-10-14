@@ -14,6 +14,7 @@ themes:
   amenities: {label: Goireasan agus beatha na h-oidhche, description: "Bùthan, cafaidhean, taighean-seinnse math, cur-seachadan agus cultar faisg air làimh."}
   housing: {label: Taigheadas agus ruigsinneachd, description: "Na chosgas dachaighean agus staid an stoc thaighean."}
   community: {label: Coimhearsnachd agus sunnd, description: "Teachd-a-steach, obair agus slàinte nan daoine a tha a' fuireach ann."}
+  climate: {label: Gnàth-shìde, description: "Grian, uisge agus cho blàth 's a tha an samhradh agus cho ciùin 's a tha an geamhradh, bho chuibheasachdan deich bliadhna fichead."}
 
 presets:
   balanced: {label: Cothromaichte, description: "Tha gach cuspair a' cunntadh gu co-ionann."}
@@ -46,6 +47,11 @@ units:
   years: bliadhnaichean
   people_km2: "daoine gach km²"
   radiance: "nW/cm²/sr"
+  hours_year: \"uairean sa bhliadhna\"
+  days_year: \"làithean sa bhliadhna\"
+  celsius: \"°C\"
+  mm_year: \"mm sa bhliadhna\"
+  m_s: \"m/s\"
 
 flags:
   imputed: "Is e tuairmsean a th' anns na figearan eucoir an seo: chan eil Poileas Greater Manchester a' foillseachadh dàta aig ìre sràide."
@@ -144,3 +150,12 @@ indicators:
   owner_occupied: {label: Dachaighean le sealbhadair a' fuireach annta, description: "Cuid de theaghlaichean a tha nan sealbhadairean air an dachaigh gu tur no le morgaids (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
   no_car: {label: Teaghlaichean gun chàr, description: "Cuid de theaghlaichean gun chàr no bhan (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
   sustainable_commute: {label: "Coiseachd, baidhsagal no còmhdhail phoblach gu obair", description: "Cuid de luchd-obrach a' siubhal gu obair air chois, air baidhsagal no air còmhdhail phoblaich (Cunntas-sluaigh 2021, rè bacaidhean COVID-19; 2022 ann an Alba)."}
+  sunshine: {label: Grian, description: "Uairean de dheàrrsadh grèine sa bhliadhna, cuibheasachd 1991–2020 (HadUK-Grid, 1km)."}
+  wet_days: {label: Làithean fliuch, description: "Làithean sa bhliadhna le co-dhiù 1mm de dh'uisge, cuibheasachd 1991–2020."}
+  summer_warmth: {label: Blàths an t-samhraidh, description: "Teòthachd as àirde làitheil chuibheasach bhon Ògmhios chun Lùnastal, cuibheasachd 1991–2020 (°C)."}
+  winter_mildness: {label: Ciùineas a' gheamhraidh, description: "Teòthachd as ìsle làitheil chuibheasach bhon Dùbhlachd chun Ghearran, cuibheasachd 1991–2020 (°C)."}
+  rainfall: {label: Uisge, description: "Uisge sa bhliadhna ann am milleameatairean, cuibheasachd 1991–2020."}
+  air_frost_days: {label: Làithean reothaidh, description: "Làithean sa bhliadhna nuair a thuiteas teòthachd an adhair fo 0°C, cuibheasachd 1991–2020."}
+  summer_days: {label: Làithean samhraidh, description: "Làithean sa bhliadhna nuair a ruigeas an teòthachd 25°C, cuibheasachd 1991–2020."}
+  wind_speed: {label: Gaoth, description: "Astar cuibheasach na gaoithe aig 10m, cuibheasachd 1991–2020."}
+  snow_days: {label: Làithean le sneachd na laighe, description: "Làithean sa bhliadhna le sneachd air an talamh aig 9m, cuibheasachd 1991–2020."}

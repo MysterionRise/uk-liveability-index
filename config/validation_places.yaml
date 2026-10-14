@@ -89,6 +89,7 @@ places:
     local_authority: Highland
     why: "Highland town under Ben Nevis: clean air, trees, a small hospital with an A&E"
     checks:
+      - {indicator: wet_days, op: ge, value: 200, anchor: true}  # the wettest corner of Britain
       - {theme: environment, op: ge, value: 50, anchor: true}
       - {indicator: hospital_ae_distance, op: le, value: 5000, anchor: true}  # the Belford
 
@@ -96,6 +97,7 @@ places:
     local_authority: Shetland Islands
     why: "Remote island capital: no railway anywhere near, clean air, its own A&E"
     checks:
+      - {indicator: summer_warmth, op: le, value: 15, anchor: true}  # cool Shetland summers
       - {indicator: station_distance, op: ge, value: 40000, anchor: true}  # capped at 50km
       - {indicator: hospital_ae_distance, op: le, value: 5000, anchor: true}  # the Gilbert Bain
       - {theme: environment, op: ge, value: 50}
@@ -344,3 +346,18 @@ places:
     why: Older seaside town
     checks:
       - {indicator: aged_65_plus, op: ge, value: 30}
+
+  # --------------------------------------------------------------------- climate
+  - name: Bognor Regis
+    local_authority: Arun
+    why: "The sunniest stretch of the English coast, by the Met Office's long-term averages"
+    checks:
+      - {indicator: sunshine, op: ge, value: 1700, anchor: true}
+      - {theme: climate, op: ge, value: 60, anchor: true}
+
+  - name: Penzance
+    local_authority: Cornwall
+    why: "Far south-west: mild winters, few frosts, rarely any snow"
+    checks:
+      - {indicator: winter_mildness, op: ge, value: 3, anchor: true}
+      - {indicator: snow_days, op: le, value: 3}

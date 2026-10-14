@@ -35,6 +35,7 @@
   --theme-amenities: #eb6834;
   --theme-housing: #1baf7a;
   --theme-community: #4a3aa7;
+  --theme-climate: #0b8fa8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -73,6 +74,7 @@
     --theme-amenities: #d95926;
     --theme-housing: #199e70;
     --theme-community: #9085e9;
+    --theme-climate: #2aa7bf;
   }
 }
 
@@ -111,5 +113,6 @@
   --theme-amenities: #d95926;
   --theme-housing: #199e70;
   --theme-community: #9085e9;
+  --theme-climate: #2aa7bf;
 }
 

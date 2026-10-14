@@ -87,6 +87,7 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "tree_cover": ["esa_worldcover", "nspl"],
     "os_open_uprn": ["os_open_uprn", *LOW_BOUNDARIES],
     "night_lights": ["viirs_vnl", "nspl"],
+    "climate": ["haduk_grid", "nspl"],
     "noise": ["*_noise_*_lden", "nspl"],
     "deprivation": ["iod_2025", "wimd_*", "simd_*", "nrs_oa22_population", "nspl"],
     "voa_ctsop": ["voa_ctsop", "nrs_dwellings_by_band"],
@@ -132,6 +133,7 @@ STAGE_READS: dict[str, list[str]] = {
     "noise": ["nspl"],
     "tree_cover": ["nspl"],
     "night_lights": ["nspl"],
+    "climate": ["nspl"],
     "deprivation": ["iod_2025", "dz11_dz22"],
 }
 
@@ -165,6 +167,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
     from lix_core.config import load_registry
     from lix_pipeline.stage import (
         childcare,
+        climate,
         community,
         environment,
         geo,
@@ -250,5 +253,6 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "noise": noise.stage_noise,  # needs staged nspl
         "tree_cover": landcover.stage_tree_cover,  # needs staged nspl
         "night_lights": night_lights.stage_night_lights,  # manual source; needs staged nspl
+        "climate": climate.stage_climate,  # manual source; needs staged nspl
         "deprivation": stage_deprivation,  # needs staged iod_2025
     }

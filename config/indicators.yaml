@@ -34,6 +34,9 @@ themes:
   community:
     label: Community & wellbeing
     description: Income, work and health of the people who live there.
+  climate:
+    label: Climate
+    description: Sunshine, rain and how warm the summers and mild the winters are, from thirty-year averages.
 
 indicators:
 
@@ -1088,4 +1091,129 @@ indicators:
     params:
       table: census_ts061
       numerator: [underground_metro_light_rail_tram, train, bus_minibus_or_coach, bicycle, on_foot]
+    role: context
+
+  # ---------------------------------------------------------------------- climate
+  # HadUK-Grid 1km thirty-year averages 1991–2020, sampled at homes (stage/climate.py).
+  # Thresholds are provisional until the first four-nation build sets them from the
+  # 10th and 90th percentiles of areas (#122).
+  - id: sunshine
+    theme: climate
+    label: Sunshine
+    description: Hours of bright sunshine a year, averaged over 1991–2020 (HadUK-Grid, 1km).
+    unit: hours a year
+    direction: higher_better
+    sources: [haduk_grid, nspl]
+    builder: environment:optional_column
+    params: {slug: climate, column: sunshine_hours}
+    normalise: threshold
+    good: 1750
+    bad: 1250
+    weight: 1.0
+    caveats: A 1km grid interpolated from sunshine recorders, so hills and coasts are smoothed; thirty-year averages say what is usual, not what any year brought.
+
+  - id: wet_days
+    theme: climate
+    label: Wet days
+    description: Days a year with at least 1mm of rain, averaged over 1991–2020.
+    unit: days a year
+    direction: lower_better
+    sources: [haduk_grid, nspl]
+    builder: environment:optional_column
+    params: {slug: climate, column: rain_days}
+    normalise: threshold
+    good: 120
+    bad: 200
+    weight: 1.0
+    overlap_group: rain
+    caveats: Counts days, not amounts, so a drizzly place reads wetter than one with the same rainfall in fewer downpours; rainfall in millimetres is shown beside it.
+
+  - id: summer_warmth
+    theme: climate
+    label: Summer warmth
+    description: Mean daily maximum temperature in June to August, averaged over 1991–2020 (°C).
+    unit: °C
+    direction: higher_better
+    sources: [haduk_grid, nspl]
+    builder: environment:optional_column
+    params: {slug: climate, column: summer_tmax}
+    normalise: threshold
+    good: 21
+    bad: 16
+    weight: 0.75
+    overlap_group: summer
+    caveats: Warmer counts as better here; the days above 25°C are shown beside it for anyone who would rather not have them.
+
+  - id: winter_mildness
+    theme: climate
+    label: Winter mildness
+    description: Mean daily minimum temperature in December to February, averaged over 1991–2020 (°C).
+    unit: °C
+    direction: higher_better
+    sources: [haduk_grid, nspl]
+    builder: environment:optional_column
+    params: {slug: climate, column: winter_tmin}
+    normalise: threshold
+    good: 3
+    bad: 0
+    weight: 0.75
+    overlap_group: winter
+    caveats: Night-time lows, which drive frost and heating bills; coasts and cities read milder than the hills behind them.
+
+  - id: rainfall
+    theme: climate
+    label: Rainfall
+    description: Rainfall a year in millimetres, averaged over 1991–2020.
+    unit: mm a year
+    direction: lower_better
+    sources: [haduk_grid, nspl]
+    builder: environment:optional_column
+    params: {slug: climate, column: rainfall_mm}
+    role: context
+    overlap_group: rain
+
+  - id: air_frost_days
+    theme: climate
+    label: Days of air frost
+    description: Days a year when the air temperature falls below 0°C, averaged over 1991–2020.
+    unit: days a year
+    direction: lower_better
+    sources: [haduk_grid, nspl]
+    builder: environment:optional_column
+    params: {slug: climate, column: air_frost_days}
+    role: context
+    overlap_group: winter
+
+  - id: summer_days
+    theme: climate
+    label: Summer days
+    description: Days a year when the temperature reaches 25°C, averaged over 1991–2020.
+    unit: days a year
+    direction: higher_better
+    sources: [haduk_grid, nspl]
+    builder: environment:optional_column
+    params: {slug: climate, column: summer_days}
+    role: context
+    overlap_group: summer
+
+  - id: wind_speed
+    theme: climate
+    label: Wind
+    description: Mean wind speed at 10m, averaged over 1991–2020.
+    unit: m/s
+    direction: lower_better
+    sources: [haduk_grid, nspl]
+    builder: environment:optional_column
+    params: {slug: climate, column: wind_ms}
+    role: context
+
+  - id: snow_days
+    theme: climate
+    label: Days with snow lying
+    description: Days a year with snow on the ground at 9am, averaged over 1991–2020.
+    unit: days a year
+    direction: lower_better
+    sources: [haduk_grid, nspl]
+    builder: environment:optional_column
+    params: {slug: climate, column: snow_days}
     role: context

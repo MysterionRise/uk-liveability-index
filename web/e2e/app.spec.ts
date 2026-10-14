@@ -53,6 +53,7 @@ test("moving a weight slider recolours the map", async ({ page }) => {
     "amenities",
     "housing",
     "community",
+    "climate",
   ]) {
     await page.getByTestId(`weight-${theme}`).fill("0");
   }

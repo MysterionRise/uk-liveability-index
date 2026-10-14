@@ -1787,3 +1787,33 @@ council_names_gd:
   attribution: "Gaelic council names from Wikidata (CC0 1.0)."
   cadence: adhoc
   size_hint: 3KB
+
+# ---------------------------------------------------------------------------------------
+# Climate
+# ---------------------------------------------------------------------------------------
+
+haduk_grid:
+  coverage: [E, W, S, N]
+  title: HadUK-Grid 1km climate averages 1991–2020 (Met Office)
+  theme: climate
+  access:
+    type: manual
+    instructions: >-
+      Register for a free CEDA account at https://services.ceda.ac.uk/cedasite/register/
+      and sign in. Under
+      https://dap.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.3.2.ceda/1km/
+      download, for each of sun, rainfall, raindays1mm, tas, tasmax, tasmin, airfrost,
+      summerdays, sfcWind and snowLying, the file
+      <var>/ann-30y/<version>/<var>_hadukgrid_uk_1km_ann-30y_199101-202012.nc, and for
+      tasmax and tasmin also <var>/seas-30y/<version>/<var>_hadukgrid_uk_1km_seas-30y_199101-202012.nc
+      (about 23 MB each), into data/manual/haduk_grid/.
+    expect: ["*_hadukgrid_uk_1km_ann-30y_*.nc", "*_hadukgrid_uk_1km_seas-30y_*.nc"]
+  format: nc
+  landing_page: https://www.metoffice.gov.uk/research/climate/maps-and-data/data/haduk-grid/haduk-grid
+  description: Thirty-year averages (1991–2020) of sunshine, rainfall, wet days, temperature, air frost, summer days, wind and lying snow on a 1km grid interpolated from the Met Office's station network, for the whole UK.
+  licence: OGL-3.0
+  attribution: "Contains Met Office HadUK-Grid data © Crown copyright and database right 2026, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  period: "1991–2020 averages"
+  size_hint: 300MB
+  notes: The CEDA archive needs a (free) account to download, so this is a manual source; the climate indicators are skipped when the files are absent. The Met Office Climate Data Portal publishes 2km and 12km versions without a login, but no sunshine layer.
