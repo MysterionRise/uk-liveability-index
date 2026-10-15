@@ -165,7 +165,6 @@ def _check_available(store: Store, measure: Measure, df: pl.DataFrame) -> None:
     if not df.height or df[measure.score_column].null_count() < df.height:
         return
     if measure.sort_by.startswith("theme:"):
-        theme = measure.sort_by.split(":", 1)[1]
         here = ", ".join(
             store.nation_names.get(n, n) for n in sorted(df["nation"].unique().to_list())
         )
