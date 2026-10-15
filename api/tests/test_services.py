@@ -233,7 +233,7 @@ class TestLanguage:
         assert friendly_message(err, "en").startswith("That needed more steps")
         assert friendly_message(err, "cy").startswith("Roedd angen mwy o gamau")
         assert friendly_message(err, "gd").startswith("Bha feum air barrachd cheumannan")
-        assert friendly_message(err, "ga") == friendly_message(err, "en")  # no catalogue yet
+        assert friendly_message(err, "ga").startswith("Theastaigh níos mó céimeanna")
 
     def test_prompt_asks_for_welsh(self, store):
         from types import SimpleNamespace
