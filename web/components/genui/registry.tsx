@@ -1,5 +1,6 @@
 "use client";
 
+
 /**
  * Generative UI: one renderer per assistant tool. The assistant's tool results are
  * typed (contracts.gen.ts), so each call becomes a component in the chat. This file is
@@ -46,12 +47,12 @@ function Chip({ children }: { children: React.ReactNode }) {
 }
 
 /** Register one renderer: pending chip while running, the component once there's a result. */
-function useToolCard<T>(
-  name: string,
-  render: (result: T, args: Record<string, unknown>) => React.ReactElement | null,
-  deps: unknown[] = [],
-) {
+function NoResult({ name }: { name: string }) {
   const t = useTranslations("Registry");
+  return <Chip>{t("noResult", { name })}</Chip>;
+}
+
+function useToolCard<T>(name: string, render: (result: T, args: Record<string, unknown>) => React.ReactElement | null) {
   useRenderTool(
     {
       name,
@@ -59,48 +60,57 @@ function useToolCard<T>(
       render: ({ status, result, parameters }) => {
         if (status !== "complete") return <Pending name={name} />;
         const data = parseResult<T>(result);
-        if (data == null) return <Chip>{t("noResult", { name })}</Chip>;
+        if (data == null) return <NoResult name={name} />;
         return render(data, (parameters ?? {}) as Record<string, unknown>);
       },
     },
-    // The chips read the language and the catalogue: re-register when either changes,
-    // or the first render's English and raw ids stick
-    [t, ...deps],
+    [],
   );
 }
 
-export function GenerativeUI() {
+function WeightsChip({ w }: { w: { preset: string; theme_weights: Record<string, number> } }) {
   const t = useTranslations("Registry");
   const labels = useLabels();
-  // Registrations capture t and labels: a change in either re-registers every card
-  const deps = [t, labels];
-  useToolCard<RankResult>("rank_areas", (r) => <RankedList result={r} />, deps);
-  useToolCard<AreaProfile>("get_area_profile", (p) => <AreaProfileCard profile={p} />, deps);
-  useToolCard<Comparison>("compare_areas", (c) => <ComparisonTable comparison={c} />, deps);
-  useToolCard<PoiResult>("nearest_pois", (r) => <PoiList result={r} />, deps);
-  useToolCard<Explanation>("explain_score", (e) => <MethodExplainer explanation={e} />, deps);
-  useToolCard<SqlData>("run_sql", (d, args) => <SqlResult data={d} query={String(args.query ?? "")} />, deps);
-  useToolCard<{ preset: string; theme_weights: Record<string, number> }>("set_weights", (w) => (
+  return (
     <Chip>
-      {t("weightsSet")} <strong className="font-medium text-[var(--text-primary)]">{w.preset}</strong>
+      {t("weightsSet")} <strong className="font-medium text-[var(--text-primary)]">{labels.preset(w.preset)}</strong>
       {Object.entries(w.theme_weights)
         .filter(([, v]) => v !== 1)
-        .map(([t, v]) => (
-          <span key={t}>· {t} ×{v}</span>
+        .map(([theme, v]) => (
+          <span key={theme}>· {labels.theme(theme)} ×{v}</span>
         ))}
     </Chip>
-  ), deps);
-  useToolCard<{ layer: string }>("show_on_map", (m) => <Chip>{t("mapUpdated", { layer: m.layer })}</Chip>, deps);
-  useToolCard<{ shortlist: unknown[] }>("add_to_shortlist", (r) => <Chip>{t("shortlistSaved", { count: r.shortlist.length })}</Chip>, deps);
-  useToolCard<{ shortlist: unknown[] }>("remove_from_shortlist", (r) => <Chip>{t("shortlistSaved", { count: r.shortlist.length })}</Chip>, deps);
-  useToolCard<Place[]>("search_place", (places) => (
+  );
+}
+
+function MapChip({ layer }: { layer: string }) {
+  const t = useTranslations("Registry");
+  const labels = useLabels();
+  const [kind, id] = layer.includes(":") ? layer.split(":", 2) : ["overall", layer];
+  const name = kind === "theme" ? labels.theme(id) : kind === "indicator" ? labels.indicator(id) : layer;
+  return <Chip>{t("mapUpdated", { layer: name })}</Chip>;
+}
+
+function ShortlistChip({ count }: { count: number }) {
+  const t = useTranslations("Registry");
+  return <Chip>{t("shortlistSaved", { count })}</Chip>;
+}
+
+function FoundChip({ places }: { places: Place[] }) {
+  const t = useTranslations("Registry");
+  return (
     <Chip>
       {t("found", {
         places: places.slice(0, 3).map((p) => `${p.name}${p.detail ? ` (${p.detail})` : ""}`).join("; ") || t("nothing"),
       })}
     </Chip>
-  ), deps);
-  useToolCard<Pick<IndicatorInfo, "id" | "role">[]>("list_indicators", (items) => (
+  );
+}
+
+function IndicatorsChip({ items }: { items: Pick<IndicatorInfo, "id" | "role">[] }) {
+  const t = useTranslations("Registry");
+  const labels = useLabels();
+  return (
     <details className="my-1 text-xs">
       <summary className="cursor-pointer text-[var(--text-secondary)]">{t("indicatorsCount", { count: items.length })}</summary>
       <ul className="mt-1 space-y-1">
@@ -113,6 +123,23 @@ export function GenerativeUI() {
         ))}
       </ul>
     </details>
-  ), deps);
+  );
+}
+
+/** Each tool's card. The renderers are registered once, so every chip is a component
+ * of its own: it reads the language and the catalogue through hooks when it renders. */
+export function GenerativeUI() {
+  useToolCard<RankResult>("rank_areas", (r) => <RankedList result={r} />);
+  useToolCard<AreaProfile>("get_area_profile", (p) => <AreaProfileCard profile={p} />);
+  useToolCard<Comparison>("compare_areas", (c) => <ComparisonTable comparison={c} />);
+  useToolCard<PoiResult>("nearest_pois", (r) => <PoiList result={r} />);
+  useToolCard<Explanation>("explain_score", (e) => <MethodExplainer explanation={e} />);
+  useToolCard<SqlData>("run_sql", (d, args) => <SqlResult data={d} query={String(args.query ?? "")} />);
+  useToolCard<{ preset: string; theme_weights: Record<string, number> }>("set_weights", (w) => <WeightsChip w={w} />);
+  useToolCard<{ layer: string }>("show_on_map", (m) => <MapChip layer={m.layer} />);
+  useToolCard<{ shortlist: unknown[] }>("add_to_shortlist", (r) => <ShortlistChip count={r.shortlist.length} />);
+  useToolCard<{ shortlist: unknown[] }>("remove_from_shortlist", (r) => <ShortlistChip count={r.shortlist.length} />);
+  useToolCard<Place[]>("search_place", (places) => <FoundChip places={places} />);
+  useToolCard<Pick<IndicatorInfo, "id" | "role">[]>("list_indicators", (items) => <IndicatorsChip items={items} />);
   return null;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { useData, useLiveability } from "@/components/AppData";
 import { Band, Card, Muted, ScoreBar, ValueWithUnit, formatValue, useQualityNote } from "@/components/ui";
@@ -143,7 +143,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
 
       <div className="mt-3" data-testid="theme-bars">
         {profile.themes.map((th) => (
-          <div key={th.theme}>
+          <Fragment key={th.theme}>
           <ScoreBar
             label={labels.theme(th.theme)}
             score={th.score}
@@ -173,7 +173,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
           {th.score == null && gaps.has(th.theme) && (
             <p className="mb-1 text-[10px] text-[var(--text-muted)]">{t("limitedData")}</p>
           )}
-          </div>
+          </Fragment>
         ))}
         <p className="mt-1 flex gap-3 text-[10px] text-[var(--text-muted)]">
           <span className="inline-flex items-center gap-1">

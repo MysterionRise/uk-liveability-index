@@ -55,7 +55,7 @@ export function SidePanel() {
     <aside className="flex h-full min-h-0 flex-col border-l border-[var(--border)] bg-[var(--surface-1)]">
       <div className="flex shrink-0 flex-wrap items-center gap-1 border-b border-[var(--border)] px-2">
         <div
-          className="flex items-center gap-1"
+          className="flex flex-wrap items-center gap-1"
           role="tablist"
           aria-label={t("panels")}
           onKeyDown={(e) => {
