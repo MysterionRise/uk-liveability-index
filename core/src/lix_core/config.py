@@ -626,6 +626,8 @@ class NationSpec(_Strict):
     """One nation: its codes, expected sizes and how its backbone is built."""
 
     name: str
+    # The name in the pack's other languages (locale → name), for exact search aliases
+    names: dict[str, str] = Field(default_factory=dict)
     ctry_cd: str
     input_crs: int = 27700  # CRS of the nation's coordinates in NSPL (Irish Grid for NI)
     bbox: tuple[float, float, float, float]  # lon/lat

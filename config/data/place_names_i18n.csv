@@ -1,0 +1,62 @@
+name,local_authority,name_cy,name_gd,name_ga,wikidata
+London,City of Westminster,Llundain,Lunnainn,Londain,Q84
+Manchester,Manchester,Manceinion,,Manchain,Q18125
+Liverpool,Liverpool,Lerpwl,,Learpholl,Q24826
+Bristol,City of Bristol,Bryste,,Briostó,Q23154
+Oxford,Oxford,Rhydychen,,,Q34217
+Cambridge,Cambridge,Caergrawnt,,,Q350
+Chester,Cheshire West and Chester,Caer,,,Q23063
+Gloucester,Gloucester,Caerloyw,,,Q214091
+Hereford,County of Herefordshire,Henffordd,,,Q212658
+Shrewsbury,Shropshire,Amwythig,,,Q213307
+Bath,Bath and North East Somerset,Caerfaddon,,,Q22889
+York,York,Efrog,,Eabhrac,Q42462
+Exeter,Exeter,Caerwysg,,,Q134672
+Worcester,Worcester,Caerwrangon,,,Q212637
+Carlisle,Cumberland,Caerliwelydd,,,Q213269
+Leicester,City of Leicester,Caerlŷr,,,Q25483
+Canterbury,Canterbury,Caergaint,,,Q29303
+Winchester,Winchester,Caerwynt,,,Q172157
+Salisbury,Wiltshire,Caersallog,,,Q220966
+Dover,Dover,Dofr,,,Q179224
+Edinburgh,City of Edinburgh,Caeredin,Dùn Èideann,Dún Éideann,Q23436
+Glasgow,Glasgow City,,Glaschu,Glaschú,Q4093
+Aberdeen,Aberdeen City,,Obar Dheathain,,Q36405
+Dundee,Dundee City,,Dùn Dè,,Q123709
+Perth,Perth and Kinross,,Peairt,,Q203000
+Stirling,Stirling,,Sruighlea,,Q182923
+Oban,Argyll and Bute,,An t-Òban,,Q1019396
+Cardiff,Cardiff,,,Caerdydd,Q10690
+Belfast,Belfast,Belffast,Beul Feirste,Béal Feirste,Q10686
+Derry,Derry City and Strabane,,Doire,Doire,Q192231
+Londonderry,Derry City and Strabane,,Doire,Doire,Q192231
+Lisburn,Lisburn and Castlereagh,,,Lios na gCearrbhach,Q217011
+Newry,"Newry, Mourne and Down",,,An tIúr,Q217037
+Armagh,"Armagh City, Banbridge and Craigavon",,,Ard Mhacha,Q207294
+Bangor,Ards and North Down,,,Beannchar,Q216955
+Newtownards,Ards and North Down,,,Baile Nua na hArda,Q1026121
+Enniskillen,Fermanagh and Omagh,,,Inis Ceithleann,Q241258
+Omagh,Fermanagh and Omagh,,,An Ómaigh,Q750014
+Coleraine,Causeway Coast and Glens,,,Cúil Raithin,Q669359
+Ballymena,Mid and East Antrim,,,An Baile Meánach,Q739893
+Craigavon,"Armagh City, Banbridge and Craigavon",,,Creag Abhann,Q1137129
+Newtownabbey,Antrim and Newtownabbey,,,Baile na Mainistreach,Q1026123
+Carrickfergus,Mid and East Antrim,,,Carraig Fhearghais,Q747148
+Larne,Mid and East Antrim,,,Latharna,Q1013920
+Strabane,Derry City and Strabane,,,An Srath Bán,Q991034
+Downpatrick,"Newry, Mourne and Down",,,Dún Pádraig,Q1006640
+Portrush,Causeway Coast and Glens,,,Port Rois,Q1140886
+Holywood,Ards and North Down,,,Ard Mhic Nasca,Q1627052
+Dungannon,Mid Ulster,,,Dún Geanainn,Q989776
+Antrim,Antrim and Newtownabbey,,,Aontroim,Q209011
+Banbridge,"Armagh City, Banbridge and Craigavon",,,Droichead na Banna,Q1006620
+Portadown,"Armagh City, Banbridge and Craigavon",,,Port an Dúnáin,Q1137132
+Lurgan,"Armagh City, Banbridge and Craigavon",,,An Lorgain,Q1026036
+Cookstown,Mid Ulster,,,An Chorr Chríochach,Q989720
+Magherafelt,Mid Ulster,,,Machaire Fíolta,Q1013968
+Limavady,Causeway Coast and Glens,,,Léim an Mhadaidh,Q1012993
+Ballymoney,Causeway Coast and Glens,,,Baile Monaidh,Q1006591
+Ballycastle,Causeway Coast and Glens,,,Baile an Chaistil,Q1006612
+Comber,Ards and North Down,,,An Comar,Q1019213
+Warrenpoint,"Newry, Mourne and Down",,,An Pointe,Q1026173
+Kilkeel,"Newry, Mourne and Down",,,Cill Chaoil,Q1013872

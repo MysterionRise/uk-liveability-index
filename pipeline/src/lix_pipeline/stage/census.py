@@ -212,7 +212,11 @@ def ni_census_table(slug: str) -> pl.DataFrame:
     sheet = load_sheet(_ni_workbook(NI_TABLES[slug]), "SDZ", "Geography")
     sheet = sheet.rename({c: str(c).strip() for c in sheet.columns})
     code = next(c for c in sheet.columns if c.lower() == "geography code")
-    zones = sheet.filter(pl.col(code).cast(pl.Utf8).str.starts_with("N21"))
+    # The counts come first; a sheet that repeats every zone as percentages keeps only
+    # the first block
+    zones = sheet.filter(pl.col(code).cast(pl.Utf8).str.starts_with("N21")).unique(
+        subset=[code], keep="first", maintain_order=True
+    )
     key = pl.col(code).cast(pl.Utf8).str.strip_chars().alias("lsoa21cd")
     if slug == "census_ts001":
         total = next(c for c in zones.columns if c.lower().startswith("all usual residents"))

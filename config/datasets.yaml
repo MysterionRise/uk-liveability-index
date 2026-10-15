@@ -2393,6 +2393,18 @@ council_names_ga:
   cadence: adhoc
   size_hint: 2KB
 
+place_names_i18n:
+  coverage: [E, W, S, N]
+  title: Welsh, Gaelic and Irish names of the nations' largest cities and towns (curated from Wikidata)
+  theme: geography
+  access: {type: curated, path: config/data/place_names_i18n.csv}
+  format: csv
+  description: The biggest cities and towns with their names in Welsh, Scottish Gaelic and Irish as Wikidata labels them (with the item ids), so a search in those languages finds them ("Dùn Èideann", "Béal Feirste", "Llundain") and the interface can show them; OS Open Names and Logainm supply the smaller places' forms.
+  licence: CC0-1.0
+  attribution: "City and town names in Welsh, Gaelic and Irish from Wikidata (CC0 1.0)."
+  cadence: adhoc
+  size_hint: 4KB
+
 ukcp_hot_days:
   coverage: [E, W, S, N]
   title: Annual count of hot summer days, UKCP18 local projections by sub-local-authority area (Met Office)

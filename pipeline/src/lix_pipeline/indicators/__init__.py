@@ -15,6 +15,7 @@ from pathlib import Path
 
 import polars as pl
 
+from lix_core.codes import active_nations
 from lix_core.config import IndicatorSpec, indicator_coverage, load_indicators, load_registry
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
@@ -60,7 +61,20 @@ def build_indicator(
     spec: IndicatorSpec, ctx: Context, coverage: list[str] | None = None
 ) -> pl.DataFrame:
     """One row per area: the builder's value and quality, ``missing`` where it has none,
-    and ``not_available`` (value dropped) in nations outside ``coverage``."""
+    and ``not_available`` (value dropped) in nations outside ``coverage``.
+
+    A builder is not run when no active nation is in its coverage (a Northern
+    Ireland-only build has no GP registrations table to read): every area is
+    ``not_available``.
+    """
+    if coverage is not None and not set(coverage) & set(active_nations()):
+        logger.info(f"{spec.id}: no active nation in its coverage {coverage}; not built")
+        return ctx.geo.select(
+            pl.lit(spec.id).alias("indicator_id"),
+            "lsoa21cd",
+            pl.lit(None, pl.Float64).alias("value"),
+            pl.lit("not_available").alias("quality"),
+        )
     df = _builder(spec)(ctx, **spec.params)
     if df["lsoa21cd"].n_unique() != df.height:
         raise ValueError(f"{spec.id}: builder returned duplicate LSOAs")

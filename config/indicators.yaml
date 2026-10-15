@@ -189,23 +189,25 @@ indicators:
   - id: green_space_access
     theme: environment
     label: Parks and green spaces nearby
-    description: Entrances to public parks, gardens and playing fields within a 1km walk, weighted by distance.
+    description: Entrances to public parks, gardens and playing fields within a 1km walk, weighted by distance (in Northern Ireland, OpenStreetMap parks and pitches).
     unit: index 0–1
     direction: higher_better
-    sources: [os_greenspace, nspl]
+    coverage: [E, W, S, N]
+    sources: [os_greenspace, osm_ireland, nspl]
     builder: common:access
     params: {slug: os_greenspace, column: function, values: [Public Park Or Garden, Playing Field], radius_m: 1000, cap: 10}
     normalise: scale
     weight: 0.75
-    caveats: Counts public parks and playing fields, not open countryside, so villages surrounded by fields and footpaths score lower than they feel.
+    caveats: Counts public parks and playing fields, not open countryside, so villages surrounded by fields and footpaths score lower than they feel. Northern Ireland has no open greenspace product, so its parks, gardens and pitches come from OpenStreetMap and are measured to the site's nearest edge rather than its entrances.
 
   - id: play_spaces
     theme: environment
     label: Play areas nearby
-    description: Entrances to public play spaces within 800m of homes, weighted by distance.
+    description: Entrances to public play spaces within 800m of homes, weighted by distance (in Northern Ireland, OpenStreetMap playgrounds).
     unit: index 0–1
     direction: higher_better
-    sources: [os_greenspace, nspl]
+    coverage: [E, W, S, N]
+    sources: [os_greenspace, osm_ireland, nspl]
     builder: common:access
     params: {slug: os_greenspace, column: function, values: [Play Space], radius_m: 800, cap: 5}
     normalise: scale
@@ -260,18 +262,18 @@ indicators:
   - id: noise_exposure
     theme: environment
     label: Homes in transport or industrial noise
-    description: Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road, rail and aircraft in England; road and rail in Wales; every mapped source in Scotland).
+    description: Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road, rail and aircraft in England; road and rail in Wales; every mapped source in Scotland and Northern Ireland).
     unit: "% of homes"
     direction: lower_better
-    coverage: [E, W, S]
-    sources: [defra_noise_road_lden, defra_noise_rail_lden, defra_noise_air_lden, wg_noise_road_lden, wg_noise_rail_lden, sepa_noise_all_lden, nspl]
+    coverage: [E, W, S, N]
+    sources: [defra_noise_road_lden, defra_noise_rail_lden, defra_noise_air_lden, wg_noise_road_lden, wg_noise_rail_lden, sepa_noise_all_lden, daera_noise_r3, nspl]
     builder: environment:percent
     params: {slug: noise, column: share_any_60}
     normalise: threshold
     good: 0
     bad: 40
     overlap_group: noise
-    caveats: Each home is read from the 10m noise grid at its postcode and the loudest mapped source counts. England's maps hold road, rail and the sixteen mapped airports, Wales's road and rail only, Scotland's consolidated map every source including industry. The cut-off is 60 dB Lden, a busy road's level, because minor roads are mapped only inside the larger towns in England.
+    caveats: Each home is read from the 10m noise grid at its postcode and the loudest mapped source counts. England's maps hold road, rail and the sixteen mapped airports, Wales's road and rail only, Scotland's consolidated map every source including industry, and Northern Ireland's round 3 (2017) contours road, rail, industry and Belfast City Airport in the Belfast and Derry agglomerations plus the major roads and railways between them. The cut-off is 60 dB Lden, a busy road's level, because minor roads are mapped only inside the larger towns in England.
 
   - id: road_rail_noise
     theme: environment
@@ -279,8 +281,8 @@ indicators:
     description: Share of homes where road or rail noise averages 60 dB Lden or more over the day, evening and night, from the strategic noise maps.
     unit: "% of homes"
     direction: lower_better
-    coverage: [E, W]  # Scotland publishes one consolidated map (see noise_exposure)
-    sources: [defra_noise_road_lden, defra_noise_rail_lden, wg_noise_road_lden, wg_noise_rail_lden, nspl]
+    coverage: [E, W, N]  # Scotland publishes one consolidated map (see noise_exposure)
+    sources: [defra_noise_road_lden, defra_noise_rail_lden, wg_noise_road_lden, wg_noise_rail_lden, daera_noise_r3, nspl]
     builder: environment:percent
     params: {slug: noise, column: share_road_rail_60}
     normalise: threshold
@@ -293,11 +295,11 @@ indicators:
   - id: aircraft_noise
     theme: environment
     label: Homes in aircraft noise
-    description: Share of homes where aircraft noise averages 55 dB Lden or more over the day, evening and night, around the sixteen airports England maps.
+    description: Share of homes where aircraft noise averages 55 dB Lden or more over the day, evening and night, around the sixteen airports England maps and Belfast City Airport.
     unit: "% of homes"
     direction: lower_better
-    coverage: [E]  # Scotland's consolidated map does not separate airports; Wales maps none
-    sources: [defra_noise_air_lden, nspl]
+    coverage: [E, N]  # Scotland's consolidated map does not separate airports; Wales maps none
+    sources: [defra_noise_air_lden, daera_noise_r3, nspl]
     builder: environment:percent
     params: {slug: noise, column: share_air_55}
     role: context
@@ -306,15 +308,15 @@ indicators:
   - id: industrial_noise
     theme: environment
     label: Homes in industrial noise
-    description: Share of homes where industrial noise averages 55 dB Lden or more over the day, evening and night, in Scotland's five mapped cities.
+    description: Share of homes where industrial noise averages 55 dB Lden or more over the day, evening and night, in Scotland's five mapped cities and Northern Ireland's two agglomerations.
     unit: "% of homes"
     direction: lower_better
-    coverage: [S]  # England and Wales publish no industry layer
-    sources: [sepa_noise_industry_lden, nspl]
+    coverage: [S, N]  # England and Wales publish no industry layer
+    sources: [sepa_noise_industry_lden, daera_noise_r3, nspl]
     builder: environment:percent
     params: {slug: noise, column: share_industry_55}
     role: context
-    caveats: Mapped only in Aberdeen, Dundee, Edinburgh, Falkirk and Glasgow; elsewhere in Scotland the value is 0 rather than unknown.
+    caveats: Mapped only in Aberdeen, Dundee, Edinburgh, Falkirk and Glasgow, and in Belfast and Derry (2017); elsewhere in Scotland and Northern Ireland the value is 0 rather than unknown.
 
   - id: tree_canopy
     theme: environment
@@ -371,7 +373,7 @@ indicators:
     bad: 40000
     log1p: true
     weight: 0.75
-    caveats: Scotland's departments come from Public Health Scotland's list; England's and Wales's from OpenStreetMap hospitals tagged with an emergency department, which may include some minor injury units.
+    caveats: Scotland's departments come from Public Health Scotland's list; England's and Wales's from OpenStreetMap hospitals tagged with an emergency department, which may include some minor injury units. Homes with nothing within 50km read 50km, the search cap, not a measured distance.
 
   - id: hospital_distance
     theme: health
@@ -383,6 +385,7 @@ indicators:
     builder: common:nearest
     params: {slug: ae_sites, column: type, values: [type1, other], beyond_cap: 50000}
     role: context
+    caveats: Homes with nothing within 50km read 50km, the search cap, not a measured distance.
 
   - id: gp_distance
     theme: health
@@ -656,7 +659,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest railway, metro or tram stop.
     unit: metres
     direction: lower_better
-    sources: [naptan, nspl]
+    coverage: [E, W, S, N]
+    sources: [naptan, translink_rail_txc, nspl]
     builder: common:nearest
     params: {slug: naptan, column: mode, values: [rail, metro_tram], beyond_cap: 50000}
     normalise: threshold
@@ -666,6 +670,7 @@ indicators:
     weight: 0.75
     role: context
     overlap_group: rail_access
+    caveats: Homes with nothing within 50km read 50km, the search cap, not a measured distance.
 
   - id: ev_charging
     theme: transport
@@ -700,8 +705,8 @@ indicators:
     description: Buses an hour (weekdays, 07:00–19:00) at the busiest stop within 400m of homes.
     unit: buses an hour
     direction: higher_better
-    coverage: [E, W, S]
-    sources: [bods_gtfs, bods_gtfs_wales, nspl, bods_gtfs_scotland]
+    coverage: [E, W, S, N]
+    sources: [bods_gtfs, bods_gtfs_wales, nspl, bods_gtfs_scotland, translink_metro_txc, translink_ulsterbus_txc]
     builder: common:nearby_max
     params: {slug: bods_gtfs, column: per_hour, radius_m: 400}
     normalise: threshold
@@ -784,8 +789,8 @@ indicators:
     description: Shops of every kind within 800m, weighted by distance.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S]
-    sources: [osm_england, osm_wales, nspl, osm_scotland]
+    coverage: [E, W, S, N]
+    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {key: shop, radius_m: 800, cap: 30}
     normalise: scale
@@ -851,8 +856,8 @@ indicators:
     description: Fast-food outlets within 800m.
     unit: index 0–1
     direction: lower_better
-    coverage: [E, W, S]
-    sources: [osm_england, osm_wales, nspl, osm_scotland]
+    coverage: [E, W, S, N]
+    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {values: [fast_food], radius_m: 800, cap: 15}
     normalise: scale
@@ -864,8 +869,8 @@ indicators:
     description: Betting shops, gambling venues and casinos within 800m.
     unit: index 0–1
     direction: lower_better
-    coverage: [E, W, S]
-    sources: [osm_england, osm_wales, nspl, osm_scotland]
+    coverage: [E, W, S, N]
+    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {values: [gambling, casino, bookmaker, lottery], radius_m: 800, cap: 5}
     normalise: scale
@@ -904,12 +909,12 @@ indicators:
     unit: "%"
     direction: higher_better
     benchmark: nation
-    coverage: [E, W, S]
-    sources: [price_paid, ros_house_prices]
+    coverage: [E, W, S, N]
+    sources: [price_paid, ros_house_prices, lps_house_prices_ward]
     builder: common:column
     params: {slug: price_paid, column: yoy_change_pct}
     role: context
-    caveats: Noisy where sales are few; in Scotland the change is between calendar years.
+    caveats: Noisy where sales are few; in Scotland and Northern Ireland the change is between calendar years, and a Northern Irish ward whose median is suppressed in either year has none.
 
   - id: council_tax
     theme: housing
@@ -1110,8 +1115,8 @@ indicators:
     description: Residents per square kilometre (Census 2021; Census 2022 in Scotland).
     unit: people per km²
     direction: lower_better
-    coverage: [E, W, S]
-    sources: [census_ts006, scotland_census_2022, sg_dz22_boundaries]
+    coverage: [E, W, S, N]
+    sources: [census_ts006, scotland_census_2022, sg_dz22_boundaries, nisra_census_2021_p1]
     builder: common:column
     params: {slug: census_ts006, column: persons_per_square_kilometre}
     role: context
@@ -1140,8 +1145,8 @@ indicators:
     description: Share of residents aged 65 or over (Census 2021).
     unit: "%"
     direction: higher_better
-    coverage: [E, W, S]
-    sources: [census_ts007a, scotland_census_2022]
+    coverage: [E, W, S, N]
+    sources: [census_ts007a, scotland_census_2022, nisra_census_2021_p1]
     builder: community:census_share
     params:
       table: census_ts007a

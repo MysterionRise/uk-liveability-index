@@ -381,3 +381,33 @@ def test_well_run_counts_a_recent_scottish_pass_like_a_high_rating():
         "The Thistle": True,
         "The Anchor": False,
     }
+
+
+def test_build_indicator_skips_a_builder_no_active_nation_needs(monkeypatch):
+    """A Northern Ireland-only build has no GP registrations table: an indicator built
+    for England alone is not_available everywhere without running its builder."""
+    monkeypatch.setenv("LIX_NATIONS", "N")
+    spec = IndicatorSpec(
+        id="x", theme="health", label="X", description="d", unit="u",
+        direction="higher_better", sources=["gp_registrations"], builder="common:column",
+        params={"slug": "missing", "column": "c"},
+    )  # fmt: skip
+    geo = GEO.with_columns(pl.lit("N").alias("nation"))
+    out = build_indicator(spec, FakeContext(geo_lsoa=geo), coverage=["E"]).sort("lsoa21cd")
+    assert out.height == GEO.height
+    assert out["quality"].unique().to_list() == ["not_available"]
+    assert out["value"].null_count() == GEO.height
+
+
+def test_ofsted_quality_is_empty_without_the_table():
+    from lix_pipeline.indicators.education import ofsted_quality
+
+    class WithoutOfsted(FakeContext):
+        def staged(self, slug: str) -> pl.DataFrame:
+            if slug == "ofsted_schools":
+                raise FileNotFoundError(slug)
+            return super().staged(slug)
+
+    ctx = WithoutOfsted(schools=pl.DataFrame({"urn": [1, 2]}, schema={"urn": pl.Int64}))
+    out = ofsted_quality(ctx)
+    assert out.is_empty() and out.schema["urn"] == pl.Int64 and "quality" in out.columns

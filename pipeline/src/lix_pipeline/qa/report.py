@@ -39,7 +39,11 @@ def build_report() -> tuple[str, list[str]]:
         # Coverage is judged where the indicator is built: not_available areas (another
         # nation's) are expected gaps, and lix validate serve checks them separately
         built = features[f"q__{ind.id}"] != "not_available"
-        coverage = raw.filter(built).is_not_null().mean() * 100 if built.any() else 0.0
+        if not built.any():
+            # Built for no nation in this build (a Northern Ireland-only run has no
+            # England-only indicators): nothing to measure
+            continue
+        coverage = raw.filter(built).is_not_null().mean() * 100
         nations = ", ".join(sorted(set(features.filter(built)["nation"].to_list())))
         minimum = COVERAGE_EXCEPTIONS.get(ind.id, MIN_SCORED_COVERAGE) * 100
         if ind.role == "scored" and coverage < minimum:

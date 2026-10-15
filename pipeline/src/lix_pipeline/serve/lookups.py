@@ -112,13 +112,22 @@ def build_pois() -> pl.DataFrame:
         )  # fmt: skip
     )
 
-    schools = pl.read_parquet(staged / "schools.parquet").join(
-        pl.read_parquet(staged / "ofsted_schools.parquet").select(
-            "urn", "quality", "framework", "inspection_date"
-        ),
-        on="urn",
-        how="left",
-    )
+    schools = pl.read_parquet(staged / "schools.parquet")
+    if (staged / "ofsted_schools.parquet").exists():
+        schools = schools.join(
+            pl.read_parquet(staged / "ofsted_schools.parquet").select(
+                "urn", "quality", "framework", "inspection_date"
+            ),
+            on="urn",
+            how="left",
+        )
+    else:
+        # A build without England has no Ofsted table: every school is ungraded
+        schools = schools.with_columns(
+            pl.lit(None, pl.Float64).alias("quality"),
+            pl.lit(None, pl.Utf8).alias("framework"),
+            pl.lit(None, pl.Date).alias("inspection_date"),
+        )
     schools = _with_lonlat(schools)
     category = (
         pl.when(pl.col("phase").is_in(["Primary", "Middle deemed primary"]))

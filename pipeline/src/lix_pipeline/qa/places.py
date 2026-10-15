@@ -98,11 +98,14 @@ def review(serve_dir: Path | None = None) -> list[PlaceResult]:
     out = []
     for spec in get_config("validation_places")["places"]:
         lsoa = spec.get("lsoa") or _resolve(places, spec["name"], spec.get("local_authority"))
-        result = PlaceResult(spec["name"], spec.get("why", ""), found=lsoa is not None)
-        if lsoa is None:
+        # A pinned code outside this build (another nation's anchor in a one-nation run)
+        # is not found either
+        hit = features.filter(pl.col("lsoa21cd") == lsoa) if lsoa else features.clear()
+        result = PlaceResult(spec["name"], spec.get("why", ""), found=not hit.is_empty())
+        if hit.is_empty():
             out.append(result)
             continue
-        home = features.filter(pl.col("lsoa21cd") == lsoa).row(0, named=True)
+        home = hit.row(0, named=True)
         if spec.get("level") == "lsoa":
             area = features.filter(pl.col("lsoa21cd") == lsoa)
             result.neighbourhood = f"{home['lsoa21nm']} ({home['msoa_name']})"

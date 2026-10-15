@@ -292,8 +292,20 @@ def _lps_ward_years(raw: pl.DataFrame) -> pl.DataFrame:
         _plain(pl.col("Ward")).alias("ward"),
         pl.col("SaleYr").cast(pl.Int32, strict=False).alias("year"),
         pl.col("Ward_VerifiedSales").cast(pl.Float64, strict=False).alias("sales"),
-        pl.col("Reporting_MedianPrice").cast(pl.Float64, strict=False).alias("median"),
+        # A ward with no sales is written as 0 across the row, not blank
+        pl.col("Reporting_MedianPrice")
+        .cast(pl.Float64, strict=False)
+        .replace(0, None)
+        .alias("median"),
     ).filter(pl.col("year").is_not_null())
+
+
+def _weighted(value: str, weight: str) -> pl.Expr:
+    """A sales-weighted mean of the rows that have a value (null when none do)."""
+    has = pl.col(value).is_not_null()
+    return ((pl.col(value) * pl.col(weight)).sum() / pl.col(weight).filter(has).sum()).fill_nan(
+        None
+    )
 
 
 def _lps_summary(ward_years: pl.DataFrame, latest: int) -> pl.DataFrame:
@@ -374,24 +386,31 @@ def _northern_ireland() -> pl.DataFrame | None:
         ),
         pl.lit(date(latest, 12, 31)).alias("as_of"),
     )
-    # A ward with under 30 sales in the year has its median suppressed; the five years
-    # pooled usually clear the bar, so they stand in (the yoy change stays null)
-    pooled = out.filter(
-        pl.col("median_price_12m").is_null() & pl.col("median_price_5y").is_not_null()
-    ).height
-    out = out.with_columns(
-        pl.coalesce("median_price_12m", "median_price_5y").alias("median_price_12m")
-    ).with_columns(
-        pl.when(pl.col("median_price_12m").is_not_null())
-        .then(pl.lit("broadcast_msoa"))
-        .otherwise(pl.lit("missing"))
-        .alias("quality")
+    # A ward with few sales in the year (about 35 or fewer) has its median suppressed;
+    # the five years pooled usually clear the bar and stand in (the yoy change stays
+    # null); a ward suppressed in every year takes its council's sales-weighted figure
+    by_district = per_ward.group_by("district").agg(
+        _weighted("median_price_12m", "transaction_count_12m").alias("district_12m"),
+        _weighted("median_price_5y", "transaction_count_5y").alias("district_5y"),
     )
+    out = out.join(by_district, on="district", how="left").with_columns(
+        pl.when(pl.col("median_price_12m").is_not_null() | pl.col("median_price_5y").is_not_null())
+        .then(pl.lit("broadcast_msoa"))
+        .when(pl.col("district_12m").is_not_null() | pl.col("district_5y").is_not_null())
+        .then(pl.lit("broadcast_lad"))
+        .otherwise(pl.lit("missing"))
+        .alias("quality"),
+        pl.coalesce("median_price_12m", "median_price_5y", "district_12m", "district_5y").alias(
+            "median_price_12m"
+        ),
+    )
+    tiers = dict(out["quality"].value_counts().rows())
     unmatched = out.filter(pl.col("transaction_count_5y").is_null()).height
     logger.info(
-        f"Land & Property Services {latest}: {out.height:,} Super Data Zones, "
-        f"{pooled:,} on the five-year median, {out['median_price_12m'].null_count():,} "
-        f"without a price, {unmatched} with no ward match"
+        f"Land & Property Services {latest}: {out.height:,} Super Data Zones; "
+        f"{tiers.get('broadcast_msoa', 0):,} on a ward median, "
+        f"{tiers.get('broadcast_lad', 0):,} on the council's (every year suppressed), "
+        f"{tiers.get('missing', 0):,} without a price; {unmatched} with no ward match"
     )
     return out.select(
         "lsoa21cd",

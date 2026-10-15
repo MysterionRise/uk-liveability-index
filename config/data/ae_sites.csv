@@ -1,0 +1,268 @@
+name,nation,type,postcode,lat,lon,source,source_url,checked_on
+A&E Department,E,type1,,51.52298,0.03436,"OpenStreetMap node 13262504860 (hospital, emergency=yes)",https://www.openstreetmap.org/node/13262504860,2026-10-13
+Aintree University Hospital,E,type1,,53.46571,-2.93445,"OpenStreetMap way 81528631 (hospital, emergency=yes)",https://www.openstreetmap.org/way/81528631,2026-10-13
+Airedale General Hospital,E,type1,,53.89768,-1.96392,"OpenStreetMap way 218723907 (hospital, emergency=yes)",https://www.openstreetmap.org/way/218723907,2026-10-13
+Barnet Hospital,E,type1,,51.65078,-0.21423,"OpenStreetMap way 4379364 (hospital, emergency=yes)",https://www.openstreetmap.org/way/4379364,2026-10-13
+Basildon University Hospital,E,type1,,51.55814,0.45106,"OpenStreetMap way 500206277 (hospital, emergency=yes)",https://www.openstreetmap.org/way/500206277,2026-10-13
+Basingstoke and North Hampshire Hospital,E,type1,,51.28104,-1.11085,"OpenStreetMap way 685970109 (hospital, emergency=yes)",https://www.openstreetmap.org/way/685970109,2026-10-13
+Bassetlaw Hospital,E,type1,,53.31703,-1.11000,"OpenStreetMap way 549825366 (hospital, emergency=yes)",https://www.openstreetmap.org/way/549825366,2026-10-13
+Bedford Hospital South Wing,E,type1,,52.12870,-0.47248,"OpenStreetMap relation 19704126 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/19704126,2026-10-13
+Blackpool Victoria Hospital,E,type1,,53.82097,-3.01405,"OpenStreetMap relation 13367980 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/13367980,2026-10-13
+Bodmin Hospital,E,type1,,50.46754,-4.74180,"OpenStreetMap way 279708712 (hospital, emergency=yes)",https://www.openstreetmap.org/way/279708712,2026-10-13
+Bradford Royal Infirmary,E,type1,,53.80685,-1.79764,"OpenStreetMap way 50509730 (hospital, emergency=yes)",https://www.openstreetmap.org/way/50509730,2026-10-13
+Bristol Royal Infirmary,E,type1,,51.45881,-2.59659,"OpenStreetMap way 211459604 (hospital, emergency=yes)",https://www.openstreetmap.org/way/211459604,2026-10-13
+Broomfield Hospital,E,type1,,51.77556,0.46445,"OpenStreetMap way 726517293 (hospital, emergency=yes)",https://www.openstreetmap.org/way/726517293,2026-10-13
+Burnley General Hospital,E,type1,,53.80890,-2.22886,"OpenStreetMap way 479911178 (hospital, emergency=yes)",https://www.openstreetmap.org/way/479911178,2026-10-13
+Calderdale Royal Hospital,E,type1,,53.70481,-1.85709,"OpenStreetMap way 81290015 (hospital, emergency=yes)",https://www.openstreetmap.org/way/81290015,2026-10-13
+Cambridge Biomedical Campus,E,type1,,52.17369,0.13791,"OpenStreetMap way 4040865 (hospital, emergency=yes)",https://www.openstreetmap.org/way/4040865,2026-10-13
+Central Middlesex Hospital,E,type1,,51.53132,-0.26776,"OpenStreetMap way 24648544 (hospital, emergency=yes)",https://www.openstreetmap.org/way/24648544,2026-10-13
+Charing Cross Hospital,E,type1,,51.48692,-0.21962,"OpenStreetMap way 188617701 (hospital, emergency=yes)",https://www.openstreetmap.org/way/188617701,2026-10-13
+Chelsea and Westminster Hospital,E,type1,,51.48431,-0.18134,"OpenStreetMap way 881918254 (hospital, emergency=yes)",https://www.openstreetmap.org/way/881918254,2026-10-13
+Children's A&E,E,type1,,53.56501,-2.87126,"OpenStreetMap node 11599550185 (hospital, emergency=yes)",https://www.openstreetmap.org/node/11599550185,2026-10-13
+Colchester General Hospital,E,type1,,51.90887,0.89974,"OpenStreetMap way 640367242 (hospital, emergency=yes)",https://www.openstreetmap.org/way/640367242,2026-10-13
+Community Paramedic Service,E,type1,,55.30675,-1.91415,"OpenStreetMap way 179172319 (hospital, emergency=yes)",https://www.openstreetmap.org/way/179172319,2026-10-13
+Countess of Chester Hospital,E,type1,,53.21057,-2.89897,"OpenStreetMap way 351210610 (hospital, emergency=yes)",https://www.openstreetmap.org/way/351210610,2026-10-13
+Croydon University Hospital,E,type1,,51.39009,-0.11031,"OpenStreetMap way 26617656 (hospital, emergency=yes)",https://www.openstreetmap.org/way/26617656,2026-10-13
+Cumberland Infirmary,E,type1,,54.89599,-2.95568,"OpenStreetMap way 584742612 (hospital, emergency=yes)",https://www.openstreetmap.org/way/584742612,2026-10-13
+Darent Valley Hospital,E,type1,,51.43473,0.25858,"OpenStreetMap way 161126146 (hospital, emergency=yes)",https://www.openstreetmap.org/way/161126146,2026-10-13
+Darlington Memorial Hospital,E,type1,,54.53066,-1.56364,"OpenStreetMap relation 1207973 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/1207973,2026-10-13
+Derriford Hospital,E,type1,,50.41717,-4.11652,"OpenStreetMap way 54699441 (hospital, emergency=yes)",https://www.openstreetmap.org/way/54699441,2026-10-13
+Dewsbury & District Hospital,E,type1,,53.70212,-1.65080,"OpenStreetMap way 46158455 (hospital, emergency=yes)",https://www.openstreetmap.org/way/46158455,2026-10-13
+Doncaster Royal Infirmary,E,type1,,53.53089,-1.10966,"OpenStreetMap way 56810027 (hospital, emergency=yes)",https://www.openstreetmap.org/way/56810027,2026-10-13
+Ealing Hospital,E,type1,,51.50788,-0.34516,"OpenStreetMap way 80402499 (hospital, emergency=yes)",https://www.openstreetmap.org/way/80402499,2026-10-13
+East Riding Community Hospital,E,other,,53.85307,-0.41218,"OpenStreetMap way 173084768 (hospital, emergency=yes)",https://www.openstreetmap.org/way/173084768,2026-10-13
+East Surrey Hospital,E,type1,,51.21889,-0.16266,"OpenStreetMap relation 7201602 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/7201602,2026-10-13
+Eastbourne District General Hospital,E,type1,,50.78614,0.26991,"OpenStreetMap way 23280159 (hospital, emergency=yes)",https://www.openstreetmap.org/way/23280159,2026-10-13
+Epsom General Hospital,E,type1,,51.32513,-0.27345,"OpenStreetMap way 289707828 (hospital, emergency=yes)",https://www.openstreetmap.org/way/289707828,2026-10-13
+Estuary View Medical Centre,E,type1,,51.34164,1.01321,"OpenStreetMap way 167355183 (hospital, emergency=yes)",https://www.openstreetmap.org/way/167355183,2026-10-13
+Evelina London Children's Hospital,E,type1,,51.49830,-0.11846,"OpenStreetMap way 116629214 (hospital, emergency=yes)",https://www.openstreetmap.org/way/116629214,2026-10-13
+Fairfield Hospital,E,type1,,53.60045,-2.25463,"OpenStreetMap way 554324480 (hospital, emergency=yes)",https://www.openstreetmap.org/way/554324480,2026-10-13
+Friarage Hospital,E,type1,,54.34245,-1.43015,"OpenStreetMap way 158454809 (hospital, emergency=yes)",https://www.openstreetmap.org/way/158454809,2026-10-13
+Frimley Park Hospital,E,type1,,51.31966,-0.74166,"OpenStreetMap way 492338746 (hospital, emergency=yes)",https://www.openstreetmap.org/way/492338746,2026-10-13
+Gloucestershire Royal Hospital,E,type1,,51.86604,-2.23327,"OpenStreetMap way 30851505 (hospital, emergency=yes)",https://www.openstreetmap.org/way/30851505,2026-10-13
+Good Hope Hospital,E,type1,,52.56801,-1.81168,"OpenStreetMap way 1530818585 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1530818585,2026-10-13
+Goole and District Hospital,E,type1,,53.71594,-0.87433,"OpenStreetMap way 146392466 (hospital, emergency=yes)",https://www.openstreetmap.org/way/146392466,2026-10-13
+Gosport War Memorial Minor Injuries Unit,E,other,,50.79306,-1.14739,"OpenStreetMap way 390925373 (hospital, emergency=yes)",https://www.openstreetmap.org/way/390925373,2026-10-13
+Great Western Hospital,E,type1,,51.53895,-1.72647,"OpenStreetMap way 122393683 (hospital, emergency=yes)",https://www.openstreetmap.org/way/122393683,2026-10-13
+Greet Urgent Care Centre,E,other,,52.45192,-1.85793,"OpenStreetMap relation 4791568 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/4791568,2026-10-13
+Guisborough Priory Hospital MIU,E,type1,,54.53860,-1.05323,"OpenStreetMap node 1422752943 (hospital, emergency=yes)",https://www.openstreetmap.org/node/1422752943,2026-10-13
+Harrogate District Hospital,E,type1,,53.99383,-1.51807,"OpenStreetMap relation 1459507 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/1459507,2026-10-13
+Hereford County Hospital,E,type1,,52.05672,-2.70580,"OpenStreetMap way 288598626 (hospital, emergency=yes)",https://www.openstreetmap.org/way/288598626,2026-10-13
+Hexham General Hospital,E,type1,,54.96947,-2.09359,"OpenStreetMap way 1510401911 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1510401911,2026-10-13
+Highgate Mental Health Centre,E,other,,51.56668,-0.14253,"OpenStreetMap way 492083208 (hospital, emergency=yes)",https://www.openstreetmap.org/way/492083208,2026-10-13
+Hillingdon Hospital,E,type1,,51.52546,-0.46152,"OpenStreetMap way 31927218 (hospital, emergency=yes)",https://www.openstreetmap.org/way/31927218,2026-10-13
+Homerton University Hospital,E,type1,,51.55080,-0.04548,"OpenStreetMap way 43514739 (hospital, emergency=yes)",https://www.openstreetmap.org/way/43514739,2026-10-13
+Huddersfield Royal Infirmary,E,type1,,53.65528,-1.81540,"OpenStreetMap way 91811805 (hospital, emergency=yes)",https://www.openstreetmap.org/way/91811805,2026-10-13
+Hull Royal Infirmary,E,type1,,53.74425,-0.35661,"OpenStreetMap way 203905776 (hospital, emergency=yes)",https://www.openstreetmap.org/way/203905776,2026-10-13
+Hythe Hospital,E,type1,,50.85876,-1.40288,"OpenStreetMap way 97556498 (hospital, emergency=yes)",https://www.openstreetmap.org/way/97556498,2026-10-13
+Ipswich Hospital,E,type1,,52.05801,1.19807,"OpenStreetMap way 1180532337 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1180532337,2026-10-13
+John Radcliffe Hospital,E,type1,,51.76412,-1.21808,"OpenStreetMap way 21806280 (hospital, emergency=yes)",https://www.openstreetmap.org/way/21806280,2026-10-13
+Kettering General Hospital,E,type1,,52.40152,-0.74076,"OpenStreetMap way 59384919 (hospital, emergency=yes)",https://www.openstreetmap.org/way/59384919,2026-10-13
+King George Hospital,E,type1,,51.58020,0.11124,"OpenStreetMap way 902050280 (hospital, emergency=yes)",https://www.openstreetmap.org/way/902050280,2026-10-13
+King's College Hospital,E,type1,,51.46813,-0.09367,"OpenStreetMap way 277432734 (hospital, emergency=yes)",https://www.openstreetmap.org/way/277432734,2026-10-13
+King's College Hospital Emergency Department,E,type1,,51.46876,-0.09280,"OpenStreetMap node 11170258999 (hospital, emergency=yes)",https://www.openstreetmap.org/node/11170258999,2026-10-13
+Kings Mill Hospital,E,type1,,53.13573,-1.23590,"OpenStreetMap way 267397479 (hospital, emergency=yes)",https://www.openstreetmap.org/way/267397479,2026-10-13
+Kingston Hospital,E,type1,,51.41493,-0.28248,"OpenStreetMap way 23109454 (hospital, emergency=yes)",https://www.openstreetmap.org/way/23109454,2026-10-13
+Leeds General Infirmary,E,type1,,53.80236,-1.55477,"OpenStreetMap way 23196317 (hospital, emergency=yes)",https://www.openstreetmap.org/way/23196317,2026-10-13
+Leicester Royal Infirmary,E,type1,,52.62666,-1.13524,"OpenStreetMap way 314688908 (hospital, emergency=yes)",https://www.openstreetmap.org/way/314688908,2026-10-13
+Leighton Hospital,E,type1,,53.11924,-2.47623,"OpenStreetMap way 332911698 (hospital, emergency=yes)",https://www.openstreetmap.org/way/332911698,2026-10-13
+Lincoln County Hospital,E,type1,,53.23358,-0.51868,"OpenStreetMap way 38928754 (hospital, emergency=yes)",https://www.openstreetmap.org/way/38928754,2026-10-13
+Liskeard Community Hospital,E,other,,50.46176,-4.45058,"OpenStreetMap way 159098120 (hospital, emergency=yes)",https://www.openstreetmap.org/way/159098120,2026-10-13
+Lister Hospital,E,type1,,51.92479,-0.21264,"OpenStreetMap way 23574379 (hospital, emergency=yes)",https://www.openstreetmap.org/way/23574379,2026-10-13
+Luton and Dunstable Hospital,E,type1,,51.89446,-0.47424,"OpenStreetMap relation 20228559 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/20228559,2026-10-13
+Maidstone Hospital,E,type1,,51.27489,0.48487,"OpenStreetMap way 28302867 (hospital, emergency=yes)",https://www.openstreetmap.org/way/28302867,2026-10-13
+Manchester Royal Infirmary,E,type1,,53.46292,-2.22610,"OpenStreetMap way 172944615 (hospital, emergency=yes)",https://www.openstreetmap.org/way/172944615,2026-10-13
+Manchester University Hospitals (central site),E,type1,,53.46172,-2.22600,"OpenStreetMap way 31647541 (hospital, emergency=yes)",https://www.openstreetmap.org/way/31647541,2026-10-13
+Medway Maritime Hospital,E,type1,,51.37959,0.54154,"OpenStreetMap way 92160471 (hospital, emergency=yes)",https://www.openstreetmap.org/way/92160471,2026-10-13
+Midland Metropolitan University Hospital,E,type1,,52.49115,-1.94968,"OpenStreetMap way 386726040 (hospital, emergency=yes)",https://www.openstreetmap.org/way/386726040,2026-10-13
+Milton Keynes University  Hospital,E,type1,,52.02628,-0.73591,"OpenStreetMap way 179668472 (hospital, emergency=yes)",https://www.openstreetmap.org/way/179668472,2026-10-13
+Moorfields Eye Hospital (City Road campus),E,other,,51.52728,-0.09021,"OpenStreetMap way 402012627 (hospital, emergency=yes)",https://www.openstreetmap.org/way/402012627,2026-10-13
+Musgrove Park Hospital,E,type1,,51.01148,-3.12001,"OpenStreetMap way 119564405 (hospital, emergency=yes)",https://www.openstreetmap.org/way/119564405,2026-10-13
+New Cross Hospital,E,type1,,52.60001,-2.09550,"OpenStreetMap way 259213448 (hospital, emergency=yes)",https://www.openstreetmap.org/way/259213448,2026-10-13
+Norfolk and Norwich University Hospital,E,type1,,52.61743,1.22017,"OpenStreetMap way 1003092894 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1003092894,2026-10-13
+Norfolk and Norwich University Hospital:Emergency Department,E,type1,,52.61733,1.22097,"OpenStreetMap node 9258408448 (hospital, emergency=yes)",https://www.openstreetmap.org/node/9258408448,2026-10-13
+North Devon District Hospital,E,type1,,51.09169,-4.05067,"OpenStreetMap way 1268143933 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1268143933,2026-10-13
+North Manchester General Hospital,E,type1,,53.51746,-2.22875,"OpenStreetMap way 138016620 (hospital, emergency=yes)",https://www.openstreetmap.org/way/138016620,2026-10-13
+North Middlesex University Hospital,E,type1,,51.61276,-0.07362,"OpenStreetMap way 4271138 (hospital, emergency=yes)",https://www.openstreetmap.org/way/4271138,2026-10-13
+Northampton General Hospital,E,type1,,52.23624,-0.88398,"OpenStreetMap way 60911741 (hospital, emergency=yes)",https://www.openstreetmap.org/way/60911741,2026-10-13
+Northumbria Specialist Emergency Care Hospital,E,type1,,55.07490,-1.56871,"OpenStreetMap way 105588652 (hospital, emergency=yes)",https://www.openstreetmap.org/way/105588652,2026-10-13
+Northwick Park Hospital,E,type1,,51.57518,-0.32153,"OpenStreetMap way 6134866 (hospital, emergency=yes)",https://www.openstreetmap.org/way/6134866,2026-10-13
+Peterborough City Hospital,E,type1,,52.58445,-0.27852,"OpenStreetMap way 663598990 (hospital, emergency=yes)",https://www.openstreetmap.org/way/663598990,2026-10-13
+Pilgrim Hospital,E,type1,,52.99166,-0.01001,"OpenStreetMap way 188192768 (hospital, emergency=yes)",https://www.openstreetmap.org/way/188192768,2026-10-13
+Pinderfields Hospital,E,type1,,53.69372,-1.48829,"OpenStreetMap way 945142160 (hospital, emergency=yes)",https://www.openstreetmap.org/way/945142160,2026-10-13
+Pontefract Hospital,E,type1,,53.69038,-1.30818,"OpenStreetMap relation 18083266 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/18083266,2026-10-13
+Poole General Hospital,E,type1,,50.72139,-1.97279,"OpenStreetMap way 190448127 (hospital, emergency=yes)",https://www.openstreetmap.org/way/190448127,2026-10-13
+Potters Bar Clinic,E,type1,,51.68651,-0.17790,"OpenStreetMap way 991369947 (hospital, emergency=yes)",https://www.openstreetmap.org/way/991369947,2026-10-13
+Princess Alexandra Hospital,E,type1,,51.77135,0.08609,"OpenStreetMap way 242400767 (hospital, emergency=yes)",https://www.openstreetmap.org/way/242400767,2026-10-13
+Princess Royal Hospital,E,type1,,52.71238,-2.51192,"OpenStreetMap way 39536871 (hospital, emergency=yes)",https://www.openstreetmap.org/way/39536871,2026-10-13
+Princess Royal University Hospital,E,type1,,51.36616,0.05871,"OpenStreetMap way 581607863 (hospital, emergency=yes)",https://www.openstreetmap.org/way/581607863,2026-10-13
+Queen Alexandra Hospital,E,type1,,50.85038,-1.06974,"OpenStreetMap way 29234032 (hospital, emergency=yes)",https://www.openstreetmap.org/way/29234032,2026-10-13
+Queen Elizabeth Hospital,E,type1,,51.47770,0.04979,"OpenStreetMap way 255439869 (hospital, emergency=yes)",https://www.openstreetmap.org/way/255439869,2026-10-13
+Queen Elizabeth Hospital,E,type1,,54.93883,-1.58015,"OpenStreetMap way 65249146 (hospital, emergency=yes)",https://www.openstreetmap.org/way/65249146,2026-10-13
+Queen Elizabeth II Hospital,E,type1,,51.78297,-0.18843,"OpenStreetMap way 47573694 (hospital, emergency=yes)",https://www.openstreetmap.org/way/47573694,2026-10-13
+Queens Hospital,E,type1,,51.56882,0.17925,"OpenStreetMap way 130345641 (hospital, emergency=yes)",https://www.openstreetmap.org/way/130345641,2026-10-13
+Queens Medical Centre,E,type1,,52.94358,-1.18593,"OpenStreetMap way 101971673 (hospital, emergency=yes)",https://www.openstreetmap.org/way/101971673,2026-10-13
+RAF Lakenheath Medical Hospital,E,type1,,52.39355,0.54482,"OpenStreetMap way 1468050786 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1468050786,2026-10-13
+Rotherham General Hospital,E,type1,,53.41377,-1.34349,"OpenStreetMap way 23334194 (hospital, emergency=yes)",https://www.openstreetmap.org/way/23334194,2026-10-13
+Rotherham Hospital Urgent Care Center/A&E,E,other,,53.41473,-1.34263,"OpenStreetMap node 6860589443 (hospital, emergency=yes)",https://www.openstreetmap.org/node/6860589443,2026-10-13
+Royal Berkshire Hospital,E,type1,,51.44918,-0.95811,"OpenStreetMap way 31900608 (hospital, emergency=yes)",https://www.openstreetmap.org/way/31900608,2026-10-13
+Royal Bournemouth Hospital,E,type1,,50.74742,-1.82181,"OpenStreetMap way 124487975 (hospital, emergency=yes)",https://www.openstreetmap.org/way/124487975,2026-10-13
+Royal Cornwall Hospital,E,type1,,50.26688,-5.09319,"OpenStreetMap way 1093135109 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1093135109,2026-10-13
+Royal Derby Hospital,E,type1,,52.91089,-1.51351,"OpenStreetMap way 47449889 (hospital, emergency=yes)",https://www.openstreetmap.org/way/47449889,2026-10-13
+Royal Devon & Exeter Hospital (Wonford),E,type1,,50.71709,-3.50627,"OpenStreetMap way 206900884 (hospital, emergency=yes)",https://www.openstreetmap.org/way/206900884,2026-10-13
+Royal Free Hospital,E,type1,,51.55294,-0.16550,"OpenStreetMap way 818779914 (hospital, emergency=yes)",https://www.openstreetmap.org/way/818779914,2026-10-13
+Royal Hampshire County Hospital,E,type1,,51.06122,-1.32948,"OpenStreetMap relation 1411868 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/1411868,2026-10-13
+Royal Lancaster Infirmary,E,type1,,54.04264,-2.79981,"OpenStreetMap way 468391239 (hospital, emergency=yes)",https://www.openstreetmap.org/way/468391239,2026-10-13
+Royal Liverpool University Hospital,E,type1,,53.40923,-2.96235,"OpenStreetMap relation 17778769 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/17778769,2026-10-13
+Royal London Hospital,E,type1,,51.51752,-0.05987,"OpenStreetMap way 640495338 (hospital, emergency=yes)",https://www.openstreetmap.org/way/640495338,2026-10-13
+Royal Preston Hospital,E,type1,,53.79004,-2.70629,"OpenStreetMap relation 1024876 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/1024876,2026-10-13
+Royal Shrewsbury Hospital,E,type1,,52.70901,-2.79364,"OpenStreetMap way 23259029 (hospital, emergency=yes)",https://www.openstreetmap.org/way/23259029,2026-10-13
+Royal South Hants Urgent Treatment Centre,E,other,,50.91291,-1.39646,"OpenStreetMap node 3940820241 (hospital, emergency=yes)",https://www.openstreetmap.org/node/3940820241,2026-10-13
+Royal Stoke University Hospital,E,type1,,53.00288,-2.21289,"OpenStreetMap way 9665868 (hospital, emergency=yes)",https://www.openstreetmap.org/way/9665868,2026-10-13
+Royal Surrey County Hospital,E,type1,,51.24120,-0.60880,"OpenStreetMap way 55113949 (hospital, emergency=yes)",https://www.openstreetmap.org/way/55113949,2026-10-13
+Royal Surrey County Hospital,E,type1,,51.24120,-0.60880,"OpenStreetMap relation 4277280 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/4277280,2026-10-13
+Royal Sussex County Hospital,E,type1,,50.81954,-0.11689,"OpenStreetMap relation 19708042 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/19708042,2026-10-13
+Royal Sussex County Hospital,E,type1,,50.81924,-0.11888,"OpenStreetMap way 1425431300 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1425431300,2026-10-13
+Royal United Hospital,E,type1,,51.39184,-2.39148,"OpenStreetMap way 37989155 (hospital, emergency=yes)",https://www.openstreetmap.org/way/37989155,2026-10-13
+Royal Victoria Infirmary,E,type1,,54.97954,-1.61966,"OpenStreetMap way 50732414 (hospital, emergency=yes)",https://www.openstreetmap.org/way/50732414,2026-10-13
+Russells Hall Hospital,E,type1,,52.50267,-2.11911,"OpenStreetMap way 91006485 (hospital, emergency=yes)",https://www.openstreetmap.org/way/91006485,2026-10-13
+Salisbury District Hospital,E,type1,,51.04486,-1.78824,"OpenStreetMap way 159183509 (hospital, emergency=yes)",https://www.openstreetmap.org/way/159183509,2026-10-13
+Scarborough Hospital,E,type1,,54.28225,-0.43624,"OpenStreetMap way 229554411 (hospital, emergency=yes)",https://www.openstreetmap.org/way/229554411,2026-10-13
+Scunthorpe General Hospital,E,type1,,53.58703,-0.66720,"OpenStreetMap way 143454754 (hospital, emergency=yes)",https://www.openstreetmap.org/way/143454754,2026-10-13
+Sheffield Children's Hospital A&E,E,type1,,53.38095,-1.49113,"OpenStreetMap node 6863263769 (hospital, emergency=yes)",https://www.openstreetmap.org/node/6863263769,2026-10-13
+Solihull Hospital,E,type1,,52.41736,-1.77486,"OpenStreetMap way 50073696 (hospital, emergency=yes)",https://www.openstreetmap.org/way/50073696,2026-10-13
+South Tyneside District Hospital,E,type1,,54.97164,-1.42925,"OpenStreetMap way 65383944 (hospital, emergency=yes)",https://www.openstreetmap.org/way/65383944,2026-10-13
+Southampton General Hospital,E,type1,,50.93254,-1.43511,"OpenStreetMap way 122141122 (hospital, emergency=yes)",https://www.openstreetmap.org/way/122141122,2026-10-13
+Southend University Hospital,E,type1,,51.55426,0.68830,"OpenStreetMap way 49654985 (hospital, emergency=yes)",https://www.openstreetmap.org/way/49654985,2026-10-13
+Southmead Hospital,E,type1,,51.49692,-2.59142,"OpenStreetMap way 25870023 (hospital, emergency=yes)",https://www.openstreetmap.org/way/25870023,2026-10-13
+Southport and Formby District General Hospital,E,type1,,53.63340,-2.97853,"OpenStreetMap way 41756730 (hospital, emergency=yes)",https://www.openstreetmap.org/way/41756730,2026-10-13
+St George's Hospital,E,type1,,51.42643,-0.17584,"OpenStreetMap way 4536914 (hospital, emergency=yes)",https://www.openstreetmap.org/way/4536914,2026-10-13
+St James's Hospital A&E,E,type1,,53.80640,-1.52133,"OpenStreetMap node 249263546 (hospital, emergency=yes)",https://www.openstreetmap.org/node/249263546,2026-10-13
+St Mary's Hospital,E,type1,,50.71125,-1.30016,"OpenStreetMap relation 6576069 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/6576069,2026-10-13
+St Mary's Hospital,E,type1,,51.51743,-0.17432,"OpenStreetMap way 45388015 (hospital, emergency=yes)",https://www.openstreetmap.org/way/45388015,2026-10-13
+St Mary’s NHS Treatment Centre,E,type1,,50.79928,-1.06194,"OpenStreetMap way 202666623 (hospital, emergency=yes)",https://www.openstreetmap.org/way/202666623,2026-10-13
+St Michael's Hospital,E,type1,,51.45931,-2.59924,"OpenStreetMap way 541961901 (hospital, emergency=yes)",https://www.openstreetmap.org/way/541961901,2026-10-13
+St Peter's Hospital,E,type1,,51.37668,-0.52695,"OpenStreetMap way 1277790524 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1277790524,2026-10-13
+St Peter's Hospital A&E,E,type1,,51.37710,-0.52680,"OpenStreetMap way 157502034 (hospital, emergency=yes)",https://www.openstreetmap.org/way/157502034,2026-10-13
+St Thomas' Hospital,E,type1,,51.49906,-0.11870,"OpenStreetMap way 122227536 (hospital, emergency=yes)",https://www.openstreetmap.org/way/122227536,2026-10-13
+St. Helier Hospital,E,type1,,51.38038,-0.18428,"OpenStreetMap way 4822314 (hospital, emergency=yes)",https://www.openstreetmap.org/way/4822314,2026-10-13
+St. James's University Hospital,E,type1,,53.80722,-1.52165,"OpenStreetMap way 147096365 (hospital, emergency=yes)",https://www.openstreetmap.org/way/147096365,2026-10-13
+Stoke Mandeville Hospital,E,type1,,51.79828,-0.80226,"OpenStreetMap way 53096119 (hospital, emergency=yes)",https://www.openstreetmap.org/way/53096119,2026-10-13
+Sunderland Primary care Trust,E,type1,,54.92662,-1.44686,"OpenStreetMap node 1737180164 (hospital, emergency=yes)",https://www.openstreetmap.org/node/1737180164,2026-10-13
+The Duchy Hospital,E,type1,,50.26814,-5.09343,"OpenStreetMap way 365497904 (hospital, emergency=yes)",https://www.openstreetmap.org/way/365497904,2026-10-13
+The Horton General Hospital,E,type1,,52.05401,-1.33598,"OpenStreetMap way 53540791 (hospital, emergency=yes)",https://www.openstreetmap.org/way/53540791,2026-10-13
+The James Cook University Hospital,E,type1,,54.55206,-1.21377,"OpenStreetMap way 1125512273 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1125512273,2026-10-13
+The Royal Oldham Hospital,E,type1,,53.55207,-2.12388,"OpenStreetMap way 267813104 (hospital, emergency=yes)",https://www.openstreetmap.org/way/267813104,2026-10-13
+Torbay Hospital,E,type1,,50.48175,-3.55398,"OpenStreetMap way 386272887 (hospital, emergency=yes)",https://www.openstreetmap.org/way/386272887,2026-10-13
+Tunbridge Wells Hospital at Pembury,E,type1,,51.14922,0.30786,"OpenStreetMap way 35221820 (hospital, emergency=yes)",https://www.openstreetmap.org/way/35221820,2026-10-13
+Tunbridge Wells Nuffield Hospital,E,type1,,51.13143,0.27792,"OpenStreetMap way 213497960 (hospital, emergency=yes)",https://www.openstreetmap.org/way/213497960,2026-10-13
+University College Hospital,E,type1,,51.52490,-0.13650,"OpenStreetMap way 440410278 (hospital, emergency=yes)",https://www.openstreetmap.org/way/440410278,2026-10-13
+University Hospital Coventry,E,type1,,52.42140,-1.44034,"OpenStreetMap way 154508310 (hospital, emergency=yes)",https://www.openstreetmap.org/way/154508310,2026-10-13
+University Hospital Coventry & Warwickshire,E,type1,,52.42178,-1.43659,"OpenStreetMap way 154503970 (hospital, emergency=yes)",https://www.openstreetmap.org/way/154503970,2026-10-13
+University Hospital Lewisham,E,type1,,51.45395,-0.01741,"OpenStreetMap way 484298094 (hospital, emergency=yes)",https://www.openstreetmap.org/way/484298094,2026-10-13
+University Hospital of North Durham,E,type1,,54.78872,-1.59318,"OpenStreetMap way 791142908 (hospital, emergency=yes)",https://www.openstreetmap.org/way/791142908,2026-10-13
+Urgent Care Cambridge,E,other,,52.21839,0.13679,"OpenStreetMap node 21137164 (hospital, emergency=yes)",https://www.openstreetmap.org/node/21137164,2026-10-13
+WIlliam Harvey Hospital,E,type1,,51.14157,0.91648,"OpenStreetMap node 9212731697 (hospital, emergency=yes)",https://www.openstreetmap.org/node/9212731697,2026-10-13
+Walsall Manor Hospital,E,type1,,52.58280,-1.99873,"OpenStreetMap way 262241259 (hospital, emergency=yes)",https://www.openstreetmap.org/way/262241259,2026-10-13
+Warrington Hospital,E,type1,,53.39374,-2.60896,"OpenStreetMap way 30410589 (hospital, emergency=yes)",https://www.openstreetmap.org/way/30410589,2026-10-13
+Warwick Hospital,E,type1,,52.28998,-1.58421,"OpenStreetMap relation 19069084 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/19069084,2026-10-13
+Watford General Hospital,E,type1,,51.64902,-0.40423,"OpenStreetMap node 12152081139 (hospital, emergency=yes)",https://www.openstreetmap.org/node/12152081139,2026-10-13
+Watford General Hospital,E,type1,,51.64851,-0.40319,"OpenStreetMap way 7989424 (hospital, emergency=yes)",https://www.openstreetmap.org/way/7989424,2026-10-13
+Weston General Hospital,E,type1,,51.32243,-2.97230,"OpenStreetMap way 854599317 (hospital, emergency=yes)",https://www.openstreetmap.org/way/854599317,2026-10-13
+Wexham Park Hospital,E,type1,,51.53221,-0.57373,"OpenStreetMap way 26006210 (hospital, emergency=yes)",https://www.openstreetmap.org/way/26006210,2026-10-13
+Whipps Cross University Hospital,E,type1,,51.57749,0.00277,"OpenStreetMap way 41378470 (hospital, emergency=yes)",https://www.openstreetmap.org/way/41378470,2026-10-13
+William Harvey Hospital,E,type1,,51.14176,0.91625,"OpenStreetMap way 97858742 (hospital, emergency=yes)",https://www.openstreetmap.org/way/97858742,2026-10-13
+Worthing Hospital,E,type1,,50.81655,-0.36396,"OpenStreetMap way 122133740 (hospital, emergency=yes)",https://www.openstreetmap.org/way/122133740,2026-10-13
+Wythenshawe Hospital,E,type1,,53.39063,-2.29093,"OpenStreetMap way 1547852176 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1547852176,2026-10-13
+Wythenshawe Hospital,E,type1,,53.38858,-2.29273,"OpenStreetMap way 134636331 (hospital, emergency=yes)",https://www.openstreetmap.org/way/134636331,2026-10-13
+Yeovil Hospital,E,type1,,50.94525,-2.63491,"OpenStreetMap way 1459625504 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1459625504,2026-10-13
+York District Hospital,E,type1,,53.97039,-1.08380,"OpenStreetMap way 851799019 (hospital, emergency=yes)",https://www.openstreetmap.org/way/851799019,2026-10-13
+Altnagelvin Hospital,N,type1,,54.98637,-7.29151,"OpenStreetMap way 123387829 (hospital, emergency=yes)",https://www.openstreetmap.org/way/123387829,2026-10-15
+Antrim Area Hospital,N,type1,,54.73252,-6.18874,"OpenStreetMap way 217758342 (hospital, emergency=yes)",https://www.openstreetmap.org/way/217758342,2026-10-15
+Causeway Hospital,N,type1,,55.12439,-6.65095,"OpenStreetMap way 439605802 (hospital, emergency=yes)",https://www.openstreetmap.org/way/439605802,2026-10-15
+Craigavon Area Hospital,N,type1,,54.43443,-6.41102,"OpenStreetMap relation 5342502 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/5342502,2026-10-15
+Daisy Hill Hospital,N,type1,,54.17971,-6.35044,"OpenStreetMap way 56176912 (hospital, emergency=yes)",https://www.openstreetmap.org/way/56176912,2026-10-15
+Downe Hospital,N,other,,54.32216,-5.69400,"OpenStreetMap way 228052215 (hospital, emergency=yes; minor injuries / urgent care unit, not a type 1 department)",https://www.openstreetmap.org/way/228052215,2026-10-15
+Lagan Valley Hospital,N,other,,54.50515,-6.04501,"OpenStreetMap way 428428719 (hospital, emergency=yes; minor injuries / urgent care unit, not a type 1 department)",https://www.openstreetmap.org/way/428428719,2026-10-15
+Mater Infirmorum Hospital,N,type1,,54.60871,-5.93994,"OpenStreetMap way 397531416 (hospital, emergency=yes)",https://www.openstreetmap.org/way/397531416,2026-10-15
+Royal Victoria Hospital,N,type1,,54.59478,-5.95494,"OpenStreetMap relation 21238917 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/21238917,2026-10-15
+South West Acute Hospital,N,type1,,54.36658,-7.63794,"OpenStreetMap way 180749233 (hospital, emergency=yes)",https://www.openstreetmap.org/way/180749233,2026-10-15
+The Royal Hospitals,N,type1,,54.59236,-5.95430,"OpenStreetMap way 435769621 (hospital, emergency=yes)",https://www.openstreetmap.org/way/435769621,2026-10-15
+Ulster Hospital,N,type1,,54.59723,-5.81103,"OpenStreetMap way 10297730 (hospital, emergency=yes)",https://www.openstreetmap.org/way/10297730,2026-10-15
+Aberdeen Royal Infirmary,S,type1,AB252ZN,,,Public Health Scotland A&E sites (N101H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Arbroath Infirmary,S,other,DD112AT,,,Public Health Scotland A&E sites (T304H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Arran War Memorial Hospital,S,other,KA278LF,,,Public Health Scotland A&E sites (A101H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Aviemore Health Centre,S,other,PH221SY,,,Public Health Scotland A&E sites (H227B),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Balfour Hospital,S,type1,KW151NZ,,,Public Health Scotland A&E sites (R103H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Belford Hospital,S,type1,PH336BS,,,Public Health Scotland A&E sites (H212H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Borders General Hospital,S,type1,TD6 9BS,,,Public Health Scotland A&E sites (B120H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Broadford Hospital,S,other,IV499AA,,,Public Health Scotland A&E sites (H229H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Caithness General Hospital,S,type1,KW1 5NS,,,Public Health Scotland A&E sites (H103H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Campbeltown Hospital,S,other,PA286LE,,,Public Health Scotland A&E sites (C122H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Chalmers Hospital,S,other,AB451JA,,,Public Health Scotland A&E sites (N337H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+County Community Hospital - Invergordon,S,other,IV180JR,,,Public Health Scotland A&E sites (H219H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Cowal Community Hospital,S,other,PA237RL,,,Public Health Scotland A&E sites (C106H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Dr Gray's Hospital,S,type1,IV301SN,,,Public Health Scotland A&E sites (N411H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Dumfries & Galloway Royal Infirmary,S,type1,DG2 8RX,,,Public Health Scotland A&E sites (Y146H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Dunbar Hospital,S,other,KW147XE,,,Public Health Scotland A&E sites (H101H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Forth Valley Royal Hospital,S,type1,FK5 4WR,,,Public Health Scotland A&E sites (V217H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Fraserburgh Hospital,S,other,AB439NF,,,Public Health Scotland A&E sites (N334H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Galloway Community Hospital,S,type1,DG9 7DQ,,,Public Health Scotland A&E sites (Y144H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Gilbert Bain Hospital,S,type1,ZE1 0TB,,,Public Health Scotland A&E sites (Z102H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Girvan Community Hospital,S,other,KA269HQ,,,Public Health Scotland A&E sites (A216H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Glasgow Royal Infirmary,S,type1,G4  0SF,,,Public Health Scotland A&E sites (G107H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Inverclyde Royal Hospital,S,type1,PA160XN,,,Public Health Scotland A&E sites (C313H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Islay Hospital,S,other,PA437JD,,,Public Health Scotland A&E sites (C108H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Jubilee Hospital,S,other,AB548EX,,,Public Health Scotland A&E sites (N335H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Lady Margaret Hospital,S,other,KA280HF,,,Public Health Scotland A&E sites (A110H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Lawson Memorial Hospital,S,other,KW106SS,,,Public Health Scotland A&E sites (H106H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Lorn & Islands Hospital,S,type1,PA344HH,,,Public Health Scotland A&E sites (C121H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Mid Argyll Community Hospital And Integrated Care Centre,S,other,PA318JZ,,,Public Health Scotland A&E sites (H224H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Mull and Iona Community Hospital,S,other,PA656BH,,,Public Health Scotland A&E sites (H227H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Nairn Town and County Hospital,S,other,IV125EE,,,Public Health Scotland A&E sites (H208H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+New Stobhill Hospital,S,other,G21 3UW,,,Public Health Scotland A&E sites (G207H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+New Victoria Hospital,S,other,G42 9LF,,,Public Health Scotland A&E sites (G306H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Ninewells Hospital,S,type1,DD1 9SY,,,Public Health Scotland A&E sites (T101H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Perth Royal Infirmary,S,type1,PH1 1NX,,,Public Health Scotland A&E sites (T202H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Peterhead Community Hospital,S,other,AB422XB,,,Public Health Scotland A&E sites (N333H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Portree Community Hospital,S,other,IV519BZ,,,Public Health Scotland A&E sites (H215H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Queen Elizabeth University Hospital,S,type1,G51 4TF,,,Public Health Scotland A&E sites (G405H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Queen Margaret Hospital,S,other,KY120SU,,,Public Health Scotland A&E sites (F805H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Raigmore Hospital,S,type1,IV2 3UJ,,,Public Health Scotland A&E sites (H202H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Royal Aberdeen Children's Hospital,S,type1,AB252ZG,,,Public Health Scotland A&E sites (N121H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Royal Alexandra Hospital,S,type1,PA2 9PN,,,Public Health Scotland A&E sites (C418H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Royal Hospital for Children Glasgow,S,type1,G51 4TF,,,Public Health Scotland A&E sites (G513H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Royal Hospital for Children and Young People (Edinburgh),S,type1,EH164TJ,,,Public Health Scotland A&E sites (S319H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Royal Infirmary of Edinburgh,S,type1,EH164SA,,,Public Health Scotland A&E sites (S314H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+St Andrews Community Hospital,S,other,KY168AR,,,Public Health Scotland A&E sites (F709H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+St Brendan's Hospital,S,other,HS9 5XE,,,Public Health Scotland A&E sites (W106H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+St John's Hospital,S,type1,EH546PP,,,Public Health Scotland A&E sites (S308H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Stirling Health and Care Village,S,other,FK8 2AU,,,Public Health Scotland A&E sites (V201H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Uist & Barra Hospital,S,other,HS7 5LA,,,Public Health Scotland A&E sites (W108H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+University Hospital Ayr,S,type1,KA6 6DX,,,Public Health Scotland A&E sites (A210H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+University Hospital Crosshouse,S,type1,KA2 0BE,,,Public Health Scotland A&E sites (A111H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+University Hospital Hairmyres,S,type1,G75 8RG,,,Public Health Scotland A&E sites (L302H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+University Hospital Monklands,S,type1,ML6 0JS,,,Public Health Scotland A&E sites (L106H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+University Hospital Wishaw,S,type1,ML2 0DP,,,Public Health Scotland A&E sites (L308H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Vale of Leven District General Hospital,S,other,G83 0UA,,,Public Health Scotland A&E sites (C206H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Victoria Hospital (NHS Fife),S,type1,KY2 5AH,,,Public Health Scotland A&E sites (F704H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Victoria Hospital (NHS Highland),S,other,PA209JJ,,,Public Health Scotland A&E sites (C113H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Western General Hospital,S,other,EH4 2XU,,,Public Health Scotland A&E sites (S116H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Western Isles Hospital,S,type1,HS1 2AF,,,Public Health Scotland A&E sites (W107H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Whitehills Health and Community Care Centre,S,other,DD8 3DY,,,Public Health Scotland A&E sites (T319H),https://www.opendata.nhs.scot/dataset/nhs-scotland-accident-emergency-sites,2026-10-13
+Ambulance station,W,type1,,52.23736,-4.25668,"OpenStreetMap way 754885122 (hospital, emergency=yes)",https://www.openstreetmap.org/way/754885122,2026-10-13
+Brecon War Memorial Hospital,W,type1,,51.94875,-3.38455,"OpenStreetMap way 1069090320 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1069090320,2026-10-13
+County Hospital,W,type1,,51.69088,-3.02658,"OpenStreetMap way 107224982 (hospital, emergency=yes)",https://www.openstreetmap.org/way/107224982,2026-10-13
+Glan Clwyd Hospital,W,type1,,53.27131,-3.49749,"OpenStreetMap way 132283014 (hospital, emergency=yes)",https://www.openstreetmap.org/way/132283014,2026-10-13
+Grange University Hospital,W,type1,,51.64865,-2.99770,"OpenStreetMap way 838254768 (hospital, emergency=yes)",https://www.openstreetmap.org/way/838254768,2026-10-13
+Neath Port Talbot Hospital,W,type1,,51.59869,-3.80136,"OpenStreetMap way 60472568 (hospital, emergency=yes)",https://www.openstreetmap.org/way/60472568,2026-10-13
+Nevill Hall Hospital,W,type1,,51.82398,-3.03412,"OpenStreetMap way 116934463 (hospital, emergency=yes)",https://www.openstreetmap.org/way/116934463,2026-10-13
+Prince Philip Hospital,W,type1,,51.69205,-4.13535,"OpenStreetMap way 51815473 (hospital, emergency=yes)",https://www.openstreetmap.org/way/51815473,2026-10-13
+Princess of Wales Hospital,W,type1,,51.51798,-3.57090,"OpenStreetMap way 1493545700 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1493545700,2026-10-13
+Royal Glamorgan Hospital,W,type1,,51.54803,-3.39212,"OpenStreetMap way 104324515 (hospital, emergency=yes)",https://www.openstreetmap.org/way/104324515,2026-10-13
+Royal Gwent Hospital,W,type1,,51.58024,-2.99741,"OpenStreetMap way 40608609 (hospital, emergency=yes)",https://www.openstreetmap.org/way/40608609,2026-10-13
+Withybush Hospital,W,type1,,51.81356,-4.96467,"OpenStreetMap way 24826184 (hospital, emergency=yes)",https://www.openstreetmap.org/way/24826184,2026-10-13
+Wrexham Maelor Hospital,W,type1,,53.04737,-3.00829,"OpenStreetMap way 218436943 (hospital, emergency=yes)",https://www.openstreetmap.org/way/218436943,2026-10-13
+Ysbyty Bronglais / Bronglais Hospital,W,type1,,52.41641,-4.07113,"OpenStreetMap way 55216072 (hospital, emergency=yes)",https://www.openstreetmap.org/way/55216072,2026-10-13
+Ysbyty Gwynedd,W,type1,,53.20875,-4.16005,"OpenStreetMap way 364805892 (hospital, emergency=yes)",https://www.openstreetmap.org/way/364805892,2026-10-13
+Ysbyty Ystrad Fawr,W,type1,,51.63446,-3.23472,"OpenStreetMap way 210621038 (hospital, emergency=yes)",https://www.openstreetmap.org/way/210621038,2026-10-13

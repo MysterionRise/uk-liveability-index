@@ -21,6 +21,7 @@ country:
 nations:
   E:
     name: England
+    names: {cy: Lloegr, gd: Sasainn, ga: Sasana}
     ctry_cd: E92000001
     input_crs: 27700
     bbox: [-6.5, 49.8, 1.8, 55.9]
@@ -45,6 +46,7 @@ nations:
     theme_gaps: []
   W:
     name: Wales
+    names: {cy: Cymru, gd: A' Chuimrigh, ga: An Bhreatain Bheag}
     ctry_cd: W92000004
     input_crs: 27700
     bbox: [-5.4, 51.3, -2.6, 53.5]
@@ -69,6 +71,7 @@ nations:
     theme_gaps: []
   S:
     name: Scotland
+    names: {cy: Yr Alban, gd: Alba, ga: Albain}
     ctry_cd: S92000003
     input_crs: 27700
     bbox: [-7.7, 54.6, -0.7, 60.9]
@@ -98,6 +101,7 @@ nations:
     theme_gaps: []
   N:
     name: Northern Ireland
+    names: {cy: Gogledd Iwerddon, gd: Èirinn a Tuath, ga: Tuaisceart Éireann}
     ctry_cd: N92000002
     input_crs: 29902  # NSPL gives BT postcodes on the Irish Grid; stage_nspl recomputes them
     bbox: [-8.2, 54.0, -5.4, 55.4]

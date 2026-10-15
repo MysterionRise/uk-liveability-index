@@ -272,3 +272,40 @@ def test_logainm_records_parse_and_match_places():
     )
     out = with_irish_names(places, logainm)
     assert out["name_ga"].to_list() == ["Béal Feirste", "Béal Feirste (OSM)", None]
+
+
+def test_lps_zero_sales_rows_have_no_median_and_the_weighted_mean_skips_nulls():
+    from lix_pipeline.stage.price_paid import _lps_ward_years, _weighted
+
+    raw = pl.DataFrame({
+        "District": ["A", "A"], "Ward": ["X", "Y"], "SaleYr": ["2024", "2024"],
+        "Ward_VerifiedSales": ["0", "40"], "Reporting_MedianPrice": ["0", "150000"],
+    })  # fmt: skip
+    assert _lps_ward_years(raw)["median"].to_list() == [None, 150000.0]
+    df = pl.DataFrame({"v": [None, 100.0, 300.0], "w": [5.0, 1.0, 3.0]})
+    assert df.select(_weighted("v", "w")).item() == 250.0
+    none = pl.DataFrame({"v": [None], "w": [5.0]}, schema={"v": pl.Float64, "w": pl.Float64})
+    assert none.select(_weighted("v", "w")).item() is None
+
+
+def test_curated_names_fill_only_the_missing_forms_of_cities_and_towns():
+    from lix_pipeline.stage.place_names import with_curated_names
+
+    places = pl.DataFrame({
+        "name": ["Edinburgh", "Cardiff", "Edinburgh"],
+        "local_authority": ["City of Edinburgh", "Cardiff", "Elsewhere"],
+        "place_type": ["City", "City", "Village"],
+        "name_cy": [None, "Caerdydd", None],
+        "name_gd": [None, None, None],
+    })  # fmt: skip
+    curated = pl.DataFrame({
+        "name": ["Edinburgh", "Cardiff"],
+        "local_authority": ["City of Edinburgh", "Cardiff"],
+        "name_cy": ["Caeredin", "Caerdydd"],
+        "name_gd": ["Dùn Èideann", ""],
+        "name_ga": ["Dún Éideann", ""],
+    })  # fmt: skip
+    out = with_curated_names(places, curated)
+    assert out["name_cy"].to_list() == ["Caeredin", "Caerdydd", None]
+    assert out["name_gd"].to_list() == ["Dùn Èideann", None, None]
+    assert out["name_ga"].to_list() == ["Dún Éideann", None, None]

@@ -62,7 +62,7 @@ STAGE_INPUTS: dict[str, list[str]] = {
     ],
     "ukcp_hot_days": ["ukcp_hot_days", "nisra_dz21_lookup"],
     "dz11_dz22": ["simd_postcode_lookup", "nrs_oa22_population", "nspl"],
-    "places": ["os_open_names", "osm_ireland", *LOW_BOUNDARIES],
+    "places": ["os_open_names", "osm_ireland", "place_names_i18n", *LOW_BOUNDARIES],
     "defra_pcm_no2": ["defra_pcm_no2", "nspl"],
     "defra_pcm_pm25": ["defra_pcm_pm25", "nspl"],
     "defra_pcm_pm10": ["defra_pcm_pm10", "nspl"],
@@ -73,6 +73,8 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "osm_pois": ["osm_*"],
     "ods_dentists": ["ods_dentists", "phs_dentists", "bso_dental", "nspl"],
     "ae_sites": ["ae_sites", "nspl", *LOW_BOUNDARIES],
+    # PSNI records carry no LSOA code and are placed by their coordinates
+    "police_crime": ["police_crime", *LOW_BOUNDARIES],
     "nhsbsa_pharmacies": ["nhsbsa_pharmacies", "nspl"],
     "ofsted_childcare": ["ofsted_childcare", "nspl"],
     "care_inspectorate": ["care_inspectorate", "nspl"],

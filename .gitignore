@@ -1,5 +1,5 @@
 # Data (every layer is rebuilt by the pipeline; `lix` creates the directories)
-data/
+/data/
 outputs/
 # Data packs (make data-pack)
 dist/

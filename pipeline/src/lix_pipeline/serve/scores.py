@@ -228,6 +228,7 @@ def geography(area_counts: dict[str, int]) -> dict:
                 for level, lv in spec.levels.items()
             },
             "theme_gaps": list(spec.theme_gaps),
+            "names": dict(spec.names),
         }
     return {
         "country": cfg.country.model_dump(),

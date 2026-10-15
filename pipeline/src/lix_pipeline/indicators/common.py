@@ -35,6 +35,10 @@ def impute_by_proxy(
     rows are interpolated between bin centres. Returns the completed ``value`` series.
     """
     train = df.filter(~impute & pl.col(value).is_not_null() & pl.col(proxy).is_not_null())
+    needs = df.select(impute & pl.col(proxy).is_not_null()).to_series().any()
+    if train.height < 2 or not needs:
+        # Nothing to impute, or no rows to learn from (a build without the proxy's nation)
+        return pl.Series(value, df[value].to_numpy().astype(float))
     y = train[value].to_numpy().astype(float)
     x = train[proxy].to_numpy().astype(float)
     if log:

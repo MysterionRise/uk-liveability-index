@@ -5,6 +5,16 @@ import polars as pl
 from lix_pipeline.stage.schools import NEUTRAL
 
 
+def ofsted_quality(ctx) -> pl.DataFrame:
+    """Ofsted's inspection quality per school reference; empty when England is not in
+    the build (no table to read), so every school counts as ungraded."""
+    try:
+        return ctx.staged("ofsted_schools").select("urn", "quality")
+    except FileNotFoundError:
+        urn = ctx.staged("schools")["urn"].dtype
+        return pl.DataFrame(schema={"urn": urn, "quality": pl.Float64})
+
+
 def school_access(ctx, phases: list[str], radius_m: float, cap: float) -> pl.DataFrame:
     """State schools of ``phases`` within ``radius_m``, each weighted by inspection quality.
 
@@ -14,7 +24,7 @@ def school_access(ctx, phases: list[str], radius_m: float, cap: float) -> pl.Dat
     schools = (
         ctx.staged("schools")
         .filter(pl.col("phase").is_in(phases) & (pl.col("type_group") != "Independent schools"))
-        .join(ctx.staged("ofsted_schools").select("urn", "quality"), on="urn", how="left")
+        .join(ofsted_quality(ctx), on="urn", how="left")
         .with_columns(pl.col("quality").fill_null(NEUTRAL))
     )
     access = ctx.access(schools, radius_m=radius_m, cap=cap, weight="quality")
@@ -76,7 +86,7 @@ def state_schools(ctx, phases: list[str]) -> pl.DataFrame:
             & (pl.col("type_group") != "Independent schools")
             & (pl.col("type_group") != "Special schools")
         )
-        .join(ctx.staged("ofsted_schools").select("urn", "quality"), on="urn", how="left")
+        .join(ofsted_quality(ctx), on="urn", how="left")
         .with_columns(
             pl.when(nation_of("lsoa21cd") == "E")
             .then(pl.col("quality").fill_null(NEUTRAL))

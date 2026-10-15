@@ -206,7 +206,9 @@ def stage_places() -> pl.LazyFrame:
         from lix_pipeline.stage.places_osm import osm_places
 
         frames.extend(osm_places(n) for n in from_osm)
-    places = pl.concat(frames, how="diagonal_relaxed")
+    from lix_pipeline.stage.place_names import with_curated_names
+
+    places = with_curated_names(pl.concat(frames, how="diagonal_relaxed"))
 
     from lix_pipeline.geo.joins import points_to_lsoa
 
