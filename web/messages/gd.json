@@ -11,11 +11,22 @@
     "S": "Alba",
     "N": "Èirinn a Tuath",
     "and": "agus",
-    "E_W": "Sasainn agus a' Chuimrigh"
+    "E_W": "Sasainn agus a' Chuimrigh",
+    "in_uk": "san RA",
+    "in_E": "ann an Sasainn",
+    "in_W": "anns a' Chuimrigh",
+    "in_S": "ann an Alba",
+    "in_N": "ann an Èirinn a Tuath",
+    "in_E_W": "ann an Sasainn agus a' Chuimrigh",
+    "in": "ann an",
+    "of_E": "de Shasainn",
+    "of_W": "den Chuimrigh",
+    "of_S": "de dh'Alba",
+    "of_N": "de dh'Èirinn a Tuath"
   },
   "Header": {
     "title": "Clàr-amais Càileachd Beatha na RA",
-    "blurb": "{count, number} nàbachdan ann an {coverage}, le sgòr bho dhàta fosgailte",
+    "blurb": "{count, number} nàbachdan {coverageIn}, le sgòr bho dhàta fosgailte",
     "demoBlurb": "Seata dàta taisbeanaidh: {count, number} nàbachdan, le sgòr bho dhàta fosgailte",
     "demoBadge": "dàta taisbeanaidh",
     "demoBadgeTitle": "Pìos beag den togail shlàn; tha na ceudadan air a' mhapa an coimeas ris na sgìrean seo",
@@ -57,11 +68,12 @@
       "compareMessage": "Dèan coimeas eadar Headingley agus Chapel Allerton",
       "explainTitle": "Mìnich sgòr",
       "explainMessage": "Carson a tha meadhan baile Manchester a' faighinn sgòr ìosal air sàbhailteachd?"
-    }
+    },
+    "copyMessage": "Dèan lethbhreac"
   },
   "Onboarding": {
     "title": "Lorg nàbachd a fhreagras ort",
-    "blurb": "Gach nàbachd ann an {coverage}, le sgòr bho dhàta fosgailte. Tha sgìrean teal nas fheàrr na an àbhaist, sgìrean orains nas miosa. Sùm a-steach agus briog air sgìre airson faicinn carson, no faighnich dhen chuidiche.",
+    "blurb": "Gach nàbachd {coverageIn}, le sgòr bho dhàta fosgailte. Tha sgìrean teal nas fheàrr na an àbhaist, sgìrean orains nas miosa. Sùm a-steach agus briog air sgìre airson faicinn carson, no faighnich dhen chuidiche.",
     "whoIsLooking": "Cò tha a' coimhead?",
     "skip": "Leum seachad",
     "personas": {
@@ -74,7 +86,7 @@
   },
   "Search": {
     "placeholder": "Còd-puist no àite",
-    "noMatches": "Gun mhaidseadh ann an {coverage}",
+    "noMatches": "Gun mhaidseadh {coverageIn}",
     "searching": "A' lorg…",
     "unavailable": "Chan eil an lorg ri fhaighinn",
     "kinds": {
@@ -122,7 +134,7 @@
     "4": "Os cionn na h-àbhaist",
     "5": "Còigeamh as àirde",
     "betterThan": "nas fheàrr na {pct, number}% den RA",
-    "betterThanNation": "nas fheàrr na {pct, number}% de {nation}"
+    "betterThanNation": "nas fheàrr na {pct, number}% {nationOf}"
   },
   "Quality": {
     "imputed": "tuairmse",
@@ -135,7 +147,7 @@
   },
   "Legend": {
     "against": {
-      "uk": "An aghaidh gach sgìre ann an {coverage}",
+      "uk": "An aghaidh gach sgìre {coverageIn}",
       "nation": "An aghaidh sgìrean san aon nàisean",
       "urban_rural": "An aghaidh sgìrean den aon seòrsa bailteil/dùthchail"
     },
@@ -149,7 +161,7 @@
     "hoverNoName": "nas fheàrr na {pct, number}% den RA",
     "overall": "Iomlan",
     "withinNation": "{label} (taobh a-staigh an nàisein)",
-    "withinUrbanRural": "{label} (vs sgìrean bailteil/dùthchail coltach)",
+    "withinUrbanRural": "{label} (an aghaidh sgìrean bailteil/dùthchail coltach)",
     "hoverNation": "{name}: nas fheàrr na {pct, number}% de a nàisean",
     "hoverNationNoName": "nas fheàrr na {pct, number}% de a nàisean",
     "hoverUrbanRural": "{name}: nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach",
@@ -205,8 +217,10 @@
     "linkCopied": "Ceangal air a chopaigeadh",
     "copyPrompt": "Dèan lethbhreac den cheangal seo",
     "note": "Tha sgòran 0–100 (nas àirde nas fheàrr). Tha astaran dìreach.",
-    "betterThanNation": "Nas fheàrr na {pct, number}% de {nation}",
-    "nationMedian": "meadhan {nation}"
+    "betterThanNation": "Nas fheàrr na {pct, number}% {nationOf}",
+    "nationMedian": "meadhanach {nation}",
+    "limitedData": "Dàta cuingealaichte: chan eil an nàisean seo a' foillseachadh gu leòr airson a' chuspair seo, agus tha e air fhàgail a-mach às an iomlan",
+    "subtitleOwnTier": "{ruc} · {population, number} luchd-còmhnaidh"
   },
   "Poi": {
     "titles": {
@@ -228,10 +242,10 @@
     "note": "Astar dìreach. Tùs: {sources}."
   },
   "Ranked": {
-    "title": "Na {count, number} {tier} as fheàrr {where}",
+    "title": "{tier} {where}: na {count, number} as fheàrr",
     "areas": "sgìrean",
     "inPlace": "ann an {place}",
-    "inCoverage": "ann an {coverage}",
+    "inCoverage": "{coverageIn}",
     "subtitle": "{count, number} a' maidseadh · cuideam: {preset}",
     "closeCall": "glè dhlùth",
     "closeCallTitle": "A' fuireach sna {n, number} as fheàrr fo {pct, number}% de chuideaman creidsinneach",
@@ -239,7 +253,9 @@
     "overallScore": "iomlan {score}",
     "typicalPrice": "prìs àbhaisteach {price}",
     "note": "Briog air sgìre airson a sealltainn air a' mhapa.",
-    "closeCallNote": "“Glè dhlùth”: dh'fhaodadh atharraichean beaga air na cuideaman a chur a-mach às an liosta seo."
+    "closeCallNote": "“Glè dhlùth”: dh'fhaodadh atharraichean beaga air na cuideaman a chur a-mach às an liosta seo.",
+    "titleWorst": "{tier} {where}: na {count, number} as miosa",
+    "withinKm": "taobh a-staigh {km, number} km de {place}"
   },
   "Comparison": {
     "title": "Taobh ri taobh",

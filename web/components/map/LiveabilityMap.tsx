@@ -21,7 +21,7 @@ import { pctRank } from "@/lib/format";
 import { CHROME, FILL_OPACITY } from "@/lib/palette";
 import { useLocale, useTranslations } from "next-intl";
 
-import { useCoverageName } from "@/lib/copy";
+import { useCoverageIn } from "@/lib/copy";
 import { activeBbox } from "@/lib/data";
 import { bboxOf } from "@/lib/state";
 
@@ -89,7 +89,7 @@ function addOverlayLayers(map: maplibregl.Map, chrome: (typeof CHROME)["light"])
       type: "vector",
       url: `pmtiles://${absoluteDataUrl()}/tiles/${layer.id}.pmtiles`,
       promoteId: { [layer.id]: layer.key },
-      attribution: "Contains OS data © Crown copyright and database right; ONS",
+      attribution: "Contains OS data © Crown copyright and database right; ONS; NRS; Contains Ordnance Survey of Northern Ireland information licensed under the OGL v3.0; NISRA",
     });
     map.addLayer(
       {
@@ -153,6 +153,9 @@ export function LiveabilityMap() {
   const locale = useLocale();
   const { manifest, scores } = useData();
   const { state, update } = useLiveability();
+  // Parents coloured by the last recolour, per source, so a parent without a value on
+  // the next layer is cleared
+  const paintedRef = useRef<{ msoa: Set<string>; lad: Set<string> }>({ msoa: new Set(), lad: new Set() });
   // Read inside map event handlers, which outlive a render
   const compareRef = useRef(state.compare_within);
   useEffect(() => {
@@ -160,8 +163,8 @@ export function LiveabilityMap() {
   }, [state.compare_within]);
   const t = useTranslations("Map");
   const tLegend = useTranslations("Legend");
-  const coverage = useCoverageName();
-  const against = tLegend(`against.${state.compare_within}`, { coverage });
+  const coverageIn = useCoverageIn();
+  const against = tLegend(`against.${state.compare_within}`, { coverageIn });
   const values = useScores(state);
   const appliedBbox = useRef<string>("");
   const styleDark = useRef<boolean | null>(null);
@@ -209,12 +212,21 @@ export function LiveabilityMap() {
     });
     // The compact attribution opens expanded on load and would sit under the legend on
     // a phone until the first drag; start it collapsed, the licence a tap away (#114)
-    map.once("load", () => {
+    const collapseAttribution = () => {
       const attrib = container.current?.querySelector(".maplibregl-ctrl-attrib");
       if (attrib?.classList.contains("maplibregl-compact-show")) {
         attrib.classList.remove("maplibregl-compact-show");
         attrib.querySelector("button")?.setAttribute("aria-expanded", "false");
       }
+    };
+    // MapLibre opens it on first paint; watch until the map has loaded, then leave it
+    // to the user
+    const attribWatch = new MutationObserver(collapseAttribution);
+    if (container.current) attribWatch.observe(container.current, { subtree: true, attributes: true, attributeFilter: ["class"] });
+    collapseAttribution();
+    map.once("load", () => {
+      collapseAttribution();
+      setTimeout(() => attribWatch.disconnect(), 1500);
     });
     map.on("style.load", () => {
       addOverlay(map, darkRef.current);
@@ -260,8 +272,16 @@ export function LiveabilityMap() {
         { v: Number.isNaN(v) ? null : v },
       );
     }
-    for (const [code, v] of values.msoa) map.setFeatureState({ source: "msoa", sourceLayer: "msoa", id: code }, { v });
-    for (const [code, v] of values.lad) map.setFeatureState({ source: "lad", sourceLayer: "lad", id: code }, { v });
+    // A council or neighbourhood with no value on this layer (every Northern Irish
+    // one on the education layer) is cleared, or it keeps the last layer's colour
+    for (const [source, next] of [["msoa", values.msoa], ["lad", values.lad]] as const) {
+      const painted = paintedRef.current[source];
+      for (const code of painted) {
+        if (!next.has(code)) map.setFeatureState({ source, sourceLayer: source, id: code }, { v: null });
+      }
+      for (const [code, v] of next) map.setFeatureState({ source, sourceLayer: source, id: code }, { v });
+      paintedRef.current[source] = new Set(next.keys());
+    }
     performance.measure("lix-recolour", "lix-recolour-start");
   }, [ready, styleVersion, values, scores]);
 

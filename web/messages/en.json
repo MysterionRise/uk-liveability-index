@@ -11,11 +11,22 @@
     "S": "Scotland",
     "N": "Northern Ireland",
     "and": "and",
-    "E_W": "England and Wales"
+    "E_W": "England and Wales",
+    "in_uk": "in the UK",
+    "in_E": "in England",
+    "in_W": "in Wales",
+    "in_S": "in Scotland",
+    "in_N": "in Northern Ireland",
+    "in_E_W": "in England and Wales",
+    "in": "in",
+    "of_E": "of England",
+    "of_W": "of Wales",
+    "of_S": "of Scotland",
+    "of_N": "of Northern Ireland"
   },
   "Header": {
     "title": "UK Liveability Index",
-    "blurb": "{count, number} neighbourhoods in {coverage}, scored from open data",
+    "blurb": "{count, number} neighbourhoods {coverageIn}, scored from open data",
     "demoBlurb": "Demo dataset: {count, number} neighbourhoods, scored from open data",
     "demoBadge": "demo data",
     "demoBadgeTitle": "A small cut of the full build; percentiles on the map are relative to these areas",
@@ -57,11 +68,12 @@
       "compareMessage": "Compare Headingley and Chapel Allerton",
       "explainTitle": "Explain a score",
       "explainMessage": "Why does Manchester city centre score low on safety?"
-    }
+    },
+    "copyMessage": "Copy"
   },
   "Onboarding": {
     "title": "Find a neighbourhood that suits you",
-    "blurb": "Every neighbourhood in {coverage}, scored from open data. Teal areas do better than typical, orange ones worse. Zoom in and click an area to see why, or ask the assistant.",
+    "blurb": "Every neighbourhood {coverageIn}, scored from open data. Teal areas do better than typical, orange ones worse. Zoom in and click an area to see why, or ask the assistant.",
     "whoIsLooking": "Who's looking?",
     "skip": "Skip",
     "personas": {
@@ -74,7 +86,7 @@
   },
   "Search": {
     "placeholder": "Postcode or place",
-    "noMatches": "No matches in {coverage}",
+    "noMatches": "No matches {coverageIn}",
     "searching": "Searching…",
     "unavailable": "Search is unavailable",
     "kinds": {
@@ -122,7 +134,7 @@
     "4": "Above average",
     "5": "Top fifth",
     "betterThan": "better than {pct, number}% of the UK",
-    "betterThanNation": "better than {pct, number}% of {nation}"
+    "betterThanNation": "better than {pct, number}% {nationOf}"
   },
   "Quality": {
     "imputed": "estimated",
@@ -135,7 +147,7 @@
   },
   "Legend": {
     "against": {
-      "uk": "Against every area in {coverage}",
+      "uk": "Against every area {coverageIn}",
       "nation": "Against areas in the same nation",
       "urban_rural": "Against areas of the same urban/rural type"
     },
@@ -205,8 +217,10 @@
     "linkCopied": "Link copied",
     "copyPrompt": "Copy this link",
     "note": "Scores are 0–100 (higher is better). Distances are straight-line.",
-    "betterThanNation": "Better than {pct, number}% of {nation}",
-    "nationMedian": "{nation} median"
+    "betterThanNation": "Better than {pct, number}% {nationOf}",
+    "nationMedian": "{nation} median",
+    "limitedData": "Limited data: this nation publishes too little for this theme, so it is left out of the overall",
+    "subtitleOwnTier": "{ruc} · {population, number} residents"
   },
   "Poi": {
     "titles": {
@@ -231,7 +245,7 @@
     "title": "Top {count, number} {tier} {where}",
     "areas": "areas",
     "inPlace": "in {place}",
-    "inCoverage": "in {coverage}",
+    "inCoverage": "{coverageIn}",
     "subtitle": "{count, number} matched · weighting: {preset}",
     "closeCall": "close call",
     "closeCallTitle": "Stays in this top {n, number} under {pct, number}% of plausible weightings",
@@ -239,7 +253,9 @@
     "overallScore": "overall {score}",
     "typicalPrice": "typical price {price}",
     "note": "Click an area to show it on the map.",
-    "closeCallNote": "“Close call”: small changes to the weights could swap it out of this list."
+    "closeCallNote": "“Close call”: small changes to the weights could swap it out of this list.",
+    "titleWorst": "Bottom {count, number} {tier} {where}",
+    "withinKm": "within {km, number} km of {place}"
   },
   "Comparison": {
     "title": "Side by side",

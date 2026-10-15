@@ -3,9 +3,9 @@
 import { useLocale, useTranslations } from "next-intl";
 
 import { useLiveability } from "@/components/AppData";
-import { Card, Muted, formatValue } from "@/components/ui";
+import { Card, Muted, ValueWithUnit, formatValue } from "@/components/ui";
 import type { RankResult } from "@/lib/contracts.gen";
-import { useCoverageName } from "@/lib/copy";
+import { useCoverageIn } from "@/lib/copy";
 import { presetLabel, useLabels } from "@/lib/labels";
 import { nationOf, useLevelWords } from "@/lib/levels";
 
@@ -17,23 +17,27 @@ export function RankedList({ result }: { result: RankResult }) {
   const t = useTranslations("Ranked");
   const tw = useTranslations("Weights");
   const locale = useLocale();
-  const coverage = useCoverageName();
-  // "within N km of X" comes from the API already phrased; a named area gets "in"
-  const where = result.within
-    ? result.within.startsWith("within")
-      ? result.within
-      : t("inPlace", { place: result.within })
-    : t("inCoverage", { coverage });
+  const coverageIn = useCoverageIn();
+  // A radius around a place, a named area, or the whole coverage, in the interface language
+  const where =
+    result.place && result.radius_km != null
+      ? t("withinKm", { km: result.radius_km, place: result.place })
+      : result.place || result.within
+        ? t("inPlace", { place: result.place ?? result.within ?? "" })
+        : t("inCoverage", { coverageIn });
   const count = result.results.length;
   const labels = useLabels();
   const level = useLevelWords();
   // The tier's word in the results' nation ("data zones" in Edinburgh); a list that
   // spans nations just says "areas"
   const nations = new Set(result.results.map((r) => nationOf(r.code)));
-  const tier =
+  const tierWord =
     nations.size === 1
       ? level([...nations][0], result.level, count)
       : t("areas");
+  // The Celtic titles lead with the tier ("Parthau data yng Nghaerdydd: y 5 gorau")
+  const tier = locale.startsWith("en") ? tierWord : tierWord.charAt(0).toUpperCase() + tierWord.slice(1);
+  const titleKey = result.direction === "worst" ? "titleWorst" : "title";
   // Ranked by one measure (the quietest, the cheapest…) rather than the weighted overall
   const measure =
     result.sort_by && result.sort_by !== "overall" ? result.sort_by : null;
@@ -52,7 +56,7 @@ export function RankedList({ result }: { result: RankResult }) {
   return (
     <Card
       testId="ranked-list"
-      title={t("title", { count, tier, where })}
+      title={t(titleKey, { count, tier, where })}
       subtitle={subtitle}
     >
       <ol className="divide-y divide-[var(--border)]">
@@ -110,12 +114,8 @@ export function RankedList({ result }: { result: RankResult }) {
                     >
                       {measureKind === "theme"
                         ? (r.sort_value?.toFixed(0) ?? "–")
-                        : r.sort_value != null
-                          ? formatValue(
-                              r.sort_value,
-                              result.sort_unit ?? "",
-                              locale,
-                            )
+                        : r.sort_value != null && measureId
+                          ? <ValueWithUnit value={r.sort_value} id={measureId} unit={result.sort_unit ?? ""} />
                           : "–"}
                     </span>
                     <span className="block h-1.5 w-14 rounded-r-[4px] bg-[var(--track)]">

@@ -2418,7 +2418,7 @@ ukcp_hot_days:
     fields: [CODE, NAME, HSD_8100_median, HSD_0120_median, HSD_15_median, HSD_2_median, HSD_3_median, HSD_4_median]
   format: parquet
   landing_page: https://climatedataportal.metoffice.gov.uk/datasets/9e4fe229900147c7a405f33724517278
-  description: Days a year above the local hot-summer-day threshold for the 1981–2000 and 2001–2020 baselines and at 1.5, 2, 3 and 4 °C of global warming, per MSOA, Intermediate Zone or district electoral area (the Met Office's Local Authority Climate Service).
+  description: Days a year with a maximum above 30°C (in any month; the median of sixteen UKCP18 model runs) for the 1981–2000 and 2001–2020 baselines and at 1.5, 2, 3 and 4 °C of global warming, per MSOA, Intermediate Zone or district electoral area (the Met Office's Local Authority Climate Service).
   licence: OGL-3.0
   attribution: "Contains Met Office data licensed under the Open Government Licence v3.0. Contains OS and ONS data © Crown copyright and database right 2026."
   cadence: adhoc

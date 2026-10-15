@@ -18,6 +18,23 @@ export function formatValue(value: number | null | undefined, unit: string, loca
   return n(value, 1);
 }
 
+/** Whether formatValue already prints the unit (£, m/km, %, out of 10); the others are
+ * appended by the caller from the catalogue in the interface language. */
+export function formatsUnit(unit: string): boolean {
+  const code = unitCode(unit);
+  return code === "gbp" || code === "metres" || code.startsWith("pct") || code === "rate" ||
+    code === "index" || code === "quality" || code === "rating" || code === "score" || code.startsWith("score");
+}
+
+/** The unit text to show after a formatted value: "hours a year", "°C", "a year" after a
+ * £ figure; nothing when the formatter printed it. */
+export function unitSuffix(unit: string, translated: string): string {
+  const code = unitCode(unit);
+  if (code === "gbp_year") return translated.replace(/^£\s*/, "");
+  if (formatsUnit(unit)) return "";
+  return translated;
+}
+
 /** The unit's code when given its English text (lix_core.config.UNIT_CODES), else as is. */
 export function unitCode(unit: string): string {
   if (unit.startsWith("£")) return unit === "£" ? "gbp" : "gbp_year";

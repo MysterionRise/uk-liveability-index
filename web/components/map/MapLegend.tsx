@@ -1,13 +1,16 @@
 import { useTranslations } from "next-intl";
 
+import { useWelcomed } from "@/components/Onboarding";
 import { gradientCss } from "@/lib/colors";
 
 /** The diverging ramp as it appears on the map: worse than typical ← typical → better. */
 export function MapLegend({ label, against, dark }: { label: string; against: string; dark: boolean }) {
   const t = useTranslations("Legend");
+  // On a phone the welcome card sits over the legend's corner until it is dismissed
+  const welcomed = useWelcomed();
   return (
     <div
-      className="absolute bottom-14 left-3 z-10 w-56 rounded-lg border sm:bottom-8 sm:w-[17rem] border-[var(--border)] bg-[var(--surface-1)] p-3 text-xs shadow-sm"
+      className={`absolute bottom-20 left-3 z-10 w-56 rounded-lg border sm:bottom-8 sm:w-[17rem] border-[var(--border)] bg-[var(--surface-1)] p-3 text-xs shadow-sm ${welcomed ? "" : "max-sm:hidden"}`}
       data-testid="legend"
     >
       <div className="font-medium text-[var(--text-primary)]">{label}</div>

@@ -32,10 +32,10 @@ export function AnalystPanel() {
     <div className="space-y-3 p-3 text-sm" data-testid="analyst">
       {values && (
         <IndicatorHistogram
-          values={values.lsoa}
+          values={values.score}
           label={values.label}
           theme={values.theme}
-          marker={selectedIndex !== undefined ? values.lsoa[selectedIndex] : null}
+          marker={selectedIndex !== undefined ? values.score[selectedIndex] : null}
         />
       )}
       <CorrelationHeatmap />

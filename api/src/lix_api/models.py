@@ -108,7 +108,7 @@ class AreaProfile(BaseModel):
     flags: list[str] = Field(default_factory=list, description="Caveats that apply to this area")
     flag_codes: list[str] = Field(
         default_factory=list,
-        description="The caveats' codes (imputed, low_n, broadcast_lad, not_available)",
+        description="The caveats' codes (imputed, low_n, broadcast_lad, not_available, theme_gap)",
     )
     centre: Point
     bbox: tuple[float, float, float, float]
@@ -153,6 +153,12 @@ class RankResult(BaseModel):
     sort_unit: str | None = Field(None, description="Unit of sort_value for an indicator")
     direction: Literal["best", "worst"] = Field(
         "best", description="best: highest first · worst: lowest first"
+    )
+    place: str | None = Field(
+        None, description="The area or place the ranking was limited to, named on its own"
+    )
+    radius_km: float | None = Field(
+        None, description="Set when the scope is a radius around `place` rather than an area"
     )
     candidates: int = Field(description="Areas that passed the filters and have the measure")
     results: list[RankedArea]

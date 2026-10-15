@@ -322,7 +322,9 @@ def explain_score(ctx: RunContext[Deps], area: str, theme: str | None = None) ->
         theme: limit the explanation to one theme (e.g. "safety")
     """
     store = get_store()
-    result: Explanation = explain.explain_score(store, area, theme=theme, **_weights(ctx))
+    result: Explanation = explain.explain_score(
+        store, area, theme=theme, **_weights(ctx), **_locale(ctx)
+    )
     # The map follows the conversation: select and show the area being explained
     row = store.features.row(store.lsoa_index[result.lsoa21cd], named=True)
     ctx.deps.state.map.selected = result.lsoa21cd

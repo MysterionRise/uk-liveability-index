@@ -1,9 +1,10 @@
 /** Small shared pieces: cards, score bars in their theme's colour, bands and number formatting. */
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { bandVar } from "@/lib/colors";
-import { pctRank } from "@/lib/format";
+import { formatValue, pctRank, unitSuffix } from "@/lib/format";
+import { useLabels } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
 
 export { formatValue } from "@/lib/format";
@@ -71,7 +72,7 @@ export function ScoreBar({
   );
 }
 
-export function Band({ band, percentile, nation }: { band?: number | null; percentile?: number | null; nation?: string }) {
+export function Band({ band, percentile, nationOf }: { band?: number | null; percentile?: number | null; nationOf?: string }) {
   const t = useTranslations("Band");
   if (!band) return null;
   return (
@@ -87,7 +88,7 @@ export function Band({ band, percentile, nation }: { band?: number | null; perce
       </span>
       {t(String(Math.min(5, Math.max(1, band))) as "1" | "2" | "3" | "4" | "5")}
       {percentile != null &&
-        ` · ${nation ? t("betterThanNation", { pct: pctRank(percentile), nation }) : t("betterThan", { pct: pctRank(percentile) })}`}
+        ` · ${nationOf ? t("betterThanNation", { pct: pctRank(percentile), nationOf }) : t("betterThan", { pct: pctRank(percentile) })}`}
     </span>
   );
 }
@@ -115,4 +116,17 @@ export function parseResult<T>(result: unknown): T | null {
   } catch {
     return null;
   }
+}
+
+/** A raw value with its unit in the interface language ("1,419 hours a year", "16.6 µg/m³"). */
+export function ValueWithUnit({ value, id, unit }: { value: number | null | undefined; id: string; unit: string }) {
+  const locale = useLocale();
+  const labels = useLabels();
+  const suffix = value == null ? "" : unitSuffix(unit, labels.unit(id));
+  return (
+    <>
+      {formatValue(value, unit, locale)}
+      {suffix && <span className="ml-1 text-[var(--text-muted)]">{suffix}</span>}
+    </>
+  );
 }

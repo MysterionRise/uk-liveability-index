@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useSyncExternalStore } from "react";
 
 import { useData, useLiveability } from "@/components/AppData";
-import { useCoverageName } from "@/lib/copy";
+import { useCoverageIn } from "@/lib/copy";
 import { useLabels } from "@/lib/labels";
 
 const KEY = "lix.welcomed";
@@ -16,6 +16,18 @@ function readWelcomed(): boolean {
   } catch {
     return true; // storage blocked: don't nag on every visit
   }
+}
+
+/** Whether the welcome card has been dismissed (true on the server, so nothing flashes). */
+export function useWelcomed(): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    readWelcomed,
+    () => true,
+  );
 }
 
 function dismiss() {
@@ -36,16 +48,9 @@ export function Onboarding() {
   const { manifest } = useData();
   const { update } = useLiveability();
   const t = useTranslations("Onboarding");
-  const coverage = useCoverageName();
+  const coverageIn = useCoverageIn();
   const labels = useLabels();
-  const welcomed = useSyncExternalStore(
-    (cb) => {
-      listeners.add(cb);
-      return () => listeners.delete(cb);
-    },
-    readWelcomed,
-    () => true, // server render: no card, so nothing flashes
-  );
+  const welcomed = useWelcomed();
   if (welcomed) return null;
   const presets = PERSONAS.filter((p) => !manifest || manifest.presets[p]);
 
@@ -59,7 +64,7 @@ export function Onboarding() {
       <h2 id="welcome-title" className="text-sm font-semibold">
         {t("title")}
       </h2>
-      <p className="mt-1 text-xs text-[var(--text-secondary)]">{t("blurb", { coverage })}</p>
+      <p className="mt-1 text-xs text-[var(--text-secondary)]">{t("blurb", { coverageIn })}</p>
       <p className="mt-3 text-xs font-medium text-[var(--text-secondary)]">{t("whoIsLooking")}</p>
       <div className="mt-1.5 flex flex-wrap gap-1.5">
         {presets.map((id) => (

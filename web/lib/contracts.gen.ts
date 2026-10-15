@@ -18,7 +18,7 @@ export type Lat = number;
 export type Lon = number;
 export type Coverage = number | null;
 /**
- * The caveats' codes (imputed, low_n, broadcast_lad, not_available)
+ * The caveats' codes (imputed, low_n, broadcast_lad, not_available, theme_gap)
  */
 export type FlagCodes = string[];
 /**
@@ -271,7 +271,15 @@ export type Candidates = number;
  */
 export type Direction1 = "best" | "worst";
 export type Level1 = "lsoa" | "msoa" | "lad" | "region" | "nation";
+/**
+ * The area or place the ranking was limited to, named on its own
+ */
+export type Place1 = string | null;
 export type Preset4 = string;
+/**
+ * Set when the scope is a radius around `place` rather than an area
+ */
+export type RadiusKm = number | null;
 export type Code3 = string;
 export type Level2 = "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type LocalAuthority1 = string;
@@ -613,7 +621,9 @@ export interface RankResult {
   candidates: Candidates;
   direction?: Direction1;
   level: Level1;
+  place?: Place1;
   preset: Preset4;
+  radius_km?: RadiusKm;
   results: Results;
   sort_by?: SortBy;
   sort_label?: SortLabel;

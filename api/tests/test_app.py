@@ -23,6 +23,13 @@ def test_health(client):
 def test_rest_routes(client):
     assert client.get("/api/v1/search", params={"q": "LS6 3HN"}).json()[0]["kind"] == "postcode"
     assert client.get("/api/v1/areas/LS6 3HN").json()["neighbourhood"] == "Headingley"
+    adjusted = client.get(
+        "/api/v1/areas/LS6 3HN", params={"preset": "balanced", "theme_weights": '{"safety": 3}'}
+    ).json()
+    assert (
+        adjusted["preset"].endswith("(adjusted)") and adjusted["overall_percentile_range"] is None
+    )
+    assert client.get("/api/v1/areas/LS6 3HN", params={"theme_weights": "nope"}).status_code == 400
     r = client.post("/api/v1/rank", json={"within": "Leeds", "level": "lsoa", "limit": 2})
     assert len(r.json()["results"]) == 2
     quiet = client.post(

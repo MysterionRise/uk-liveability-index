@@ -11,7 +11,7 @@ import { PanelProvider } from "@/components/PanelContext";
 import { SearchBox } from "@/components/SearchBox";
 import { SidePanel } from "@/components/SidePanel";
 import { ThemeToggle } from "@/components/ThemeProvider";
-import { useCoverageName } from "@/lib/copy";
+import { useCoverageIn } from "@/lib/copy";
 
 // MapLibre needs the browser
 const LiveabilityMap = dynamic(() => import("@/components/map/LiveabilityMap").then((m) => m.LiveabilityMap), {
@@ -21,7 +21,7 @@ const LiveabilityMap = dynamic(() => import("@/components/map/LiveabilityMap").t
 export default function Home() {
   const { error, manifest, scores } = useData();
   const t = useTranslations("Header");
-  const coverage = useCoverageName();
+  const coverageIn = useCoverageIn();
   const count = manifest?.lsoa_count ?? 0;
   return (
     <PanelProvider>
@@ -30,7 +30,7 @@ export default function Home() {
         <header className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-[var(--border)] bg-[var(--surface-1)] px-4 py-2">
           <h1 className="text-base font-semibold">{t("title")}</h1>
           <span className="hidden text-xs text-[var(--text-secondary)] lg:inline">
-            {manifest?.demo ? t("demoBlurb", { count }) : t("blurb", { count, coverage })}
+            {manifest?.demo ? t("demoBlurb", { count }) : t("blurb", { count, coverageIn })}
           </span>
           {manifest?.demo && (
             <span

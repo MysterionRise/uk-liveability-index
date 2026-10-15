@@ -216,10 +216,10 @@ HOT_DAY_COLUMNS = {
 
 
 def stage_ukcp_hot_days() -> pl.LazyFrame:
-    """UKCP18's local projections of hot summer days per MSOA, Intermediate Zone or (in
-    Northern Ireland) district electoral area, copied down to every small area inside
-    (``broadcast_msoa``): the 2001–2020 baseline and the counts at 2 and 4 °C of global
-    warming (median of the ensemble)."""
+    """UKCP18's local projections of hot summer days (a daily maximum above 30 °C, in any
+    month) per MSOA, Intermediate Zone or (in Northern Ireland) district electoral area,
+    copied down to every small area inside (``broadcast_msoa``): the 2001–2020 baseline
+    and the counts at 2 and 4 °C of global warming (median of the ensemble)."""
     raw = pl.read_parquet(data_dir("raw") / "ukcp_hot_days" / "ukcp_hot_days.parquet")
     code = next(c for c in raw.columns if c.upper() == "CODE")
     values = raw.select(

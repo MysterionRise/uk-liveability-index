@@ -37,7 +37,7 @@ def _within(store: Store, within: str | None, radius_km: float | None, lang: str
     """Filter expression and label for "within" (an area or a place + radius); the
     label names an area in the locale asked for where the pack has that form."""
     if not within:
-        return pl.lit(True), None, None
+        return pl.lit(True), None, None, None, None
     places = search_place(store, within, limit=1)
     if not places:
         raise LookupError(f"Couldn't find {within!r}")
@@ -47,11 +47,18 @@ def _within(store: Store, within: str | None, radius_km: float | None, lang: str
             place.kind
         ]
         label = place.name
-        if lang != "en" and f"name_{lang}" in store.areas.columns:
-            row = store.areas.filter(pl.col("code") == place.code)
-            if row.height and row[f"name_{lang}"][0]:
-                label = row[f"name_{lang}"][0]
-        return pl.col(column) == place.code, label, place.bbox
+        if lang != "en":
+            # The features carry each council's and neighbourhood's other-language name
+            name_col = {"lad": "lad_nm", "msoa": "msoa_name"}.get(place.kind)
+            if name_col and f"{name_col}_{lang}" in store.features.columns:
+                row = store.features.filter(pl.col(column) == place.code)
+                if row.height and row[f"{name_col}_{lang}"][0]:
+                    label = row[f"{name_col}_{lang}"][0]
+            elif f"name_{lang}" in store.areas.columns:
+                row = store.areas.filter(pl.col("code") == place.code)
+                if row.height and row[f"name_{lang}"][0]:
+                    label = row[f"name_{lang}"][0]
+        return pl.col(column) == place.code, label, place.bbox, label, None
     centre = place.centre
     km = radius_km or DEFAULT_RADIUS_KM
     dlat = km / 111.0
@@ -61,7 +68,7 @@ def _within(store: Store, within: str | None, radius_km: float | None, lang: str
         + ((pl.col("pwc_lon") - centre.lon) * 111.0 * math.cos(math.radians(centre.lat))) ** 2
     ).sqrt()
     bbox = (centre.lon - dlon, centre.lat - dlat, centre.lon + dlon, centre.lat + dlat)
-    return dist_km <= km, f"within {km:g} km of {place.name}", bbox
+    return dist_km <= km, f"within {km:g} km of {place.name}", bbox, place.name, km
 
 
 @dataclass(frozen=True)
@@ -248,7 +255,7 @@ def rank_areas(
         [store.features.select(columns), scores.drop("lsoa21cd")],
         how="horizontal",
     )
-    where, label, bbox = _within(store, within, radius_km, lang)
+    where, label, bbox, place_name, radius = _within(store, within, radius_km, lang)
     df = df.filter(where)
     if urban is not None:
         df = df.filter(pl.col("urban") == urban)
@@ -373,5 +380,6 @@ def rank_areas(
     return RankResult(
         level=level, within=label, preset=name, theme_weights=themes,
         sort_by=measure.sort_by, sort_label=measure.label, sort_unit=measure.unit,
-        direction=direction, candidates=candidates, results=results, bbox=bbox,
+        direction=direction, place=place_name, radius_km=radius,
+        candidates=candidates, results=results, bbox=bbox,
     )  # fmt: skip

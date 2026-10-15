@@ -60,6 +60,7 @@ flags:
   low_n: "Is beag teach a díoladh anseo le bliain anuas, mar sin tá an praghas cobhsaithe i dtreo an cheantair máguaird."
   broadcast_lad: "Tagann cáilíocht na meánscoileanna ó thorthaí scrúduithe na comhairle ar fad, mar ní fhoilsíonn an náisiún seo torthaí ná gráid chigireachta in aghaidh na scoile."
   not_available: "Níl roinnt táscairí ar fáil sa náisiún seo go fóill; úsáideann an téama na cinn atá aige."
+  theme_gap: "Tá ró-bheagán sonraí oscailte ag an náisiún seo chun téama amháin a scóráil: taispeántar é mar shonraí teoranta agus fágtar as an iomlán é."
 
 # What the interface calls each nation's areas (one, several)
 levels:
@@ -169,7 +170,7 @@ indicators:
   summer_days: {label: Laethanta samhraidh, description: "Laethanta sa bhliain nuair a shroicheann an teocht 25°C, meán 1991–2020."}
   wind_speed: {label: Gaoth, description: "Meánluas na gaoithe ag 10m, meán 1991–2020."}
   snow_days: {label: Laethanta le sneachta ina luí, description: "Laethanta sa bhliain le sneachta ar an talamh ag 9rn, meán 1991–2020."}
-  future_hot_days: {label: Laethanta teo samhraidh i ndomhan 2°C níos teo, description: "Laethanta sa bhliain os cionn tairseach áitiúil lae theo samhraidh nuair a bheidh an domhan 2°C níos teo, ó réamh-mheastacháin áitiúla UKCP18 Oifig na hAimsire."}
+  future_hot_days: {label: Laethanta teo samhraidh i ndomhan 2°C níos teo, description: "Laethanta sa bhliain le huasteocht os cionn 30°C nuair a bheidh an domhan 2°C níos teo, ó réamh-mheastacháin áitiúla UKCP18 Oifig na hAimsire."}
   gp_list_size: {label: Othair in aghaidh an chleachtais dochtúra teaghlaigh in aice láimhe, description: "Othair chláraithe in aghaidh an chleachtais ag na cleachtais dochtúirí teaghlaigh in aice le tithe, ualaithe de réir faid."}
   allotment_distance: {label: Fad chuig na leithdháiltí is gaire, description: "Meánfhad díreach ó thithe chuig na leithdháiltí nó an spás fáis pobail is gaire."}
   ev_charging: {label: Pointí luchtaithe poiblí in aice láimhe, description: "Stáisiúin luchtaithe feithiclí leictreacha poiblí laistigh de 1.5km de thithe, ar an meán (OpenStreetMap)."}

@@ -83,6 +83,8 @@ FLAG_TEXT = {
     "this nation publishes no per-school results or inspection grades.",
     "not_available": "Some indicators are not available in this nation yet; the theme uses "
     "the ones it has.",
+    "theme_gap": "This nation publishes too little open data for one theme to be scored: it is "
+    "shown as limited data and left out of the overall.",
 }
 
 
@@ -154,6 +156,14 @@ def area_profile(
             else set()
         )
         | ({"not_available"} if unavailable else set())
+        | (
+            {"theme_gap"}
+            if any(
+                scores.get(f"theme__{t}") is None
+                for t in store.theme_gaps.get(row["nation"], [])
+            )
+            else set()
+        )
     )
     flags = [FLAG_TEXT[c] for c in flag_codes if c in FLAG_TEXT]
     pct = scores.get("overall_pct")

@@ -46,7 +46,11 @@ function Chip({ children }: { children: React.ReactNode }) {
 }
 
 /** Register one renderer: pending chip while running, the component once there's a result. */
-function useToolCard<T>(name: string, render: (result: T, args: Record<string, unknown>) => React.ReactElement | null) {
+function useToolCard<T>(
+  name: string,
+  render: (result: T, args: Record<string, unknown>) => React.ReactElement | null,
+  deps: unknown[] = [],
+) {
   const t = useTranslations("Registry");
   useRenderTool(
     {
@@ -59,19 +63,23 @@ function useToolCard<T>(name: string, render: (result: T, args: Record<string, u
         return render(data, (parameters ?? {}) as Record<string, unknown>);
       },
     },
-    [],
+    // The chips read the language and the catalogue: re-register when either changes,
+    // or the first render's English and raw ids stick
+    [t, ...deps],
   );
 }
 
 export function GenerativeUI() {
   const t = useTranslations("Registry");
   const labels = useLabels();
-  useToolCard<RankResult>("rank_areas", (r) => <RankedList result={r} />);
-  useToolCard<AreaProfile>("get_area_profile", (p) => <AreaProfileCard profile={p} />);
-  useToolCard<Comparison>("compare_areas", (c) => <ComparisonTable comparison={c} />);
-  useToolCard<PoiResult>("nearest_pois", (r) => <PoiList result={r} />);
-  useToolCard<Explanation>("explain_score", (e) => <MethodExplainer explanation={e} />);
-  useToolCard<SqlData>("run_sql", (d, args) => <SqlResult data={d} query={String(args.query ?? "")} />);
+  // Registrations capture t and labels: a change in either re-registers every card
+  const deps = [t, labels];
+  useToolCard<RankResult>("rank_areas", (r) => <RankedList result={r} />, deps);
+  useToolCard<AreaProfile>("get_area_profile", (p) => <AreaProfileCard profile={p} />, deps);
+  useToolCard<Comparison>("compare_areas", (c) => <ComparisonTable comparison={c} />, deps);
+  useToolCard<PoiResult>("nearest_pois", (r) => <PoiList result={r} />, deps);
+  useToolCard<Explanation>("explain_score", (e) => <MethodExplainer explanation={e} />, deps);
+  useToolCard<SqlData>("run_sql", (d, args) => <SqlResult data={d} query={String(args.query ?? "")} />, deps);
   useToolCard<{ preset: string; theme_weights: Record<string, number> }>("set_weights", (w) => (
     <Chip>
       {t("weightsSet")} <strong className="font-medium text-[var(--text-primary)]">{w.preset}</strong>
@@ -81,17 +89,17 @@ export function GenerativeUI() {
           <span key={t}>· {t} ×{v}</span>
         ))}
     </Chip>
-  ));
-  useToolCard<{ layer: string }>("show_on_map", (m) => <Chip>{t("mapUpdated", { layer: m.layer })}</Chip>);
-  useToolCard<{ shortlist: unknown[] }>("add_to_shortlist", (r) => <Chip>{t("shortlistSaved", { count: r.shortlist.length })}</Chip>);
-  useToolCard<{ shortlist: unknown[] }>("remove_from_shortlist", (r) => <Chip>{t("shortlistSaved", { count: r.shortlist.length })}</Chip>);
+  ), deps);
+  useToolCard<{ layer: string }>("show_on_map", (m) => <Chip>{t("mapUpdated", { layer: m.layer })}</Chip>, deps);
+  useToolCard<{ shortlist: unknown[] }>("add_to_shortlist", (r) => <Chip>{t("shortlistSaved", { count: r.shortlist.length })}</Chip>, deps);
+  useToolCard<{ shortlist: unknown[] }>("remove_from_shortlist", (r) => <Chip>{t("shortlistSaved", { count: r.shortlist.length })}</Chip>, deps);
   useToolCard<Place[]>("search_place", (places) => (
     <Chip>
       {t("found", {
         places: places.slice(0, 3).map((p) => `${p.name}${p.detail ? ` (${p.detail})` : ""}`).join("; ") || t("nothing"),
       })}
     </Chip>
-  ));
+  ), deps);
   useToolCard<Pick<IndicatorInfo, "id" | "role">[]>("list_indicators", (items) => (
     <details className="my-1 text-xs">
       <summary className="cursor-pointer text-[var(--text-secondary)]">{t("indicatorsCount", { count: items.length })}</summary>
@@ -105,6 +113,6 @@ export function GenerativeUI() {
         ))}
       </ul>
     </details>
-  ));
+  ), deps);
   return null;
 }

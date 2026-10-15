@@ -12,7 +12,7 @@ themes:
   education: {label: Sgoiltean agus cùram-chloinne, description: "Sgoiltean agus sgoiltean-àraich math taobh a-staigh ruigsinn."}
   transport: {label: Còmhdhail agus ceangalachd, description: "Dè cho math 's a tha sgìre a' ceangal ri obraichean agus seirbheisean air gach dòigh, agus a bann-leathann."}
   amenities: {label: Goireasan agus beatha na h-oidhche, description: "Bùthan, cafaidhean, taighean-seinnse math, cur-seachadan agus cultar faisg air làimh."}
-  housing: {label: Taigheadas agus ruigsinneachd, description: "Na chosgas dachaighean agus staid an stoc thaighean."}
+  housing: {label: Taigheadas agus cosgaisean, description: "Na chosgas dachaighean agus staid an stoc thaighean."}
   community: {label: Coimhearsnachd agus sunnd, description: "Teachd-a-steach, obair agus slàinte nan daoine a tha a' fuireach ann."}
   climate: {label: Gnàth-shìde, description: "Grian, uisge agus cho blàth 's a tha an samhradh agus cho ciùin 's a tha an geamhradh, bho chuibheasachdan deich bliadhna fichead."}
 
@@ -58,8 +58,9 @@ units:
 flags:
   imputed: "Is e tuairmsean a th' anns na figearan eucoir an seo: chan eil Poileas Greater Manchester a' foillseachadh dàta aig ìre sràide."
   low_n: "Cha deach ach beagan dhachaighean a reic an seo sa bhliadhna a dh'fhalbh, mar sin tha a' phrìs air a daingneachadh a dh'ionnsaigh na sgìre mun cuairt."
-  broadcast_lad: "Tha càileachd nan àrd-sgoiltean a' tighinn bho thoraidhean deuchainnean na comhairle gu lèir, oir chan eil a' Chuimrigh a' foillseachadh thoraidhean no ìrean sgrùdaidh airson gach sgoil."
+  broadcast_lad: "Tha càileachd nan àrd-sgoiltean a' tighinn bho thoraidhean deuchainnean na comhairle gu lèir, oir chan eil an nàisean seo a' foillseachadh thoraidhean no ìrean sgrùdaidh airson gach sgoil."
   not_available: "Chan eil cuid de thaisbeanairean ri fhaighinn san nàisean seo fhathast; tha an cuspair a' cleachdadh na tha aige."
+  theme_gap: "Tha ro bheag de dhàta fosgailte aig an nàisean seo airson aon chuspair a sgòradh: tha e air a shealltainn mar dhàta cuingealaichte agus air fhàgail a-mach às an iomlan."
 
 # What the interface calls each nation's areas (one, several)
 levels:
@@ -166,7 +167,7 @@ indicators:
   air_frost_days: {label: Làithean reothaidh, description: "Làithean sa bhliadhna nuair a thuiteas teòthachd an adhair fo 0°C, cuibheasachd 1991–2020."}
   summer_days: {label: Làithean samhraidh, description: "Làithean sa bhliadhna nuair a ruigeas an teòthachd 25°C, cuibheasachd 1991–2020."}
   wind_speed: {label: Gaoth, description: "Astar cuibheasach na gaoithe aig 10m, cuibheasachd 1991–2020."}
-  future_hot_days: {label: Làithean teth samhraidh ann an saoghal 2°C nas blàithe, description: "Làithean sa bhliadhna os cionn stairsneach ionadail latha teth samhraidh aon uair 's gu bheil an saoghal air blàthachadh 2°C, bho ro-mheasaidhean ionadail UKCP18 Oifis na Sìde."}
+  future_hot_days: {label: Làithean teth samhraidh ann an saoghal 2°C nas blàithe, description: "Làithean sa bhliadhna le teòthachd as àirde os cionn 30°C aon uair 's gu bheil an saoghal air blàthachadh 2°C, bho ro-mheasaidhean ionadail UKCP18 Oifis na Sìde."}
   domestic_rates: {label: Reataichean dachaigheil (dachaigh àbhaisteach), description: "Bile bliadhnail nan reataichean dachaigheil airson dachaigh aig luach-calpa meadhanail na sgìre, bhon reata roinneil agus reata sgìreil na comhairle (Èirinn a Tuath)."}
   snow_days: {label: Làithean le sneachd na laighe, description: "Làithean sa bhliadhna le sneachd air an talamh aig 9m, cuibheasachd 1991–2020."}
   council_tax_typical: {label: Cìs comhairle (dachaigh àbhaisteach an seo), description: "Na phàigheas dachaigh àbhaisteach san sgìre ann an cìs comhairle, cosgais gach bann air a cuideamachadh a rèir cia mheud de dhachaighean na sgìre a tha sa bhann sin."}

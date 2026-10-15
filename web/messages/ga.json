@@ -11,11 +11,22 @@
     "S": "Albain",
     "N": "Tuaisceart Éireann",
     "and": "agus",
-    "E_W": "Sasana agus an Bhreatain Bheag"
+    "E_W": "Sasana agus an Bhreatain Bheag",
+    "in_uk": "sa RA",
+    "in_E": "i Sasana",
+    "in_W": "sa Bhreatain Bheag",
+    "in_S": "in Albain",
+    "in_N": "i dTuaisceart Éireann",
+    "in_E_W": "i Sasana agus sa Bhreatain Bheag",
+    "in": "i",
+    "of_E": "de Shasana",
+    "of_W": "den Bhreatain Bheag",
+    "of_S": "d'Albain",
+    "of_N": "de Thuaisceart Éireann"
   },
   "Header": {
     "title": "Innéacs Inchónaitheachta na RA",
-    "blurb": "{count, number} comharsanacht in {coverage}, scóráilte ó shonraí oscailte",
+    "blurb": "{count, number} comharsanacht {coverageIn}, scóráilte ó shonraí oscailte",
     "demoBlurb": "Tacar sonraí taispeána: {count, number} comharsanacht, scóráilte ó shonraí oscailte",
     "demoBadge": "sonraí taispeána",
     "demoBadgeTitle": "Píosa beag den tógáil iomlán; tá na peircintílí ar an léarscáil i gcomparáid leis na ceantair seo",
@@ -57,11 +68,12 @@
       "compareMessage": "Cuir Headingley agus Chapel Allerton i gcomparáid",
       "explainTitle": "Mínigh scór",
       "explainMessage": "Cén fáth a bhfaigheann lár chathair Manchester scór íseal ar shábháilteacht?"
-    }
+    },
+    "copyMessage": "Cóipeáil"
   },
   "Onboarding": {
     "title": "Aimsigh comharsanacht a oireann duit",
-    "blurb": "Gach comharsanacht in {coverage}, scóráilte ó shonraí oscailte. Tá ceantair theal níos fearr ná an gnáth, ceantair oráiste níos measa. Zúmáil isteach agus cliceáil ar cheantar le fáil amach cén fáth, nó fiafraigh den chúntóir.",
+    "blurb": "Gach comharsanacht {coverageIn}, scóráilte ó shonraí oscailte. Tá ceantair theal níos fearr ná an gnáth, ceantair oráiste níos measa. Zúmáil isteach agus cliceáil ar cheantar le fáil amach cén fáth, nó fiafraigh den chúntóir.",
     "whoIsLooking": "Cé atá ag breathnú?",
     "skip": "Léim thairis",
     "personas": {
@@ -74,7 +86,7 @@
   },
   "Search": {
     "placeholder": "Postchód nó áit",
-    "noMatches": "Gan aon mheaitseáil in {coverage}",
+    "noMatches": "Gan aon mheaitseáil {coverageIn}",
     "searching": "Ag cuardach…",
     "unavailable": "Níl an cuardach ar fáil",
     "kinds": {
@@ -122,7 +134,7 @@
     "4": "Os cionn an ghnáith",
     "5": "An cúigiú is airde",
     "betterThan": "níos fearr ná {pct, number}% den RA",
-    "betterThanNation": "níos fearr ná {pct, number}% de {nation}"
+    "betterThanNation": "níos fearr ná {pct, number}% {nationOf}"
   },
   "Quality": {
     "imputed": "meastachán",
@@ -135,7 +147,7 @@
   },
   "Legend": {
     "against": {
-      "uk": "I gcoinne gach ceantair in {coverage}",
+      "uk": "I gcoinne gach ceantair {coverageIn}",
       "nation": "I gcoinne ceantar sa náisiún céanna",
       "urban_rural": "I gcoinne ceantar den chineál uirbeach/tuaithe céanna"
     },
@@ -149,7 +161,7 @@
     "hoverNoName": "níos fearr ná {pct, number}% den RA",
     "overall": "Iomlán",
     "withinNation": "{label} (laistigh den náisiún)",
-    "withinUrbanRural": "{label} (vs ceantair uirbeacha/tuaithe comhchosúla)",
+    "withinUrbanRural": "{label} (i gcoinne ceantair uirbeacha/tuaithe comhchosúla)",
     "hoverNation": "{name}: níos fearr ná {pct, number}% dá náisiún",
     "hoverNationNoName": "níos fearr ná {pct, number}% dá náisiún",
     "hoverUrbanRural": "{name}: níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla",
@@ -205,8 +217,10 @@
     "linkCopied": "Nasc cóipeáilte",
     "copyPrompt": "Cóipeáil an nasc seo",
     "note": "Is scóir 0–100 iad (níos airde níos fearr). Is faid dhíreacha iad.",
-    "betterThanNation": "Níos fearr ná {pct, number}% de {nation}",
-    "nationMedian": "airmheán {nation}"
+    "betterThanNation": "Níos fearr ná {pct, number}% {nationOf}",
+    "nationMedian": "airmheán {nation}",
+    "limitedData": "Sonraí teoranta: ní fhoilsíonn an náisiún seo a dhóthain don téama seo, mar sin fágtar as an iomlán é",
+    "subtitleOwnTier": "{ruc} · {population, number} cónaitheoir"
   },
   "Poi": {
     "titles": {
@@ -228,10 +242,10 @@
     "note": "Fad díreach. Foinse: {sources}."
   },
   "Ranked": {
-    "title": "Na {count, number} {tier} is fearr {where}",
+    "title": "{tier} {where}: na {count, number} is fearr",
     "areas": "ceantar",
     "inPlace": "i {place}",
-    "inCoverage": "in {coverage}",
+    "inCoverage": "{coverageIn}",
     "subtitle": "{count, number} ag meaitseáil · ualú: {preset}",
     "closeCall": "an-ghar",
     "closeCallTitle": "Fanann sna {n, number} is fearr faoi {pct, number}% d'ualaí inchreidte",
@@ -239,7 +253,9 @@
     "overallScore": "iomlán {score}",
     "typicalPrice": "praghas tipiciúil {price}",
     "note": "Cliceáil ar cheantar lena thaispeáint ar an léarscáil.",
-    "closeCallNote": "“An-ghar”: d'fhéadfadh athruithe beaga ar na hualaí é a chur as an liosta seo."
+    "closeCallNote": "“An-ghar”: d'fhéadfadh athruithe beaga ar na hualaí é a chur as an liosta seo.",
+    "titleWorst": "{tier} {where}: na {count, number} is measa",
+    "withinKm": "laistigh de {km, number} km ó {place}"
   },
   "Comparison": {
     "title": "Taobh le taobh",

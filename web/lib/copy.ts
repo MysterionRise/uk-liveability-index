@@ -10,7 +10,7 @@ import { coverageName } from "@/lib/data";
 export function useCoverageName(): string {
   const { manifest } = useData();
   const t = useTranslations("Nations");
-  const locale = useLocale();
+  const locale = useLocale().split("-")[0];
   // A named pair first ("Lloegr a Chymru" mutates), else the catalogue's own "and":
   // browsers have no list patterns for Welsh, Gaelic or Irish
   const active = manifest?.geography?.active ?? [];
@@ -25,4 +25,18 @@ export function useCoverageName(): string {
       return `${names.slice(0, -1).join(", ")} ${joiner}`;
     },
   );
+}
+
+/** "in the UK" / "yng Nghymru" / "sa RA": the coverage with the preposition each language
+ * needs before that noun (a nation's name mutates or takes a different word). */
+export function useCoverageIn(): string {
+  const { manifest } = useData();
+  const t = useTranslations("Nations");
+  const list = useCoverageName();
+  const active = manifest?.geography?.active ?? [];
+  const all = Object.keys(manifest?.geography?.nations ?? {});
+  if (active.length && all.length && active.length === all.length) return t("in_uk");
+  if (active.length === 1) return t(`in_${active[0]}` as "in_E" | "in_W" | "in_S" | "in_N");
+  if (active.length === 2 && active.join("_") === "E_W") return t("in_E_W");
+  return `${t("in")} ${list}`;
 }

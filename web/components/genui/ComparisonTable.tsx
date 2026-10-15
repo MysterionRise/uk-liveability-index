@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 
 import { useData } from "@/components/AppData";
-import { Card, Muted, formatValue } from "@/components/ui";
+import { Card, Muted, ValueWithUnit } from "@/components/ui";
 import type { Comparison } from "@/lib/contracts.gen";
 import { presetLabel, useLabels } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
@@ -72,7 +72,7 @@ export function ComparisonTable({ comparison }: { comparison: Comparison }) {
                 </td>
                 {areas.map((a) => (
                   <td key={a.code} className="py-1 pr-2">
-                    {formatValue((a.indicators as Record<string, number | null>)[id], units.get(id) ?? "", locale)}
+                    <ValueWithUnit value={(a.indicators as Record<string, number | null>)[id]} id={id} unit={units.get(id) ?? ""} />
                   </td>
                 ))}
               </tr>

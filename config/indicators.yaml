@@ -1321,11 +1321,11 @@ indicators:
   - id: future_hot_days
     theme: climate
     label: Hot summer days in a 2°C world
-    description: Days a year above the local hot-summer-day threshold once the world has warmed by 2°C, from the Met Office's UKCP18 local projections for the area's neighbourhood.
+    description: Days a year with a maximum above 30°C once the world has warmed by 2°C, from the Met Office's UKCP18 local projections for the area's neighbourhood.
     unit: days a year
     direction: lower_better
     sources: [ukcp_hot_days]
     builder: environment:optional_column
     params: {slug: ukcp_hot_days, column: hot_days_2c}
     role: context
-    caveats: A projection for the MSOA, Intermediate Zone or district electoral area, copied to every small area inside; the threshold is local (the 95th percentile of the 1981–2000 summer), so the count says how much more often such days would come, not how hot they are.
+    caveats: A projection for the MSOA, Intermediate Zone or district electoral area, copied to every small area inside (an estimate for the neighbourhood, not the small area); a hot summer day is one above 30°C in any month, the median of sixteen UKCP18 model runs, so much of the north reads 0 at 2°C and the count says how often such days would come, not how hot the place is.

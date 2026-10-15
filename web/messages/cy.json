@@ -11,11 +11,22 @@
     "S": "yr Alban",
     "N": "Gogledd Iwerddon",
     "and": "a",
-    "E_W": "Lloegr a Chymru"
+    "E_W": "Lloegr a Chymru",
+    "in_uk": "yn y DU",
+    "in_E": "yn Lloegr",
+    "in_W": "yng Nghymru",
+    "in_S": "yn yr Alban",
+    "in_N": "yng Ngogledd Iwerddon",
+    "in_E_W": "yn Lloegr a Chymru",
+    "in": "yn",
+    "of_E": "o Loegr",
+    "of_W": "o Gymru",
+    "of_S": "o'r Alban",
+    "of_N": "o Ogledd Iwerddon"
   },
   "Header": {
     "title": "Mynegai Byw yn y DU",
-    "blurb": "{count, number} o gymdogaethau yn {coverage}, wedi'u sgorio o ddata agored",
+    "blurb": "{count, number} o gymdogaethau {coverageIn}, wedi'u sgorio o ddata agored",
     "demoBlurb": "Set ddata enghreifftiol: {count, number} o gymdogaethau, wedi'u sgorio o ddata agored",
     "demoBadge": "data enghreifftiol",
     "demoBadgeTitle": "Toriad bach o'r adeiladwaith llawn; mae canraddau'r map yn gymharol â'r ardaloedd hyn",
@@ -57,11 +68,12 @@
       "compareMessage": "Cymharwch Pontcanna a Cathays",
       "explainTitle": "Esbonio sgôr",
       "explainMessage": "Pam mae canol dinas Caerdydd yn sgorio'n isel ar ddiogelwch?"
-    }
+    },
+    "copyMessage": "Copïo"
   },
   "Onboarding": {
     "title": "Dewch o hyd i gymdogaeth sy'n addas i chi",
-    "blurb": "Pob cymdogaeth yn {coverage}, wedi'i sgorio o ddata agored. Mae ardaloedd gwyrddlas yn gwneud yn well na'r arfer, rhai oren yn waeth. Chwyddwch i mewn a chliciwch ar ardal i weld pam, neu gofynnwch i'r cynorthwyydd.",
+    "blurb": "Pob cymdogaeth {coverageIn}, wedi'i sgorio o ddata agored. Mae ardaloedd gwyrddlas yn gwneud yn well na'r arfer, rhai oren yn waeth. Chwyddwch i mewn a chliciwch ar ardal i weld pam, neu gofynnwch i'r cynorthwyydd.",
     "whoIsLooking": "Pwy sy'n chwilio?",
     "skip": "Hepgor",
     "personas": {
@@ -74,7 +86,7 @@
   },
   "Search": {
     "placeholder": "Cod post neu le",
-    "noMatches": "Dim canlyniadau yn {coverage}",
+    "noMatches": "Dim canlyniadau {coverageIn}",
     "searching": "Yn chwilio…",
     "unavailable": "Nid yw'r chwilio ar gael",
     "kinds": {
@@ -122,20 +134,20 @@
     "4": "Uwchlaw'r cyfartaledd",
     "5": "Pumed uchaf",
     "betterThan": "yn well na {pct, number}% o'r DU",
-    "betterThanNation": "yn well na {pct, number}% o {nation}"
+    "betterThanNation": "yn well na {pct, number}% {nationOf}"
   },
   "Quality": {
     "imputed": "amcangyfrif",
     "low_n": "ychydig o werthiannau",
     "broadcast_msoa": "ardal ehangach",
     "broadcast_lad": "cyngor cyfan",
-    "not_available": "ddim ar gael yma",
+    "not_available": "dim ar gael yma",
     "missing": "dim data",
     "standsInFor": "yn sefyll yn lle {label}"
   },
   "Legend": {
     "against": {
-      "uk": "Yn erbyn pob ardal yn {coverage}",
+      "uk": "Yn erbyn pob ardal {coverageIn}",
       "nation": "Yn erbyn ardaloedd yn yr un genedl",
       "urban_rural": "Yn erbyn ardaloedd o'r un math trefol/gwledig"
     },
@@ -205,8 +217,10 @@
     "linkCopied": "Dolen wedi'i chopïo",
     "copyPrompt": "Copïwch y ddolen hon",
     "note": "Mae'r sgoriau rhwng 0 a 100 (uwch yn well). Pellteroedd mewn llinell syth.",
-    "betterThanNation": "Yn well na {pct, number}% o {nation}",
-    "nationMedian": "canolrif {nation}"
+    "betterThanNation": "Yn well na {pct, number}% {nationOf}",
+    "nationMedian": "canolrif {nation}",
+    "limitedData": "Data cyfyngedig: nid yw'r genedl hon yn cyhoeddi digon ar gyfer y thema hon, felly caiff ei gadael allan o'r cyfanswm",
+    "subtitleOwnTier": "{ruc} · {population, number} o drigolion"
   },
   "Poi": {
     "titles": {
@@ -228,10 +242,10 @@
     "note": "Pellter mewn llinell syth. Ffynhonnell: {sources}."
   },
   "Ranked": {
-    "title": "Y {count, number} {tier} orau {where}",
+    "title": "{tier} {where}: y {count, number} gorau",
     "areas": "ardaloedd",
     "inPlace": "yn {place}",
-    "inCoverage": "yn {coverage}",
+    "inCoverage": "{coverageIn}",
     "subtitle": "{count, number} yn cyfateb · pwysoli: {preset}",
     "closeCall": "agos iawn",
     "closeCallTitle": "Yn aros yn y {n, number} uchaf o dan {pct, number}% o bwysoliadau credadwy",
@@ -239,7 +253,9 @@
     "overallScore": "cyfanswm {score}",
     "typicalPrice": "pris arferol {price}",
     "note": "Cliciwch ar ardal i'w dangos ar y map.",
-    "closeCallNote": "“Agos iawn”: gallai newidiadau bach i'r pwysau ei symud allan o'r rhestr hon."
+    "closeCallNote": "“Agos iawn”: gallai newidiadau bach i'r pwysau ei symud allan o'r rhestr hon.",
+    "titleWorst": "{tier} {where}: y {count, number} gwaethaf",
+    "withinKm": "o fewn {km, number} km i {place}"
   },
   "Comparison": {
     "title": "Ochr yn ochr",

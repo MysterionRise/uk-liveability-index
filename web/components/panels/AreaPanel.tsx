@@ -21,12 +21,14 @@ export function AreaPanel() {
   const locale = useLocale();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const code = state.map.selected;
-  const key = `${code}|${state.preset}|${locale}`;
+  const weightsKey = JSON.stringify(state.theme_weights ?? {});
+  const key = `${code}|${state.preset}|${locale}|${weightsKey}`;
 
   useEffect(() => {
     if (!code) return;
     let cancelled = false;
-    fetchProfile(code, state.preset, locale)
+    const themeWeights = JSON.parse(weightsKey) as Record<string, number>;
+    fetchProfile(code, state.preset, locale, themeWeights)
       .then((profile) => !cancelled && setLoaded({ key, profile }))
       .catch(
         (e) => !cancelled && setLoaded({ key, error: String(e.message ?? e) }),
@@ -34,7 +36,7 @@ export function AreaPanel() {
     return () => {
       cancelled = true;
     };
-  }, [code, state.preset, key, locale]);
+  }, [code, state.preset, key, locale, weightsKey]);
 
   if (!code) {
     return (

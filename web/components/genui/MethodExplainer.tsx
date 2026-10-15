@@ -3,15 +3,16 @@
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { Card, Muted, formatValue, useQualityNote } from "@/components/ui";
+import { Card, Muted, ValueWithUnit, formatValue, useQualityNote } from "@/components/ui";
 import type { Explanation } from "@/lib/contracts.gen";
 import { BCP47, type Locale } from "@/lib/i18n";
-import { useLabels } from "@/lib/labels";
+import { presetLabel, useLabels } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
 import { formatPeriod } from "@/lib/period";
 
 export function MethodExplainer({ explanation }: { explanation: Explanation }) {
   const t = useTranslations("Explainer");
+  const tw = useTranslations("Weights");
   const locale = useLocale();
   const format = useFormatter();
   const qualityNote = useQualityNote();
@@ -27,7 +28,7 @@ export function MethodExplainer({ explanation }: { explanation: Explanation }) {
     <Card
       testId="explainer"
       title={t("title", { name: explanation.name, score: explanation.overall?.toFixed(0) ?? "–" })}
-      subtitle={t("subtitle", { preset: explanation.preset })}
+      subtitle={t("subtitle", { preset: presetLabel(labels, explanation.preset, tw("adjusted")) })}
     >
       <ul>
         {explanation.contributions.map((c) => (
@@ -54,7 +55,7 @@ export function MethodExplainer({ explanation }: { explanation: Explanation }) {
                   {c.indicators.map((i) => (
                     <tr key={i.id} className={i.role === "context" ? "text-[var(--text-muted)]" : ""}>
                       <td className="py-0.5 pr-2">{labels.indicator(i.id)}{i.role === "context" && ` ${t("notScored")}`}</td>
-                      <td className="py-0.5 pr-2 text-right">{formatValue(i.value, i.unit, locale)}</td>
+                      <td className="py-0.5 pr-2 text-right"><ValueWithUnit value={i.value} id={i.id} unit={i.unit} /></td>
                       <td className="py-0.5 text-right">{i.score?.toFixed(0) ?? "–"}</td>
                       <td className="py-0.5 pl-1 text-[var(--text-muted)]">{qualityNote(i.quality) ?? ""}</td>
                     </tr>

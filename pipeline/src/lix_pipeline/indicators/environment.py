@@ -49,4 +49,8 @@ def optional_column(ctx, slug: str, column: str) -> pl.DataFrame:
     every area is then ``missing`` rather than the build failing."""
     if not (data_dir("staged") / f"{slug}.parquet").exists():
         return pl.DataFrame(schema={"lsoa21cd": pl.Utf8, "value": pl.Float64})
-    return ctx.staged(slug).select("lsoa21cd", pl.col(column).alias("value"))
+    table = ctx.staged(slug)
+    columns = ["lsoa21cd", pl.col(column).alias("value")]
+    if "quality" in table.columns:
+        columns.append("quality")  # a projection copied from the neighbourhood says so
+    return table.select(columns)

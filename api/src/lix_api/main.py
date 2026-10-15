@@ -7,6 +7,7 @@ In development /data serves data/serve/ (map tiles and the browser's score file)
 docker compose the proxy (docker/Caddyfile) does that instead.
 """
 
+import json
 import os
 import time
 from contextlib import asynccontextmanager
@@ -123,9 +124,23 @@ def search_place(q: str, limit: Annotated[int, Query(ge=1, le=20)] = 8) -> list[
 
 
 @app.get(f"{api}/areas/{{ref}}")
-def area_profile(ref: str, preset: str | None = None, locale: str | None = None) -> AreaProfile:
-    """``locale`` (en, cy, gd) picks the language of the area names."""
-    return areas.area_profile(get_store(), ref, preset=preset, locale=locale)
+def area_profile(
+    ref: str,
+    preset: str | None = None,
+    locale: str | None = None,
+    theme_weights: str | None = Query(
+        None, description='The sliders\' weights as a JSON object, e.g. {"safety": 3}'
+    ),
+) -> AreaProfile:
+    """``locale`` (en, cy, gd, ga) picks the language of the area names; ``theme_weights``
+    re-scores the area with the user's sliders (the preset's name reads "(adjusted)")."""
+    weights = None
+    if theme_weights:
+        try:
+            weights = {str(k): float(v) for k, v in json.loads(theme_weights).items()}
+        except (ValueError, AttributeError) as e:
+            raise ValueError(f"theme_weights must be a JSON object of numbers: {e}") from e
+    return areas.area_profile(get_store(), ref, preset=preset, theme_weights=weights, locale=locale)
 
 
 class RankRequest(BaseModel):
@@ -176,8 +191,10 @@ def nearest_pois(
 
 
 @app.get(f"{api}/explain/{{ref}}")
-def explain_score(ref: str, theme: str | None = None, preset: str | None = None) -> Explanation:
-    return explain.explain_score(get_store(), ref, theme=theme, preset=preset)
+def explain_score(
+    ref: str, theme: str | None = None, preset: str | None = None, locale: str | None = None
+) -> Explanation:
+    return explain.explain_score(get_store(), ref, theme=theme, preset=preset, locale=locale)
 
 
 @app.get(f"{api}/indicators")

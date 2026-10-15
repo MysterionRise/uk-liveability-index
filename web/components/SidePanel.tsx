@@ -53,7 +53,7 @@ export function SidePanel() {
 
   return (
     <aside className="flex h-full min-h-0 flex-col border-l border-[var(--border)] bg-[var(--surface-1)]">
-      <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--border)] px-2">
+      <div className="flex shrink-0 flex-wrap items-center gap-1 border-b border-[var(--border)] px-2">
         <div
           className="flex items-center gap-1"
           role="tablist"
@@ -112,6 +112,8 @@ export function SidePanel() {
           <CopilotChat
             className="h-full"
             labels={{
+              assistantMessageToolbarCopyMessageLabel: t("copyMessage"),
+              userMessageToolbarCopyMessageLabel: t("copyMessage"),
               chatInputPlaceholder: t("chatPlaceholder"),
               welcomeMessageText: t("chatWelcome"),
               chatDisclaimerText: t("chatDisclaimer"),

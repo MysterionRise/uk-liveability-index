@@ -478,3 +478,18 @@ class TestReleasePassFindings:
         assert [c.theme for c in out.contributions] == ["education"]
         with pytest.raises(LookupError, match="Unknown theme"):
             explain_score(store, "LS6 3HN", theme="vibes")
+
+
+def test_rankings_name_their_scope_in_parts(store):
+    around = ranking.rank_areas(store, within="Brighton", radius_km=5, level="lsoa")
+    assert around.place == "Brighton" and around.radius_km == 5
+    assert around.within == "within 5 km of Brighton"
+    inside = ranking.rank_areas(store, within="Cardiff", level="msoa", locale="cy")
+    assert inside.place == "Caerdydd" and inside.radius_km is None and inside.within == "Caerdydd"
+
+
+def test_explanations_name_the_area_in_the_locale(store):
+    from lix_api.services.explain import explain_score
+
+    assert explain_score(store, "CF10 1AA", locale="cy").name.startswith("Cardiff 032A")
+    assert explain_score(store, "CF10 1AA", locale="cy").preset == "balanced"

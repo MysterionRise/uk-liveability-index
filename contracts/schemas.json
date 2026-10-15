@@ -50,7 +50,7 @@
           "title": "Coverage"
         },
         "flag_codes": {
-          "description": "The caveats' codes (imputed, low_n, broadcast_lad, not_available)",
+          "description": "The caveats' codes (imputed, low_n, broadcast_lad, not_available, theme_gap)",
           "items": {
             "type": "string"
           },
@@ -1114,9 +1114,35 @@
           "title": "Level",
           "type": "string"
         },
+        "place": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The area or place the ranking was limited to, named on its own",
+          "title": "Place"
+        },
         "preset": {
           "title": "Preset",
           "type": "string"
+        },
+        "radius_km": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set when the scope is a radius around `place` rather than an area",
+          "title": "Radius Km"
         },
         "results": {
           "items": {

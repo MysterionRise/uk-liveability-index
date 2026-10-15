@@ -2,6 +2,7 @@
 
 from lix_api.models import Contribution, Explanation, SourceRef
 from lix_api.services.areas import indicator_value, with_substitutes
+from lix_api.services.names import localised
 from lix_api.services.scoring import (
     ThemeWeights,
     match_theme,
@@ -19,7 +20,9 @@ def explain_score(
     theme: str | None = None,
     preset: str | None = None,
     theme_weights: ThemeWeights | None = None,
+    locale: str | None = None,
 ) -> Explanation:
+    """``locale`` names the area in the interface language where the pack has it."""
     code = resolve_lsoa(store, ref)
     i = store.lsoa_index[code]
     row = store.features.row(i, named=True)
@@ -97,9 +100,9 @@ def explain_score(
     ]
     return Explanation(
         lsoa21cd=code,
-        name=row["lsoa21nm"]
+        name=localised(row, "lsoa21nm", locale)
         if row["msoa21cd"] == row["lsoa21cd"]
-        else f"{row['lsoa21nm']} ({row['msoa_name']})",
+        else f"{localised(row, 'lsoa21nm', locale)} ({localised(row, 'msoa_name', locale)})",
         preset=name,
         overall=None if scores.get("overall") is None else round(scores["overall"], 1),
         overall_percentile=percentile(scores.get("overall_pct")),

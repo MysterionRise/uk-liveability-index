@@ -170,6 +170,23 @@ export async function loadScores(manifest: Manifest): Promise<ScoreData> {
   // garbage in this one, so each build's file gets its own URL
   const version = manifest.files?.["scores.parquet"]?.sha256?.slice(0, 16);
   const url = `${DATA_URL}/scores.parquet${version ? `?v=${version}` : ""}`;
+  // A cold load has come back with whole columns empty (byte-range reads under
+  // load); a column every active nation lacks is the sign, and one re-read settles it
+  const expected = new Set(manifest.geography?.active ?? []);
+  for (let attempt = 0; ; attempt++) {
+    const data = await readScores(manifest, url);
+    const empty = manifest.scored_indicators.filter((id) => {
+      const info = manifest.indicators.find((i) => i.id === id);
+      const built = (info?.coverage ?? []).some((n) => expected.has(n));
+      return built && data.indicators[id].every((v) => Number.isNaN(v));
+    });
+    if (!empty.length) return data;
+    if (attempt >= 1) throw new Error(`scores.parquet read back empty columns: ${empty.slice(0, 5).join(", ")}`);
+    console.warn(`scores.parquet: ${empty.length} columns read back empty; reading again`);
+  }
+}
+
+async function readScores(manifest: Manifest, url: string): Promise<ScoreData> {
   const file = await asyncBufferFromUrl({ url });
   const rows = (await parquetReadObjects({ file })) as Record<
     string,

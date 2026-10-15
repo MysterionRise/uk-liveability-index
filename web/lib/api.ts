@@ -21,8 +21,18 @@ async function get<T>(
 }
 
 /** `locale` (en, cy, gd) picks the language of the area names in the answer. */
-export const fetchProfile = (ref: string, preset?: string, locale?: string) =>
-  get<AreaProfile>(`/areas/${encodeURIComponent(ref)}`, { preset, locale });
+export const fetchProfile = (
+  ref: string,
+  preset?: string,
+  locale?: string,
+  themeWeights?: Record<string, number>,
+) =>
+  get<AreaProfile>(`/areas/${encodeURIComponent(ref)}`, {
+    preset,
+    locale,
+    // The sliders' weights, so the card scores and names "(adjusted)" like the map
+    ...(themeWeights && Object.keys(themeWeights).length ? { theme_weights: JSON.stringify(themeWeights) } : {}),
+  });
 
 export const searchPlaces = (q: string) =>
   get<Place[]>("/search", { q, limit: "6" });

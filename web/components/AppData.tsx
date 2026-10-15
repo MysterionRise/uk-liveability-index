@@ -118,6 +118,8 @@ export const useLiveability = () => useContext(StateCtx);
 export interface LayerValues {
   /** Percentile (0–100) per LSOA for the active layer (NaN = no value) */
   lsoa: Float64Array;
+  /** The layer's 0–100 score per LSOA before ranking (what the histogram shows) */
+  score: Float64Array;
   msoa: Map<string, number>;
   lad: Map<string, number>;
   result: ScoreResult;
@@ -166,6 +168,7 @@ export function useScores(state: LiveabilityState): LayerValues | null {
     if (!manifest || !scores || !result) return null;
     const layer = state.map.layer || "overall";
     let lsoa: Float64Array;
+    let score: Float64Array;
     let label: string;
     let theme: string | undefined;
     // Colour by percentile: scores bunch in the middle of 0–100, so percentiles use the
@@ -173,16 +176,19 @@ export function useScores(state: LiveabilityState): LayerValues | null {
     if (layer.startsWith("theme:") && result.themes[layer.slice(6)]) {
       const t = layer.slice(6);
       lsoa = result.themes[t].percentile;
+      score = result.themes[t].score;
       label = labelsFor(manifest, locale).theme(t);
       theme = t;
     } else if (layer.startsWith("indicator:") && scores.indicators[layer.slice(10)]) {
       const id = layer.slice(10);
       lsoa = percentileRank(scores.indicators[id]);
+      score = scores.indicators[id];
       const info = manifest.indicators.find((i) => i.id === id);
       label = labelsFor(manifest, locale).indicator(id);
       theme = info?.theme;
     } else {
       lsoa = result.overallPercentile;
+      score = result.overall;
       label = t("overall");
     }
     if (state.compare_within === "nation") {
@@ -194,6 +200,7 @@ export function useScores(state: LiveabilityState): LayerValues | null {
     }
     return {
       lsoa,
+      score,
       msoa: aggregate(lsoa, scores.msoa, scores.population),
       lad: aggregate(lsoa, scores.lad, scores.population),
       result,

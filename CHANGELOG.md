@@ -75,6 +75,19 @@ All notable changes to this project. The format follows
   presets show their labels, and the map controls follow dark mode (#116 #117).
 - The curated lists under `config/data/` (A&E sites, Irish council names, domestic
   rates) were hidden from git by the data ignore rule and never committed.
+- Found by a six-agent release pass over the real four-nation build: error bodies were
+  hand-formatted strings (a refusal quoting an id was not valid JSON); saturated
+  threshold scores tied, so "sunniest" and "furthest from an A&E" lists were unordered
+  within the tie (ties now break by the raw value); the assistant read the page's state
+  after its own tool had changed it ("already on your shortlist"); NIMDM's rates were
+  percentages and Wales's values percentiles beside the IoD's proportions (all 0–1 now);
+  Northern Irish zones were named twice and with NISRA's underscores; the Irish name
+  columns were not searched; council and neighbourhood map layers kept the previous
+  layer's colours where the new one had no value; the tool-result chips kept the first
+  render's language; the histogram plotted uniform percentiles; raw values lacked their
+  units; the explainer listed every nation's sources; a theme a nation declares a gap
+  gave an empty list instead of a refusal; hot summer days are days above 30 °C, not a
+  local threshold.
 
 ## [0.4.1] - 2026-10-13
 

@@ -3,15 +3,8 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { useLiveability } from "@/components/AppData";
-import {
-  Band,
-  Card,
-  Muted,
-  ScoreBar,
-  formatValue,
-  useQualityNote,
-} from "@/components/ui";
+import { useData, useLiveability } from "@/components/AppData";
+import { Band, Card, Muted, ScoreBar, ValueWithUnit, formatValue, useQualityNote } from "@/components/ui";
 import type { AreaProfile, IndicatorValue } from "@/lib/contracts.gen";
 import { presetLabel, useLabels } from "@/lib/labels";
 import { bboxOf } from "@/lib/state";
@@ -36,12 +29,12 @@ function Facts({ items }: { items: IndicatorValue[] }) {
             {labels.indicator(f.id)}
             {f.stands_in_for && (
               <span className="ml-1 text-[10px]">
-                ({tq("standsInFor", { label: labels.indicator(f.stands_in_for) })})
+                · {tq("standsInFor", { label: labels.indicator(f.stands_in_for) })}
               </span>
             )}
           </dt>
           <dd className="text-sm tabular-nums">
-            {formatValue(f.value, f.unit, locale)}
+            <ValueWithUnit value={f.value} id={f.id} unit={f.unit} />
             {qualityNote(f.quality) && (
               <span className="ml-1 text-xs text-[var(--text-muted)]">
                 ({qualityNote(f.quality)})
@@ -87,6 +80,7 @@ function CopyLink({ code }: { code: string }) {
 
 export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
   const { state, update } = useLiveability();
+  const { manifest } = useData();
   const t = useTranslations("Profile");
   const tw = useTranslations("Weights");
   const tn = useTranslations("Nations");
@@ -94,11 +88,14 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
   // chosen (the urban/rural comparison has no per-area percentile, so it reads as the UK)
   const withinNation = state.compare_within === "nation";
   const nationName = tn(profile.nation as "E" | "W" | "S" | "N");
+  const nationOf = tn(`of_${profile.nation}` as "of_E" | "of_W" | "of_S" | "of_N");
+  // Themes this nation declares it cannot score (shown as limited data)
+  const gaps = new Set(manifest?.geography?.nations?.[profile.nation]?.theme_gaps ?? []);
   const labels = useLabels();
   const saved = state.shortlist.some((i) => i.code === profile.lsoa21cd);
-  const title = profile.neighbourhood
-    ? `${profile.neighbourhood}, ${profile.local_authority}`
-    : profile.lsoa_name;
+  // Without a separate neighbourhood (a nation whose small areas are their own mid
+  // tier) the area itself heads the card beside its council
+  const title = `${profile.neighbourhood ?? profile.lsoa_name}, ${profile.local_authority}`;
   // The English name beside a Welsh or Gaelic one, so a place stays recognisable
   const english = [profile.neighbourhood_en, profile.local_authority_en]
     .filter(Boolean)
@@ -108,7 +105,11 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
     <Card
       testId="area-profile"
       title={title}
-      subtitle={`${english ? `${english} · ` : ""}${t("subtitle", { area: profile.lsoa_name, ruc: profile.urban_rural, population: profile.population })}`}
+      subtitle={`${english ? `${english} · ` : ""}${
+        profile.neighbourhood
+          ? t("subtitle", { area: profile.lsoa_name, ruc: profile.urban_rural, population: profile.population })
+          : t("subtitleOwnTier", { ruc: profile.urban_rural, population: profile.population })
+      }`}
     >
       <div className="flex flex-wrap items-baseline gap-2">
         <span className="text-3xl font-semibold tabular-nums">
@@ -122,7 +123,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
         <Band
           band={profile.band}
           percentile={withinNation ? profile.overall_percentile_nation : profile.overall_percentile}
-          nation={withinNation ? nationName : undefined}
+          nationOf={withinNation ? nationOf : undefined}
         />
       </div>
       {!withinNation &&
@@ -142,15 +143,15 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
 
       <div className="mt-3" data-testid="theme-bars">
         {profile.themes.map((th) => (
+          <div key={th.theme}>
           <ScoreBar
-            key={th.theme}
             label={labels.theme(th.theme)}
             score={th.score}
             theme={th.theme}
             hint={
               withinNation
                 ? th.percentile_nation != null
-                  ? t("betterThanNation", { pct: th.percentile_nation, nation: nationName })
+                  ? t("betterThanNation", { pct: th.percentile_nation, nationOf })
                   : undefined
                 : th.percentile != null
                   ? t("betterThan", { pct: th.percentile })
@@ -169,6 +170,10 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
               },
             ]}
           />
+          {th.score == null && gaps.has(th.theme) && (
+            <p className="mb-1 text-[10px] text-[var(--text-muted)]">{t("limitedData")}</p>
+          )}
+          </div>
         ))}
         <p className="mt-1 flex gap-3 text-[10px] text-[var(--text-muted)]">
           <span className="inline-flex items-center gap-1">

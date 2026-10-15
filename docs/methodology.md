@@ -367,7 +367,7 @@ stays out of that nation's overall.
   2017 and its noise contours from 2017.
 - **Climate is the 1991–2020 average** on a 1 km grid interpolated from stations: it
   says what a place's weather has been, not what it will be, and smooths local effects
-  such as a sheltered valley. The projected hot-summer-days count is one scenario (2 °C
+  such as a sheltered valley. The projected count of hot summer days (above 30 °C) is one scenario (2 °C
   of global warming) from one model set, shown as context.
 - **Ecological fallacy.** An LSOA's score describes the area, not every home in it.
 - **Affluence.** Several measures track affluence; the overall score is not a measure

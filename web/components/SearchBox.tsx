@@ -7,7 +7,7 @@ import { useLiveability } from "@/components/AppData";
 import { usePanel } from "@/components/PanelContext";
 import { searchPlaces } from "@/lib/api";
 import type { Place } from "@/lib/contracts.gen";
-import { useCoverageName } from "@/lib/copy";
+import { useCoverageIn } from "@/lib/copy";
 import { nationOf, useLevelWords } from "@/lib/levels";
 
 // Kinds with a word of their own; an area tier takes its nation's word (lib/levels)
@@ -21,7 +21,7 @@ function capitalise(word: string): string {
 /** Postcode or place search: opens an area's profile without going through the chat. */
 export function SearchBox() {
   const t = useTranslations("Search");
-  const coverage = useCoverageName();
+  const coverageIn = useCoverageIn();
   const level = useLevelWords();
   const { update } = useLiveability();
   const { setTab } = usePanel();
@@ -119,12 +119,12 @@ export function SearchBox() {
         <ul
           id="search-results"
           role="listbox"
-          className="absolute right-0 top-full z-30 mt-1 w-[min(26rem,calc(100vw-2rem))] overflow-hidden rounded-md border border-[var(--border)] bg-[var(--surface-1)] text-sm shadow-lg"
+          className="absolute left-0 top-full z-30 mt-1 w-[min(26rem,calc(100vw-2rem))] sm:left-auto sm:right-0 overflow-hidden rounded-md border border-[var(--border)] bg-[var(--surface-1)] text-sm shadow-lg"
         >
           {results.length === 0 && (
             <li className="px-3 py-2 text-[var(--text-muted)]">
               {found.query === query.trim()
-                ? t("noMatches", { coverage })
+                ? t("noMatches", { coverageIn })
                 : t("searching")}
             </li>
           )}
