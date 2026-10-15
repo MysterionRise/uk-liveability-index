@@ -49,6 +49,14 @@ export function labelsFor(manifest: Manifest | null, locale: string): Labels {
   };
 }
 
+/** A preset's label for the name the API returns ("balanced (adjusted)" when the weights were changed). */
+export function presetLabel(labels: Labels, preset: string, adjusted: string): string {
+  const suffix = " (adjusted)";
+  return preset.endsWith(suffix)
+    ? `${labels.preset(preset.slice(0, -suffix.length))} ${adjusted}`
+    : labels.preset(preset);
+}
+
 export function useLabels(): Labels {
   const { manifest } = useData();
   const locale = useLocale();

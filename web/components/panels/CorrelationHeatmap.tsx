@@ -47,8 +47,8 @@ export function CorrelationHeatmap() {
         {t("caption")}
       </figcaption>
       <svg
-        width={LABEL_W + size}
-        height={size}
+        viewBox={`0 0 ${LABEL_W + size} ${size}`}
+        style={{ width: "100%", maxWidth: LABEL_W + size, height: "auto" }}
         role="img"
         aria-label={t("aria")}
         onMouseLeave={() => setHover(null)}

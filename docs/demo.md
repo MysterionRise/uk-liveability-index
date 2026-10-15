@@ -22,7 +22,7 @@ make down           # stop
 
 | # | Do | You'll see | Say |
 |---|---|---|---|
-| 1 | Open the page | Every neighbourhood in England, Wales and Scotland coloured by its UK percentile; the welcome card | "43,064 neighbourhoods, about 100 open datasets: police, NHS, Ofsted, Land Registry, air quality, flood risk, noise, tree cover, broadband, bus timetables, pubs." |
+| 1 | Open the page | Every neighbourhood in the UK coloured by its UK percentile; the welcome card | "43,914 neighbourhoods, about 140 open datasets: police, NHS, Ofsted, Land Registry, air quality, flood risk, noise, tree cover, broadband, bus timetables, pubs." |
 | 2 | Click **Family with children** | The map recolours instantly | "Weights are a judgement, so they're yours to change. Scoring every area takes a tenth of a second in the browser." |
 | 3 | **Weights** tab: drag *Safety* to 3 | The map recolours as you drag | "No server round trip: the scores are recomputed on the page." |
 | 4 | **Assistant**: *We have two young kids and a budget of £350k. Where should we look around Leeds?* | Sliders move to the family preset, a ranked list, outlined areas on the map; "close call" tags | "The assistant uses the same tools and data as the page. It never makes numbers up: every figure comes from a tool. 'Close call' means a slightly different weighting could swap that area out." |
@@ -46,7 +46,7 @@ local authorities with the highest average gigabit broadband availability.*
 - [ ] The welcome card appears in a fresh profile; "Skip" dismisses it for good
 - [ ] Dark mode (system setting, and the header toggle): map, legend, cards, heatmap and the
       chat panel are all dark and readable; switching back to light restores everything
-- [ ] A wrong postcode in search says "No matches in England, Wales and Scotland"
+- [ ] A wrong postcode in search says "No matches in the UK"
 - [ ] An ambiguous place (*Tell me about Clapham*) says which Clapham it used
 - [ ] Model outage: unset the key or block the network with `make demo` running; the
       assistant explains in the chat and the map keeps working

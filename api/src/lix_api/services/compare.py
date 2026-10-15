@@ -4,6 +4,7 @@ import polars as pl
 
 from lix_api.models import ComparedArea, Comparison
 from lix_api.services.areas import stand_in
+from lix_api.services.names import localised
 from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa, search_place
 from lix_api.store import Store
@@ -20,7 +21,9 @@ def compare_areas(
     refs: list[str],
     preset: str | None = None,
     theme_weights: ThemeWeights | None = None,
+    locale: str | None = None,
 ) -> Comparison:
+    """``locale`` names the areas in the interface language where the pack has it."""
     if not 2 <= len(refs) <= 5:
         raise ValueError("Compare between 2 and 5 areas")
     name, themes, multipliers = resolve_weights(store, preset, theme_weights)
@@ -43,21 +46,26 @@ def compare_areas(
     for ref in refs:
         place = (search_place(store, ref, limit=1) or [None])[0]
         if place and place.kind in ("msoa", "lad"):
-            column = "msoa21cd" if place.kind == "msoa" else "lad_cd"
+            column, name_col = {"msoa": ("msoa21cd", "msoa_name"), "lad": ("lad_cd", "lad_nm")}[
+                place.kind
+            ]
             rows = scored.filter(pl.col(column) == place.code)
-            label, level, code = place.name, place.kind, place.code
+            level, code = place.kind, place.code
+            label = localised(rows.row(0, named=True), name_col, locale) or place.name
         elif place and place.kind == "place" and place.lsoa21cd:
             # A named suburb or village means its neighbourhood, not one LSOA of it
             home = scored.filter(pl.col("lsoa21cd") == place.lsoa21cd).row(0, named=True)
             code, level = home["msoa21cd"], "msoa"
             rows = scored.filter(pl.col("msoa21cd") == code)
-            same = home["msoa_name"].lower().startswith(place.name.lower())
-            label = home["msoa_name"] if same else f"{place.name} ({home['msoa_name']})"
+            neighbourhood = localised(home, "msoa_name", locale)
+            same = neighbourhood.lower().startswith(place.name.lower())
+            label = neighbourhood if same else f"{place.name} ({neighbourhood})"
         else:
             code = resolve_lsoa(store, ref)
             rows = scored.filter(pl.col("lsoa21cd") == code)
             r = rows.row(0, named=True)
-            label, level = f"{r['lsoa21nm']} ({r['msoa_name']})", "lsoa"
+            label = f"{localised(r, 'lsoa21nm', locale)} ({localised(r, 'msoa_name', locale)})"
+            level = "lsoa"
         w = rows["population"].cast(pl.Float64)
 
         def wmean(col: str) -> float | None:

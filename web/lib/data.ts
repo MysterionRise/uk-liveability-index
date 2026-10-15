@@ -114,7 +114,7 @@ export interface Manifest {
   data_to?: string | null;
   /** The data release this pack shipped in (data-YYYY-MM), if any */
   data_release?: string | null;
-  /** Areas in this build (43,064 for England, Wales and Scotland; fewer in a demo cut) */
+  /** Areas in this build (43,914 for the UK; fewer in a demo cut) */
   lsoa_count?: number;
   /** A small cut of the full build (CI and quick starts): see `lix demo-data` */
   demo?: boolean;

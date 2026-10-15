@@ -257,7 +257,7 @@ def rank_areas(
 @_recoverable
 def compare_areas(ctx: RunContext[Deps], areas: list[str]) -> ToolReturn:
     """Compare 2–5 areas side by side (postcodes, places, neighbourhoods or local authorities)."""
-    result: Comparison = compare.compare_areas(get_store(), areas, **_weights(ctx))
+    result: Comparison = compare.compare_areas(get_store(), areas, **_weights(ctx), **_locale(ctx))
     ctx.deps.state.map.highlighted = [a.code for a in result.areas]
     return _with_state(ctx, result)
 

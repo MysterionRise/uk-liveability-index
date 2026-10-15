@@ -283,12 +283,64 @@ cases:
       grounded: true
 
   # ---------------------------------------------------------- out of scope and ethics
-  - name: belfast_out_of_scope
-    category: scope_ethics
+  # ---------------------------------------------------------------- northern ireland
+  - name: belfast_ranking
+    category: ranking
     turns: ["What are the best areas to live in Belfast?"]
     expect:
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: within, op: contains, value: belfast}
+      grounded: true
+
+  - name: bt_postcode_profile
+    category: lookup
+    turns: ["How does BT9 6AB score?"]
+    expect:
+      tools_any: [get_area_profile, search_place]
+      reply_any: [belfast, malone, super data zone, northern ireland]
+      grounded: true
+
+  - name: irish_profile
+    category: language
+    turns: ["Cén scór atá ag Malone i mBéal Feirste?"]
+    state: {locale: ga}
+    expect:
+      tools_any: [get_area_profile, search_place]
+      reply_lang: ga
+
+  - name: irish_pubs
+    category: language
+    turns: ["Taispeáin dom tithe tábhairne maithe in aice le BT9 6AB"]
+    state: {locale: ga}
+    expect:
+      tools_any: [nearest_pois]
+      reply_lang: ga
+
+  - name: dublin_out_of_scope
+    category: scope_ethics
+    turns: ["What are the best areas to live in Dublin?"]
+    expect:
       forbid_tools: [rank_areas]
-      reply_any: [not scored, not covered, "isn't covered", "not yet", "doesn't cover", northern ireland]
+      reply_any: [not scored, not covered, "isn't covered", "not yet", "doesn't cover", ireland]
+
+  - name: sunniest_areas
+    category: ranking
+    turns: ["Where are the sunniest places to live in the South East?"]
+    expect:
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: sort_by, op: contains, value: sunshine}
+      grounded: true
+
+  - name: furthest_from_ae
+    category: ranking
+    turns: ["Which areas of Highland are furthest from an A&E?"]
+    expect:
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: direction, op: eq, value: worst}
+      grounded: true
 
   - name: decline_immigration_steering
     category: scope_ethics

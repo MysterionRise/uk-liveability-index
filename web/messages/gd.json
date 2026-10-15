@@ -112,7 +112,8 @@
       "uk": "Ceudadan thar gach sgìre le sgòr.",
       "nation": "Ceudadan taobh a-staigh gach nàisein; tha na sgòran a' fuireach mar a tha iad.",
       "urban_rural": "Chan eil bailtean beaga air am measadh an aghaidh meadhanan bhailtean mòra."
-    }
+    },
+    "adjusted": "(air atharrachadh)"
   },
   "Band": {
     "1": "Còigeamh as ìsle",
@@ -120,7 +121,8 @@
     "3": "Meadhan",
     "4": "Os cionn na h-àbhaist",
     "5": "Còigeamh as àirde",
-    "betterThan": "nas fheàrr na {pct, number}% den RA"
+    "betterThan": "nas fheàrr na {pct, number}% den RA",
+    "betterThanNation": "nas fheàrr na {pct, number}% de {nation}"
   },
   "Quality": {
     "imputed": "tuairmse",
@@ -147,7 +149,11 @@
     "hoverNoName": "nas fheàrr na {pct, number}% den RA",
     "overall": "Iomlan",
     "withinNation": "{label} (taobh a-staigh an nàisein)",
-    "withinUrbanRural": "{label} (vs sgìrean bailteil/dùthchail coltach)"
+    "withinUrbanRural": "{label} (vs sgìrean bailteil/dùthchail coltach)",
+    "hoverNation": "{name}: nas fheàrr na {pct, number}% de a nàisean",
+    "hoverNationNoName": "nas fheàrr na {pct, number}% de a nàisean",
+    "hoverUrbanRural": "{name}: nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach",
+    "hoverUrbanRuralNoName": "nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach"
   },
   "Docs": {
     "nav": "Sgrìobhainnean",
@@ -198,7 +204,9 @@
     "copyLink": "Dèan lethbhreac den cheangal",
     "linkCopied": "Ceangal air a chopaigeadh",
     "copyPrompt": "Dèan lethbhreac den cheangal seo",
-    "note": "Tha sgòran 0–100 (nas àirde nas fheàrr). Tha astaran dìreach."
+    "note": "Tha sgòran 0–100 (nas àirde nas fheàrr). Tha astaran dìreach.",
+    "betterThanNation": "Nas fheàrr na {pct, number}% de {nation}",
+    "nationMedian": "meadhan {nation}"
   },
   "Poi": {
     "titles": {

@@ -367,3 +367,48 @@ places:
     why: "Under Heathrow's approach: most homes inside the 55 dB Lden aircraft contour"
     checks:
       - {indicator: aircraft_noise, op: ge, value: 50, anchor: true}
+
+  # -------------------------------------------------------------- northern ireland
+  # Benchmarked within Northern Ireland for NIMDM deprivation, prices (ward medians) and
+  # domestic rates; no open flood map, no school grades or results (education is a
+  # declared gap) and no GP ratings
+  - name: Upper Malone
+    local_authority: Belfast
+    why: "South Belfast's leafy, affluent quarter beyond Queen's: high prices, low deprivation"
+    checks:
+      - {theme: community, op: ge, value: 60, anchor: true}
+      - {indicator: house_price, op: ge, value: 250000, anchor: true}
+
+  - name: Shankill
+    local_authority: Belfast
+    why: "Inner west Belfast, among the most deprived areas in Northern Ireland"
+    checks:
+      - {theme: community, op: le, value: 35, anchor: true}
+      - {indicator: house_price, op: le, value: 160000, anchor: true}
+
+  - name: Holywood
+    local_authority: Ards and North Down
+    why: "Prosperous commuter town on Belfast Lough with its own station"
+    checks:
+      - {theme: community, op: ge, value: 60, anchor: true}
+      - {indicator: station_distance, op: le, value: 2000, anchor: true}
+
+  - name: Enniskillen
+    local_authority: Fermanagh and Omagh
+    why: "Lakeland county town with the South West Acute Hospital and no railway"
+    checks:
+      - {indicator: hospital_ae_distance, op: le, value: 5000, anchor: true}
+      - {indicator: station_distance, op: ge, value: 40000, anchor: true}
+
+  - name: Creggan
+    local_authority: Derry City and Strabane
+    why: "Large estate above Derry's Bogside, long among the most deprived areas"
+    checks:
+      - {theme: community, op: le, value: 35, anchor: true}
+
+  - name: Portrush
+    local_authority: Causeway Coast and Glens
+    why: "North coast resort: clean air, the sea, a station"
+    checks:
+      - {indicator: no2, op: le, value: 10, anchor: true}
+      - {indicator: station_distance, op: le, value: 2000}

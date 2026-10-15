@@ -13,7 +13,7 @@ import {
   useQualityNote,
 } from "@/components/ui";
 import type { AreaProfile, IndicatorValue } from "@/lib/contracts.gen";
-import { useLabels } from "@/lib/labels";
+import { presetLabel, useLabels } from "@/lib/labels";
 import { bboxOf } from "@/lib/state";
 
 function Facts({ items }: { items: IndicatorValue[] }) {
@@ -27,7 +27,11 @@ function Facts({ items }: { items: IndicatorValue[] }) {
         <div key={f.id} className="min-w-0">
           <dt
             className="truncate text-xs text-[var(--text-muted)]"
-            title={f.stands_in_for ? tq("standsInFor", { label: labels.indicator(f.stands_in_for) }) : undefined}
+            title={
+              f.stands_in_for
+                ? `${labels.indicator(f.id)} (${tq("standsInFor", { label: labels.indicator(f.stands_in_for) })})`
+                : labels.indicator(f.id)
+            }
           >
             {labels.indicator(f.id)}
             {f.stands_in_for && (
@@ -84,6 +88,12 @@ function CopyLink({ code }: { code: string }) {
 export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
   const { state, update } = useLiveability();
   const t = useTranslations("Profile");
+  const tw = useTranslations("Weights");
+  const tn = useTranslations("Nations");
+  // The card's benchmark follows "compare against": within the nation when that is
+  // chosen (the urban/rural comparison has no per-area percentile, so it reads as the UK)
+  const withinNation = state.compare_within === "nation";
+  const nationName = tn(profile.nation as "E" | "W" | "S" | "N");
   const labels = useLabels();
   const saved = state.shortlist.some((i) => i.code === profile.lsoa21cd);
   const title = profile.neighbourhood
@@ -105,24 +115,30 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
           {profile.overall?.toFixed(0) ?? "–"}
         </span>
         <span className="text-xs text-[var(--text-muted)]">
-          {t("overallOf100", { preset: profile.preset })}
+          {t("overallOf100", { preset: presetLabel(labels, profile.preset, tw("adjusted")) })}
         </span>
       </div>
       <div className="mt-1">
-        <Band band={profile.band} percentile={profile.overall_percentile} />
+        <Band
+          band={profile.band}
+          percentile={withinNation ? profile.overall_percentile_nation : profile.overall_percentile}
+          nation={withinNation ? nationName : undefined}
+        />
       </div>
-      {profile.overall_percentile_range && (
-        <p
-          className="mt-1 text-xs text-[var(--text-muted)]"
-          data-testid="percentile-range"
-          title={t("rangeTitle")}
-        >
-          {t("range", {
-            lo: profile.overall_percentile_range[0],
-            hi: profile.overall_percentile_range[1],
-          })}
-        </p>
-      )}
+      {!withinNation &&
+        profile.overall_percentile_range &&
+        profile.overall_percentile_range[0] !== profile.overall_percentile_range[1] && (
+          <p
+            className="mt-1 text-xs text-[var(--text-muted)]"
+            data-testid="percentile-range"
+            title={t("rangeTitle")}
+          >
+            {t("range", {
+              lo: profile.overall_percentile_range[0],
+              hi: profile.overall_percentile_range[1],
+            })}
+          </p>
+        )}
 
       <div className="mt-3" data-testid="theme-bars">
         {profile.themes.map((th) => (
@@ -132,9 +148,13 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
             score={th.score}
             theme={th.theme}
             hint={
-              th.percentile != null
-                ? t("betterThan", { pct: th.percentile })
-                : undefined
+              withinNation
+                ? th.percentile_nation != null
+                  ? t("betterThanNation", { pct: th.percentile_nation, nation: nationName })
+                  : undefined
+                : th.percentile != null
+                  ? t("betterThan", { pct: th.percentile })
+                  : undefined
             }
             marks={[
               {
@@ -143,9 +163,9 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
                 label: t("localMedian", { area: profile.local_authority }),
               },
               {
-                value: th.country_median,
+                value: withinNation ? th.nation_median : th.country_median,
                 kind: "england",
-                label: t("ukMedian"),
+                label: withinNation ? t("nationMedian", { nation: nationName }) : t("ukMedian"),
               },
             ]}
           />
@@ -163,7 +183,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
               className="inline-block h-2.5 w-px bg-[var(--text-muted)]"
               aria-hidden
             />{" "}
-            {t("ukMedian")}
+            {withinNation ? t("nationMedian", { nation: nationName }) : t("ukMedian")}
           </span>
         </p>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { useLiveability } from "@/components/AppData";
@@ -16,6 +16,7 @@ const KEY = "lix.shortlist";
 export function ShortlistPanel() {
   const { state, update } = useLiveability();
   const t = useTranslations("Shortlist");
+  const locale = useLocale();
   const [comparison, setComparison] = useState<{
     key: string;
     result?: Comparison;
@@ -106,7 +107,7 @@ export function ShortlistPanel() {
             className="btn"
             data-testid="compare-shortlist"
             onClick={() =>
-              compareAreas(codes, state.preset)
+              compareAreas(codes, state.preset, locale)
                 .then((result) => setComparison({ key, result }))
                 .catch((e) =>
                   setComparison({ key, error: String(e.message ?? e) }),

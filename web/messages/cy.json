@@ -112,7 +112,8 @@
       "uk": "Canraddau ar draws pob ardal a sgoriwyd.",
       "nation": "Canraddau o fewn pob cenedl; mae'r sgoriau'n aros yr un fath.",
       "urban_rural": "Nid yw pentrefi'n cael eu barnu yn erbyn canol dinasoedd."
-    }
+    },
+    "adjusted": "(wedi'i addasu)"
   },
   "Band": {
     "1": "Pumed isaf",
@@ -120,7 +121,8 @@
     "3": "Canol",
     "4": "Uwchlaw'r cyfartaledd",
     "5": "Pumed uchaf",
-    "betterThan": "yn well na {pct, number}% o'r DU"
+    "betterThan": "yn well na {pct, number}% o'r DU",
+    "betterThanNation": "yn well na {pct, number}% o {nation}"
   },
   "Quality": {
     "imputed": "amcangyfrif",
@@ -147,7 +149,11 @@
     "hoverNoName": "yn well na {pct, number}% o'r DU",
     "overall": "Cyffredinol",
     "withinNation": "{label} (o fewn y genedl)",
-    "withinUrbanRural": "{label} (yn erbyn ardaloedd trefol/gwledig tebyg)"
+    "withinUrbanRural": "{label} (yn erbyn ardaloedd trefol/gwledig tebyg)",
+    "hoverNation": "{name}: yn well na {pct, number}% o'i genedl",
+    "hoverNationNoName": "yn well na {pct, number}% o'i genedl",
+    "hoverUrbanRural": "{name}: yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg",
+    "hoverUrbanRuralNoName": "yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg"
   },
   "Docs": {
     "nav": "Dogfennaeth",
@@ -198,7 +204,9 @@
     "copyLink": "Copïo dolen",
     "linkCopied": "Dolen wedi'i chopïo",
     "copyPrompt": "Copïwch y ddolen hon",
-    "note": "Mae'r sgoriau rhwng 0 a 100 (uwch yn well). Pellteroedd mewn llinell syth."
+    "note": "Mae'r sgoriau rhwng 0 a 100 (uwch yn well). Pellteroedd mewn llinell syth.",
+    "betterThanNation": "Yn well na {pct, number}% o {nation}",
+    "nationMedian": "canolrif {nation}"
   },
   "Poi": {
     "titles": {

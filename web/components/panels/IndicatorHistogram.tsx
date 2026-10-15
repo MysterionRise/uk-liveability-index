@@ -72,7 +72,7 @@ export function IndicatorHistogram({
           </g>
         )}
         {[0, 50, 100].map((t) => (
-          <text key={t} x={PAD + (t / 100) * (W - PAD)} y={H + 13} textAnchor="middle" fill="var(--text-muted)" fontSize={10}>{t}</text>
+          <text key={t} x={PAD + (t / 100) * (W - PAD)} y={H + 13} textAnchor={t === 0 ? "start" : t === 100 ? "end" : "middle"} fill="var(--text-muted)" fontSize={10}>{t}</text>
         ))}
       </svg>
       <div className="h-4 text-[var(--text-secondary)]">

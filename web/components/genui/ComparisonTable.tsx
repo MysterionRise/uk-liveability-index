@@ -5,13 +5,14 @@ import { useLocale, useTranslations } from "next-intl";
 import { useData } from "@/components/AppData";
 import { Card, Muted, formatValue } from "@/components/ui";
 import type { Comparison } from "@/lib/contracts.gen";
-import { useLabels } from "@/lib/labels";
+import { presetLabel, useLabels } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
 
 export function ComparisonTable({ comparison }: { comparison: Comparison }) {
   const { manifest } = useData();
   const t = useTranslations("Comparison");
   const tq = useTranslations("Quality");
+  const tw = useTranslations("Weights");
   const locale = useLocale();
   const labels = useLabels();
   const units = new Map(manifest?.indicators.map((i) => [i.id, i.unit]));
@@ -20,7 +21,7 @@ export function ComparisonTable({ comparison }: { comparison: Comparison }) {
   const best = (values: (number | null)[]) => Math.max(...values.map((v) => v ?? -Infinity));
 
   return (
-    <Card testId="comparison" title={t("title")} subtitle={t("subtitle", { preset: comparison.preset })}>
+    <Card testId="comparison" title={t("title")} subtitle={t("subtitle", { preset: presetLabel(labels, comparison.preset, tw("adjusted")) })}>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>

@@ -85,7 +85,17 @@ def _wales() -> pl.DataFrame:
         # Decile within Wales, 1 = most deprived, as the IoD's is within England
         ((pl.col("imd_rank") - 1) * 10 // pl.col("imd_rank").count() + 1)
         .cast(pl.Int32)
-        .alias("imd_decile")
+        .alias("imd_decile"),
+        # WIMD publishes its income and employment domains as exponentially transformed
+        # scores, not the deprivation rates behind them (those are on StatsWales as
+        # "indicator data", not yet staged: #104). Until they are, the raw value is the
+        # domain's within-Wales percentile (0–100, higher = more deprived), which the
+        # within-nation rank normalisation scores the same and which is not mistaken
+        # for a rate
+        *[
+            (pl.col(c).rank("average") / pl.col(c).count() * 100).alias(c)
+            for c in ("income_score", "employment_score")
+        ],
     )
     return out.select(COLUMNS)
 

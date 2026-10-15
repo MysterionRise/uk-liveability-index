@@ -205,3 +205,16 @@ input[type="checkbox"] {
 .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner a {
   text-decoration: underline;
 }
+
+/* MapLibre's zoom buttons and attribution take the chrome's dark tokens */
+:root.dark .maplibregl-ctrl-group,
+:root.dark .maplibregl-ctrl.maplibregl-ctrl-attrib {
+  background: var(--surface-1);
+  color: var(--text-secondary);
+}
+:root.dark .maplibregl-ctrl-group button + button {
+  border-top-color: var(--border);
+}
+:root.dark .maplibregl-ctrl button .maplibregl-ctrl-icon {
+  filter: invert(1) hue-rotate(180deg);
+}

@@ -6,7 +6,7 @@ A pub counts as well run when:
   the FSA's "Pub/bar/nightclub" type, are left out), and
 - it matches an FSA record rated 4 or 5 at an inspection in the last three years (in
   Scotland, where the Food Hygiene Information Scheme grades Pass or Improvement
-  Required rather than 0–5, a Pass in the last three years).
+  Required rather than 0–5 and inspects less often, a Pass in the last five years).
 
 Matching uses the OSM ``fhrs:id`` tag where mappers added one (about 63% of pubs),
 whatever the FSA business type (food-led pubs often register as restaurants and inns
@@ -23,7 +23,7 @@ Hygiene ratings say how well a pub is run, not how good the beer is, so the UI c
 these "well-run pubs".
 """
 
-from datetime import date, timedelta
+from datetime import date
 
 import numpy as np
 import polars as pl
@@ -38,8 +38,11 @@ PUB_LIKE_TYPES = [PUB_BAR_NIGHTCLUB, 1, 7842]  # + Restaurant/Cafe/Canteen, Hote
 MATCH_RADIUS_M = 75
 NAME_SIMILARITY = 80
 RATING_MAX_AGE_DAYS = 3 * 365
-# Scotland's Food Hygiene Information Scheme outcomes that count as well run
+# Scotland's Food Hygiene Information Scheme outcomes that count as well run. FHIS
+# inspects on a longer risk-based cycle than FHRS (42% of Scottish passes were older
+# than three years in 2026 against 15% of English 4–5 ratings), so a Pass counts for five
 FHIS_PASS = ["Pass", "Pass and Eat Safe"]
+FHIS_MAX_AGE_DAYS = 5 * 365
 OVERTURE_MIN_CONFIDENCE = 0.8
 DUPLICATE_RADIUS_M = 60
 DUPLICATE_ANY_NAME_M = 20  # this close, a different name is still the same pub
@@ -184,7 +187,12 @@ def build_pubs(ctx, as_of: date | None = None) -> pl.DataFrame:
     )
 
     pubs = keyed.join(matched, on="_key", how="left").drop("_key")
-    recent = pl.col("rating_date") >= pl.lit(as_of - timedelta(days=RATING_MAX_AGE_DAYS))
+    max_age = (
+        pl.when(pl.col("rating_status").is_in(FHIS_PASS))
+        .then(FHIS_MAX_AGE_DAYS)
+        .otherwise(RATING_MAX_AGE_DAYS)
+    )
+    recent = (pl.lit(as_of) - pl.col("rating_date")).dt.total_days() <= max_age
     character = pl.sum_horizontal(
         pl.col(t).is_in(["yes", "only", "real_ale"]).fill_null(False).cast(pl.Int8)
         for t in CHARACTER_TAGS

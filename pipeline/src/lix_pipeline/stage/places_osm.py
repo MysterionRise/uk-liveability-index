@@ -41,10 +41,14 @@ class _PlaceNodes(osmium.SimpleHandler):
         name = n.tags.get("name")
         if not kind or not name or not n.location.valid():
             return
+        # "Derry/Londonderry" is one node with two names: the first is the name, the
+        # second the alternative (as OS Open Names carries name_alt)
+        shown, _, alt = (n.tags.get("name:en") or name).partition("/")
         self.rows.append(
             {
                 "osm_id": n.id,
-                "name": n.tags.get("name:en") or name,
+                "name": shown.strip(),
+                "name_alt": alt.strip() or None,
                 "name_ga": n.tags.get("name:ga"),
                 "place_type": kind,
                 "lon": n.location.lon,
@@ -60,6 +64,7 @@ def places_from_pbf(pbf) -> pl.DataFrame:
     schema = {
         "osm_id": pl.Int64,
         "name": pl.Utf8,
+        "name_alt": pl.Utf8,
         "name_ga": pl.Utf8,
         "place_type": pl.Utf8,
         "lon": pl.Float64,

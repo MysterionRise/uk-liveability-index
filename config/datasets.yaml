@@ -956,7 +956,7 @@ osm_england:
 
 overture_pubs:
   coverage: [E, W, S, N]
-  title: Overture Maps places, bars and pubs (Great Britain)
+  title: Overture Maps places, bars and pubs (United Kingdom)
   theme: amenities
   access:
     type: overture
@@ -1740,11 +1740,11 @@ orr_station_usage:
   landing_page: https://dataportal.orr.gov.uk/station-usage
   description: Annual passenger entries and exits and interchanges at every mainline station in Great Britain (Table 1410), with the station's NLC and three-letter code.
   licence: OGL-3.0
-  licence_verified: false
+  licence_verified: true
   attribution: "Office of Rail and Road, Estimates of station usage, licensed under the Open Government Licence v3.0."
   cadence: annual
   size_hint: 400KB
-  notes: The data portal shows no licence line on the table; ORR's site-wide statement is OGL v3 (confirmation requested).
+  notes: "The data portal carries no licence line of its own (checked 2026-10-15: the portal's home, accessibility and station-usage pages say nothing); the licence rests on ORR's terms for its websites, https://www.orr.gov.uk/terms-and-conditions, which state that the material is Crown copyright and \"All content is available under the Open Government Licence v3.0, except where otherwise stated\", and the portal is ORR's own subdomain; the station usage estimates are accredited official statistics. Reuse enquiries: contact.pct@orr.gov.uk."
 
 orr_station_attributes:
   coverage: [E, W, S]
@@ -1757,10 +1757,11 @@ orr_station_attributes:
   landing_page: https://dataportal.orr.gov.uk/statistics/infrastructure-and-environment/rail-infrastructure-and-assets/table-6329-station-attributes-for-all-mainline-stations/
   description: Every mainline station with its NLC, three-letter code, operator and grid reference, used to place the usage estimates.
   licence: OGL-3.0
-  licence_verified: false
+  licence_verified: true
   attribution: "Office of Rail and Road, Station attributes, licensed under the Open Government Licence v3.0."
   cadence: annual
   size_hint: 300KB
+  notes: "Licence as orr_station_usage: ORR's website terms (OGL v3.0 unless stated otherwise) cover its data portal."
 
 osm_scotland:
   coverage: [S]

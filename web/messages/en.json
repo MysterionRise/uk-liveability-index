@@ -112,7 +112,8 @@
       "uk": "Percentiles across every scored area.",
       "nation": "Percentiles within each nation; scores stay the same.",
       "urban_rural": "Villages aren't judged against city centres."
-    }
+    },
+    "adjusted": "(adjusted)"
   },
   "Band": {
     "1": "Bottom fifth",
@@ -120,7 +121,8 @@
     "3": "Middle",
     "4": "Above average",
     "5": "Top fifth",
-    "betterThan": "better than {pct, number}% of the UK"
+    "betterThan": "better than {pct, number}% of the UK",
+    "betterThanNation": "better than {pct, number}% of {nation}"
   },
   "Quality": {
     "imputed": "estimated",
@@ -147,7 +149,11 @@
     "hoverNoName": "better than {pct, number}% of the UK",
     "overall": "Overall",
     "withinNation": "{label} (within the nation)",
-    "withinUrbanRural": "{label} (vs similar urban/rural areas)"
+    "withinUrbanRural": "{label} (vs similar urban/rural areas)",
+    "hoverNation": "{name}: better than {pct, number}% of its nation",
+    "hoverNationNoName": "better than {pct, number}% of its nation",
+    "hoverUrbanRural": "{name}: better than {pct, number}% of similar urban/rural areas",
+    "hoverUrbanRuralNoName": "better than {pct, number}% of similar urban/rural areas"
   },
   "Docs": {
     "nav": "Documentation",
@@ -198,7 +204,9 @@
     "copyLink": "Copy link",
     "linkCopied": "Link copied",
     "copyPrompt": "Copy this link",
-    "note": "Scores are 0–100 (higher is better). Distances are straight-line."
+    "note": "Scores are 0–100 (higher is better). Distances are straight-line.",
+    "betterThanNation": "Better than {pct, number}% of {nation}",
+    "nationMedian": "{nation} median"
   },
   "Poi": {
     "titles": {

@@ -6,7 +6,7 @@ import { useLiveability } from "@/components/AppData";
 import { Card, Muted, formatValue } from "@/components/ui";
 import type { RankResult } from "@/lib/contracts.gen";
 import { useCoverageName } from "@/lib/copy";
-import { useLabels } from "@/lib/labels";
+import { presetLabel, useLabels } from "@/lib/labels";
 import { nationOf, useLevelWords } from "@/lib/levels";
 
 // Below this share of plausible weightings keeping it in the list, a result is a close call
@@ -15,6 +15,7 @@ const CLOSE_CALL = 0.6;
 export function RankedList({ result }: { result: RankResult }) {
   const { update } = useLiveability();
   const t = useTranslations("Ranked");
+  const tw = useTranslations("Weights");
   const locale = useLocale();
   const coverage = useCoverageName();
   // "within N km of X" comes from the API already phrased; a named area gets "in"
@@ -46,7 +47,7 @@ export function RankedList({ result }: { result: RankResult }) {
     : null;
   const subtitle = measureLabel
     ? t("rankedBy", { label: measureLabel, count: result.candidates })
-    : t("subtitle", { count: result.candidates, preset: result.preset });
+    : t("subtitle", { count: result.candidates, preset: presetLabel(labels, result.preset, tw("adjusted")) });
 
   return (
     <Card

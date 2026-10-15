@@ -153,9 +153,11 @@ def rank_areas(req: RankRequest) -> RankResult:
 
 @app.get(f"{api}/compare")
 def compare_areas(
-    areas_: Annotated[list[str], Query(alias="areas")], preset: str | None = None
+    areas_: Annotated[list[str], Query(alias="areas")],
+    preset: str | None = None,
+    locale: str | None = None,
 ) -> Comparison:
-    return compare.compare_areas(get_store(), areas_, preset=preset)
+    return compare.compare_areas(get_store(), areas_, preset=preset, locale=locale)
 
 
 @app.get(f"{api}/pois")

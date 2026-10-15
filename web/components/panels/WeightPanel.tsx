@@ -48,7 +48,7 @@ export function WeightPanel() {
         </div>
         {Object.keys(manifest.themes).map((theme) => (
           <label key={theme} className="grid grid-cols-[8.5rem_1fr_2rem] items-center gap-2 py-1">
-            <span className="flex min-w-0 items-center gap-1.5 text-xs" title={labels.themeDescription(theme)}>
+            <span className="flex min-w-0 items-center gap-1.5 text-xs" title={`${labels.theme(theme)}: ${labels.themeDescription(theme)}`}>
               <span className="inline-block h-2 w-2 shrink-0 rounded-full" style={{ background: themeVar(theme) }} aria-hidden />
               <span className="truncate">{labels.theme(theme)}</span>
             </span>

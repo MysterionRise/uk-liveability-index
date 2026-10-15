@@ -573,8 +573,11 @@ class TestOverture:
         )
         httpserver.expect_request("/bucket").respond_with_data(f"<x>{xml}</x>")
         resolved = overture.resolve_query(self._access(), make_session())
-        assert resolved["version"] == "2026-09-23.1"
+        # The version names the release and the query, so a widened bbox is a new edition
+        assert resolved["version"].startswith("2026-09-23.1+")
         assert resolved["url"].endswith("/release/2026-09-23.1/theme=places/type=place/*")
+        wider = self._access().model_copy(update={"bbox": (-8.7, 49.8, 1.9, 60.9)})
+        assert overture.resolve_query(wider, make_session())["version"] != resolved["version"]
 
     def test_pinned_release_and_sql(self):
         from lix_pipeline.fetch import overture

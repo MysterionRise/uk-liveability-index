@@ -153,6 +153,11 @@ export function LiveabilityMap() {
   const locale = useLocale();
   const { manifest, scores } = useData();
   const { state, update } = useLiveability();
+  // Read inside map event handlers, which outlive a render
+  const compareRef = useRef(state.compare_within);
+  useEffect(() => {
+    compareRef.current = state.compare_within;
+  }, [state.compare_within]);
   const t = useTranslations("Map");
   const tLegend = useTranslations("Legend");
   const coverage = useCoverageName();
@@ -195,6 +200,22 @@ export function LiveabilityMap() {
     });
     styleDark.current = darkRef.current;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+    // MapLibre logs every failed tile request, including the range requests the browser
+    // cancels when the view moves on; those are not errors (#118)
+    map.on("error", (e) => {
+      const err = (e as unknown as { error?: { name?: string; message?: string } }).error;
+      if (err && (err.name === "AbortError" || /abort|cancel|Failed to fetch/i.test(err.message ?? ""))) return;
+      console.error(err ?? e);
+    });
+    // The compact attribution opens expanded on load and would sit under the legend on
+    // a phone until the first drag; start it collapsed, the licence a tap away (#114)
+    map.once("load", () => {
+      const attrib = container.current?.querySelector(".maplibregl-ctrl-attrib");
+      if (attrib?.classList.contains("maplibregl-compact-show")) {
+        attrib.classList.remove("maplibregl-compact-show");
+        attrib.querySelector("button")?.setAttribute("aria-expanded", "false");
+      }
+    });
     map.on("style.load", () => {
       addOverlay(map, darkRef.current);
       placeLabels(map, darkRef.current ? "dark" : "light", localeRef.current);
@@ -306,9 +327,13 @@ export function LiveabilityMap() {
       map.getCanvas().style.cursor = f ? "pointer" : "";
       const v = f?.state?.v;
       const name = f?.properties?.name;
+      // The wording follows "compare against": the value shown is already within the
+      // nation or the urban/rural class when that is chosen (#113)
+      const key =
+        compareRef.current === "nation" ? "hoverNation" : compareRef.current === "urban_rural" ? "hoverUrbanRural" : "hover";
       setHover(
         f && typeof v === "number"
-          ? { x: e.point.x, y: e.point.y, text: name ? t("hover", { name, pct: pctRank(v) }) : t("hoverNoName", { pct: pctRank(v) }) }
+          ? { x: e.point.x, y: e.point.y, text: name ? t(key, { name, pct: pctRank(v) }) : t(`${key}NoName`, { pct: pctRank(v) }) }
           : null,
       );
     };

@@ -30,9 +30,11 @@ export const searchPlaces = (q: string) =>
 export async function compareAreas(
   codes: string[],
   preset?: string,
+  locale?: string,
 ): Promise<Comparison> {
   const qs = new URLSearchParams(codes.map((c) => ["areas", c]));
   if (preset) qs.set("preset", preset);
+  if (locale) qs.set("locale", locale);
   const res = await fetch(`${API_URL}/api/v1/compare?${qs}`);
   if (!res.ok)
     throw new Error(

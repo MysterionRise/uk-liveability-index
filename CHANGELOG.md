@@ -4,6 +4,78 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- **Northern Ireland.** The 850 Super Data Zones 2021 join the map and the assistant
+  (43,914 areas in all), each its own neighbourhood, grouped into the 11 councils. The
+  backbone reads NISRA's zones, centroids, lookups and population estimates; every
+  nation's coordinates are reprojected to the working grid (Irish Grid for NI's
+  postcodes, centroids and boundaries), so the point-in-polygon joins, rasters and
+  distances work unchanged (#52 #53).
+- **Northern Irish sources** (#54): the NIMDM 2017 through a crosswalk from the 2001
+  Super Output Areas (141 zones one to one, 198 dominant); the PSNI's street-level crime
+  on police.uk, placed by its coordinates; PSNI collisions; Land & Property Services'
+  ward house prices (suppressed wards take the council's figure), capital-value bands and
+  domestic rates (standing in for council tax); the BSO's GP, dental and pharmacy lists;
+  the Department of Education's schools and nurseries (no grades or results: the schools
+  theme is declared limited data in NI); Translink's TransXChange timetables through a
+  new reader (buses, Glider and NI Railways' stations); DAERA's noise contours (road,
+  rail, industry and Belfast City Airport); the Census 2021 population and age tables;
+  parks, play areas and allotments from OpenStreetMap; 14 emergency sites. No open
+  flood map exists for Northern Ireland (DfI's is licensed), so flood risk is not
+  available there (#55).
+- **A ninth theme, climate** (#120–#123): sunshine, wet days, summer warmth and winter
+  mildness are scored from the Met Office's HadUK-Grid 1 km averages for 1991–2020,
+  with rainfall, air frost, summer days, wind, snow and the UKCP18 hot summer days at
+  2 °C of warming as context. Every preset weights it; the map takes a teal.
+- **Keyed open sources** (#98): an `api_key` access type reads a free key from an
+  environment variable named in the registry, never writes it to the lock, logs or docs,
+  and a build without the key carries on with a warning. Logainm's Irish place names
+  are the first (`LOGAINM_API_KEY`); without it the councils' Irish names come from a
+  curated list and the largest towns' from OpenStreetMap.
+- **Gaeilge** (#70): interface copy, data labels and the assistant's fixed replies as a
+  draft, the fourth language beside Cymraeg and Gàidhlig; each nation's name in the other
+  three languages is a search alias ("Alba", "Cymru", "Tuaisceart Éireann"), and a
+  curated Wikidata list gives the largest cities' names in each language ("Llundain",
+  "Dùn Èideann", "Béal Feirste").
+- **More measures everywhere**: aircraft and industrial noise where mapped (#86), public
+  EV charging points (#35), the distance to allotments (#77), patients per practice
+  (#74), the council tax a typical home in the area pays beside the council's Band D
+  rate (#119).
+- **Rankings** can be made at council level (`lad`), worst first (`direction`), and by
+  a theme or indicator named leniently; an indicator the scope's nation lacks is refused
+  with where it is built and what stands in for it (#102 #111).
+
+### Changed
+
+- Profiles, explanations and comparisons show the substitute an area's nation has in
+  place of the usual indicator, marked "stands in for …" (#103). The profile card and
+  the map hover follow "compare against" (#113).
+- Place search reads "Place, Scope" as a place inside a council or nation, matches a
+  nation only by its exact name, and ignores two- and three-letter names unless typed
+  (#110). Comparisons name areas in the interface language (#117).
+- Scotland's hygiene passes count for five years rather than three, because the FHIS
+  inspects on a longer cycle (#105); the Overture pubs file is re-fetched when its query
+  changes (its version now names the query).
+- In Wales the income and employment deprivation values are the WIMD domains' within-
+  nation percentiles rather than transformed scores mislabelled as rates (#104).
+- The ORR station usage licence rests on ORR's published website terms (OGL v3.0),
+  recorded in the registry (#108). The QA report lists theme medians by nation (#112).
+
+### Fixed
+
+- Rankings sorted areas without a score first, ignored the locale, passed `lad` through
+  as small areas, accepted negative limits and unknown theme keys, and could read 100%
+  (#102). The assistant's indicator list is a name card unless detail is asked for, and
+  the shortlist tools say what happened (#111). Cancelled tile requests no longer log
+  errors (#118); the map attribution starts collapsed and clear of the legend (#114);
+  the analyst charts fit their column (#115); truncated labels carry the full text,
+  presets show their labels, and the map controls follow dark mode (#116 #117).
+- The curated lists under `config/data/` (A&E sites, Irish council names, domestic
+  rates) were hidden from git by the data ignore rule and never committed.
+
 ## [0.4.1] - 2026-10-13
 
 ### Fixed

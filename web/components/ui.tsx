@@ -54,7 +54,7 @@ export function ScoreBar({
       className="grid grid-cols-[minmax(0,9.5rem)_1fr_2.5rem] items-center gap-2 py-0.5"
       title={[hint, ...shown.map((m) => `${m.label}: ${Math.round(m.value as number)}`)].filter(Boolean).join(" · ")}
     >
-      <span className="truncate text-xs text-[var(--text-secondary)]">{label}</span>
+      <span className="truncate text-xs text-[var(--text-secondary)]" title={label}>{label}</span>
       <span className="relative h-2 rounded-r-[4px] bg-[var(--track)]">
         {v !== null && <span className="block h-2 rounded-r-[4px]" style={{ width: `${v}%`, background: themeVar(theme) }} />}
         {shown.map((m) => (
@@ -71,7 +71,7 @@ export function ScoreBar({
   );
 }
 
-export function Band({ band, percentile }: { band?: number | null; percentile?: number | null }) {
+export function Band({ band, percentile, nation }: { band?: number | null; percentile?: number | null; nation?: string }) {
   const t = useTranslations("Band");
   if (!band) return null;
   return (
@@ -86,7 +86,8 @@ export function Band({ band, percentile }: { band?: number | null; percentile?: 
         ))}
       </span>
       {t(String(Math.min(5, Math.max(1, band))) as "1" | "2" | "3" | "4" | "5")}
-      {percentile != null && ` · ${t("betterThan", { pct: pctRank(percentile) })}`}
+      {percentile != null &&
+        ` · ${nation ? t("betterThanNation", { pct: pctRank(percentile), nation }) : t("betterThan", { pct: pctRank(percentile) })}`}
     </span>
   );
 }

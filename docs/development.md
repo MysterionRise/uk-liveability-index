@@ -119,9 +119,9 @@ checks any serve directory (CI runs the browser tests on the demo data).
 
 `web/` is a Next.js app (Node 24, see `.nvmrc`):
 
-- a MapLibre map of every neighbourhood in England, Wales and Scotland from static PMTiles,
+- a MapLibre map of every neighbourhood in the UK from static PMTiles,
   coloured by UK percentile; weights are recomputed in the browser, so moving a slider
-  recolours all 43,064 areas in about 100 ms
+  recolours all 43,914 areas in about 100 ms
 - an assistant chat ([CopilotKit](https://copilotkit.ai) over AG-UI) whose tool calls render as
   components: ranked lists, area profiles, side-by-side comparisons, nearby places, score
   explanations and SQL results. The assistant and the page share state, so it can move the map,

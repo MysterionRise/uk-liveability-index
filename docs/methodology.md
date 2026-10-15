@@ -1,8 +1,8 @@
 # Methodology
 
-How the UK Liveability Index turns open data into a score for each of the 43,064
-neighbourhoods of England, Wales and Scotland (2021 LSOAs; 2022 Data Zones in
-Scotland). The indicator list
+How the UK Liveability Index turns open data into a score for each of the 43,914
+neighbourhoods of the UK (2021 LSOAs in England and Wales; 2022 Data Zones in
+Scotland; 2021 Super Data Zones in Northern Ireland). The indicator list
 itself lives in [`config/indicators.yaml`](../config/indicators.yaml), the presets in
 [`config/weights.yaml`](../config/weights.yaml), the nations in
 [`config/nations.yaml`](../config/nations.yaml), and the sources in
@@ -101,6 +101,15 @@ may be scored. The build's QA report lists scored indicators that correlate abov
   smaller areas: council tax per billing authority (`broadcast_lad`) and household
   income per MSOA (`broadcast_msoa`).
 
+Climate (v0.5.0) is read from the Met Office's HadUK-Grid 1 km averages for 1991–2020:
+each residential postcode takes its grid cell's value and the area is the mean of its
+postcodes, so a coastal strip and the hills behind it differ. Sunshine hours, days with
+1 mm of rain or more, the June–August daily maximum and the December–February daily
+minimum are scored against fixed thresholds (1,250–1,750 hours, 200–120 days, 16–21 °C,
+0–3 °C); rainfall, air frost, summer days, wind, lying snow and the UKCP18 count of hot
+summer days at 2 °C of global warming are context. The grid interpolates station
+observations, so a sheltered valley or an exposed ridge can read as its surroundings.
+
 ## 3. From raw value to a 0–100 score
 
 Every indicator is converted to 0–100, higher always better, by one of three methods:
@@ -130,6 +139,22 @@ neighbourhoods. The profile shows which benchmark each indicator uses.
 Theme and overall percentiles are reported both ways: against every scored
 neighbourhood (the headline, and the band) and within the nation ("compare against"
 on the map and in profiles). Scores themselves do not change with the comparison.
+
+Nations are offset from one another where they do not measure the same things. A theme
+built from fewer indicators is not a lower one, but it is a different one: Scotland's
+health theme rests on the distance indicators alone (England's GP capacity and ratings
+are absent) and its median was 87 against England's 45 in the v0.4.0 build. A
+substitute carries its own distribution: the SIMD's access domain is a rank with a
+median of 50 by construction, where the DfT connectivity index it replaces has a median
+near 90, so Scotland's transport percentile median was 18.5 against England's 57.6; and
+a threshold indicator fed a within-nation percentile (Scotland's secondary school
+tariff) is squeezed through thresholds set for England. The bottom band therefore holds
+different shares of each nation (17.5% of England, 27.8% of Scotland, 34.1% of Wales in
+v0.4.0). The build's QA report tables each nation's theme medians and bottom-band
+share; the within-nation comparison removes the offsets, which is why profiles and
+the map offer it, and every substitute is marked "stands in for …" wherever it is
+shown. Mapping a substitute onto the distribution of what it replaces is an open
+question (#112).
 
 ## 4. Themes and the overall score
 
@@ -194,8 +219,9 @@ otherwise the nearest pub, restaurant or hotel within 75m whose name is similar 
 only Overture lists. Pubs tagged with real ale, food, outdoor seating or a microbrewery
 count up to 30% more. Hygiene ratings say how well a pub is run, not how good the beer
 is, hence the name. Scotland's Food Hygiene Information Scheme grades Pass or
-Improvement Required rather than 0–5, so there a pub counts when it passed within the
-last three years.
+Improvement Required rather than 0–5 and inspects on a longer risk-based cycle (in the
+2026 data 42% of Scottish passes were older than three years, against 15% of English
+4–5 ratings), so there a pub counts when it passed within the last five years.
 
 ## 6. Nations
 
@@ -253,23 +279,62 @@ OpenStreetMap Scotland extract. Two indicators stand in for sources Scotland lac
 recorded crime from the SIMD for the four police.uk measures, and the SIMD's geographic
 access domain for the DfT connectivity metric (`substitute_for` in the catalogue).
 
+Northern Ireland (v0.5.0): the unit is the 2021 Super Data Zone (850, 1,900–4,700
+residents), which is its own neighbourhood (there is no mid tier between it and the 11
+councils); NISRA's zones, population-weighted centroids and mid-year estimates come in
+the Irish Grid and are reprojected, as are the BT postcodes in the NSPL (every nation
+declares its input grid in `config/nations.yaml`). Sources shared with Great Britain
+already covered Northern Ireland (Defra air quality, ESA WorldCover, VIIRS, Ofcom, the
+FSA's hygiene scheme, HadUK-Grid, the UKCP18 projections). Northern Irish sources: the
+Census 2021 population and age tables (the other census tables are not published at
+Super Data Zone level); the Northern Ireland Multiple Deprivation Measure 2017, still on
+the 2001 Super Output Areas and crossed to the 2021 zones through the zones' centroids
+and the 2021 census populations (141 zones lie in one SOA, 198 mostly in one; every
+rank becomes a within-Northern-Ireland score; its proximity-to-services domain stands in
+for the DfT connectivity index, its living environment domain for housing condition);
+the PSNI's street-level crime on police.uk, whose records carry no area code and are
+placed by their coordinates, and the PSNI's injury collisions; Land & Property Services'
+annual sale prices by electoral ward (a zone takes the ward its centroid falls in; a
+ward with a suppressed year takes its five years pooled, and a ward suppressed in every
+year takes the council's sales-weighted figure, flagged council-wide), its domestic
+properties by capital-value band, and the regional and district rates, which give a
+typical home's domestic rates bill in place of council tax; the Business Services
+Organisation's GP practices with their list sizes, dentists and pharmacies; the
+Department of Education's school and pre-school lists (no inspection grades or results
+are published, so schools count as present and the schools theme is declared a gap:
+limited data, outside the overall score); Translink's TransXChange timetables for Metro,
+Glider, Ulsterbus and Goldliner (bus frequency) and NI Railways (stations), read by a
+new TransXChange reader; DAERA's round 3 noise contours for the Belfast and Derry
+agglomerations and the major roads and railways, which give every noise kind (road,
+rail, aircraft at Belfast City Airport, industry); parks, play areas, allotments and
+every amenity from the OpenStreetMap Ireland extract (OS Open Greenspace stops at
+Great Britain); the fourteen hospitals OpenStreetMap tags with an emergency department,
+checked by hand to ten emergency departments and two minor-injury units. There is no
+open flood map: the Department for Infrastructure's maps are licensed commercially
+through LPS, so flood risk is not available in Northern Ireland. Irish names come from
+OpenStreetMap's `name:ga` tags, a curated Wikidata list of the councils and the largest
+towns, and, with a free key, Logainm.
+
 How much of each theme's scored weight a nation can have, counting a substitute against
 what it replaces (the coverage gate, `lix validate config`):
 
-| Theme | England | Wales | Scotland |
-|---|---|---|---|
-| Safety | 100% | 100% | 52% |
-| Environment | 100% | 100% | 100% |
-| Health | 100% | 63% | 63% |
-| Education | 100% | 67% | 67% |
-| Transport | 100% | 100% | 100% |
-| Amenities | 100% | 100% | 100% |
-| Housing | 100% | 100% | 100% |
-| Community | 100% | 100% | 100% |
+| Theme | England | Wales | Scotland | Northern Ireland |
+|---|---|---|---|---|
+| Safety | 100% | 100% | 52% | 100% |
+| Environment | 100% | 100% | 100% | 82% |
+| Health services | 100% | 63% | 63% | 63% |
+| Schools | 100% | 67% | 67% | gap |
+| Transport | 100% | 100% | 100% | 75% |
+| Amenities | 100% | 100% | 100% | 100% |
+| Housing | 100% | 100% | 100% | 100% |
+| Community | 100% | 100% | 100% | 100% |
+| Climate | 100% | 100% | 100% | 100% |
 
 An area's theme score is the weighted mean of the indicators its nation has, so a thinner
-theme is not a lower one; a theme a nation declares it cannot cover (`theme_gaps`, none
-so far) would show as limited data and stay out of that nation's overall.
+theme is not a lower one (see the offsets under [benchmarks](#benchmarks-the-whole-country-or-the-nation));
+a theme a nation declares it cannot cover (`theme_gaps`: schools and childcare in
+Northern Ireland, which publishes neither grades nor results) shows as limited data and
+stays out of that nation's overall.
 
 ## 7. Known limitations
 
@@ -296,7 +361,12 @@ so far) would show as limited data and stay out of that nation's overall.
   frequency tracks DfT connectivity at ρ ≈ 0.82, and life expectancy tracks health
   deprivation, so those are shown as context rather than scored.
 - **Mixed vintages.** Sources range from Census 2021 to data published this month; the
-  manifest records each source's version.
+  manifest records each source's version. Northern Ireland's deprivation measure is from
+  2017 and its noise contours from 2017.
+- **Climate is the 1991–2020 average** on a 1 km grid interpolated from stations: it
+  says what a place's weather has been, not what it will be, and smooths local effects
+  such as a sheltered valley. The projected hot-summer-days count is one scenario (2 °C
+  of global warming) from one model set, shown as context.
 - **Ecological fallacy.** An LSOA's score describes the area, not every home in it.
 - **Affluence.** Several measures track affluence; the overall score is not a measure
   of whether an area is "nice", and no indicator uses ethnicity, religion or any other

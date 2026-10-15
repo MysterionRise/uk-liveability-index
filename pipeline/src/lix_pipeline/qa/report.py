@@ -54,6 +54,30 @@ def build_report() -> tuple[str, list[str]]:
         })  # fmt: skip
     out += ["## Indicators\n", _table(pl.DataFrame(rows)), ""]
 
+    # Offsets between nations: a theme built from fewer indicators, or from a substitute
+    # with another distribution, sits higher or lower than England's (#112)
+    if "nation" in features.columns and features["nation"].n_unique() > 1:
+        theme_cols = [f"theme__{t}" for t in catalogue.themes if f"theme__{t}" in features.columns]
+        by_nation = (
+            features.group_by("nation")
+            .agg(
+                pl.len().alias("areas"),
+                *[pl.col(c).median().round(1).alias(c.removeprefix("theme__")) for c in theme_cols],
+                pl.col("overall_pct").median().round(1).alias("overall percentile"),
+                ((pl.col("band") == 1).mean() * 100).round(1).alias("band 1 %"),
+            )
+            .sort("nation")
+        )
+        out += [
+            "## Theme medians by nation\n",
+            "Each nation's median theme score and overall percentile, and its share of areas "
+            "in the bottom band. Offsets come from the indicators a nation lacks and the "
+            "substitutes that stand in (the methodology's benchmarks section); the "
+            "within-nation comparison removes them.\n",
+            _table(by_nation),
+            "",
+        ]
+
     scored = catalogue.scored()
     ids = [i.id for i in scored]
     ranks = features.select([pl.col(f"n__{i}").rank() for i in ids]).fill_null(strategy="mean")

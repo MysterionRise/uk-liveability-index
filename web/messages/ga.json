@@ -112,7 +112,8 @@
       "uk": "Peircintílí thar gach ceantar scóráilte.",
       "nation": "Peircintílí laistigh de gach náisiún; fanann na scóir mar atá.",
       "urban_rural": "Ní mheastar bailte beaga i gcoinne lár cathracha móra."
-    }
+    },
+    "adjusted": "(coigeartaithe)"
   },
   "Band": {
     "1": "An cúigiú is ísle",
@@ -120,7 +121,8 @@
     "3": "Meán",
     "4": "Os cionn an ghnáith",
     "5": "An cúigiú is airde",
-    "betterThan": "níos fearr ná {pct, number}% den RA"
+    "betterThan": "níos fearr ná {pct, number}% den RA",
+    "betterThanNation": "níos fearr ná {pct, number}% de {nation}"
   },
   "Quality": {
     "imputed": "meastachán",
@@ -147,7 +149,11 @@
     "hoverNoName": "níos fearr ná {pct, number}% den RA",
     "overall": "Iomlán",
     "withinNation": "{label} (laistigh den náisiún)",
-    "withinUrbanRural": "{label} (vs ceantair uirbeacha/tuaithe comhchosúla)"
+    "withinUrbanRural": "{label} (vs ceantair uirbeacha/tuaithe comhchosúla)",
+    "hoverNation": "{name}: níos fearr ná {pct, number}% dá náisiún",
+    "hoverNationNoName": "níos fearr ná {pct, number}% dá náisiún",
+    "hoverUrbanRural": "{name}: níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla",
+    "hoverUrbanRuralNoName": "níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla"
   },
   "Docs": {
     "nav": "Doiciméadú",
@@ -198,7 +204,9 @@
     "copyLink": "Cóipeáil an nasc",
     "linkCopied": "Nasc cóipeáilte",
     "copyPrompt": "Cóipeáil an nasc seo",
-    "note": "Is scóir 0–100 iad (níos airde níos fearr). Is faid dhíreacha iad."
+    "note": "Is scóir 0–100 iad (níos airde níos fearr). Is faid dhíreacha iad.",
+    "betterThanNation": "Níos fearr ná {pct, number}% de {nation}",
+    "nationMedian": "airmheán {nation}"
   },
   "Poi": {
     "titles": {

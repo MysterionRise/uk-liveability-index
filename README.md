@@ -1,21 +1,23 @@
 # UK Liveability Index
 
-Every neighbourhood in England, Wales and Scotland, scored from open data. Choose what matters to you (safety,
+Every neighbourhood in the UK, scored from open data. Choose what matters to you (safety,
 schools, green space, transport, pubs, prices…), see the whole country recolour, and ask an
 assistant that answers with maps, profiles and comparisons instead of walls of text.
 
 ![Choosing "family with children", raising the weight on safety, then asking the assistant where to look around Leeds on a £350k budget: it sets the weights, ranks neighbourhoods and outlines them on the map](docs/media/hero.gif)
 
-- **43,064 neighbourhoods** (2021 LSOAs in England and Wales, 2022 Data Zones in
-  Scotland; 500–3,000 residents each), scored 0–100 on eight themes from **about 100
-  open datasets**: police.uk, NHS, Ofsted, DfE, the Welsh and Scottish Governments,
-  Land Registry and Registers of Scotland, ONS and NRS, the SIMD, Public Health
-  Scotland, Defra air quality, Environment Agency, Natural Resources Wales and SEPA
-  flood maps, strategic noise maps, Ofcom broadband, bus timetables, OpenStreetMap and
+- **43,914 neighbourhoods** (2021 LSOAs in England and Wales, 2022 Data Zones in
+  Scotland, 2021 Super Data Zones in Northern Ireland; 500–3,000 residents each), scored
+  0–100 on nine themes from **about 140 open datasets**: police.uk and the PSNI, NHS,
+  Ofsted, DfE, the Welsh and Scottish Governments and the Northern Ireland departments,
+  Land Registry, Registers of Scotland and Land & Property Services, ONS, NRS and
+  NISRA, the SIMD and NIMDM, Public Health Scotland, Defra air quality, the Met Office's
+  HadUK-Grid climate averages, Environment Agency, Natural Resources Wales and SEPA flood
+  maps, strategic noise maps, Ofcom broadband, bus and rail timetables, OpenStreetMap and
   more.
 - **Your weights, computed in your browser**, from five ready-made personas or any
   weighting of your own, with an honest range for how much a result depends on them.
-- **An assistant that shows its working**, tested on 37 cases with three models, including
+- **An assistant that shows its working**, tested on 43 cases with three models, including
   that its replies only use numbers from the data ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.
@@ -72,11 +74,11 @@ A full walkthrough video comes with each
 
 ## How the scores work
 
-Each neighbourhood gets 75 indicators. The 36 that count towards the score are turned into
-0–100 scores, averaged within eight themes (safety, environment, health services, schools
-and childcare, transport, amenities, housing and community), and the themes are weighted
-by what you choose. Measures that are the same everywhere (distances, air quality,
-broadband) are ranked across both nations; those each nation records its own way
+Each neighbourhood gets 92 indicators. The 41 that count towards the score are turned into
+0–100 scores, averaged within nine themes (safety, environment, health services, schools
+and childcare, transport, amenities, housing, community and climate), and the themes are
+weighted by what you choose. Measures that are the same everywhere (distances, air quality,
+broadband, sunshine) are ranked across the UK; those each nation records its own way
 (crime, deprivation, schools, prices) are ranked within the nation. The other indicators
 are shown for context, so related measures aren't counted twice.
 
@@ -118,12 +120,13 @@ The same tools are available to Claude Desktop and other clients over
 
 ## Limitations
 
-- **England, Wales and Scotland**; Northern Ireland publishes different data and is the
-  next release. A few indicators are England-only for now (life expectancy, GP capacity
-  and ratings, primary school quality) and say so in Welsh and Scottish profiles. Where a
-  nation has no source for an indicator but a comparable one of its own, that stands in:
-  Scotland's recorded crime and access to services come from the SIMD, so its safety
-  theme rests on fewer measures than England's.
+- **The four nations publish different data.** A few indicators are England-only (life
+  expectancy, GP capacity and ratings, primary school quality) and say so in the other
+  nations' profiles. Where a nation has no source for an indicator but a comparable one of
+  its own, that stands in and the interface says so: Scotland's recorded crime and access
+  to services come from the SIMD, Northern Ireland's domestic rates replace council tax.
+  Northern Ireland has no open flood map and no school grades or results, so its schools
+  theme is shown as limited data and left out of its overall score. Ireland is next.
 - **Neighbourhoods, not streets.** Scores describe areas of 1,000–3,000 residents, and
   distances are straight-line.
 - **Data has dates.** Each source's data period is shown on the explainer card and in

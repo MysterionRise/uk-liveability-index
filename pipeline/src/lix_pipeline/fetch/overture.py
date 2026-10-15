@@ -6,6 +6,8 @@ Row groups carry bbox statistics, so a bounding-box filter reads a small part of
 global files.
 """
 
+import hashlib
+import json
 import re
 from pathlib import Path
 
@@ -30,9 +32,17 @@ def latest_release(session: requests.Session) -> str:
 
 
 def resolve_query(access: OvertureAccess, session: requests.Session) -> dict:
+    """The release's prefix and a version that names the release and the query: a
+    widened bbox or a changed filter is a new edition, so the file is fetched again
+    (the Scottish pubs were missing after Scotland joined until this was so)."""
     release = access.release or latest_release(session)
     url = f"{BUCKET_S3}/release/{release}/theme={access.theme}/type={access.kind}/*"
-    return {"url": url, "version": release}
+    query = json.dumps(
+        {"bbox": list(access.bbox), "where": access.where, "select": list(access.select)},
+        sort_keys=True,
+    )
+    digest = hashlib.sha256(query.encode()).hexdigest()[:8]
+    return {"url": url, "version": f"{release}+{digest}"}
 
 
 def probe(url: str, session: requests.Session) -> int:

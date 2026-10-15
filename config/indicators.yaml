@@ -753,7 +753,7 @@ indicators:
     builder: pubs:well_run_pub_access
     params: {radius_m: 1200, cap: 3}
     normalise: scale
-    caveats: Hygiene ratings measure how well a pub is run, not the beer or the atmosphere. Scotland's hygiene scheme grades Pass or Improvement Required rather than 0–5, so there a pub counts as well run when it passed within the last three years.
+    caveats: Hygiene ratings measure how well a pub is run, not the beer or the atmosphere. Scotland's hygiene scheme grades Pass or Improvement Required rather than 0–5 and inspects on a longer cycle, so there a pub counts as well run when it passed within the last five years.
 
   - id: food_and_drink
     theme: amenities
@@ -1015,6 +1015,7 @@ indicators:
     builder: common:deprivation
     params: {column: income_score}
     overlap_group: income_work
+    caveats: In Wales the value is the WIMD 2025 income domain's within-nation percentile (0–100, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).
 
   - id: employment_deprivation
     theme: community
@@ -1029,6 +1030,7 @@ indicators:
     params: {column: employment_score}
     role: context
     overlap_group: income_work
+    caveats: In Wales the value is the WIMD 2025 employment domain's within-nation percentile (0–100, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).
 
   - id: claimant_rate
     theme: community
