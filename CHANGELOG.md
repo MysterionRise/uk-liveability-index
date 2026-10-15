@@ -29,7 +29,7 @@ All notable changes to this project. The format follows
 - **A ninth theme, climate** (#120–#123): sunshine, wet days, summer warmth and winter
   mildness are scored from the Met Office's HadUK-Grid 1 km averages for 1991–2020,
   with rainfall, air frost, summer days, wind, snow and the UKCP18 hot summer days at
-  2 °C of warming as context. Every preset weights it; the map takes a teal.
+  2 °C of warming as context. Every preset weights it, at half the weight of a core theme (balanced 0.5, family 0.5, young professional 0.25, retiree 1, commuter 0.25), because the UK-wide thresholds place most of Scotland and Northern Ireland low and the balanced preset should not let weather outweigh schools; the map takes a teal.
 - **Keyed open sources** (#98): an `api_key` access type reads a free key from an
   environment variable named in the registry, never writes it to the lock, logs or docs,
   and a build without the key carries on with a warning. Logainm's Irish place names

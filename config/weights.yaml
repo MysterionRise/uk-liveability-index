@@ -10,27 +10,27 @@ presets:
   balanced:
     label: Balanced
     description: Every theme counts equally.
-    themes: {safety: 1, environment: 1, health: 1, education: 1, transport: 1, amenities: 1, housing: 1, community: 1, climate: 1}
+    themes: {safety: 1, environment: 1, health: 1, education: 1, transport: 1, amenities: 1, housing: 1, community: 1, climate: 0.5}
 
   family:
     label: Family with children
     description: Good schools and nurseries, safety and green space come first.
-    themes: {safety: 2, environment: 1.5, health: 1, education: 2.5, transport: 0.75, amenities: 0.75, housing: 1.5, community: 1, climate: 0.75}
+    themes: {safety: 2, environment: 1.5, health: 1, education: 2.5, transport: 0.75, amenities: 0.75, housing: 1.5, community: 1, climate: 0.5}
     indicators: {nursery_access: 1.5, well_run_pubs: 0.5, culture: 0.75}
 
   young_professional:
     label: Young professional
     description: Connections, things to do and well-run pubs; schools matter less.
-    themes: {safety: 1, environment: 0.75, health: 0.5, education: 0.25, transport: 2, amenities: 2.5, housing: 1.5, community: 0.5, climate: 0.5}
+    themes: {safety: 1, environment: 0.75, health: 0.5, education: 0.25, transport: 2, amenities: 2.5, housing: 1.5, community: 0.5, climate: 0.25}
     indicators: {well_run_pubs: 1.5, food_and_drink: 1.5}
 
   retiree:
     label: Retired
     description: Safety, health services, clean air, sunshine and a quieter area.
-    themes: {safety: 2, environment: 1.5, health: 2.5, education: 0.25, transport: 1, amenities: 1, housing: 1, community: 1, climate: 1.25}
+    themes: {safety: 2, environment: 1.5, health: 2.5, education: 0.25, transport: 1, amenities: 1, housing: 1, community: 1, climate: 1}
     indicators: {gp_distance: 1.5, pharmacy_distance: 1.5, noise_exposure: 1.5, sunshine: 1.5}
 
   commuter:
     label: Commuter
     description: Fast connections to jobs, by public transport above all.
-    themes: {safety: 1, environment: 0.75, health: 0.75, education: 0.75, transport: 3, amenities: 1, housing: 1.5, community: 0.75, climate: 0.5}
+    themes: {safety: 1, environment: 0.75, health: 0.75, education: 0.75, transport: 3, amenities: 1, housing: 1.5, community: 0.75, climate: 0.25}

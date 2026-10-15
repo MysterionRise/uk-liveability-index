@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-10-15T11:14:19+00:00",
+  "generated_at": "2026-10-15T11:28:15+00:00",
   "data_release": null,
   "data_to": "2026-10-15",
   "geography": {
@@ -5338,7 +5338,7 @@
         "amenities": 1.0,
         "housing": 1.0,
         "community": 1.0,
-        "climate": 1.0
+        "climate": 0.5
       },
       "indicators": {}
     },
@@ -5354,7 +5354,7 @@
         "amenities": 0.75,
         "housing": 1.5,
         "community": 1.0,
-        "climate": 0.75
+        "climate": 0.5
       },
       "indicators": {
         "nursery_access": 1.5,
@@ -5374,7 +5374,7 @@
         "amenities": 2.5,
         "housing": 1.5,
         "community": 0.5,
-        "climate": 0.5
+        "climate": 0.25
       },
       "indicators": {
         "well_run_pubs": 1.5,
@@ -5393,7 +5393,7 @@
         "amenities": 1.0,
         "housing": 1.0,
         "community": 1.0,
-        "climate": 1.25
+        "climate": 1.0
       },
       "indicators": {
         "gp_distance": 1.5,
@@ -5414,7 +5414,7 @@
         "amenities": 1.0,
         "housing": 1.5,
         "community": 0.75,
-        "climate": 0.5
+        "climate": 0.25
       },
       "indicators": {}
     }
@@ -7650,8 +7650,8 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "8102f447d378a534938de8789fefd999d387fd00c7a89f6326ff4952d42cb346",
-      "bytes": 2346514
+      "sha256": "307bb440d8a321880d373e74cbe585822ec58737751dbbc5512349b5d6236d80",
+      "bytes": 2346341
     },
     "scores.parquet": {
       "sha256": "1575c1748758b6ee5c88aa05059b781950067a7cb1930350018226ff9642afd7",
@@ -7666,8 +7666,8 @@
       "bytes": 31042
     },
     "areas.parquet": {
-      "sha256": "cb732c927c72416ce33faf5e29c2b8db91395591943ee84d8b2121afa91c8a7e",
-      "bytes": 23929
+      "sha256": "4cf7f93e98223d3f73a4c3461f5bb9ea9766a1b063cfbb0747864602eed17c0a",
+      "bytes": 24023
     },
     "pois.parquet": {
       "sha256": "35db22d129d1083ac5c56da9531f2c934fe72819463196feaa92786cdba56178",

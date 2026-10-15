@@ -47,6 +47,7 @@ local authorities with the highest average gigabit broadband availability.*
 - [ ] Dark mode (system setting, and the header toggle): map, legend, cards, heatmap and the
       chat panel are all dark and readable; switching back to light restores everything
 - [ ] A wrong postcode in search says "No matches in the UK"
+- [ ] *What are the best areas to live in Belfast?* ranks Super Data Zones and outlines them on the map
 - [ ] An ambiguous place (*Tell me about Clapham*) says which Clapham it used
 - [ ] Model outage: unset the key or block the network with `make demo` running; the
       assistant explains in the chat and the map keeps working

@@ -107,7 +107,9 @@ postcodes, so a coastal strip and the hills behind it differ. Sunshine hours, da
 1 mm of rain or more, the June–August daily maximum and the December–February daily
 minimum are scored against fixed thresholds (1,250–1,750 hours, 200–120 days, 16–21 °C,
 0–3 °C); rainfall, air frost, summer days, wind, lying snow and the UKCP18 count of hot
-summer days at 2 °C of global warming are context. The grid interpolates station
+summer days at 2 °C of global warming are context. The presets give the theme half the
+weight of a core theme (balanced 0.5, retiree 1), since the thresholds are UK-wide and
+place most of Scotland and Northern Ireland low. The grid interpolates station
 observations, so a sheltered valley or an exposed ridge can read as its surroundings.
 
 ## 3. From raw value to a 0–100 score
