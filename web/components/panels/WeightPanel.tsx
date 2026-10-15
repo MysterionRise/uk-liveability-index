@@ -3,45 +3,89 @@
 import { useTranslations } from "next-intl";
 
 import { useData, useLiveability } from "@/components/AppData";
+import { ProfileBox } from "@/components/ProfileBox";
 import { useLabels } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
+import { PROFILE_OPTION, isTweaked, profileState, saveProfile, useSavedProfile } from "@/lib/profileStore";
 import { type CompareWithin, effectiveWeights } from "@/lib/state";
 
-/** Preset picker and one slider per theme. Moving a slider recolours the map at once,
- * and the assistant sees the new weights on its next turn. */
+/** A sentence about yourself or a preset to start from, then one slider per theme.
+ * Moving a slider recolours the map at once, and the assistant sees the new weights on
+ * its next turn. */
 export function WeightPanel() {
   const { manifest } = useData();
   const { state, update } = useLiveability();
   const t = useTranslations("Weights");
   const labels = useLabels();
+  const saved = useSavedProfile();
   if (!manifest) return null;
   const weights = effectiveWeights(manifest, state).themes;
   const preset = manifest.presets[state.preset];
+  const active = state.profile;
+  const tweaked = active ? (saved ? isTweaked(saved, state) : Object.keys(state.theme_weights).length > 0) : false;
+  const canReset = active ? tweaked : Object.keys(state.theme_weights).length > 0;
+
+  const reset = () =>
+    update((s) =>
+      s.profile && saved
+        ? { ...s, theme_weights: { ...saved.theme_weights }, indicator_weights: { ...saved.indicator_weights } }
+        : { ...s, theme_weights: {} },
+    );
 
   return (
     <div className="space-y-3 p-3 text-sm" data-testid="weights">
+      <div>
+        <span className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">{t("describeYourself")}</span>
+        <ProfileBox />
+      </div>
+
       <label className="block">
         <span className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">{t("startFromPreset")}</span>
         <select
           className="input w-full"
-          value={state.preset}
+          value={active ? PROFILE_OPTION : state.preset}
           data-testid="preset-select"
-          onChange={(e) =>
-            update((s) => ({ ...s, preset: e.target.value, theme_weights: {}, indicator_weights: {} }))
-          }
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === PROFILE_OPTION) {
+              if (saved) update((s) => ({ ...s, ...profileState(saved) }));
+              return;
+            }
+            update((s) => ({ ...s, preset: value, theme_weights: {}, indicator_weights: {}, profile: null }));
+          }}
         >
+          {(active || saved) && (
+            <option value={PROFILE_OPTION}>{t("myProfile", { name: active?.name ?? saved?.name ?? "" })}</option>
+          )}
           {Object.keys(manifest.presets).map((id) => (
             <option key={id} value={id}>{labels.preset(id)}</option>
           ))}
         </select>
-        {preset && <span className="mt-1 block text-xs text-[var(--text-muted)]">{labels.presetDescription(state.preset)}</span>}
+        {active ? (
+          <span className="mt-1 block text-xs text-[var(--text-muted)]" data-testid="profile-card">
+            {active.rationale || saved?.rationale || labels.presetDescription(state.preset)}
+            {(saved?.engine ?? "model") === "rules" && <> {t("profileByRules")}</>}{" "}
+            <button
+              className="underline"
+              data-testid="profile-clear"
+              onClick={() => {
+                saveProfile(null);
+                update((s) => ({ ...s, theme_weights: {}, indicator_weights: {}, profile: null }));
+              }}
+            >
+              {t("clearProfile")}
+            </button>
+          </span>
+        ) : (
+          preset && <span className="mt-1 block text-xs text-[var(--text-muted)]">{labels.presetDescription(state.preset)}</span>
+        )}
       </label>
 
       <div>
         <div className="mb-1 flex items-baseline justify-between">
           <span className="text-xs font-medium text-[var(--text-secondary)]">{t("howMuch")}</span>
-          {Object.keys(state.theme_weights).length > 0 && (
-            <button className="text-xs underline" onClick={() => update((s) => ({ ...s, theme_weights: {} }))}>
+          {canReset && (
+            <button className="text-xs underline" data-testid="weights-reset" onClick={reset}>
               {t("reset")}
             </button>
           )}

@@ -82,7 +82,8 @@
       "retiree": "Wedi ymddeol",
       "commuter": "Cymudwr",
       "balanced": "Cytbwys"
-    }
+    },
+    "orDescribe": "Neu dywedwch wrthym pwy ydych chi"
   },
   "Search": {
     "placeholder": "Cod post neu le",
@@ -125,7 +126,16 @@
       "nation": "Canraddau o fewn pob cenedl; mae'r sgoriau'n aros yr un fath.",
       "urban_rural": "Nid yw pentrefi'n cael eu barnu yn erbyn canol dinasoedd."
     },
-    "adjusted": "(wedi'i addasu)"
+    "adjusted": "(wedi'i addasu)",
+    "describeYourself": "Neu disgrifiwch eich hun",
+    "describePlaceholder": "e.e. gweithiwr proffesiynol ifanc, un plentyn yn dechrau'r ysgol gynradd, angen heulwen arnaf",
+    "buildProfile": "Adeiladu fy mhroffil",
+    "building": "Wrthi'n adeiladu…",
+    "myProfile": "Fy mhroffil: {name}",
+    "profileByRules": "Wedi'i adeiladu drwy baru geiriau (ni ddefnyddiwyd model iaith).",
+    "clearProfile": "Clirio'r proffil",
+    "profileBusy": "Mae'r adeiladwr proffiliau yn brysur ar hyn o bryd; rhowch gynnig arall arni mewn munud.",
+    "profileError": "Methwyd adeiladu proffil: {detail}"
   },
   "Band": {
     "1": "Pumed isaf",
@@ -189,7 +199,8 @@
       "search_place": "Yn chwilio am y lle…",
       "list_indicators": "Yn rhestru dangosyddion…",
       "add_to_shortlist": "Yn cadw i'ch rhestr fer…",
-      "remove_from_shortlist": "Yn diweddaru'ch rhestr fer…"
+      "remove_from_shortlist": "Yn diweddaru'ch rhestr fer…",
+      "set_profile": "Yn adeiladu eich proffil…"
     },
     "running": "Yn rhedeg {name}…",
     "noResult": "{name}: dim canlyniad",
@@ -198,7 +209,8 @@
     "shortlistSaved": "Rhestr fer: {count, plural, zero {# wedi'u cadw} one {# wedi'i gadw} two {# wedi'u cadw} few {# wedi'u cadw} many {# wedi'u cadw} other {# wedi'u cadw}}",
     "found": "Wedi dod o hyd i: {places}",
     "nothing": "dim byd",
-    "indicatorsCount": "{count, plural, zero {# dangosydd} one {# dangosydd} two {# ddangosydd} few {# dangosydd} many {# dangosydd} other {# dangosydd}}"
+    "indicatorsCount": "{count, plural, zero {# dangosydd} one {# dangosydd} two {# ddangosydd} few {# dangosydd} many {# dangosydd} other {# dangosydd}}",
+    "profileSet": "Proffil wedi'i osod:"
   },
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} o drigolion",

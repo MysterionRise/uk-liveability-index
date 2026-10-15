@@ -66,14 +66,18 @@ class Limits:
         if self.today() != self.day:
             self.day, self.spent = self.today(), 0.0
 
+    def budget_spent(self) -> bool:
+        """Whether today's spend has reached the budget (never for a free model)."""
+        self._roll()
+        return self.daily_budget > 0 and self.spent >= self.daily_budget
+
     def admit(self, user_turns: int) -> str | None:
         """None if the question may go ahead (and counts it), else the reason it can't.
 
         ``user_turns`` is the number of user messages in the conversation so far,
         including this one: AG-UI clients send the whole conversation each time.
         """
-        self._roll()
-        if self.daily_budget > 0 and self.spent >= self.daily_budget:
+        if self.budget_spent():
             return (
                 "The assistant has used today's budget, so it's resting until tomorrow "
                 f"(midnight UTC). {STILL_WORKS}"
@@ -142,3 +146,8 @@ def reply_model(text: str):
         yield text
 
     return FunctionModel(reply, stream_function=stream, model_name="limits")
+
+
+# The server's one set of limits: the chat endpoint, the profile generator and the
+# assistant's tools all admit through and spend against it
+limits = Limits.from_env()

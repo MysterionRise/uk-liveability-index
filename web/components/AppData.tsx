@@ -22,6 +22,7 @@ import {
 import type { LiveabilityState as WireState } from "@/lib/contracts.gen";
 import { DEFAULT_STATE, type LiveabilityState, effectiveWeights, normaliseState } from "@/lib/state";
 import { labelsFor } from "@/lib/labels";
+import { profileState, readSavedProfile, saveProfile, savedFromState } from "@/lib/profileStore";
 import { readHash, writeHash } from "@/lib/urlState";
 
 interface DataContext {
@@ -68,13 +69,18 @@ const StateCtx = createContext<StateContext>({ state: DEFAULT_STATE, update: () 
  * - the agent's snapshots (the assistant set weights or highlighted areas) update the page;
  * - a new agent instance (CopilotKit swaps in the runtime's agent once it connects, a few
  *   seconds after load) is given the current state, so early changes aren't lost;
- * - the URL hash mirrors the shareable part, and a shared link seeds the first state.
+ * - the URL hash mirrors the shareable part, and a shared link seeds the first state;
+ *   without one, the profile this browser keeps (lix.profile) does, and while a profile
+ *   is active the saved copy follows the sliders.
  */
 export function LiveabilityStateProvider({ children }: { children: React.ReactNode }) {
   const { agent } = useAgent({ updates: [UseAgentUpdate.OnStateChanged] });
-  const [state, setState] = useState<LiveabilityState>(() =>
-    normaliseState({ ...DEFAULT_STATE, ...readHash() } as Partial<WireState>),
-  );
+  const [state, setState] = useState<LiveabilityState>(() => {
+    const hash = readHash();
+    const saved = typeof window === "undefined" ? null : readSavedProfile();
+    const seed = Object.keys(hash).length ? hash : saved ? profileState(saved) : {};
+    return normaliseState({ ...DEFAULT_STATE, ...seed } as Partial<WireState>);
+  });
   const latest = useRef(state);
   const pushedTo = useRef<unknown>(null);
 
@@ -89,6 +95,11 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
   useEffect(() => {
     latest.current = state;
     writeHash(state);
+    if (state.profile) {
+      const prev = readSavedProfile();
+      const next = savedFromState(state, prev);
+      if (next && JSON.stringify(next) !== JSON.stringify(prev)) saveProfile(next);
+    }
   }, [state]);
 
   // A new agent instance starts empty: hand it the current view

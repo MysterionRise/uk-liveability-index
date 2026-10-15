@@ -82,7 +82,8 @@
       "retiree": "Ar scor",
       "commuter": "Comaitéir",
       "balanced": "Cothrom"
-    }
+    },
+    "orDescribe": "Nó inis dúinn cé tú féin"
   },
   "Search": {
     "placeholder": "Postchód nó áit",
@@ -125,7 +126,16 @@
       "nation": "Peircintílí laistigh de gach náisiún; fanann na scóir mar atá.",
       "urban_rural": "Ní mheastar bailte beaga i gcoinne lár cathracha móra."
     },
-    "adjusted": "(coigeartaithe)"
+    "adjusted": "(coigeartaithe)",
+    "describeYourself": "Nó déan cur síos ort féin",
+    "describePlaceholder": "m.sh. gairmí óg, páiste amháin ag tosú sa bhunscoil, teastaíonn grian uaim",
+    "buildProfile": "Tóg mo phróifíl",
+    "building": "Á tógáil…",
+    "myProfile": "Mo phróifíl: {name}",
+    "profileByRules": "Tógtha trí fhocail a mheaitseáil (níor úsáideadh samhail teanga).",
+    "clearProfile": "Glan an phróifíl",
+    "profileBusy": "Tá tógálaí na bpróifílí gnóthach faoi láthair; bain triail eile as i gceann nóiméid.",
+    "profileError": "Níorbh fhéidir próifíl a thógáil: {detail}"
   },
   "Band": {
     "1": "An cúigiú is ísle",
@@ -189,7 +199,8 @@
       "search_place": "An áit á cuardach…",
       "list_indicators": "Táscairí á liostú…",
       "add_to_shortlist": "Á shábháil ar do ghearrliosta…",
-      "remove_from_shortlist": "Do ghearrliosta á nuashonrú…"
+      "remove_from_shortlist": "Do ghearrliosta á nuashonrú…",
+      "set_profile": "Do phróifíl á tógáil…"
     },
     "running": "{name} á rith…",
     "noResult": "{name}: gan toradh",
@@ -198,7 +209,8 @@
     "shortlistSaved": "Gearrliosta: {count, plural, one {# sábháilte} two {# sábháilte} few {# sábháilte} many {# sábháilte} other {# sábháilte}}",
     "found": "Aimsithe: {places}",
     "nothing": "faic",
-    "indicatorsCount": "{count, plural, one {# táscaire} two {# tháscaire} few {# tháscaire} many {# dtáscaire} other {# táscaire}}"
+    "indicatorsCount": "{count, plural, one {# táscaire} two {# tháscaire} few {# tháscaire} many {# dtáscaire} other {# táscaire}}",
+    "profileSet": "Próifíl socraithe:"
   },
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} cónaitheoir",

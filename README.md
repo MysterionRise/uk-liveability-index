@@ -15,9 +15,10 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
   HadUK-Grid climate averages, Environment Agency, Natural Resources Wales and SEPA flood
   maps, strategic noise maps, Ofcom broadband, bus and rail timetables, OpenStreetMap and
   more.
-- **Your weights, computed in your browser**, from five ready-made personas or any
-  weighting of your own, with an honest range for how much a result depends on them.
-- **An assistant that shows its working**, tested on 43 cases with three models, including
+- **Your weights, computed in your browser**, from five ready-made personas, a sentence
+  about yourself ("young professional, one child starting school, I need sunshine") or
+  any weighting of your own, with an honest range for how much a result depends on them.
+- **An assistant that shows its working**, tested on 50 cases with three models, including
   that its replies only use numbers from the data ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.

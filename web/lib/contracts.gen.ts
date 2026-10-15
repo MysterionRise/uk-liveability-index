@@ -235,8 +235,14 @@ export type Pois = Poi[];
 export type Selected = string | null;
 export type Mode = "consumer" | "analyst";
 export type Preset3 = string;
-export type Code1 = string;
+/**
+ * What the user typed; kept on the page, never stored
+ */
+export type Description1 = string;
 export type Name3 = string;
+export type Rationale = string;
+export type Code1 = string;
+export type Name4 = string;
 export type Note = string | null;
 export type Shortlist = ShortlistItem[];
 /**
@@ -253,7 +259,7 @@ export type Lsoa21Cd2 = string | null;
 /**
  * The form that matched (Welsh or Gaelic when the query was)
  */
-export type Name4 = string;
+export type Name5 = string;
 /**
  * The English name when `name` is another language's
  */
@@ -287,7 +293,7 @@ export type MedianPrice = number | null;
 /**
  * In the locale asked for
  */
-export type Name5 = string;
+export type Name6 = string;
 /**
  * The English name when `name` is another language's
  */
@@ -325,6 +331,21 @@ export type SortUnit = string | null;
  * The area or place the ranking was limited to
  */
 export type Within = string | null;
+/**
+ * model: the configured model · rules: word matching
+ */
+export type Engine = "model" | "rules";
+/**
+ * Why the rules engine was used instead of the model
+ */
+export type EngineReason = ("free_model" | "no_key" | "budget" | "model_error") | null;
+export type Locale1 = "en" | "cy" | "gd" | "ga";
+export type Name7 = string;
+/**
+ * Base preset id
+ */
+export type Preset5 = string;
+export type Rationale1 = string;
 
 export interface Schemas {
   [k: string]: unknown;
@@ -534,6 +555,10 @@ export interface LiveabilityState {
   map?: MapView;
   mode?: Mode;
   preset?: Preset3;
+  /**
+   * The generated profile the weights come from, if any
+   */
+  profile?: ProfileRef | null;
   shortlist?: Shortlist;
   theme_weights?: ThemeWeights;
 }
@@ -571,13 +596,24 @@ export interface Detail {
   [k: string]: unknown;
 }
 /**
+ * The generated weighting profile the sliders start from, as the page keeps it.
+ *
+ * This interface was referenced by `Schemas`'s JSON-Schema
+ * via the `definition` "ProfileRef".
+ */
+export interface ProfileRef {
+  description?: Description1;
+  name: Name3;
+  rationale?: Rationale;
+}
+/**
  * This interface was referenced by `Schemas`'s JSON-Schema
  * via the `definition` "ShortlistItem".
  */
 export interface ShortlistItem {
   centre?: Point | null;
   code: Code1;
-  name: Name3;
+  name: Name4;
   note?: Note;
 }
 /**
@@ -599,7 +635,7 @@ export interface Place {
   detail?: Detail1;
   kind: Kind1;
   lsoa21cd?: Lsoa21Cd2;
-  name: Name4;
+  name: Name5;
   name_en?: NameEn;
 }
 /**
@@ -641,7 +677,7 @@ export interface RankedArea {
   level: Level2;
   local_authority: LocalAuthority1;
   median_price?: MedianPrice;
-  name: Name5;
+  name: Name6;
   name_en?: NameEn1;
   overall: Overall3;
   overall_percentile: OverallPercentile3;
@@ -656,5 +692,34 @@ export interface Themes2 {
   [k: string]: number | null;
 }
 export interface ThemeWeights1 {
+  [k: string]: number;
+}
+/**
+ * A named weighting built from a description of the user: a base preset plus
+ * overrides, never a new preset of its own.
+ *
+ * This interface was referenced by `Schemas`'s JSON-Schema
+ * via the `definition` "WeightProfile".
+ */
+export interface WeightProfile {
+  engine: Engine;
+  engine_reason?: EngineReason;
+  indicator_weights?: IndicatorWeights1;
+  locale?: Locale1;
+  name: Name7;
+  preset: Preset5;
+  rationale: Rationale1;
+  theme_weights?: ThemeWeights2;
+}
+/**
+ * Multipliers on scored indicators
+ */
+export interface IndicatorWeights1 {
+  [k: string]: number;
+}
+/**
+ * Overrides on the preset's theme weights
+ */
+export interface ThemeWeights2 {
   [k: string]: number;
 }

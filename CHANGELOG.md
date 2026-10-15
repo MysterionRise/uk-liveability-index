@@ -4,6 +4,33 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- **Describe yourself.** A sentence about who you are ("I'm a young professional with
+  one child going into primary school and I have a sun deficit") becomes a named
+  weighting profile: the closest preset, overrides on the theme weights, multipliers on
+  single indicators and a one-sentence rationale, in the interface language. The box is
+  in the Weights panel and on the welcome card; the profile shows as "My profile: …" in
+  the preset picker, survives a reload (`lix.profile` in this browser), travels in a
+  shared link (new hash keys `i` for indicator multipliers and `n` for the name; the
+  description never leaves the page) and can be tweaked with the sliders and reset to
+  what was generated. The configured model builds it through a small structured output
+  checked against the catalogue (`POST /api/v1/profile`, under the chat's limits and run
+  log, `kind: profile`); without a key, over budget, in the no-key demo or when the model
+  fails, a word-matching engine with phrases in English, Welsh, Gaelic and Irish does,
+  and the result says so. The assistant's new `set_profile` tool does the same from the
+  chat ("I'm retired and have asthma"), and it sees the active profile in its state.
+  Seven eval cases cover it (six through the generator, one through the chat).
+
+### Fixed
+
+- Indicator multipliers now reach area profiles, comparisons and score explanations (the
+  REST routes take `indicator_weights`, `/compare` also `theme_weights`; the assistant's
+  tools pass them), so a profile's "sunshine ×2" changes the card as it does the map.
+  `set_weights` accepts everyday words for indicators ("broadband").
+
 ## [0.5.0] - 2026-10-15
 
 ### Added

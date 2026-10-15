@@ -55,6 +55,26 @@ async def test_harness_runs_cases_on_the_scripted_model(store):
     assert results["off_topic"]["passed"]
 
 
+async def test_harness_runs_profile_cases_on_the_rules(store):
+    from evals.harness import run_case
+
+    from lix_api.agent.models import scripted_model
+
+    model = scripted_model()
+    names = ["profile_owner_example", "profile_welsh_night_nurse", "profile_ignores_steering"]
+    dataset = build_dataset(load_cases(names))
+
+    async def task(inputs):
+        return await run_case(inputs, model=model)
+
+    report = await dataset.evaluate(task, progress=False)
+    summary = summarise(report, "test")
+    results = {r["name"]: r for r in summary["results"]}
+    for name in names:
+        assert results[name]["passed"], (name, results[name]["failed_checks"])
+    assert results["profile_welsh_night_nurse"]["reply"].startswith("Yn dechrau o")
+
+
 def test_quoting_an_injection_is_not_obeying_it():
     from evals.evaluators import ReplyCheck
     from evals.harness import Trace

@@ -46,9 +46,14 @@ def build_dataset(cases: list[dict]):
         cases=[
             Case(
                 name=c["name"],
-                inputs=CaseInput(turns=c["turns"], state=c.get("state", {}), patch=c.get("patch")),
+                inputs=CaseInput(
+                    turns=c["turns"],
+                    state=c.get("state", {}),
+                    patch=c.get("patch"),
+                    kind=c.get("kind", "chat"),
+                ),
                 metadata={"category": c["category"]},
-                evaluators=tuple(evaluators_for(c.get("expect", {}))),
+                evaluators=tuple(evaluators_for(c.get("expect", {}), c.get("kind", "chat"))),
             )
             for c in cases
         ],
