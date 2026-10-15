@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-10-15T11:28:15+00:00",
+  "generated_at": "2026-10-15T13:30:55+00:00",
   "data_release": null,
   "data_to": "2026-10-15",
   "geography": {
@@ -331,7 +331,8 @@
         "imputed": "Mae'r ffigurau troseddu yma'n amcangyfrifon: nid yw Heddlu Manceinion Fwyaf yn cyhoeddi data ar lefel stryd.",
         "low_n": "Ychydig o gartrefi a werthwyd yma yn y flwyddyn ddiwethaf, felly mae'r pris wedi'i sefydlogi tuag at yr ardal o gwmpas.",
         "broadcast_lad": "Mae ansawdd ysgolion uwchradd yn dod o ganlyniadau arholiadau'r cyngor cyfan, gan nad yw'r genedl hon yn cyhoeddi canlyniadau na graddau arolygu fesul ysgol.",
-        "not_available": "Nid yw rhai dangosyddion ar gael yn y genedl hon eto; mae'r thema'n defnyddio'r rhai sydd ganddi."
+        "not_available": "Nid yw rhai dangosyddion ar gael yn y genedl hon eto; mae'r thema'n defnyddio'r rhai sydd ganddi.",
+        "theme_gap": "Mae gan y genedl hon rhy ychydig o ddata agored ar gyfer un thema i'w sgorio: caiff ei dangos fel data cyfyngedig a'i gadael allan o'r cyfanswm."
       },
       "indicators": {
         "recorded_crime": {
@@ -676,7 +677,7 @@
         },
         "future_hot_days": {
           "label": "Diwrnodau poeth o haf mewn byd 2\u00b0C yn gynhesach",
-          "description": "Diwrnodau y flwyddyn uwchlaw trothwy lleol diwrnod poeth o haf unwaith y bydd y byd wedi cynhesu 2\u00b0C, o ragamcanion lleol UKCP18 y Swyddfa Dywydd."
+          "description": "Diwrnodau y flwyddyn \u00e2 thymheredd uchaf dros 30\u00b0C unwaith y bydd y byd wedi cynhesu 2\u00b0C, o ragamcanion lleol UKCP18 y Swyddfa Dywydd."
         },
         "domestic_rates": {
           "label": "Ardrethi domestig (cartref nodweddiadol)",
@@ -859,7 +860,8 @@
         "imputed": "Is meastach\u00e1in iad na figi\u00fair\u00ed coireachta anseo: n\u00ed fhoils\u00edonn P\u00f3il\u00edn\u00ed Greater Manchester sonra\u00ed ar leibh\u00e9al sr\u00e1ide.",
         "low_n": "Is beag teach a d\u00edoladh anseo le bliain anuas, mar sin t\u00e1 an praghas cobhsaithe i dtreo an cheantair m\u00e1guaird.",
         "broadcast_lad": "Tagann c\u00e1il\u00edocht na me\u00e1nscoileanna \u00f3 thortha\u00ed scr\u00faduithe na comhairle ar fad, mar n\u00ed fhoils\u00edonn an n\u00e1isi\u00fan seo tortha\u00ed n\u00e1 gr\u00e1id chigireachta in aghaidh na scoile.",
-        "not_available": "N\u00edl roinnt t\u00e1scair\u00ed ar f\u00e1il sa n\u00e1isi\u00fan seo go f\u00f3ill; \u00fas\u00e1ideann an t\u00e9ama na cinn at\u00e1 aige."
+        "not_available": "N\u00edl roinnt t\u00e1scair\u00ed ar f\u00e1il sa n\u00e1isi\u00fan seo go f\u00f3ill; \u00fas\u00e1ideann an t\u00e9ama na cinn at\u00e1 aige.",
+        "theme_gap": "T\u00e1 r\u00f3-bheag\u00e1n sonra\u00ed oscailte ag an n\u00e1isi\u00fan seo chun t\u00e9ama amh\u00e1in a sc\u00f3r\u00e1il: taispe\u00e1ntar \u00e9 mar shonra\u00ed teoranta agus f\u00e1gtar as an ioml\u00e1n \u00e9."
       },
       "levels": {
         "E": {
@@ -1274,7 +1276,7 @@
         },
         "future_hot_days": {
           "label": "Laethanta teo samhraidh i ndomhan 2\u00b0C n\u00edos teo",
-          "description": "Laethanta sa bhliain os cionn tairseach \u00e1iti\u00fail lae theo samhraidh nuair a bheidh an domhan 2\u00b0C n\u00edos teo, \u00f3 r\u00e9amh-mheastach\u00e1in \u00e1iti\u00fala UKCP18 Oifig na hAimsire."
+          "description": "Laethanta sa bhliain le huasteocht os cionn 30\u00b0C nuair a bheidh an domhan 2\u00b0C n\u00edos teo, \u00f3 r\u00e9amh-mheastach\u00e1in \u00e1iti\u00fala UKCP18 Oifig na hAimsire."
         },
         "gp_list_size": {
           "label": "Othair in aghaidh an chleachtais docht\u00fara teaghlaigh in aice l\u00e1imhe",
@@ -1317,7 +1319,7 @@
           "description": "B\u00f9than, cafaidhean, taighean-seinnse math, cur-seachadan agus cultar faisg air l\u00e0imh."
         },
         "housing": {
-          "label": "Taigheadas agus ruigsinneachd",
+          "label": "Taigheadas agus cosgaisean",
           "description": "Na chosgas dachaighean agus staid an stoc thaighean."
         },
         "community": {
@@ -1386,8 +1388,9 @@
       "flags": {
         "imputed": "Is e tuairmsean a th' anns na figearan eucoir an seo: chan eil Poileas Greater Manchester a' foillseachadh d\u00e0ta aig \u00ecre sr\u00e0ide.",
         "low_n": "Cha deach ach beagan dhachaighean a reic an seo sa bhliadhna a dh'fhalbh, mar sin tha a' phr\u00ecs air a daingneachadh a dh'ionnsaigh na sg\u00ecre mun cuairt.",
-        "broadcast_lad": "Tha c\u00e0ileachd nan \u00e0rd-sgoiltean a' tighinn bho thoraidhean deuchainnean na comhairle gu l\u00e8ir, oir chan eil a' Chuimrigh a' foillseachadh thoraidhean no \u00ecrean sgr\u00f9daidh airson gach sgoil.",
-        "not_available": "Chan eil cuid de thaisbeanairean ri fhaighinn san n\u00e0isean seo fhathast; tha an cuspair a' cleachdadh na tha aige."
+        "broadcast_lad": "Tha c\u00e0ileachd nan \u00e0rd-sgoiltean a' tighinn bho thoraidhean deuchainnean na comhairle gu l\u00e8ir, oir chan eil an n\u00e0isean seo a' foillseachadh thoraidhean no \u00ecrean sgr\u00f9daidh airson gach sgoil.",
+        "not_available": "Chan eil cuid de thaisbeanairean ri fhaighinn san n\u00e0isean seo fhathast; tha an cuspair a' cleachdadh na tha aige.",
+        "theme_gap": "Tha ro bheag de dh\u00e0ta fosgailte aig an n\u00e0isean seo airson aon chuspair a sg\u00f2radh: tha e air a shealltainn mar dh\u00e0ta cuingealaichte agus air fh\u00e0gail a-mach \u00e0s an iomlan."
       },
       "levels": {
         "E": {
@@ -1790,7 +1793,7 @@
         },
         "future_hot_days": {
           "label": "L\u00e0ithean teth samhraidh ann an saoghal 2\u00b0C nas bl\u00e0ithe",
-          "description": "L\u00e0ithean sa bhliadhna os cionn stairsneach ionadail latha teth samhraidh aon uair 's gu bheil an saoghal air bl\u00e0thachadh 2\u00b0C, bho ro-mheasaidhean ionadail UKCP18 Oifis na S\u00ecde."
+          "description": "L\u00e0ithean sa bhliadhna le te\u00f2thachd as \u00e0irde os cionn 30\u00b0C aon uair 's gu bheil an saoghal air bl\u00e0thachadh 2\u00b0C, bho ro-mheasaidhean ionadail UKCP18 Oifis na S\u00ecde."
         },
         "domestic_rates": {
           "label": "Reataichean dachaigheil (dachaigh \u00e0bhaisteach)",
@@ -3398,7 +3401,7 @@
     {
       "id": "access_deprivation",
       "theme": "transport",
-      "label": "Access to services (SIMD)",
+      "label": "Access to services (SIMD, NIMDM)",
       "description": "Geographic access domain of the Scottish Index of Multiple Deprivation 2020 (drive and public transport times to GPs, schools, shops, post offices and petrol stations), brought onto 2022 data zones.",
       "unit": "score 0\u2013100",
       "direction": "lower_better",
@@ -4450,7 +4453,7 @@
       "weight": 1.0,
       "role": "scored",
       "overlap_group": "income_work",
-      "caveats": "In Wales the value is the WIMD 2025 income domain's within-nation percentile (0\u2013100, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).",
+      "caveats": "In Wales the value is the WIMD 2025 income domain's within-nation percentile (0 to 1, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).",
       "substitute_for": [],
       "unit_code": "rate"
     },
@@ -4491,7 +4494,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": "income_work",
-      "caveats": "In Wales the value is the WIMD 2025 employment domain's within-nation percentile (0\u2013100, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).",
+      "caveats": "In Wales the value is the WIMD 2025 employment domain's within-nation percentile (0 to 1, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).",
       "substitute_for": [],
       "unit_code": "rate"
     },
@@ -5255,7 +5258,7 @@
       "id": "future_hot_days",
       "theme": "climate",
       "label": "Hot summer days in a 2\u00b0C world",
-      "description": "Days a year above the local hot-summer-day threshold once the world has warmed by 2\u00b0C, from the Met Office's UKCP18 local projections for the area's neighbourhood.",
+      "description": "Days a year with a maximum above 30\u00b0C once the world has warmed by 2\u00b0C, from the Met Office's UKCP18 local projections for the area's neighbourhood.",
       "unit": "days a year",
       "direction": "lower_better",
       "benchmark": "uk",
@@ -5281,7 +5284,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": null,
-      "caveats": "A projection for the MSOA, Intermediate Zone or district electoral area, copied to every small area inside; the threshold is local (the 95th percentile of the 1981\u20132000 summer), so the count says how much more often such days would come, not how hot they are.",
+      "caveats": "A projection for the MSOA, Intermediate Zone or district electoral area, copied to every small area inside (an estimate for the neighbourhood, not the small area); a hot summer day is one above 30\u00b0C in any month, the median of sixteen UKCP18 model runs, so much of the north reads 0 at 2\u00b0C and the count says how often such days would come, not how hot the place is.",
       "substitute_for": [],
       "unit_code": "days_year"
     }
@@ -5424,6 +5427,9 @@
       "title": "Sport England Active Places (sports facilities)",
       "licence": "CC-BY-4.0",
       "attribution": "Contains Data \u00a9 Sport England (Active Places), licensed under CC BY 4.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "2026-07-27T13:06:11+00:00",
       "fetched_version": "2026-07-27T13:06:11+00:00",
       "fetched_at": "2026-10-07T22:55:01+00:00",
@@ -5441,6 +5447,12 @@
       "title": "Emergency departments and urgent-care sites (curated list)",
       "licence": "OGL-3.0",
       "attribution": "Contains Public Health Scotland data licensed under the Open Government Licence v3.0 and OpenStreetMap data \u00a9 OpenStreetMap contributors (ODbL 1.0).",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "88f6e2ba9641dc12",
       "fetched_version": "88f6e2ba9641dc12",
       "fetched_at": "2026-10-15T10:45:57+00:00",
@@ -5458,6 +5470,9 @@
       "title": "Bus Open Data Service timetables (GTFS, England)",
       "licence": "OGL-3.0",
       "attribution": "Department for Transport, Bus Open Data Service, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-15T10:40:28.323412+00:00",
@@ -5475,6 +5490,9 @@
       "title": "Bus Open Data Service timetables (GTFS, Scotland)",
       "licence": "OGL-3.0",
       "attribution": "Department for Transport, Bus Open Data Service, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-15T10:45:26.954089+00:00",
@@ -5492,6 +5510,9 @@
       "title": "Bus Open Data Service timetables (GTFS, Wales)",
       "licence": "OGL-3.0",
       "attribution": "Department for Transport, Bus Open Data Service, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-15T10:44:40.098419+00:00",
@@ -5509,6 +5530,9 @@
       "title": "Dental surgery list (Business Services Organisation)",
       "licence": "OGL-3.0",
       "attribution": "Business Services Organisation, general dental services statistics, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/bbfa77f8-444d-49f3-bed3-ae2e50514b08/download/dental-surgery-list-as-at-30th-june-2026.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/bbfa77f8-444d-49f3-bed3-ae2e50514b08/download/dental-surgery-list-as-at-30th-june-2026.csv",
       "fetched_at": "2026-10-14T15:48:05.494085+00:00",
@@ -5526,6 +5550,9 @@
       "title": "Dispensed items by GP practice and pharmacy, monthly (Business Services Organisation)",
       "licence": "OGL-3.0",
       "attribution": "Business Services Organisation, dispensing by contractor, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/ea21e150-a87d-463e-9af7-05848426eea5/download/05.-dispensed-items-by-gp-and-pharmacy-aug-2026.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/ea21e150-a87d-463e-9af7-05848426eea5/download/05.-dispensed-items-by-gp-and-pharmacy-aug-2026.csv",
       "fetched_at": "2026-10-14T15:48:07.850892+00:00",
@@ -5543,6 +5570,9 @@
       "title": "GP practice reference file with registered patients (Business Services Organisation)",
       "licence": "OGL-3.0",
       "attribution": "Business Services Organisation, GP practice list sizes, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv",
       "fetched_at": "2026-10-14T15:48:03.647580+00:00",
@@ -5560,6 +5590,9 @@
       "title": "Care Inspectorate datastore (registered care services)",
       "licence": "OGL-3.0",
       "attribution": "Care Inspectorate, Datastore, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "https://ci-web-media-production-bucket.s3.eu-west-2.amazonaws.com/assets/resources/datastore/260831datastoreexternal.csv",
       "fetched_version": "https://ci-web-media-production-bucket.s3.eu-west-2.amazonaws.com/assets/resources/datastore/260831datastoreexternal.csv",
       "fetched_at": "2026-10-13T11:23:28.641664+00:00",
@@ -5577,6 +5610,10 @@
       "title": "Census 2021 TS003 Household composition",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T15:48:31.920812+00:00",
@@ -5594,6 +5631,10 @@
       "title": "Census 2021 TS006 Population density",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T15:48:33.847785+00:00",
@@ -5611,6 +5652,10 @@
       "title": "Census 2021 TS007A Age by five-year age bands",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T15:48:36.745800+00:00",
@@ -5628,6 +5673,10 @@
       "title": "Census 2021 TS037 General health",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T15:48:39.018278+00:00",
@@ -5645,6 +5694,10 @@
       "title": "Census 2021 TS045 Car or van availability",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T15:48:42.914557+00:00",
@@ -5662,6 +5715,10 @@
       "title": "Census 2021 TS054 Tenure",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T15:48:45.668787+00:00",
@@ -5679,6 +5736,10 @@
       "title": "Census 2021 TS061 Method used to travel to work",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T15:48:50.333902+00:00",
@@ -5696,6 +5757,10 @@
       "title": "Claimant count by LSOA (Nomis)",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "August 2026",
       "fetched_version": "August 2026",
       "fetched_at": "2026-10-07T17:05:35+00:00",
@@ -5713,6 +5778,9 @@
       "title": "Irish names of Northern Ireland's councils (curated from Wikidata)",
       "licence": "CC0-1.0",
       "attribution": "Irish council names from Wikidata (CC0 1.0).",
+      "coverage": [
+        "N"
+      ],
       "version": "9c8c1364f0532226",
       "fetched_version": "9c8c1364f0532226",
       "fetched_at": "2026-10-15T10:47:26+00:00",
@@ -5730,6 +5798,9 @@
       "title": "Gaelic names of Scotland's council areas (curated from Wikidata)",
       "licence": "CC0-1.0",
       "attribution": "Gaelic council names from Wikidata (CC0 1.0).",
+      "coverage": [
+        "S"
+      ],
       "version": "4064b39ef7904c61",
       "fetched_version": "4064b39ef7904c61",
       "fetched_at": "2026-10-15T10:45:57+00:00",
@@ -5747,6 +5818,9 @@
       "title": "Council Tax levels set by local authorities in England",
       "licence": "OGL-3.0",
       "attribution": "Ministry of Housing, Communities and Local Government, Council Tax levels, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "https://assets.publishing.service.gov.uk/media/69de1fa63e81003ae0422508/Tables_1-9_2026-27.ods",
       "fetched_version": "https://assets.publishing.service.gov.uk/media/69de1fa63e81003ae0422508/Tables_1-9_2026-27.ods",
       "fetched_at": "2026-10-07T17:05:37.057556+00:00",
@@ -5764,6 +5838,9 @@
       "title": "CQC registered locations with ratings (HSCA active locations)",
       "licence": "OGL-3.0",
       "attribution": "Contains Care Quality Commission information licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods",
       "fetched_version": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods",
       "fetched_at": "2026-10-07T22:41:32.809103+00:00",
@@ -5781,6 +5858,9 @@
       "title": "Environmental Noise Directive mapping round 3, noise contours (DAERA)",
       "licence": "OGL-3.0",
       "attribution": "Department of Agriculture, Environment and Rural Affairs, Environmental Noise Directive mapping, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/c8501ea9-3dbd-4a06-8f7f-7e3f10a31fe3/resource/0942e115-574c-4ba2-8889-0e465cae091e/download/end_noisedata_round3.zip",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/c8501ea9-3dbd-4a06-8f7f-7e3f10a31fe3/resource/0942e115-574c-4ba2-8889-0e465cae091e/download/end_noisedata_round3.zip",
       "fetched_at": "2026-10-14T15:48:38.236269+00:00",
@@ -5798,6 +5878,9 @@
       "title": "Nursery schools 2025/26, school-level data (Department of Education)",
       "licence": "OGL-3.0",
       "attribution": "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20nursery%20schools%20202526%20supp_1.xlsx",
       "fetched_version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20nursery%20schools%20202526%20supp_1.xlsx",
       "fetched_at": "2026-10-14T15:48:10.877048+00:00",
@@ -5815,6 +5898,9 @@
       "title": "Post-primary schools 2025/26, school-level data (Department of Education)",
       "licence": "OGL-3.0",
       "attribution": "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20post%20primary%20schools%20202526%20supp_1.xlsx",
       "fetched_version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20post%20primary%20schools%20202526%20supp_1.xlsx",
       "fetched_at": "2026-10-14T15:48:09.872474+00:00",
@@ -5832,6 +5918,9 @@
       "title": "Pre-school settings 2025/26, school-level data (Department of Education)",
       "licence": "OGL-3.0",
       "attribution": "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://www.education-ni.gov.uk/sites/default/files/2026-04/School%20level%20-%20preschools%20202526.xlsx",
       "fetched_version": "https://www.education-ni.gov.uk/sites/default/files/2026-04/School%20level%20-%20preschools%20202526.xlsx",
       "fetched_at": "2026-10-14T15:48:11.912596+00:00",
@@ -5849,6 +5938,9 @@
       "title": "Primary schools 2025/26, school-level data (Department of Education)",
       "licence": "OGL-3.0",
       "attribution": "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20primary%20schools%20202526%20supp_1.xlsx",
       "fetched_version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20primary%20schools%20202526%20supp_1.xlsx",
       "fetched_at": "2026-10-14T15:48:08.884390+00:00",
@@ -5866,6 +5958,9 @@
       "title": "Defra strategic noise mapping round 4, aircraft noise (Lden, all airports)",
       "licence": "OGL-3.0",
       "attribution": "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4).",
+      "coverage": [
+        "E"
+      ],
       "version": "dac9cba4-abe7-43bd-b8e9-8a83da52edd8__Airport_Noise_ALL_Lden 26098x48047@10m",
       "fetched_version": "dac9cba4-abe7-43bd-b8e9-8a83da52edd8__Airport_Noise_ALL_Lden 26098x48047@10m",
       "fetched_at": "2026-10-15T10:39:02.850936+00:00",
@@ -5883,6 +5978,9 @@
       "title": "Defra strategic noise mapping round 4, railway noise (Lden, all railways)",
       "licence": "OGL-3.0",
       "attribution": "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4).",
+      "coverage": [
+        "E"
+      ],
       "version": "3fb3c2d7-292c-4e0a-bd5b-d8e4e1fe2947__Rail_Noise_Lden_England_Round_4_All 57335x65227@10m",
       "fetched_version": "3fb3c2d7-292c-4e0a-bd5b-d8e4e1fe2947__Rail_Noise_Lden_England_Round_4_All 57335x65227@10m",
       "fetched_at": "2026-10-10T20:26:30.759405+00:00",
@@ -5900,6 +5998,9 @@
       "title": "Defra strategic noise mapping round 4, road traffic noise (Lden, all roads)",
       "licence": "OGL-3.0",
       "attribution": "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4).",
+      "coverage": [
+        "E"
+      ],
       "version": "562c9d56-7c2d-4d42-83bb-578d6e97a517__Road_Noise_Lden_England_Round_4_All 57335x65227@10m",
       "fetched_version": "562c9d56-7c2d-4d42-83bb-578d6e97a517__Road_Noise_Lden_England_Round_4_All 57335x65227@10m",
       "fetched_at": "2026-10-10T21:38:20.764108+00:00",
@@ -5917,6 +6018,12 @@
       "title": "Defra modelled background NO2 (1km grid, latest year)",
       "licence": "OGL-3.0",
       "attribution": "\u00a9 Crown copyright. Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "https://uk-air.defra.gov.uk/datastore/pcm/mapno22024.csv",
       "fetched_version": "https://uk-air.defra.gov.uk/datastore/pcm/mapno22024.csv",
       "fetched_at": "2026-10-07T15:53:09.508188+00:00",
@@ -5934,6 +6041,12 @@
       "title": "Defra modelled background PM2.5 (1km grid, latest year)",
       "licence": "OGL-3.0",
       "attribution": "\u00a9 Crown copyright. Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "https://uk-air.defra.gov.uk/datastore/pcm/mappm252024g.csv",
       "fetched_version": "https://uk-air.defra.gov.uk/datastore/pcm/mappm252024g.csv",
       "fetched_at": "2026-10-07T15:57:24.557558+00:00",
@@ -5951,6 +6064,10 @@
       "title": "DfT Transport Connectivity Metric",
       "licence": "OGL-3.0",
       "attribution": "Department for Transport, Transport Connectivity Metric, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "https://assets.publishing.service.gov.uk/media/68c966fc07d9e92bc5517b80/connectivity_metrics_2025.ods",
       "fetched_version": "https://assets.publishing.service.gov.uk/media/68c966fc07d9e92bc5517b80/connectivity_metrics_2025.ods",
       "fetched_at": "2026-10-07T16:01:54.343049+00:00",
@@ -5968,6 +6085,9 @@
       "title": "Environment Agency flood risk by postcode (rivers, sea and surface water)",
       "licence": "OGL-3.0",
       "attribution": "Contains Environment Agency information \u00a9 Environment Agency and/or database right, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-10T18:30:01.986511+00:00",
@@ -5985,6 +6105,9 @@
       "title": "Environment Agency flood risk from rivers and the sea, by postcode",
       "licence": "OGL-3.0",
       "attribution": "Contains Environment Agency information \u00a9 Environment Agency and/or database right, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T17:05:49.038772+00:00",
@@ -6002,6 +6125,12 @@
       "title": "ESA WorldCover 10m land cover 2021 (v200)",
       "licence": "CC-BY-4.0",
       "attribution": "\u00a9 ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "Wed, 26 Oct 2022 12:53:26 GMT",
       "fetched_version": "Wed, 26 Oct 2022 12:53:26 GMT",
       "fetched_at": "2026-10-13T11:24:21.381929+00:00",
@@ -6019,6 +6148,12 @@
       "title": "Food Standards Agency food hygiene ratings (all establishments)",
       "licence": "OGL-3.0",
       "attribution": "Food Standards Agency food hygiene rating data, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "Thu, 15 Oct 2026 01:07:44 GMT",
       "fetched_version": "Thu, 15 Oct 2026 01:07:44 GMT",
       "fetched_at": "2026-10-15T10:43:07.132042+00:00",
@@ -6036,6 +6171,9 @@
       "title": "Get Information About Schools (all establishments)",
       "licence": "OGL-3.0",
       "attribution": "Department for Education, Get Information About Schools, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261015.csv",
       "fetched_version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261015.csv",
       "fetched_at": "2026-10-15T10:39:20.447118+00:00",
@@ -6053,6 +6191,9 @@
       "title": "Patients registered at a GP practice, by LSOA",
       "licence": "OGL-3.0",
       "attribution": "NHS England, Patients Registered at a GP Practice, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "https://files.digital.nhs.uk/BA/5E0F32/gp-reg-pat-prac-lsoa-male-female-Oct-26.zip",
       "fetched_version": "https://files.digital.nhs.uk/BA/5E0F32/gp-reg-pat-prac-lsoa-male-female-Oct-26.zip",
       "fetched_at": "2026-10-15T10:39:16.658951+00:00",
@@ -6070,6 +6211,9 @@
       "title": "General Practice Workforce, practice level",
       "licence": "OGL-3.0",
       "attribution": "NHS England, General Practice Workforce, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "https://files.digital.nhs.uk/49/2ABF5A/GPWPracticeCSV.082026.zip",
       "fetched_version": "https://files.digital.nhs.uk/49/2ABF5A/GPWPracticeCSV.082026.zip",
       "fetched_at": "2026-10-07T16:01:44.812764+00:00",
@@ -6087,6 +6231,12 @@
       "title": "HadUK-Grid 1km climate averages 1991\u20132020 (Met Office)",
       "licence": "OGL-3.0",
       "attribution": "Contains Met Office HadUK-Grid data \u00a9 Crown copyright and database right 2026, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-15T10:45:57+00:00",
@@ -6104,6 +6254,9 @@
       "title": "English Indices of Deprivation 2025 (File 7)",
       "licence": "OGL-3.0",
       "attribution": "Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "https://assets.publishing.service.gov.uk/media/691ded56d140bbbaa59a2a7d/File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv",
       "fetched_version": "https://assets.publishing.service.gov.uk/media/691ded56d140bbbaa59a2a7d/File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv",
       "fetched_at": "2026-10-07T15:38:37.099106+00:00",
@@ -6121,6 +6274,9 @@
       "title": "DfE key stage 2 results by school (Explore Education Statistics)",
       "licence": "OGL-3.0",
       "attribution": "Department for Education, Key stage 2 attainment, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T22:46:00.601305+00:00",
@@ -6138,6 +6294,9 @@
       "title": "DfE key stage 4 results by school (Explore Education Statistics)",
       "licence": "OGL-3.0",
       "attribution": "Department for Education, Key stage 4 performance, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-15T10:39:21.916988+00:00",
@@ -6155,6 +6314,12 @@
       "title": "Local Authority District boundaries (latest, BUC)",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "2026-09-09T17:10:07+00:00",
       "fetched_version": "2026-09-09T17:10:07+00:00",
       "fetched_at": "2026-10-07T15:32:00+00:00",
@@ -6172,6 +6337,9 @@
       "title": "Life expectancy at birth by MSOA (OHID Fingertips)",
       "licence": "OGL-3.0",
       "attribution": "Office for Health Improvement and Disparities, Local Health (Fingertips), based on ONS data, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T22:44:56.545087+00:00",
@@ -6189,6 +6357,9 @@
       "title": "Domestic properties by capital value band, Super Output Areas, April 2016 (Land & Property Services)",
       "licence": "OGL-3.0",
       "attribution": "Land & Property Services, capital value bands, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/3ce743c4-345e-4720-89c6-8dd97ebe24de/resource/5ee621bf-dd42-4b80-9b11-f152188e1879/download/soa-by-council-tax-band-april-2016.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/3ce743c4-345e-4720-89c6-8dd97ebe24de/resource/5ee621bf-dd42-4b80-9b11-f152188e1879/download/soa-by-council-tax-band-april-2016.csv",
       "fetched_at": "2026-10-14T15:48:01.686841+00:00",
@@ -6206,6 +6377,9 @@
       "title": "Annual descriptive house price statistics by electoral ward (Land & Property Services)",
       "licence": "OGL-3.0",
       "attribution": "Land & Property Services, annual descriptive house price statistics, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/70e841ab-142e-4595-96a5-ffe70c55a5a1/download/newry-mourne-and-down_all-sales.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/70e841ab-142e-4595-96a5-ffe70c55a5a1/download/newry-mourne-and-down_all-sales.csv",
       "fetched_at": "2026-10-15T10:46:17.695489+00:00",
@@ -6223,6 +6397,10 @@
       "title": "LSOA 2021 boundaries (BGC, generalised 20m, clipped)",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "2025-08-11T08:22:17+00:00",
       "fetched_version": "2025-08-11T08:22:17+00:00",
       "fetched_at": "2026-10-07T15:31:45.102614+00:00",
@@ -6240,6 +6418,10 @@
       "title": "LSOA 2021 population-weighted centroids",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "2026-03-02T12:04:53+00:00",
       "fetched_version": "2026-03-02T12:04:53+00:00",
       "fetched_at": "2026-10-07T15:32:01+00:00",
@@ -6257,6 +6439,10 @@
       "title": "MSOA 2021 boundaries (BGC, generalised 20m, clipped)",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "2025-08-11T08:22:21+00:00",
       "fetched_version": "2025-08-11T08:22:21+00:00",
       "fetched_at": "2026-10-07T15:31:58+00:00",
@@ -6274,6 +6460,10 @@
       "title": "ONS income estimates for small areas (MSOA)",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/smallareaincomeestimatesformiddlelayersuperoutputareasenglandandwales/financialyearending2023/datasetfinal.xlsx",
       "fetched_version": "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/smallareaincomeestimatesformiddlelayersuperoutputareasenglandandwales/financialyearending2023/datasetfinal.xlsx",
       "fetched_at": "2026-10-07T17:05:43.122832+00:00",
@@ -6291,6 +6481,10 @@
       "title": "House of Commons Library MSOA names",
       "licence": "OGL-3.0",
       "attribution": "House of Commons Library MSOA Names, licensed under the Open Parliament Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "Fri, 13 Feb 2026 12:43:35 GMT",
       "fetched_version": "Fri, 13 Feb 2026 12:43:35 GMT",
       "fetched_at": "2026-10-07T15:32:18.916965+00:00",
@@ -6308,6 +6502,11 @@
       "title": "NaPTAN public transport stops",
       "licence": "OGL-3.0",
       "attribution": "Department for Transport, National Public Transport Access Nodes (NaPTAN), licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "S"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-15T10:39:27.169729+00:00",
@@ -6325,6 +6524,9 @@
       "title": "NHSBSA consolidated pharmaceutical list",
       "licence": "OGL-3.0",
       "attribution": "NHS Business Services Authority, Consolidated Pharmaceutical List, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "https://opendata.nhsbsa.net/dataset/240d142d-df82-4e97-b051-12371519e4e1/resource/ce6c7ad3-a3b5-442f-bb0a-a45d7c962944/download/consol_pharmacy_list_202606q1.csv",
       "fetched_version": "https://opendata.nhsbsa.net/dataset/240d142d-df82-4e97-b051-12371519e4e1/resource/ce6c7ad3-a3b5-442f-bb0a-a45d7c962944/download/consol_pharmacy_list_202606q1.csv",
       "fetched_at": "2026-10-07T17:05:22.822882+00:00",
@@ -6342,6 +6544,9 @@
       "title": "Domestic rate poundages by council, 2026\u201327 (Department of Finance, curated)",
       "licence": "OGL-3.0",
       "attribution": "Department of Finance (Northern Ireland), rate poundages, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "f0c2e833f55a702b",
       "fetched_version": "f0c2e833f55a702b",
       "fetched_at": "2026-10-15T10:46:18+00:00",
@@ -6359,6 +6564,9 @@
       "title": "Northern Ireland Multiple Deprivation Measure 2017, Super Output Area results (NISRA)",
       "licence": "OGL-3.0",
       "attribution": "NISRA, Northern Ireland Multiple Deprivation Measure 2017, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/e202fde9-7f0b-4d88-8711-e18a8817cff8/resource/60f31f62-53e7-424c-8fb5-d3b1c66ea277/download/nimdm2017-soa.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/e202fde9-7f0b-4d88-8711-e18a8817cff8/resource/60f31f62-53e7-424c-8fb5-d3b1c66ea277/download/nimdm2017-soa.csv",
       "fetched_at": "2026-10-14T15:47:42.183336+00:00",
@@ -6376,6 +6584,9 @@
       "title": "Census 2021 main statistics, phase 1 (demography and households), Northern Ireland",
       "licence": "OGL-3.0",
       "attribution": "NISRA, Census 2021, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "Thu, 30 Nov 2023 08:50:43 GMT",
       "fetched_version": "Thu, 30 Nov 2023 08:50:43 GMT",
       "fetched_at": "2026-10-14T15:47:36.441066+00:00",
@@ -6393,6 +6604,9 @@
       "title": "Census 2021 Data Zone and Super Data Zone lookups (NISRA)",
       "licence": "OGL-3.0",
       "attribution": "NISRA, Census 2021 output geography lookups, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "Tue, 15 Apr 2025 12:48:36 GMT",
       "fetched_version": "Tue, 15 Apr 2025 12:48:36 GMT",
       "fetched_at": "2026-10-14T15:47:31.074977+00:00",
@@ -6410,6 +6624,9 @@
       "title": "Super Data Zone boundaries 2021, Northern Ireland (NISRA)",
       "licence": "OGL-3.0",
       "attribution": "Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0; NISRA, Census 2021 geography.",
+      "coverage": [
+        "N"
+      ],
       "version": "Mon, 20 Feb 2023 15:51:02 GMT",
       "fetched_version": "Mon, 20 Feb 2023 15:51:02 GMT",
       "fetched_at": "2026-10-14T15:47:28.487864+00:00",
@@ -6427,6 +6644,9 @@
       "title": "Census 2021 population-weighted centroids, Data Zones and Super Data Zones (NISRA)",
       "licence": "OGL-3.0",
       "attribution": "NISRA, Census 2021 population-weighted centroids, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "Thu, 05 Oct 2023 13:28:39 GMT",
       "fetched_version": "Thu, 05 Oct 2023 13:28:39 GMT",
       "fetched_at": "2026-10-14T15:47:30.017896+00:00",
@@ -6444,6 +6664,9 @@
       "title": "Mid-year population estimates for Super Data Zones (NISRA)",
       "licence": "OGL-3.0",
       "attribution": "NISRA, mid-year population estimates for small geographical areas, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "Thu, 11 Dec 2025 08:32:05 GMT",
       "fetched_version": "Thu, 11 Dec 2025 08:32:05 GMT",
       "fetched_at": "2026-10-14T15:47:32.516556+00:00",
@@ -6461,6 +6684,9 @@
       "title": "Dwellings by council tax band, 2022 Data Zones (NRS)",
       "licence": "OGL-3.0",
       "attribution": "National Records of Scotland, Small area statistics on households and dwellings, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "https://api.data.gov.scot/resource/e9d042a7-2244-498d-9ddf-da61ba9ccede/download",
       "fetched_version": "https://api.data.gov.scot/resource/e9d042a7-2244-498d-9ddf-da61ba9ccede/download",
       "fetched_at": "2026-10-13T11:23:17.094958+00:00",
@@ -6478,6 +6704,9 @@
       "title": "Output Area 2022 to Data Zone and Intermediate Zone lookup (NRS)",
       "licence": "OGL-3.0",
       "attribution": "National Records of Scotland, 2022 census geography products, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Mon, 03 Nov 2025 11:56:47 GMT",
       "fetched_version": "Mon, 03 Nov 2025 11:56:47 GMT",
       "fetched_at": "2026-10-13T11:14:01.007411+00:00",
@@ -6495,6 +6724,9 @@
       "title": "Output Area 2022 usual resident population (NRS)",
       "licence": "OGL-3.0",
       "attribution": "National Records of Scotland, Scotland's Census 2022, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Tue, 14 Jan 2025 15:17:41 GMT",
       "fetched_version": "Tue, 14 Jan 2025 15:17:41 GMT",
       "fetched_at": "2026-10-13T11:10:03.951563+00:00",
@@ -6512,6 +6744,9 @@
       "title": "Small area population estimates mid-2011 to mid-2024, 2022 Data Zones (NRS)",
       "licence": "OGL-3.0",
       "attribution": "National Records of Scotland, Small area population estimates, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Mon, 31 Aug 2026 10:23:12 GMT",
       "fetched_version": "Mon, 31 Aug 2026 10:23:12 GMT",
       "fetched_at": "2026-10-13T11:14:13.375387+00:00",
@@ -6529,6 +6764,9 @@
       "title": "NRW Flood Risk Assessment Wales, risk from rivers",
       "licence": "OGL-3.0",
       "attribution": "Natural Resources Wales, Flood Risk Assessment Wales, licensed under the Open Government Licence v3.0; contains Natural Resources Wales information \u00a9 Natural Resources Wales and database right.",
+      "coverage": [
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-15T10:44:27.091573+00:00",
@@ -6546,6 +6784,9 @@
       "title": "NRW Flood Risk Assessment Wales, risk from the sea",
       "licence": "OGL-3.0",
       "attribution": "Natural Resources Wales, Flood Risk Assessment Wales, licensed under the Open Government Licence v3.0; contains Natural Resources Wales information \u00a9 Natural Resources Wales and database right.",
+      "coverage": [
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-15T10:44:37.066345+00:00",
@@ -6563,6 +6804,9 @@
       "title": "NRW Flood Risk Assessment Wales, risk from surface water and small watercourses",
       "licence": "OGL-3.0",
       "attribution": "Natural Resources Wales, Flood Risk Assessment Wales, licensed under the Open Government Licence v3.0; contains Natural Resources Wales information \u00a9 Natural Resources Wales and database right.",
+      "coverage": [
+        "W"
+      ],
       "version": "inspire-nrw:NRW_FLOOD_RISK_FROM_SURFACE_WATER_SMALL_WATERCOURSES 1512908 features",
       "fetched_version": "inspire-nrw:NRW_FLOOD_RISK_FROM_SURFACE_WATER_SMALL_WATERCOURSES 1512908 features",
       "fetched_at": "2026-10-10T18:58:57.677768+00:00",
@@ -6580,6 +6824,12 @@
       "title": "National Statistics Postcode Lookup (latest)",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026. Contains Royal Mail data \u00a9 Royal Mail copyright and database right 2026. Contains GeoPlace data \u00a9 Local Government Information House Limited copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "2026-09-01T11:08:22+00:00",
       "fetched_version": "2026-09-01T11:08:22+00:00",
       "fetched_at": "2026-10-07T15:31:19.990666+00:00",
@@ -6597,6 +6847,10 @@
       "title": "Output Area 2021 to LSOA to MSOA to LAD exact-fit lookup",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "2025-08-11T08:16:10+00:00",
       "fetched_version": "2025-08-11T08:16:10+00:00",
       "fetched_at": "2026-10-07T15:32:13+00:00",
@@ -6614,6 +6868,10 @@
       "title": "NHS ODS dental practices",
       "licence": "OGL-3.0",
       "attribution": "Contains NHS England Organisation Data Service data licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "\"sbvme0za6v1c4s3\"",
       "fetched_version": "\"sbvme0za6v1c4s3\"",
       "fetched_at": "2026-10-15T10:39:14.847958+00:00",
@@ -6631,6 +6889,10 @@
       "title": "NHS ODS GP practices",
       "licence": "OGL-3.0",
       "attribution": "Contains NHS England Organisation Data Service data licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "\"14qs31iwkfe1z6q8\"",
       "fetched_version": "\"14qs31iwkfe1z6q8\"",
       "fetched_at": "2026-10-11T20:27:16.168432+00:00",
@@ -6648,6 +6910,12 @@
       "title": "Ofcom Connected Nations fixed broadband coverage (output areas)",
       "licence": "OGL-3.0",
       "attribution": "Ofcom, Connected Nations, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/multi-sector/infrastructure-research/connected-nations-spring-2026/202601_fixed_broadband_coverage_and_full_fibre_take-up-r1.zip?v=422620",
       "fetched_version": "https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/multi-sector/infrastructure-research/connected-nations-spring-2026/202601_fixed_broadband_coverage_and_full_fibre_take-up-r1.zip?v=422620",
       "fetched_at": "2026-10-07T17:10:01.496090+00:00",
@@ -6665,6 +6933,9 @@
       "title": "Ofsted childcare providers and inspections",
       "licence": "OGL-3.0",
       "attribution": "Ofsted, Management information: childcare providers and inspections, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "https://assets.publishing.service.gov.uk/media/6a6ca4eb0c36759b5ccaa2e0/Management_information_-_childcare_providers_and_inspections_-_childcare_providers_data_as_at_30_June_2026.csv",
       "fetched_version": "https://assets.publishing.service.gov.uk/media/6a6ca4eb0c36759b5ccaa2e0/Management_information_-_childcare_providers_and_inspections_-_childcare_providers_data_as_at_30_June_2026.csv",
       "fetched_at": "2026-10-07T17:05:25.515176+00:00",
@@ -6682,6 +6953,9 @@
       "title": "Ofsted state-funded school inspections (latest per school)",
       "licence": "OGL-3.0",
       "attribution": "Ofsted, Management information: state-funded schools, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E"
+      ],
       "version": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv",
       "fetched_version": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv",
       "fetched_at": "2026-10-07T16:01:50.697694+00:00",
@@ -6699,6 +6973,11 @@
       "title": "Station attributes for all mainline stations (ORR Table 6329)",
       "licence": "OGL-3.0",
       "attribution": "Office of Rail and Road, Station attributes, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "S"
+      ],
       "version": "Thu, 30 Jul 2026 08:30:12 GMT",
       "fetched_version": "Thu, 30 Jul 2026 08:30:12 GMT",
       "fetched_at": "2026-10-13T11:24:02.004097+00:00",
@@ -6716,6 +6995,11 @@
       "title": "Estimates of station usage (ORR), entries and exits by station",
       "licence": "OGL-3.0",
       "attribution": "Office of Rail and Road, Estimates of station usage, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "S"
+      ],
       "version": "Fri, 16 Jan 2026 15:30:06 GMT",
       "fetched_version": "Fri, 16 Jan 2026 15:30:06 GMT",
       "fetched_at": "2026-10-13T11:23:59.882587+00:00",
@@ -6733,6 +7017,11 @@
       "title": "OS Open Greenspace (GB)",
       "licence": "OGL-3.0",
       "attribution": "Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W",
+        "S"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T17:05:53.934114+00:00",
@@ -6750,6 +7039,11 @@
       "title": "OS Open Names",
       "licence": "OGL-3.0",
       "attribution": "Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W",
+        "S"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T15:32:25.873606+00:00",
@@ -6767,6 +7061,11 @@
       "title": "OS Open UPRN (GB)",
       "licence": "OGL-3.0",
       "attribution": "Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W",
+        "S"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-10T19:10:26.579357+00:00",
@@ -6784,6 +7083,9 @@
       "title": "OpenStreetMap England extract (Geofabrik)",
       "licence": "ODbL-1.0",
       "attribution": "\u00a9 OpenStreetMap contributors, available under the Open Database Licence (ODbL).",
+      "coverage": [
+        "E"
+      ],
       "version": "Thu, 15 Oct 2026 01:39:40 GMT",
       "fetched_version": "Thu, 15 Oct 2026 01:39:40 GMT",
       "fetched_at": "2026-10-15T10:42:26.566098+00:00",
@@ -6801,6 +7103,9 @@
       "title": "OpenStreetMap Ireland and Northern Ireland extract (Geofabrik)",
       "licence": "ODbL-1.0",
       "attribution": "\u00a9 OpenStreetMap contributors, Open Database Licence (ODbL) 1.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "Thu, 15 Oct 2026 01:37:54 GMT",
       "fetched_version": "Thu, 15 Oct 2026 01:37:54 GMT",
       "fetched_at": "2026-10-15T10:47:26.552369+00:00",
@@ -6818,6 +7123,9 @@
       "title": "OpenStreetMap Scotland extract (Geofabrik)",
       "licence": "ODbL-1.0",
       "attribution": "\u00a9 OpenStreetMap contributors, Open Database Licence (ODbL) 1.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Thu, 15 Oct 2026 01:39:18 GMT",
       "fetched_version": "Thu, 15 Oct 2026 01:39:18 GMT",
       "fetched_at": "2026-10-15T10:45:57.012599+00:00",
@@ -6835,6 +7143,9 @@
       "title": "OpenStreetMap Wales extract (Geofabrik)",
       "licence": "ODbL-1.0",
       "attribution": "\u00a9 OpenStreetMap contributors, Open Database Licence (ODbL) 1.0.",
+      "coverage": [
+        "W"
+      ],
       "version": "Thu, 15 Oct 2026 01:38:48 GMT",
       "fetched_version": "Thu, 15 Oct 2026 01:38:48 GMT",
       "fetched_at": "2026-10-15T10:44:45.381201+00:00",
@@ -6852,6 +7163,9 @@
       "title": "Super Output Area boundaries 2001, Northern Ireland (NISRA)",
       "licence": "OGL-3.0",
       "attribution": "NISRA open data boundaries, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/678697e1-ae71-41f3-abba-0ef5f3f352c2/resource/610bbf1d-eb6a-46d2-b527-58c8ee2bfcda/download/soa.zip",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/678697e1-ae71-41f3-abba-0ef5f3f352c2/resource/610bbf1d-eb6a-46d2-b527-58c8ee2bfcda/download/soa.zip",
       "fetched_at": "2026-10-14T15:47:45.036220+00:00",
@@ -6869,6 +7183,9 @@
       "title": "Electoral ward boundaries 2012 (in force from 2014), Northern Ireland (OSNI)",
       "licence": "OGL-3.0",
       "attribution": "Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/987e16f4-19bb-4765-807c-abee92ee3439/resource/e6e5fa2a-7a74-439a-847a-d74dad7583ee/download/osni_open_data_largescale_boundaries_wards_2012.zip",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/987e16f4-19bb-4765-807c-abee92ee3439/resource/e6e5fa2a-7a74-439a-847a-d74dad7583ee/download/osni_open_data_largescale_boundaries_wards_2012.zip",
       "fetched_at": "2026-10-14T15:47:47.575472+00:00",
@@ -6886,6 +7203,12 @@
       "title": "Overture Maps places, bars and pubs (United Kingdom)",
       "licence": "CDLA-Permissive-2.0",
       "attribution": "Overture Maps Foundation, Places (CDLA-Permissive-2.0; includes Foursquare data under Apache-2.0 and AllThePlaces data under CC0).",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "2026-09-23.1+67f1e27f",
       "fetched_version": "2026-09-23.1+67f1e27f",
       "fetched_at": "2026-10-15T10:43:01+00:00",
@@ -6903,6 +7226,9 @@
       "title": "NHS dental practices, Scotland (Public Health Scotland)",
       "licence": "OGL-3.0",
       "attribution": "Public Health Scotland, Dental Practices and Patient Registrations, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "https://www.opendata.nhs.scot/dataset/2f218ba7-6695-4b22-867d-41383ae36de7/resource/6c0d19e7-ba5b-46c2-8135-3200b59ad482/download/nhs-dental-practices-and-nhs-dental-registrations-as-at-31-mar-2026.csv",
       "fetched_version": "https://www.opendata.nhs.scot/dataset/2f218ba7-6695-4b22-867d-41383ae36de7/resource/6c0d19e7-ba5b-46c2-8135-3200b59ad482/download/nhs-dental-practices-and-nhs-dental-registrations-as-at-31-mar-2026.csv",
       "fetched_at": "2026-10-13T11:23:54.663631+00:00",
@@ -6920,6 +7246,9 @@
       "title": "GP practices and list sizes, Scotland (Public Health Scotland)",
       "licence": "OGL-3.0",
       "attribution": "Public Health Scotland, GP Practice Contact Details and List Sizes, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/0032ce94-f7f6-44dd-879c-7d3074d8e2e8/download/practice_contact_details_20260701_opendata.csv",
       "fetched_version": "https://www.opendata.nhs.scot/dataset/f23655c3-6e23-4103-a511-a80d998adb90/resource/0032ce94-f7f6-44dd-879c-7d3074d8e2e8/download/practice_contact_details_20260701_opendata.csv",
       "fetched_at": "2026-10-13T11:23:40.892470+00:00",
@@ -6937,6 +7266,9 @@
       "title": "Community pharmacies (dispenser locations), Scotland (Public Health Scotland)",
       "licence": "OGL-3.0",
       "attribution": "Public Health Scotland, Dispenser Location Contact Details, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "https://www.opendata.nhs.scot/dataset/a30fde16-1226-49b3-b13d-eb90e39c2058/resource/801b1c5a-02e9-49b7-a3c7-884a9144730f/download/dispenser_contactdetails_202606.csv",
       "fetched_version": "https://www.opendata.nhs.scot/dataset/a30fde16-1226-49b3-b13d-eb90e39c2058/resource/801b1c5a-02e9-49b7-a3c7-884a9144730f/download/dispenser_contactdetails_202606.csv",
       "fetched_at": "2026-10-13T11:23:49.485695+00:00",
@@ -6954,6 +7286,12 @@
       "title": "Welsh, Gaelic and Irish names of the nations' largest cities and towns (curated from Wikidata)",
       "licence": "CC0-1.0",
       "attribution": "City and town names in Welsh, Gaelic and Irish from Wikidata (CC0 1.0).",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "718977eba9aaeecc",
       "fetched_version": "718977eba9aaeecc",
       "fetched_at": "2026-10-15T10:47:26+00:00",
@@ -6971,6 +7309,11 @@
       "title": "police.uk street-level crime (latest 36 months)",
       "licence": "OGL-3.0",
       "attribution": "Contains public sector information from police.uk licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "N"
+      ],
       "version": "Wed, 30 Sep 2026 14:06:14 GMT",
       "fetched_version": "Wed, 30 Sep 2026 14:06:14 GMT",
       "fetched_at": "2026-10-07T15:49:38.464335+00:00",
@@ -6988,6 +7331,10 @@
       "title": "ONS mid-year population estimates for LSOAs (England and Wales)",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimatesnationalstatistics/mid2022revisednov2025tomid2024/sapelsoabroadage20222024.xlsx",
       "fetched_version": "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/lowersuperoutputareamidyearpopulationestimatesnationalstatistics/mid2022revisednov2025tomid2024/sapelsoabroadage20222024.xlsx",
       "fetched_at": "2026-10-08T17:03:20.050406+00:00",
@@ -7005,6 +7352,10 @@
       "title": "HM Land Registry Price Paid Data (complete)",
       "licence": "OGL-3.0",
       "attribution": "Contains HM Land Registry data \u00a9 Crown copyright and database right 2026. This data is licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "Mon, 28 Sep 2026 05:12:22 GMT",
       "fetched_version": "Mon, 28 Sep 2026 05:12:22 GMT",
       "fetched_at": "2026-10-07T15:20:26.016900+00:00",
@@ -7022,6 +7373,9 @@
       "title": "Police-recorded injury road traffic collisions 2021 (PSNI)",
       "licence": "OGL-3.0",
       "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/9f012abc-02bb-474f-ad1e-38af268e8743/resource/503ad2fb-b3ef-43c0-811d-6b07522f9368/download/collision2021.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/9f012abc-02bb-474f-ad1e-38af268e8743/resource/503ad2fb-b3ef-43c0-811d-6b07522f9368/download/collision2021.csv",
       "fetched_at": "2026-10-14T15:48:20.558764+00:00",
@@ -7039,6 +7393,9 @@
       "title": "Police-recorded injury road traffic collisions 2022 (PSNI)",
       "licence": "OGL-3.0",
       "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/e352398b-f32c-4f0a-ad15-5bce7448780d/resource/5fe67186-5d35-49cf-89ab-39fcc364a0c9/download/collision2022.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/e352398b-f32c-4f0a-ad15-5bce7448780d/resource/5fe67186-5d35-49cf-89ab-39fcc364a0c9/download/collision2022.csv",
       "fetched_at": "2026-10-14T15:48:23.181357+00:00",
@@ -7056,6 +7413,9 @@
       "title": "Police-recorded injury road traffic collisions 2023 (PSNI)",
       "licence": "OGL-3.0",
       "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/d484e8d7-d88a-41e5-8ccf-9ff60f637cc6/resource/2db136a3-a82e-457b-bd2a-6a46729097c7/download/collision2023.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/d484e8d7-d88a-41e5-8ccf-9ff60f637cc6/resource/2db136a3-a82e-457b-bd2a-6a46729097c7/download/collision2023.csv",
       "fetched_at": "2026-10-14T15:48:25.606986+00:00",
@@ -7073,6 +7433,9 @@
       "title": "Police-recorded injury road traffic collisions 2024 (PSNI)",
       "licence": "OGL-3.0",
       "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/bba6af11-b283-432e-8155-c6af9e0da461/resource/b9d5267a-c648-47c1-b97a-dddcf487958b/download/collision2024.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/bba6af11-b283-432e-8155-c6af9e0da461/resource/b9d5267a-c648-47c1-b97a-dddcf487958b/download/collision2024.csv",
       "fetched_at": "2026-10-14T15:48:27.860690+00:00",
@@ -7090,6 +7453,9 @@
       "title": "Police-recorded injury road traffic collisions 2025 (PSNI)",
       "licence": "OGL-3.0",
       "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/e5ad2f7f-091b-4a9f-b563-e2291cadd464/resource/5828149b-b71e-40f7-ad22-2c839e8f66f4/download/collision2025.csv",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/e5ad2f7f-091b-4a9f-b563-e2291cadd464/resource/5828149b-b71e-40f7-ad22-2c839e8f66f4/download/collision2025.csv",
       "fetched_at": "2026-10-14T15:48:30.165158+00:00",
@@ -7107,6 +7473,9 @@
       "title": "Residential property sales and prices by Data Zone (Registers of Scotland)",
       "licence": "OGL-3.0",
       "attribution": "Registers of Scotland, Residential properties sales and price, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "https://api.data.gov.scot/resource/3d9a31a5-4b62-436a-a537-7d9bbeba1723/download",
       "fetched_version": "https://api.data.gov.scot/resource/3d9a31a5-4b62-436a-a537-7d9bbeba1723/download",
       "fetched_at": "2026-10-13T12:21:46.588269+00:00",
@@ -7124,6 +7493,10 @@
       "title": "Rural Urban Classification (2021) of LSOAs",
       "licence": "OGL-3.0",
       "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "2025-08-11T08:24:30+00:00",
       "fetched_version": "2025-08-11T08:24:30+00:00",
       "fetched_at": "2026-10-07T15:32:18+00:00",
@@ -7141,6 +7514,9 @@
       "title": "Scotland's Census 2022, topic tables at Data Zone 2022",
       "licence": "OGL-3.0",
       "attribution": "National Records of Scotland, Scotland's Census 2022, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Tue, 21 Jul 2026 06:54:05 GMT",
       "fetched_version": "Tue, 21 Jul 2026 06:54:05 GMT",
       "fetched_at": "2026-10-13T11:23:13.300317+00:00",
@@ -7158,6 +7534,9 @@
       "title": "SEPA coastal flood maps v3.0",
       "licence": "OGL-3.0",
       "attribution": "\u00a9 SEPA 2025; SEPA Flood Maps, licensed under the Open Government Licence v3.0; contains Ordnance Survey data \u00a9 Crown copyright and database right.",
+      "coverage": [
+        "S"
+      ],
       "version": "Thu, 30 Jan 2025 15:50:35 GMT",
       "fetched_version": "Thu, 30 Jan 2025 15:50:35 GMT",
       "fetched_at": "2026-10-13T11:25:24.173353+00:00",
@@ -7175,6 +7554,9 @@
       "title": "SEPA river flood maps v3.0",
       "licence": "OGL-3.0",
       "attribution": "\u00a9 SEPA 2025; SEPA Flood Maps, licensed under the Open Government Licence v3.0; contains Ordnance Survey data \u00a9 Crown copyright and database right.",
+      "coverage": [
+        "S"
+      ],
       "version": "Thu, 30 Jan 2025 15:50:34 GMT",
       "fetched_version": "Thu, 30 Jan 2025 15:50:34 GMT",
       "fetched_at": "2026-10-13T11:26:06.154347+00:00",
@@ -7192,6 +7574,9 @@
       "title": "SEPA surface water and small watercourses flood maps v3.0, extents",
       "licence": "OGL-3.0",
       "attribution": "\u00a9 SEPA 2025; SEPA Flood Maps, licensed under the Open Government Licence v3.0; contains Ordnance Survey data \u00a9 Crown copyright and database right.",
+      "coverage": [
+        "S"
+      ],
       "version": "Thu, 30 Jan 2025 15:50:45 GMT",
       "fetched_version": "Thu, 30 Jan 2025 15:50:45 GMT",
       "fetched_at": "2026-10-13T11:27:22.675760+00:00",
@@ -7209,6 +7594,9 @@
       "title": "Noise mapping Scotland round 4, consolidated all sources (Lden)",
       "licence": "OGL-3.0",
       "attribution": "\u00a9 Scottish Government, contains Ordnance Survey data \u00a9 Crown copyright and database right 2024; Noise Mapping Scotland round 4, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Tue, 04 Mar 2025 14:09:48 GMT",
       "fetched_version": "Tue, 04 Mar 2025 14:09:48 GMT",
       "fetched_at": "2026-10-13T11:25:14.813874+00:00",
@@ -7226,6 +7614,9 @@
       "title": "Noise mapping Scotland round 4, industry (Lden)",
       "licence": "OGL-3.0",
       "attribution": "\u00a9 Scottish Government, contains Ordnance Survey data \u00a9 Crown copyright and database right 2024; Noise Mapping Scotland round 4, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Tue, 30 Jul 2024 08:44:20 GMT",
       "fetched_version": "Tue, 30 Jul 2024 08:44:20 GMT",
       "fetched_at": "2026-10-13T11:24:45.774872+00:00",
@@ -7243,6 +7634,9 @@
       "title": "School leaver attainment (Attainment for All), Scotland",
       "licence": "OGL-3.0",
       "attribution": "Scottish Government, Schools - Attainment for All, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "https://api.data.gov.scot/resource/564b1561-b422-46c3-9522-5fa11f7dde33/download",
       "fetched_version": "https://api.data.gov.scot/resource/564b1561-b422-46c3-9522-5fa11f7dde33/download",
       "fetched_at": "2026-10-13T11:23:23.322489+00:00",
@@ -7260,6 +7654,9 @@
       "title": "Council tax by band and council, Scotland",
       "licence": "OGL-3.0",
       "attribution": "Scottish Government, Council Tax datasets, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Thu, 26 Mar 2026 12:12:07 GMT",
       "fetched_version": "Thu, 26 Mar 2026 12:12:07 GMT",
       "fetched_at": "2026-10-13T11:23:18.953547+00:00",
@@ -7277,6 +7674,9 @@
       "title": "Data Zone boundaries 2022, Scotland",
       "licence": "OGL-3.0",
       "attribution": "Copyright Scottish Government, contains Ordnance Survey data \u00a9 Crown copyright and database right 2024; licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Thu, 23 Oct 2025 14:51:29 GMT",
       "fetched_version": "Thu, 23 Oct 2025 14:51:29 GMT",
       "fetched_at": "2026-10-13T11:13:52.888933+00:00",
@@ -7294,6 +7694,9 @@
       "title": "Data Zone population-weighted centroids 2022, Scotland",
       "licence": "OGL-3.0",
       "attribution": "Copyright Scottish Government, contains Ordnance Survey data \u00a9 Crown copyright and database right 2024; licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Thu, 23 Oct 2025 15:06:16 GMT",
       "fetched_version": "Thu, 23 Oct 2025 15:06:16 GMT",
       "fetched_at": "2026-10-13T11:13:59.055473+00:00",
@@ -7311,6 +7714,9 @@
       "title": "Data Zone 2022 lookup (Intermediate Zone, council, urban rural classification)",
       "licence": "OGL-3.0",
       "attribution": "Scottish Government, 2022 Data Zone Lookup, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "https://api.data.gov.scot/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download",
       "fetched_version": "https://api.data.gov.scot/resource/81b010f5-0207-4ee5-bd2d-e7821aa6a3dc/download",
       "fetched_at": "2026-10-13T11:10:09.826913+00:00",
@@ -7328,6 +7734,9 @@
       "title": "Intermediate Zone boundaries 2022, Scotland",
       "licence": "OGL-3.0",
       "attribution": "Copyright Scottish Government, contains Ordnance Survey data \u00a9 Crown copyright and database right 2024; licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Fri, 13 Dec 2024 11:38:35 GMT",
       "fetched_version": "Fri, 13 Dec 2024 11:38:35 GMT",
       "fetched_at": "2026-10-13T11:13:56.923926+00:00",
@@ -7345,6 +7754,9 @@
       "title": "Scottish school roll and locations",
       "licence": "OGL-3.0",
       "attribution": "Copyright Scottish Government, contains Ordnance Survey data \u00a9 Crown copyright and database right 2024; school data created and maintained by Scottish Local Government (Local Government Information House Limited); licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Wed, 03 Apr 2024 10:14:18 GMT",
       "fetched_version": "Wed, 03 Apr 2024 10:14:18 GMT",
       "fetched_at": "2026-10-13T11:23:20.832859+00:00",
@@ -7362,6 +7774,9 @@
       "title": "Scottish Index of Multiple Deprivation 2020v2, indicator data",
       "licence": "OGL-3.0",
       "attribution": "Scottish Government, Scottish Index of Multiple Deprivation 2020, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Mon, 27 Apr 2020 16:27:48 GMT",
       "fetched_version": "Mon, 27 Apr 2020 16:27:48 GMT",
       "fetched_at": "2026-10-13T11:10:07.451016+00:00",
@@ -7379,6 +7794,9 @@
       "title": "Scottish Index of Multiple Deprivation 2020v2, ranks and domain ranks",
       "licence": "OGL-3.0",
       "attribution": "Scottish Government, Scottish Index of Multiple Deprivation 2020, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Mon, 27 Apr 2020 16:16:03 GMT",
       "fetched_version": "Mon, 27 Apr 2020 16:16:03 GMT",
       "fetched_at": "2026-10-13T11:10:05.671302+00:00",
@@ -7396,6 +7814,9 @@
       "title": "Scottish Index of Multiple Deprivation 2020v2, postcode lookup",
       "licence": "OGL-3.0",
       "attribution": "Scottish Government, Scottish Index of Multiple Deprivation 2020, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "S"
+      ],
       "version": "Tue, 11 Feb 2025 12:28:47 GMT",
       "fetched_version": "Tue, 11 Feb 2025 12:28:47 GMT",
       "fetched_at": "2026-10-13T11:09:59.636618+00:00",
@@ -7413,6 +7834,11 @@
       "title": "DfT road collisions (STATS19, last 5 years)",
       "licence": "OGL-3.0",
       "attribution": "Department for Transport, Road Safety Data (STATS19), licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W",
+        "S"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-07T17:06:04.703530+00:00",
@@ -7430,6 +7856,9 @@
       "title": "Translink Metro and Glider timetables (TransXChange)",
       "licence": "OGL-3.0",
       "attribution": "Translink timetable data via OpenDataNI, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/6d9677cf-8d03-4851-985c-16f73f7dd5fb/resource/f2c58049-7ca9-4576-b3bd-1b3d8a8674e0/download/metro-and-glider-final-10-sept-26-1.zip",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/6d9677cf-8d03-4851-985c-16f73f7dd5fb/resource/f2c58049-7ca9-4576-b3bd-1b3d8a8674e0/download/metro-and-glider-final-10-sept-26-1.zip",
       "fetched_at": "2026-10-14T15:48:16.841149+00:00",
@@ -7447,6 +7876,9 @@
       "title": "Translink NI Railways and Enterprise timetables (TransXChange)",
       "licence": "OGL-3.0",
       "attribution": "Translink timetable data via OpenDataNI, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/e41b1057-b0bd-4419-95eb-77057c8ad6b0/resource/ff8c5dd8-dcfd-4141-a270-df242f114215/download/nir-and-enterprise-10-sept-26.zip",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/e41b1057-b0bd-4419-95eb-77057c8ad6b0/resource/ff8c5dd8-dcfd-4141-a270-df242f114215/download/nir-and-enterprise-10-sept-26.zip",
       "fetched_at": "2026-10-14T15:48:14.634429+00:00",
@@ -7464,6 +7896,9 @@
       "title": "Translink Ulsterbus, Goldliner, town services and Foyle Metro timetables (TransXChange)",
       "licence": "OGL-3.0",
       "attribution": "Translink timetable data via OpenDataNI, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "N"
+      ],
       "version": "https://admin.opendatani.gov.uk/dataset/c1acee5b-a400-46bd-a795-9bf7637ff879/resource/291cbb54-7bb3-4df7-8599-0c8f49a20be6/download/ulsterbus-and-goldline.zip",
       "fetched_version": "https://admin.opendatani.gov.uk/dataset/c1acee5b-a400-46bd-a795-9bf7637ff879/resource/291cbb54-7bb3-4df7-8599-0c8f49a20be6/download/ulsterbus-and-goldline.zip",
       "fetched_at": "2026-10-14T15:48:18.821003+00:00",
@@ -7481,6 +7916,12 @@
       "title": "Annual count of hot summer days, UKCP18 local projections by sub-local-authority area (Met Office)",
       "licence": "OGL-3.0",
       "attribution": "Contains Met Office data licensed under the Open Government Licence v3.0. Contains OS and ONS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": "2026-07-21T09:42:20+00:00",
       "fetched_version": "2026-07-21T09:42:20+00:00",
       "fetched_at": "2026-10-14T15:48:33+00:00",
@@ -7498,6 +7939,12 @@
       "title": "VIIRS annual night-time lights (Earth Observation Group VNL v2.2)",
       "licence": "CC-BY-4.0",
       "attribution": "This product was made utilizing VIIRS Nighttime Lights (VNL v2.2) data produced by the Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines.",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-15T10:39:11+00:00",
@@ -7515,6 +7962,10 @@
       "title": "VOA Council Tax stock of properties by band and build period (LSOA)",
       "licence": "OGL-3.0",
       "attribution": "Valuation Office Agency, Council Tax: stock of properties, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "E",
+        "W"
+      ],
       "version": "https://assets.publishing.service.gov.uk/media/6aa93b422f29b388848184b8/CTSOP_4_1.zip",
       "fetched_version": "https://assets.publishing.service.gov.uk/media/6aa93b422f29b388848184b8/CTSOP_4_1.zip",
       "fetched_at": "2026-10-07T17:05:41.807820+00:00",
@@ -7532,6 +7983,9 @@
       "title": "Council tax levels in Wales by billing authority",
       "licence": "OGL-3.0",
       "attribution": "Welsh Government, Council tax levels, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "W"
+      ],
       "version": "https://www.gov.wales/sites/default/files/statistics-and-research/2026-03/council-tax-levels-april-2026-march-2027-153478.xlsx",
       "fetched_version": "https://www.gov.wales/sites/default/files/statistics-and-research/2026-03/council-tax-levels-april-2026-march-2027-153478.xlsx",
       "fetched_at": "2026-10-08T17:41:41.396879+00:00",
@@ -7549,6 +8003,9 @@
       "title": "Examination results in Wales (Key Stage 4 interim measures by local authority)",
       "licence": "OGL-3.0",
       "attribution": "Welsh Government, Examination results, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "W"
+      ],
       "version": "https://www.gov.wales/sites/default/files/statistics-and-research/2025-12/examination-results-september-2024-august-2025-081.ods",
       "fetched_version": "https://www.gov.wales/sites/default/files/statistics-and-research/2025-12/examination-results-september-2024-august-2025-081.ods",
       "fetched_at": "2026-10-08T17:41:43.289728+00:00",
@@ -7566,6 +8023,9 @@
       "title": "Welsh Government environmental noise mapping 2022, railway noise (Lden, all railways)",
       "licence": "OGL-3.0",
       "attribution": "Contains Welsh Government information licensed under the Open Government Licence v3.0 (Environmental Noise Mapping 2022).",
+      "coverage": [
+        "W"
+      ],
       "version": "Thu, 03 Aug 2023 14:46:12 GMT",
       "fetched_version": "Thu, 03 Aug 2023 14:46:12 GMT",
       "fetched_at": "2026-10-10T18:37:24.635582+00:00",
@@ -7583,6 +8043,9 @@
       "title": "Welsh Government environmental noise mapping 2022, road traffic noise (Lden, all roads)",
       "licence": "OGL-3.0",
       "attribution": "Contains Welsh Government information licensed under the Open Government Licence v3.0 (Environmental Noise Mapping 2022).",
+      "coverage": [
+        "W"
+      ],
       "version": "Thu, 03 Aug 2023 14:29:15 GMT",
       "fetched_version": "Thu, 03 Aug 2023 14:29:15 GMT",
       "fetched_at": "2026-10-10T18:37:23.194589+00:00",
@@ -7600,6 +8063,9 @@
       "title": "Schools in Wales, maintained (DataMapWales)",
       "licence": "OGL-3.0",
       "attribution": "Welsh Government, Schools - Maintained (DataMapWales), licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "W"
+      ],
       "version": null,
       "fetched_version": null,
       "fetched_at": "2026-10-08T17:41:39.499166+00:00",
@@ -7617,6 +8083,9 @@
       "title": "Welsh Index of Multiple Deprivation 2025, index and domain ranks by LSOA",
       "licence": "OGL-3.0",
       "attribution": "Welsh Government, Welsh Index of Multiple Deprivation 2025, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "W"
+      ],
       "version": "Wed, 26 Nov 2025 09:26:20 GMT",
       "fetched_version": "Wed, 26 Nov 2025 09:26:20 GMT",
       "fetched_at": "2026-10-08T17:41:37.528574+00:00",
@@ -7634,6 +8103,9 @@
       "title": "Welsh Index of Multiple Deprivation 2025, index and domain scores by LSOA",
       "licence": "OGL-3.0",
       "attribution": "Welsh Government, Welsh Index of Multiple Deprivation 2025, licensed under the Open Government Licence v3.0.",
+      "coverage": [
+        "W"
+      ],
       "version": "Tue, 09 Dec 2025 10:32:04 GMT",
       "fetched_version": "Tue, 09 Dec 2025 10:32:04 GMT",
       "fetched_at": "2026-10-08T17:41:36.126579+00:00",
@@ -7650,8 +8122,8 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "307bb440d8a321880d373e74cbe585822ec58737751dbbc5512349b5d6236d80",
-      "bytes": 2346341
+      "sha256": "bee97a925ea202e8ebc622a5c19296d458a4f1e656f64770bcec7b355abd31fe",
+      "bytes": 2346290
     },
     "scores.parquet": {
       "sha256": "1575c1748758b6ee5c88aa05059b781950067a7cb1930350018226ff9642afd7",
@@ -7666,8 +8138,8 @@
       "bytes": 31042
     },
     "areas.parquet": {
-      "sha256": "4cf7f93e98223d3f73a4c3461f5bb9ea9766a1b063cfbb0747864602eed17c0a",
-      "bytes": 24023
+      "sha256": "41562238b8dc00858972318caf5ec97f8317a53bc39143268a946f0632f5d931",
+      "bytes": 23892
     },
     "pois.parquet": {
       "sha256": "35db22d129d1083ac5c56da9531f2c934fe72819463196feaa92786cdba56178",
