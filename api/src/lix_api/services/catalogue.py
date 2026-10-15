@@ -1,10 +1,27 @@
 """What the index measures: indicators, themes, presets and sources."""
 
-from lix_api.models import IndicatorInfo
+from lix_api.models import IndicatorBrief, IndicatorInfo
 from lix_api.store import Store
 
 
-def list_indicators(store: Store, theme: str | None = None) -> list[IndicatorInfo]:
+def list_indicators(
+    store: Store, theme: str | None = None, detail: bool = True
+) -> list[IndicatorInfo] | list[IndicatorBrief]:
+    """Every indicator (or one theme's): the full card, or without ``detail`` the name
+    card alone (id, label, theme, unit, role, coverage), a tenth of the size."""
+    if not detail:
+        return [
+            IndicatorBrief(
+                id=i.id,
+                theme=i.theme,
+                label=i.label,
+                unit=i.unit,
+                role=i.role,
+                coverage=i.coverage or [],
+            )  # fmt: skip
+            for i in store.indicators.values()
+            if theme is None or i.theme == theme
+        ]
     return [
         IndicatorInfo(
             id=i.id,

@@ -3,7 +3,8 @@
 import polars as pl
 
 from lix_api.models import ComparedArea, Comparison
-from lix_api.services.scoring import ThemeWeights, resolve_weights, scores_for
+from lix_api.services.areas import stand_in
+from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa, search_place
 from lix_api.store import Store
 
@@ -27,8 +28,18 @@ def compare_areas(
         [store.base_features, scores_for(store, themes, multipliers).drop("lsoa21cd")],
         how="horizontal",
     )
-    indicators = [i for i in COMPARE_INDICATORS if i in store.indicators]
-    areas = []
+    requested = [i for i in COMPARE_INDICATORS if i in store.indicators]
+    picked: list[
+        tuple[
+            str,
+            str,
+            str,
+            float | None,
+            float | None,
+            dict[str, float | None],
+            dict[str, tuple[str | None, float | None]],
+        ]
+    ] = []
     for ref in refs:
         place = (search_place(store, ref, limit=1) or [None])[0]
         if place and place.kind in ("msoa", "lad"):
@@ -56,20 +67,48 @@ def compare_areas(
                 return None
             return round(float((vals.filter(ok) * w.filter(ok)).sum() / w.filter(ok).sum()), 2)
 
+        # What each nation lacks is flagged on every one of its rows alike, so the
+        # first row says which indicator (or substitute) this area can show
+        first = rows.row(0, named=True)
+        shown = {}
+        for i in requested:
+            pick = stand_in(store, first, i)
+            shown[i] = (pick, wmean(f"raw__{pick}") if pick else None)
+        picked.append((
+            code, label, level, wmean("overall"),
+            percentile(wmean("overall_pct")) if level == "lsoa" else None,
+            {t: wmean(f"theme__{t}") for t in store.themes}, shown,
+        ))  # fmt: skip
+
+    # One row per indicator any area shows: the usual one, and a substitute beside it
+    # when another area's nation lacks the usual one
+    rows_shown: list[str] = []
+    stand_ins: dict[str, str] = {}
+    for i in requested:
+        for *_, shown in picked:
+            pick = shown[i][0]
+            if pick and pick not in rows_shown:
+                rows_shown.append(pick)
+            if pick and pick != i:
+                stand_ins[pick] = i
+    areas = []
+    for code, label, level, overall, pct, themes_, shown in picked:
+        values = {pick: value for pick, value in shown.values() if pick}
         areas.append(
             ComparedArea(
                 code=code,
                 name=label,
                 level=level,
-                overall=wmean("overall"),
-                overall_percentile=wmean("overall_pct") if level == "lsoa" else None,
-                themes={t: wmean(f"theme__{t}") for t in store.themes},
-                indicators={i: wmean(f"raw__{i}") for i in indicators},
+                overall=overall,
+                overall_percentile=pct,
+                themes=themes_,
+                indicators={i: values.get(i) for i in rows_shown},
             )  # fmt: skip
         )
     return Comparison(
         preset=name,
         areas=areas,
-        indicator_labels={i: store.indicators[i].label for i in indicators},
+        indicator_labels={i: store.indicators[i].label for i in rows_shown},
         theme_labels={t: s.label for t, s in store.themes.items()},
+        stand_ins=stand_ins,
     )

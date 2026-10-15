@@ -357,6 +357,14 @@
           "title": "Preset",
           "type": "string"
         },
+        "stand_ins": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Substitute indicator \u2192 the usual indicator it stands in for, where an area's nation lacks the usual one",
+          "title": "Stand Ins",
+          "type": "object"
+        },
         "theme_labels": {
           "additionalProperties": {
             "type": "string"
@@ -639,6 +647,19 @@
           "default": null,
           "description": "0\u2013100, higher is better",
           "title": "Score"
+        },
+        "stands_in_for": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The indicator this one replaces here: a substitute shown because the nation lacks the usual one (the SIMD crime rate for police.uk crime in Scotland)",
+          "title": "Stands In For"
         },
         "theme": {
           "title": "Theme",
@@ -1068,9 +1089,19 @@
           "title": "Bbox"
         },
         "candidates": {
-          "description": "Areas that passed the filters",
+          "description": "Areas that passed the filters and have the measure",
           "title": "Candidates",
           "type": "integer"
+        },
+        "direction": {
+          "default": "best",
+          "description": "best: highest first \u00b7 worst: lowest first",
+          "enum": [
+            "best",
+            "worst"
+          ],
+          "title": "Direction",
+          "type": "string"
         },
         "level": {
           "enum": [

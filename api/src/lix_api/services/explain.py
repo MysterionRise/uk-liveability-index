@@ -1,8 +1,8 @@
 """Why an area scores what it does: each theme's share of the score and its indicators."""
 
 from lix_api.models import Contribution, Explanation, SourceRef
-from lix_api.services.areas import indicator_value
-from lix_api.services.scoring import ThemeWeights, resolve_weights, scores_for
+from lix_api.services.areas import indicator_value, with_substitutes
+from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
 
@@ -28,11 +28,15 @@ def explain_score(
             continue
         share = max(available.get(t, 0.0), 0.0) / total
         score = scores.get(f"theme__{t}")
-        indicators = [
-            indicator_value(store, row, ind.id)
-            for ind in store.indicators.values()
-            if ind.theme == t and ind.role in ("scored", "context")
-        ]
+        indicators = with_substitutes(
+            store,
+            row,
+            [
+                indicator_value(store, row, ind.id)
+                for ind in store.indicators.values()
+                if ind.theme == t and ind.role in ("scored", "context")
+            ],
+        )
         contributions.append(
             Contribution(
                 theme=t,
@@ -70,8 +74,6 @@ def explain_score(
     return Explanation(
         lsoa21cd=code, name=f"{row['lsoa21nm']} ({row['msoa_name']})", preset=name,
         overall=None if scores.get("overall") is None else round(scores["overall"], 1),
-        overall_percentile=None
-        if scores.get("overall_pct") is None
-        else round(scores["overall_pct"]),
+        overall_percentile=percentile(scores.get("overall_pct")),
         contributions=contributions, caveats=caveats, sources=sources,
     )  # fmt: skip

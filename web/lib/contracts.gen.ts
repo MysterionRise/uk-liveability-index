@@ -37,6 +37,10 @@ export type Role = string;
  * 0–100, higher is better
  */
 export type Score = number | null;
+/**
+ * The indicator this one replaces here: a substitute shown because the nation lacks the usual one (the SIMD crime rate for police.uk crime in Scotland)
+ */
+export type StandsInFor = string | null;
 export type Theme = string;
 export type Unit = string;
 /**
@@ -259,9 +263,13 @@ export type OriginLabel = string;
 export type Pois1 = Poi[];
 export type Bbox3 = [unknown, unknown, unknown, unknown] | null;
 /**
- * Areas that passed the filters
+ * Areas that passed the filters and have the measure
  */
 export type Candidates = number;
+/**
+ * best: highest first · worst: lowest first
+ */
+export type Direction1 = "best" | "worst";
 export type Level1 = "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type Preset4 = string;
 export type Code3 = string;
@@ -365,6 +373,7 @@ export interface IndicatorValue {
   quality?: Quality;
   role?: Role;
   score?: Score;
+  stands_in_for?: StandsInFor;
   theme: Theme;
   unit: Unit;
   unit_code?: UnitCode;
@@ -414,9 +423,16 @@ export interface Comparison {
   areas: Areas;
   indicator_labels: IndicatorLabels;
   preset: Preset1;
+  stand_ins?: StandIns;
   theme_labels: ThemeLabels;
 }
 export interface IndicatorLabels {
+  [k: string]: string;
+}
+/**
+ * Substitute indicator → the usual indicator it stands in for, where an area's nation lacks the usual one
+ */
+export interface StandIns {
   [k: string]: string;
 }
 export interface ThemeLabels {
@@ -595,6 +611,7 @@ export interface PoiResult {
 export interface RankResult {
   bbox?: Bbox3;
   candidates: Candidates;
+  direction?: Direction1;
   level: Level1;
   preset: Preset4;
   results: Results;

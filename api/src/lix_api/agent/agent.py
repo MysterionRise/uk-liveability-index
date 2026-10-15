@@ -8,6 +8,7 @@ so the sliders move and the map recolours as the assistant works.
 
 import functools
 import logging
+from typing import Literal
 
 import polars as pl
 from ag_ui.core import EventType, StateSnapshotEvent
@@ -22,6 +23,7 @@ from lix_api.models import (
     AreaProfile,
     Comparison,
     Explanation,
+    IndicatorBrief,
     IndicatorInfo,
     Level,
     Place,
@@ -57,12 +59,16 @@ How to work:
   picks a place the user probably didn't mean, say which one you used.
 - When the user describes priorities ("we have two kids", "I commute to Manchester"),
   call set_weights before ranking so the sliders and map reflect them.
-- Rank at "msoa" level (neighbourhoods of ~8,000 people) for broad questions and at
-  "lsoa" level when the user wants street-scale detail.
+- Rank at "msoa" level (neighbourhoods of ~8,000 people) for broad questions, at
+  "lsoa" level when the user wants street-scale detail, and at "lad" level to compare
+  whole councils.
 - When the question is about one measure (the quietest, the least flood-prone, the
   cleanest air, the cheapest, the best broadband), rank by it with sort_by
   ("indicator:<id>" or "theme:<id>"; list_indicators gives the ids) rather than
-  changing the weights; the list and the map then show that measure.
+  changing the weights; the list and the map then show that measure. For the worst
+  areas (the furthest from a hospital, the most polluted) pass direction="worst".
+- An indicator a nation lacks has a substitute where one exists (the tools say what
+  stands in for what); rank by the substitute there.
 - Mention caveats the tools return when they matter to the answer, and always say when
   a figure is an estimate: an indicator whose quality is "imputed", "low_n" or
   "broadcast_lad" (crime in Greater Manchester, a price from few sales, a council-wide
@@ -211,15 +217,17 @@ def rank_areas(
     urban: bool | None = None,
     limit: int = 8,
     sort_by: str = "overall",
+    direction: Literal["best", "worst"] = "best",
 ) -> ToolReturn:
-    """Rank areas best first and highlight them on the map: by the current weighting, or
-    by one measure when the question is about one thing.
+    """Rank areas best first (or worst first) and highlight them on the map: by the
+    current weighting, or by one measure when the question is about one thing.
 
     Args:
         within: a local authority, region, neighbourhood or place; with a place, areas
             within radius_km of it (default 10 km)
         radius_km: search radius around a place
-        level: "msoa" (neighbourhoods of ~8,000 people) or "lsoa" (~1,600)
+        level: "msoa" (neighbourhoods of ~8,000 people), "lsoa" (~1,600) or "lad"
+            (whole councils, as population-weighted averages)
         max_median_price: only areas whose typical house price is at most this (£)
         min_theme_scores: e.g. {"safety": 60} to require a minimum theme score
         urban: True for towns and cities only, False for rural areas only
@@ -228,11 +236,14 @@ def rank_areas(
             "theme:safety") or "indicator:<id>" (e.g. "indicator:noise_exposure" for the
             quietest areas, "indicator:house_price" for the cheapest); the map is then
             coloured by that measure and the weights are left alone
+        direction: "best" (highest scores first) or "worst" (lowest first: the most
+            polluted, the furthest from a hospital)
     """
     result: RankResult = ranking.rank_areas(
         get_store(), within=within, radius_km=radius_km, level=level,
         max_median_price=max_median_price, min_theme_scores=min_theme_scores, urban=urban,
-        limit=min(limit, 20), sort_by=sort_by, **_weights(ctx), **_locale(ctx),
+        limit=max(1, min(limit, 20)), sort_by=sort_by, direction=direction,
+        **_weights(ctx), **_locale(ctx),
     )  # fmt: skip
     ctx.deps.state.map.highlighted = [r.code for r in result.results]
     if result.bbox:
@@ -368,11 +379,21 @@ def add_to_shortlist(ctx: RunContext[Deps], area: str, note: str | None = None) 
         raise ValueError(f"Couldn't find {area!r}")
     code = place.lsoa21cd if place.kind in ("postcode", "place", "lsoa") else place.code
     s = ctx.deps.state
-    if all(i.code != code for i in s.shortlist):
+    already = any(i.code == code for i in s.shortlist)
+    if not already:
         s.shortlist.append(
             ShortlistItem(code=code, name=place.name, note=note, centre=place.centre)
         )
-    return _with_state(ctx, s.shortlist)
+    # Say what happened, so the reply does not call a fresh addition "already there"
+    return _with_state(
+        ctx,
+        {
+            "added": not already,
+            "already_there": already,
+            "area": place.name,
+            "shortlist": [i.model_dump(mode="json") for i in s.shortlist],
+        },
+    )
 
 
 # Changes the shared state: tools called after it in the same turn see the change
@@ -381,15 +402,31 @@ def add_to_shortlist(ctx: RunContext[Deps], area: str, note: str | None = None) 
 def remove_from_shortlist(ctx: RunContext[Deps], code: str) -> ToolReturn:
     """Remove an area from the shortlist by its code."""
     s = ctx.deps.state
+    before = len(s.shortlist)
     s.shortlist = [i for i in s.shortlist if i.code != code]
-    return _with_state(ctx, s.shortlist)
+    return _with_state(
+        ctx,
+        {
+            "removed": len(s.shortlist) < before,
+            "shortlist": [i.model_dump(mode="json") for i in s.shortlist],
+        },
+    )
 
 
 @agent.tool
 @_recoverable
-def list_indicators(ctx: RunContext[Deps], theme: str | None = None) -> list[IndicatorInfo]:
-    """What the index measures, with units, sources and caveats (optionally for one theme)."""
-    return catalogue.list_indicators(get_store(), theme)
+def list_indicators(
+    ctx: RunContext[Deps], theme: str | None = None, detail: bool = False
+) -> list[IndicatorBrief] | list[IndicatorInfo]:
+    """What the index measures: each indicator's id (for sort_by), label, theme, unit,
+    role and the nations it covers; optionally one theme's.
+
+    Args:
+        theme: limit the list to one theme (e.g. "transport")
+        detail: True adds descriptions, caveats and sources (a long reply; ask only when
+            a caveat or source matters to the answer)
+    """
+    return catalogue.list_indicators(get_store(), theme, detail=detail)
 
 
 async def _analyst_only(ctx: RunContext[Deps], tool_def: ToolDefinition) -> ToolDefinition | None:

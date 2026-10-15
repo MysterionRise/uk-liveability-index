@@ -4,7 +4,7 @@ import polars as pl
 
 from lix_api.models import AreaProfile, IndicatorValue, Point, ThemeScore
 from lix_api.services.names import english_if_different, localised
-from lix_api.services.scoring import ThemeWeights, resolve_weights, scores_for
+from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
 
@@ -22,6 +22,52 @@ def _covered(store: Store, values: list[IndicatorValue]) -> set[str]:
             if target in present:
                 covered.add(spec.id)
     return covered
+
+
+def stand_in(store: Store, row: dict, indicator_id: str) -> str | None:
+    """The indicator to show for ``indicator_id`` in this area: itself where its nation
+    has it, else a scored substitute (either way round) the nation has, else None."""
+
+    def available(i: str) -> bool:
+        return row.get(f"q__{i}") != "not_available"
+
+    if available(indicator_id):
+        return indicator_id
+    spec = store.indicators[indicator_id]
+    for other in store.scored:
+        pair = indicator_id in other.substitute_for or other.id in spec.substitute_for
+        if pair and other.id != indicator_id and available(other.id):
+            return other.id
+    return None
+
+
+def fact(store: Store, row: dict, indicator_id: str) -> IndicatorValue:
+    """``indicator_id``'s value here, or its substitute's marked as standing in."""
+    shown = stand_in(store, row, indicator_id) or indicator_id
+    value = indicator_value(store, row, shown)
+    if shown != indicator_id:
+        value.stands_in_for = indicator_id
+    return value
+
+
+def with_substitutes(store: Store, row: dict, values: list[IndicatorValue]) -> list[IndicatorValue]:
+    """A list of an area's indicator values with the substitutes resolved: a value the
+    nation lacks is dropped when its substitute (either way round) is in the list, and
+    a substitute says what it stands in for."""
+    covered = _covered(store, values)
+    out = []
+    for v in values:
+        if v.quality == "not_available" and v.id in covered:
+            continue
+        if v.quality != "not_available":
+            replaced = [
+                t for t in store.indicators[v.id].substitute_for
+                if row.get(f"q__{t}") == "not_available"
+            ]  # fmt: skip
+            if replaced:
+                v = v.model_copy(update={"stands_in_for": replaced[0]})
+        out.append(v)
+    return out
 
 
 KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_exposure",
@@ -44,9 +90,7 @@ def _round(v: float | None, digits: int = 1) -> float | None:
     return None if v is None else round(v, digits)
 
 
-def _pct(v: float | None) -> float | None:
-    """A percentile for "better than N% of…": whole, and the top area is 99, never 100."""
-    return None if v is None else min(99.0, round(v))
+_pct = percentile
 
 
 def indicator_value(store: Store, row: dict, indicator_id: str) -> IndicatorValue:
@@ -139,7 +183,7 @@ def area_profile(
         themes=theme_scores,
         strengths=list(reversed(ranked[-3:])),
         weaknesses=ranked[:3],
-        key_facts=[indicator_value(store, row, i) for i in KEY_FACTS if i in store.indicators],
+        key_facts=[fact(store, row, i) for i in KEY_FACTS if i in store.indicators],
         flags=flags,
         flag_codes=flag_codes,
         centre=Point(lat=row["pwc_lat"], lon=row["pwc_lon"]),

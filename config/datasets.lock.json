@@ -18,16 +18,16 @@
   },
   "ae_sites": {
     "fetched": {
-      "bytes": 42481,
-      "fetched_at": "2026-10-13T13:07:11+00:00",
-      "sha256": "86b1636e9eb653f87d5d27549a7480e4da50c679b59782591e1f63cb24e35bf8",
-      "version": "86b1636e9eb653f8"
+      "bytes": 44520,
+      "fetched_at": "2026-10-15T01:12:22+00:00",
+      "sha256": "88f6e2ba9641dc1254457a4273bd3d4d15466e32f2111a26be537d722f768a26",
+      "version": "88f6e2ba9641dc12"
     },
     "resolved": {
       "path": "config/data/ae_sites.csv",
-      "resolved_at": "2026-10-13T13:21:56+00:00",
+      "resolved_at": "2026-10-15T01:12:22+00:00",
       "url": null,
-      "version": "86b1636e9eb653f8"
+      "version": "88f6e2ba9641dc12"
     }
   },
   "bods_gtfs": {
@@ -3028,6 +3028,20 @@
       "title": "Dispenser Details - June 2026 ",
       "url": "https://www.opendata.nhs.scot/dataset/a30fde16-1226-49b3-b13d-eb90e39c2058/resource/801b1c5a-02e9-49b7-a3c7-884a9144730f/download/dispenser_contactdetails_202606.csv",
       "version": "https://www.opendata.nhs.scot/dataset/a30fde16-1226-49b3-b13d-eb90e39c2058/resource/801b1c5a-02e9-49b7-a3c7-884a9144730f/download/dispenser_contactdetails_202606.csv"
+    }
+  },
+  "place_names_i18n": {
+    "fetched": {
+      "bytes": 3197,
+      "fetched_at": "2026-10-15T01:21:35+00:00",
+      "sha256": "718977eba9aaeecc831501222ec6d90d9414a6ce227d943abad969394d21a725",
+      "version": "718977eba9aaeecc"
+    },
+    "resolved": {
+      "path": "config/data/place_names_i18n.csv",
+      "resolved_at": "2026-10-15T01:21:35+00:00",
+      "url": null,
+      "version": "718977eba9aaeecc"
     }
   },
   "police_crime": {

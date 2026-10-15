@@ -312,6 +312,11 @@ class TestRankingScopesAndSorts:
         from lix_api.services.ranking import rank_areas
 
         for ident in [i.id for i in store.scored]:
+            if "E" not in store.applicable.get(ident, []):
+                # Built for another nation: a clear refusal, not an empty list (#111)
+                with pytest.raises(LookupError, match="not available in England"):
+                    rank_areas(store, within="Leeds", level="msoa", sort_by=f"indicator:{ident}")
+                continue
             out = rank_areas(
                 store, within="Leeds", level="msoa", limit=2, sort_by=f"indicator:{ident}"
             )
@@ -324,3 +329,105 @@ class TestRankingScopesAndSorts:
         assert out.results
         # The test store carries a Welsh name for Cardiff's areas; the English stays beside it
         assert any(r.name_en for r in out.results) or all(r.name for r in out.results)
+
+
+class TestRankingGuards:
+    """The v0.4.0 testing pass (#102, #111): council-level rankings, areas without the
+    measure, lenient names, worst-first, capped percentiles, localised names."""
+
+    def test_lad_level_aggregates_whole_councils(self, store):
+        r = ranking.rank_areas(store, level="lad", limit=5)
+        assert {a.code for a in r.results} == {"E08000035", "E06000043", "W06000015"}
+        assert all(a.level == "lad" for a in r.results)
+        leeds = next(a for a in r.results if a.code == "E08000035")
+        assert leeds.name == "Leeds" and leeds.local_authority == "Leeds"
+        assert leeds.population == 1500 + 1600 + 1700 + 1800
+
+    def test_region_and_nation_levels_are_refused_with_the_allowed_ones(self, store):
+        with pytest.raises(LookupError, match="'lad'"):
+            ranking.rank_areas(store, level="region")
+
+    def test_areas_without_the_measure_are_left_out_not_first(self, store):
+        # primary_school_quality is built for England only: Cardiff's areas have no value
+        r = ranking.rank_areas(
+            store, level="msoa", sort_by="indicator:primary_school_quality", limit=10
+        )
+        assert "W02000384" not in {a.code for a in r.results}
+        assert r.candidates == len(r.results) == 3
+        assert all(a.sort_score is not None for a in r.results)
+
+    def test_an_indicator_the_scope_lacks_is_explained_not_empty(self, store):
+        with pytest.raises(LookupError, match="not available in Wales"):
+            ranking.rank_areas(store, within="Cardiff", sort_by="indicator:primary_school_quality")
+
+    def test_theme_names_and_minimum_keys_are_lenient(self, store):
+        r = ranking.rank_areas(store, level="msoa", sort_by="theme:schools")
+        assert r.sort_by == "theme:education"
+        assert ranking.rank_areas(store, sort_by="Safety").sort_by == "theme:safety"
+        r = ranking.rank_areas(store, level="lsoa", min_theme_scores={"Safety": 0}, limit=0)
+        assert len(r.results) == 1  # limit is at least one
+        with pytest.raises(LookupError, match="min_theme_scores"):
+            ranking.rank_areas(store, min_theme_scores={"vibes": 50})
+
+    def test_worst_first_reverses_the_order(self, store):
+        worst = ranking.rank_areas(store, level="lsoa", limit=8, direction="worst")
+        overall = [a.overall for a in worst.results]
+        assert overall == sorted(overall) and worst.direction == "worst"
+        assert all(a.stability is not None for a in worst.results)
+
+    def test_percentiles_never_read_100(self, store):
+        r = ranking.rank_areas(store, level="lsoa", limit=8)
+        pcts = [a.overall_percentile for a in r.results if a.overall_percentile is not None]
+        assert pcts and max(pcts) <= 99
+
+    def test_names_follow_the_locale(self, store):
+        r = ranking.rank_areas(store, within="Cardiff", level="msoa", locale="cy")
+        assert r.results[0].local_authority == "Caerdydd"
+        r = ranking.rank_areas(store, within="Cardiff", level="lad", locale="cy")
+        assert r.results[0].name == "Caerdydd" and r.results[0].name_en == "Cardiff"
+
+
+class TestSubstitutes:
+    """#103: an indicator a nation lacks shows its substitute, marked as standing in."""
+
+    def test_stand_in_prefers_the_indicator_then_its_substitute(self, store):
+        from lix_api.services.areas import stand_in
+
+        row = {"q__crime_violence": "not_available", "q__recorded_crime": "ok"}
+        assert stand_in(store, row, "crime_violence") == "recorded_crime"
+        assert stand_in(store, row, "recorded_crime") == "recorded_crime"
+        row = {"q__crime_violence": "ok", "q__recorded_crime": "not_available"}
+        assert stand_in(store, row, "recorded_crime") == "crime_violence"
+        row = {"q__crime_violence": "not_available", "q__recorded_crime": "not_available"}
+        assert stand_in(store, row, "crime_violence") is None
+
+    def test_with_substitutes_drops_the_covered_and_marks_the_stand_in(self, store):
+        from lix_api.services.areas import indicator_value, with_substitutes
+
+        row = {f"q__{i}": "ok" for i in store.indicators}
+        row |= {f"q__{i}": "not_available" for i in store.indicators if i.startswith("crime_")}
+        row |= {"raw__recorded_crime": 50.0, "n__recorded_crime": 40.0}
+        values = [
+            indicator_value(store, row, i) for i in ("crime_violence", "recorded_crime", "no2")
+        ]
+        out = with_substitutes(store, row, values)
+        assert [v.id for v in out] == ["recorded_crime", "no2"]
+        assert out[0].stands_in_for == "crime_violence" and out[1].stands_in_for is None
+
+    def test_key_facts_show_the_substitute(self, store):
+        from lix_api.services.areas import fact
+
+        row = {f"q__{i}": "ok" for i in store.indicators}
+        row |= {"q__crime_violence": "not_available", "raw__recorded_crime": 12.5}
+        f = fact(store, row, "crime_violence")
+        assert f.id == "recorded_crime" and f.stands_in_for == "crime_violence"
+        assert f.value == 12.5
+
+    def test_comparison_rows_are_the_requested_indicators_without_substitutes(self, store):
+        from lix_api.services.compare import COMPARE_INDICATORS, compare_areas
+
+        c = compare_areas(store, ["LS6 3HN", "CF10 1AA"])
+        assert list(c.indicator_labels) == [i for i in COMPARE_INDICATORS if i in store.indicators]
+        assert c.stand_ins == {}
+        # Wales lacks primary school quality: no value, no substitute
+        assert c.areas[1].indicators["primary_school_quality"] is None

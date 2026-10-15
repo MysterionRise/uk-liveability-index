@@ -11,6 +11,7 @@ import { themeVar } from "@/lib/palette";
 export function ComparisonTable({ comparison }: { comparison: Comparison }) {
   const { manifest } = useData();
   const t = useTranslations("Comparison");
+  const tq = useTranslations("Quality");
   const locale = useLocale();
   const labels = useLabels();
   const units = new Map(manifest?.indicators.map((i) => [i.id, i.unit]));
@@ -60,7 +61,14 @@ export function ComparisonTable({ comparison }: { comparison: Comparison }) {
             })}
             {Object.keys(comparison.indicator_labels).map((id) => (
               <tr key={id} className="border-t border-[var(--border)]">
-                <td className="py-1 pr-2 text-[var(--text-secondary)]">{labels.indicator(id)}</td>
+                <td className="py-1 pr-2 text-[var(--text-secondary)]">
+                  {labels.indicator(id)}
+                  {comparison.stand_ins?.[id] && (
+                    <span className="block text-[10px] text-[var(--text-muted)]">
+                      {tq("standsInFor", { label: labels.indicator(comparison.stand_ins[id]) })}
+                    </span>
+                  )}
+                </td>
                 {areas.map((a) => (
                   <td key={a.code} className="py-1 pr-2">
                     {formatValue((a.indicators as Record<string, number | null>)[id], units.get(id) ?? "", locale)}

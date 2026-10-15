@@ -53,6 +53,18 @@ class Store:
         return {code: n["name"] for code, n in self.geography["nations"].items()}
 
     @cached_property
+    def nation_aliases(self) -> dict[str, str]:
+        """Each nation's folded name in every language the pack knows → its code
+        ("alba" → S), for exact matching: a nation is never a fuzzy search result."""
+        from lix_api.services.text import fold
+
+        out: dict[str, str] = {}
+        for code, nation in self.geography["nations"].items():
+            for name in (nation["name"], *(nation.get("names") or {}).values()):
+                out[fold(name)] = code
+        return out
+
+    @cached_property
     def applicable(self) -> dict[str, list[str]]:
         """Scored indicator → the nations it is built for (the manifest's coverage)."""
         scored = set(self.manifest["scored_indicators"])

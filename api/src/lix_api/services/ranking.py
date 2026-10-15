@@ -2,18 +2,35 @@
 
 import math
 from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 import polars as pl
 
 from lix_api.models import Level, Point, RankedArea, RankResult
 from lix_api.services.names import base_locale
-from lix_api.services.scoring import ThemeWeights, resolve_weights, scores_for
+from lix_api.services.scoring import (
+    ThemeWeights,
+    match_indicator,
+    match_theme,
+    percentile,
+    resolve_weights,
+    scores_for,
+)
 from lix_api.services.search import search_place
 from lix_api.store import Store
 from lix_core.uncertainty import top_share
 
 DEFAULT_RADIUS_KM = 10.0
+Direction = Literal["best", "worst"]
+# Levels a ranking can be made at above the small areas: each is a population-weighted
+# mean of its small areas (code column, name column). Regions and nations are too few
+# and too varied to rank.
+AGGREGATE_LEVELS: dict[str, tuple[str, str]] = {
+    "msoa": ("msoa21cd", "msoa_name"),
+    "lad": ("lad_cd", "lad_nm"),
+}
+RANK_LEVELS = ("lsoa", *AGGREGATE_LEVELS)
 
 
 def _within(store: Store, within: str | None, radius_km: float | None):
@@ -62,22 +79,32 @@ class Measure:
 
 
 def sort_measure(store: Store, sort_by: str | None) -> Measure:
-    """Resolve ``"overall"``, ``"theme:<id>"`` or ``"indicator:<id>"`` against the catalogue."""
+    """Resolve ``"overall"``, ``"theme:<id>"`` or ``"indicator:<id>"`` against the catalogue.
+
+    Theme and indicator names are matched leniently (an id, its label or an everyday
+    word: "theme:schools" is education); a bare name without a kind is tried as a theme
+    first, then as an indicator.
+    """
     sort_by = (sort_by or "overall").strip()
-    if sort_by == "overall":
+    if sort_by.lower() in ("overall", "score", ""):
         return Measure("overall", "overall", ())
     kind, _, ident = sort_by.partition(":")
-    if kind == "theme" and ident in store.themes:
+    kind, ident = kind.strip().lower(), ident.strip()
+    if not ident:
+        kind, ident = "", kind
+    theme = match_theme(store, ident) if kind in ("theme", "") else None
+    if theme:
         return Measure(
-            sort_by, f"theme__{ident}", (), label=store.themes[ident].label, unit="score"
+            f"theme:{theme}", f"theme__{theme}", (), label=store.themes[theme].label, unit="score"
         )
-    if kind == "indicator" and ident in store.indicators:
-        spec = store.indicators[ident]
-        score, raw = f"n__{ident}", f"raw__{ident}"
+    iid = match_indicator(store, ident) if kind in ("indicator", "") else None
+    if iid:
+        spec = store.indicators[iid]
+        score, raw = f"n__{iid}", f"raw__{iid}"
         columns = tuple(c for c in (score, raw) if c in store.features.columns)
         if score in columns:
             return Measure(
-                sort_by,
+                f"indicator:{iid}",
                 score,
                 columns,
                 label=spec.label,
@@ -89,6 +116,52 @@ def sort_measure(store: Store, sort_by: str | None) -> Measure:
         f'Unknown sort_by {sort_by!r}: use "overall", one of {themes}, or "indicator:<id>" '
         "with an id from list_indicators"
     )
+
+
+def _theme_minimums(store: Store, minimums: dict[str, float] | None) -> dict[str, float]:
+    """``min_theme_scores`` keyed by theme id; an unknown theme is an error the caller
+    can relay, not a 500."""
+    out = {}
+    for key, value in (minimums or {}).items():
+        theme = match_theme(store, key)
+        if theme is None:
+            raise LookupError(
+                f"Unknown theme {key!r} in min_theme_scores; themes: {', '.join(store.themes)}"
+            )
+        out[theme] = float(value)
+    return out
+
+
+def _stand_in(store: Store, indicator_id: str, nations: set[str]) -> str | None:
+    """A scored substitute for ``indicator_id`` built in every one of ``nations``."""
+    for spec in store.scored:
+        pair = (
+            indicator_id in spec.substitute_for
+            or spec.id in store.indicators[indicator_id].substitute_for
+        )
+        if pair and nations <= set(store.applicable.get(spec.id, [])):
+            return spec.id
+    return None
+
+
+def _check_available(store: Store, measure: Measure, df: pl.DataFrame) -> None:
+    """An indicator ranking over areas that all lack it is a wrong question, not an
+    empty list: say where it is available and what stands in for it."""
+    if measure.sort_by.startswith("indicator:") and df.height:
+        if df[measure.score_column].null_count() < df.height:
+            return
+        iid = measure.sort_by.split(":", 1)[1]
+        nations = set(df["nation"].unique().to_list())
+        here = ", ".join(store.nation_names.get(n, n) for n in sorted(nations))
+        covered = [store.nation_names.get(n, n) for n in store.applicable.get(iid, [])]
+        where = f"it is built for {', '.join(covered)}" if covered else "it has no values"
+        stand_in = _stand_in(store, iid, nations)
+        hint = (
+            f' Rank by "indicator:{stand_in}" ({store.indicators[stand_in].label}) instead.'
+            if stand_in
+            else ""
+        )
+        raise LookupError(f"{measure.label} is not available in {here}: {where}.{hint}")
 
 
 def rank_areas(
@@ -104,20 +177,30 @@ def rank_areas(
     urban: bool | None = None,
     limit: int = 10,
     sort_by: str = "overall",
+    direction: Direction = "best",
     locale: str | None = None,
 ) -> RankResult:
-    """Best areas first. At MSOA level, scores are population-weighted LSOA means.
+    """Best areas first (or worst, with ``direction="worst"``). Above the small areas
+    (``msoa``, ``lad``), scores are population-weighted means of the small areas.
 
     ``sort_by`` ranks by one measure instead of the weighted overall: ``theme:<id>`` by a
     theme's score, ``indicator:<id>`` by an indicator's 0–100 score (so "lower is better"
     indicators rank their lowest values first); the weights still give the overall shown
-    beside it.
+    beside it. Areas without the measure are left out rather than sorted first.
     """
+    if level not in RANK_LEVELS:
+        raise LookupError(
+            f"Rankings are made at {', '.join(repr(lv) for lv in RANK_LEVELS)} level, not {level!r}"
+        )
+    limit = max(1, int(limit))
     name, themes, multipliers = resolve_weights(store, preset, theme_weights, indicator_weights)
     measure = sort_measure(store, sort_by)
+    minimums = _theme_minimums(store, min_theme_scores)
     scores = scores_for(store, themes, multipliers)
-    # Every scope column _within() may filter on (ctry_cd for a nation), and each
-    # feature column once: a sort by house_price names raw__house_price itself
+    lang = base_locale(locale)
+    # Every scope column _within() may filter on (ctry_cd for a nation), the names in
+    # the locale asked for where the pack has them, and each feature column once: a
+    # sort by house_price names raw__house_price itself
     columns = list(
         dict.fromkeys(
             [
@@ -128,6 +211,7 @@ def rank_areas(
                 "lad_cd",
                 "rgn_cd",
                 "ctry_cd",
+                "nation",
                 "lad_nm",
                 "population",
                 "pwc_lat",
@@ -135,6 +219,11 @@ def rank_areas(
                 "urban",
                 "raw__house_price",
                 *measure.feature_columns,
+                *(
+                    f"{c}_{lang}"
+                    for c in ("lsoa21nm", "msoa_name", "lad_nm")
+                    if lang != "en" and f"{c}_{lang}" in store.features.columns
+                ),
             ]
         )
     )
@@ -148,30 +237,36 @@ def rank_areas(
         df = df.filter(pl.col("urban") == urban)
 
     theme_cols = [f"theme__{t}" for t in store.themes]
+    numeric = list(dict.fromkeys(["overall", *theme_cols, *measure.feature_columns]))
 
     def in_locale(column: str) -> pl.Expr:
         """The column in the locale asked for where the row has that form."""
-        other = f"{column}_{base_locale(locale)}"
-        if base_locale(locale) != "en" and other in df.columns:
+        other = f"{column}_{lang}"
+        if lang != "en" and other in df.columns:
             return pl.coalesce(other, column)
         return pl.col(column)
 
-    if level == "msoa":
+    if level in AGGREGATE_LEVELS:
+        code_col, name_col = AGGREGATE_LEVELS[level]
         w = pl.col("population")
-        df = df.group_by("msoa21cd").agg(
-            in_locale("msoa_name").first().alias("name"),
-            pl.col("msoa_name").first().alias("name_en"),
+        df = df.group_by(code_col).agg(
+            in_locale(name_col).first().alias("name"),
+            pl.col(name_col).first().alias("name_en"),
             in_locale("lad_nm").first().alias("lad_nm"),
+            pl.col("nation").first(),
             w.sum().alias("population"),
             *[((pl.col(c) * w).sum() / w.filter(pl.col(c).is_not_null()).sum()).alias(c)
-              for c in dict.fromkeys(["overall", *theme_cols, *measure.feature_columns])
-              if c != "raw__house_price"],
+              for c in numeric if c != "raw__house_price"],
             pl.col("raw__house_price").median(),  # the price itself: a median, once
             ((pl.col("pwc_lat") * w).sum() / w.sum()).alias("pwc_lat"),
             ((pl.col("pwc_lon") * w).sum() / w.sum()).alias("pwc_lon"),
-        ).rename({"msoa21cd": "code"})  # fmt: skip
-        # MSOA percentiles among MSOAs in the result set would mislead; use LSOA's scale
-        df = df.with_columns(pl.lit(None, pl.Float64).alias("overall_pct"))
+        ).rename({code_col: "code"})  # fmt: skip
+        # Percentiles among the areas in the result set would mislead; use the small
+        # areas' scale. A mean over no values (0/0) is no value, not NaN sorted first.
+        df = df.with_columns(
+            pl.lit(None, pl.Float64).alias("overall_pct"),
+            *[pl.col(c).fill_nan(None) for c in numeric if c in df.columns],
+        )
     else:
         df = df.rename({"lsoa21cd": "code"}).with_columns(
             pl.concat_str(
@@ -185,18 +280,25 @@ def rank_areas(
 
     if max_median_price is not None:
         df = df.filter(pl.col("raw__house_price") <= max_median_price)
-    for theme, minimum in (min_theme_scores or {}).items():
+    for theme, minimum in minimums.items():
         df = df.filter(pl.col(f"theme__{theme}") >= minimum)
 
+    _check_available(store, measure, df)
+    df = df.filter(pl.col(measure.score_column).is_not_null())
     candidates = df.height
-    df = df.sort(measure.score_column, descending=True, nulls_last=True)
+    df = df.sort(measure.score_column, descending=direction == "best", nulls_last=True)
     # How robust the top results are to the exact weights (lix_core.uncertainty); a list
-    # ranked by one measure does not depend on the weights
+    # ranked by one measure does not depend on the weights. The worst-first list is the
+    # best-first list of the scores' complements.
     present = [t for t in store.themes if f"theme__{t}" in df.columns and themes.get(t, 0) > 0]
     if measure.sort_by != "overall":
         shares = np.full(df.height, np.nan)
     elif df.height > limit and present:
-        theme_scores = {t: df[f"theme__{t}"].to_numpy().astype(float) for t in present}
+        theme_scores = {
+            t: (df[f"theme__{t}"].to_numpy().astype(float) if direction == "best"
+                else 100.0 - df[f"theme__{t}"].to_numpy().astype(float))
+            for t in present
+        }  # fmt: skip
         shares = top_share(theme_scores, {t: themes[t] for t in present}, top_n=limit)
     else:
         shares = np.ones(df.height)
@@ -210,7 +312,7 @@ def rank_areas(
             name_en=r["name_en"] if r["name_en"] != r["name"] else None,
             local_authority=r["lad_nm"],
             overall=None if r["overall"] is None else round(r["overall"], 1),
-            overall_percentile=None if r["overall_pct"] is None else round(r["overall_pct"]),
+            overall_percentile=percentile(r["overall_pct"]),
             themes={
                 t: None if r[f"theme__{t}"] is None else round(r[f"theme__{t}"], 1)
                 for t in store.themes
@@ -229,5 +331,5 @@ def rank_areas(
     return RankResult(
         level=level, within=label, preset=name, theme_weights=themes,
         sort_by=measure.sort_by, sort_label=measure.label, sort_unit=measure.unit,
-        candidates=candidates, results=results, bbox=bbox,
+        direction=direction, candidates=candidates, results=results, bbox=bbox,
     )  # fmt: skip

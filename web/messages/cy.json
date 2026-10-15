@@ -128,7 +128,8 @@
     "broadcast_msoa": "ardal ehangach",
     "broadcast_lad": "cyngor cyfan",
     "not_available": "ddim ar gael yma",
-    "missing": "dim data"
+    "missing": "dim data",
+    "standsInFor": "yn sefyll yn lle {label}"
   },
   "Legend": {
     "against": {

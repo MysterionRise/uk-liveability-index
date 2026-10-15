@@ -128,7 +128,8 @@
     "broadcast_msoa": "ceantar níos leithne",
     "broadcast_lad": "ar fud na comhairle",
     "not_available": "níl ar fáil anseo",
-    "missing": "gan sonraí"
+    "missing": "gan sonraí",
+    "standsInFor": "in ionad {label}"
   },
   "Legend": {
     "against": {

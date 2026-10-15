@@ -4,13 +4,14 @@ Mounted at /mcp (streamable HTTP). Same services as the web assistant, without t
 page state: weights are passed explicitly instead.
 """
 
+from typing import Literal
+
 from fastmcp import FastMCP
 
 from lix_api.models import (
     AreaProfile,
     Comparison,
     Explanation,
-    IndicatorInfo,
     Level,
     Place,
     PoiResult,
@@ -56,13 +57,15 @@ def rank_areas(
     max_median_price: float | None = None,
     limit: int = 10,
     sort_by: str = "overall",
+    direction: Literal["best", "worst"] = "best",
 ) -> RankResult:
-    """Rank areas best first, optionally within a place/area and under a house price;
-    ``sort_by`` ("theme:<id>" or "indicator:<id>") ranks by one measure instead."""
+    """Rank areas best first (or worst first), optionally within a place/area and under a
+    house price; ``sort_by`` ("theme:<id>" or "indicator:<id>") ranks by one measure
+    instead. ``level``: lsoa, msoa or lad."""
     return ranking.rank_areas(
         get_store(), within=within, radius_km=radius_km, level=level, preset=preset,
-        theme_weights=theme_weights, max_median_price=max_median_price, limit=min(limit, 25),
-        sort_by=sort_by,
+        theme_weights=theme_weights, max_median_price=max_median_price,
+        limit=max(1, min(limit, 25)), sort_by=sort_by, direction=direction,
     )  # fmt: skip
 
 
@@ -85,6 +88,7 @@ def explain_score(area: str, theme: str | None = None, preset: str | None = None
 
 
 @mcp.tool
-def list_indicators(theme: str | None = None) -> list[IndicatorInfo]:
-    """What the index measures, with units, sources and caveats."""
-    return catalogue.list_indicators(get_store(), theme)
+def list_indicators(theme: str | None = None, detail: bool = False) -> list:
+    """What the index measures: ids, labels, themes and units; ``detail`` adds
+    descriptions, sources and caveats."""
+    return catalogue.list_indicators(get_store(), theme, detail=detail)

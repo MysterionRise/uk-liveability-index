@@ -20,12 +20,21 @@ function Facts({ items }: { items: IndicatorValue[] }) {
   const locale = useLocale();
   const qualityNote = useQualityNote();
   const labels = useLabels();
+  const tq = useTranslations("Quality");
   return (
     <dl className="grid grid-cols-2 gap-x-3 gap-y-1">
       {items.map((f) => (
         <div key={f.id} className="min-w-0">
-          <dt className="truncate text-xs text-[var(--text-muted)]">
+          <dt
+            className="truncate text-xs text-[var(--text-muted)]"
+            title={f.stands_in_for ? tq("standsInFor", { label: labels.indicator(f.stands_in_for) }) : undefined}
+          >
             {labels.indicator(f.id)}
+            {f.stands_in_for && (
+              <span className="ml-1 text-[10px]">
+                ({tq("standsInFor", { label: labels.indicator(f.stands_in_for) })})
+              </span>
+            )}
           </dt>
           <dd className="text-sm tabular-nums">
             {formatValue(f.value, f.unit, locale)}

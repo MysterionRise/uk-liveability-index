@@ -1,5 +1,7 @@
 """Scores for any weighting: preset, custom theme weights and indicator multipliers."""
 
+import math
+
 import polars as pl
 
 from lix_api.store import Store
@@ -40,6 +42,25 @@ def _match(
         if candidate in ids:
             return candidate
     return None
+
+
+def match_theme(store: Store, key: str) -> str | None:
+    """A theme id for its id, label or an everyday word ("schools" is education)."""
+    labels = {t: getattr(spec, "label", t) for t, spec in store.themes.items()}
+    return _match(key, store.themes, THEME_WORDS, labels)
+
+
+def match_indicator(store: Store, key: str) -> str | None:
+    """An indicator id for its id or label (any case)."""
+    labels = {i: spec.label for i, spec in store.indicators.items()}
+    return _match(key, store.indicators, {}, labels)
+
+
+def percentile(v: float | None) -> float | None:
+    """A percentile for "better than N% of…": whole, and the top area is 99, never 100."""
+    if v is None or (isinstance(v, float) and math.isnan(v)):
+        return None
+    return min(99.0, float(round(v)))
 
 
 def match_preset(store: Store, preset: str) -> str:

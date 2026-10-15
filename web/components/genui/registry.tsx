@@ -83,8 +83,8 @@ export function GenerativeUI() {
     </Chip>
   ));
   useToolCard<{ layer: string }>("show_on_map", (m) => <Chip>{t("mapUpdated", { layer: m.layer })}</Chip>);
-  useToolCard<unknown[]>("add_to_shortlist", (items) => <Chip>{t("shortlistSaved", { count: items.length })}</Chip>);
-  useToolCard<unknown[]>("remove_from_shortlist", (items) => <Chip>{t("shortlistSaved", { count: items.length })}</Chip>);
+  useToolCard<{ shortlist: unknown[] }>("add_to_shortlist", (r) => <Chip>{t("shortlistSaved", { count: r.shortlist.length })}</Chip>);
+  useToolCard<{ shortlist: unknown[] }>("remove_from_shortlist", (r) => <Chip>{t("shortlistSaved", { count: r.shortlist.length })}</Chip>);
   useToolCard<Place[]>("search_place", (places) => (
     <Chip>
       {t("found", {
@@ -92,7 +92,7 @@ export function GenerativeUI() {
       })}
     </Chip>
   ));
-  useToolCard<IndicatorInfo[]>("list_indicators", (items) => (
+  useToolCard<Pick<IndicatorInfo, "id" | "role">[]>("list_indicators", (items) => (
     <details className="my-1 text-xs">
       <summary className="cursor-pointer text-[var(--text-secondary)]">{t("indicatorsCount", { count: items.length })}</summary>
       <ul className="mt-1 space-y-1">

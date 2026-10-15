@@ -128,7 +128,8 @@
     "broadcast_msoa": "wider area",
     "broadcast_lad": "council-wide",
     "not_available": "not available here",
-    "missing": "no data"
+    "missing": "no data",
+    "standsInFor": "stands in for {label}"
   },
   "Legend": {
     "against": {

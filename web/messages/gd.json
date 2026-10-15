@@ -128,7 +128,8 @@
     "broadcast_msoa": "sgìre nas fharsainge",
     "broadcast_lad": "air feadh na comhairle",
     "not_available": "chan eil ri fhaighinn an seo",
-    "missing": "gun dàta"
+    "missing": "gun dàta",
+    "standsInFor": "a' seasamh an àite {label}"
   },
   "Legend": {
     "against": {

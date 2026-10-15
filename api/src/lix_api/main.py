@@ -11,13 +11,13 @@ import os
 import time
 from contextlib import asynccontextmanager
 from importlib.metadata import version
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import Body, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic_ai.ui import StateDeps
 
 from lix_api.agent.agent import agent
@@ -120,8 +120,8 @@ api = "/api/v1"
 
 
 @app.get(f"{api}/search")
-def search_place(q: str, limit: int = 8) -> list[Place]:
-    return search.search_place(get_store(), q, limit=min(limit, 20))
+def search_place(q: str, limit: Annotated[int, Query(ge=1, le=20)] = 8) -> list[Place]:
+    return search.search_place(get_store(), q, limit=limit)
 
 
 @app.get(f"{api}/areas/{{ref}}")
@@ -140,14 +140,15 @@ class RankRequest(BaseModel):
     max_median_price: float | None = None
     min_theme_scores: dict[str, float] | None = None
     urban: bool | None = None
-    limit: int = 10
+    limit: int = Field(10, ge=1, le=50)
     sort_by: str = "overall"  # or "theme:<id>" / "indicator:<id>": rank by one measure
-    locale: str | None = None  # en, cy or gd: the language of the area names
+    direction: Literal["best", "worst"] = "best"
+    locale: str | None = None  # en, cy, gd or ga: the language of the area names
 
 
 @app.post(f"{api}/rank")
 def rank_areas(req: RankRequest) -> RankResult:
-    return ranking.rank_areas(get_store(), **{**req.model_dump(), "limit": min(req.limit, 50)})
+    return ranking.rank_areas(get_store(), **req.model_dump())
 
 
 @app.get(f"{api}/compare")
@@ -169,7 +170,7 @@ def explain_score(ref: str, theme: str | None = None, preset: str | None = None)
 
 @app.get(f"{api}/indicators")
 def list_indicators(theme: str | None = None) -> list[IndicatorInfo]:
-    return catalogue.list_indicators(get_store(), theme)
+    return catalogue.list_indicators(get_store(), theme, detail=True)
 
 
 @app.get(f"{api}/presets")

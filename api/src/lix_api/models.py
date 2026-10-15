@@ -62,6 +62,11 @@ class IndicatorValue(BaseModel):
     benchmark: Literal["uk", "nation"] = Field(
         "uk", description="uk: ranked against the whole country · nation: within its nation"
     )
+    stands_in_for: str | None = Field(
+        None,
+        description="The indicator this one replaces here: a substitute shown because the "
+        "nation lacks the usual one (the SIMD crime rate for police.uk crime in Scotland)",
+    )
 
 
 class AreaProfile(BaseModel):
@@ -146,7 +151,10 @@ class RankResult(BaseModel):
     )
     sort_label: str | None = Field(None, description="Label of that measure (English)")
     sort_unit: str | None = Field(None, description="Unit of sort_value for an indicator")
-    candidates: int = Field(description="Areas that passed the filters")
+    direction: Literal["best", "worst"] = Field(
+        "best", description="best: highest first · worst: lowest first"
+    )
+    candidates: int = Field(description="Areas that passed the filters and have the measure")
     results: list[RankedArea]
     bbox: tuple[float, float, float, float] | None = None
 
@@ -166,6 +174,11 @@ class Comparison(BaseModel):
     areas: list[ComparedArea]
     indicator_labels: dict[str, str]
     theme_labels: dict[str, str]
+    stand_ins: dict[str, str] = Field(
+        default_factory=dict,
+        description="Substitute indicator → the usual indicator it stands in for, where an "
+        "area's nation lacks the usual one",
+    )
 
 
 class Poi(BaseModel):
@@ -230,6 +243,17 @@ class Explanation(BaseModel):
     contributions: list[Contribution]
     caveats: list[str]
     sources: list[SourceRef]
+
+
+class IndicatorBrief(BaseModel):
+    """An indicator's name card: enough to pick a sort_by or a theme."""
+
+    id: str
+    theme: str
+    label: str
+    unit: str
+    role: str
+    coverage: list[str] = Field(default_factory=list, description="Nation codes it is built for")
 
 
 class IndicatorInfo(BaseModel):

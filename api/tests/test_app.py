@@ -43,6 +43,11 @@ def test_rest_routes(client):
 def test_errors_map_to_status_codes(client):
     assert client.get("/api/v1/areas/Nowheresville XYZ").status_code == 404
     assert client.post("/api/v1/rank", json={"preset": "hermit"}).status_code == 400
+    # Bad inputs are refused by the models, not honoured (#102)
+    assert client.post("/api/v1/rank", json={"limit": -5}).status_code == 422
+    assert client.get("/api/v1/search", params={"q": "Leeds", "limit": -1}).status_code == 422
+    assert client.post("/api/v1/rank", json={"level": "region"}).status_code == 404
+    assert client.post("/api/v1/rank", json={"min_theme_scores": {"vibes": 1}}).status_code == 404
     r = client.post("/api/v1/sql", json={"query": "COPY lsoa TO '/tmp/x'"})
     assert r.status_code == 400 and "SELECT" in r.json()["detail"]
 

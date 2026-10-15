@@ -20,6 +20,9 @@ GSS = re.compile(r"^[EWSN]\d{8}$")
 # Query and names are both folded first (see services.text), so "leeds" and "Ynys Mon"
 # score 100 against "Leeds" and "Ynys Môn"
 MIN_SIMILARITY = 88
+# A name shorter than this matches only the query that equals it: WRatio scores two-
+# and three-letter names ("Ae", "Ely") against anything that contains their letters
+MIN_FUZZY_LETTERS = 4
 
 KIND_PRIORITY = {"nation": 7, "lad": 6, "region": 5, "City": 5, "Town": 4, "msoa": 3,
                  "Suburban Area": 3, "Village": 2, "Other Settlement": 1, "Hamlet": 0}  # fmt: skip
@@ -67,6 +70,21 @@ def lookup_code(store: Store, text: str) -> Place | None:
     return _area_place(row)
 
 
+def lookup_nation(store: Store, text: str) -> Place | None:
+    """A nation by its name in any language the pack knows ("Scotland", "Alba", "Yr
+    Alban"): an exact match only, never a fuzzy one, so "Stirling, Scotland" is never
+    read as Scotland."""
+    code = store.nation_aliases.get(fold(text))
+    if code is None:
+        return None
+    hit = store.areas.filter((pl.col("level") == "nation") & (pl.col("nation") == code))
+    if hit.is_empty():
+        return None
+    row = hit.row(0, named=True)
+    shown = text.strip() if fold(text) != fold(row["name"]) else row["name"]
+    return _area_place(row, shown)
+
+
 def _area_place(row: dict, name: str | None = None) -> Place:
     bbox = _bbox(row)
     centre = Point(lat=(bbox[1] + bbox[3]) / 2, lon=(bbox[0] + bbox[2]) / 2) if bbox else None
@@ -77,26 +95,25 @@ def _area_place(row: dict, name: str | None = None) -> Place:
                  name_en=row["name"] if shown != row["name"] else None)  # fmt: skip
 
 
-def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
-    """Rank candidate places for free text, best first."""
-    query = query.strip()
-    if not query:
-        return []
-    for exact in (lookup_postcode(store, query), lookup_code(store, query)):
-        if exact:
-            return [exact]
-
+def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
+    """Fuzzy matches for free text over places and areas (nations excepted), best first."""
     candidates: list[tuple[float, Place]] = []
     folded = fold(query)
+
+    def too_short(matched: str) -> bool:
+        return len(matched) < MIN_FUZZY_LETTERS and fold(matched) != folded
+
     n_places = store.places.height
     for _, score, idx in process.extract(
-        folded, store.place_search_names, scorer=fuzz.WRatio, processor=None, limit=40,
+        folded, store.place_search_names, scorer=fuzz.WRatio, processor=None, limit=limit,
         score_cutoff=MIN_SIMILARITY,
     ):  # fmt: skip
         row = store.places.row(idx % n_places, named=True)
         # The form that matched is the one shown ("Caerdydd" for a Welsh query), with the
         # English beside it
         matched = row[store.place_name_columns[idx // n_places]]
+        if too_short(matched):
+            continue
         place = Place(
             kind="place", name=matched, code=row["place_id"], lsoa21cd=row["lsoa21cd"],
             detail=f"{row['place_type']}, {row['local_authority']}",
@@ -111,7 +128,11 @@ def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
         score_cutoff=MIN_SIMILARITY,
     ):  # fmt: skip
         row = store.areas.row(idx % n_areas, named=True)
+        if row["level"] == "nation":
+            continue
         matched = row[store.area_name_columns[idx // n_areas]]
+        if too_short(matched):
+            continue
         candidates.append((score + KIND_PRIORITY.get(row["level"], 0), _area_place(row, matched)))
 
     candidates.sort(key=lambda c: c[0], reverse=True)
@@ -121,7 +142,72 @@ def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
         if key not in seen:
             seen.add(key)
             out.append(place)
-    return out[:limit]
+    return out
+
+
+def nation_of(place: Place) -> str | None:
+    """The nation letter of a result (from the LSOA it sits in, or its GSS code)."""
+    code = place.lsoa21cd or (place.code if place.kind != "place" else None)
+    return code[0] if code else None
+
+
+def _council_of(place: Place) -> str | None:
+    """The folded council name a result sits in, where the result says."""
+    if place.kind == "lad":
+        return fold(place.name_en or place.name)
+    if place.kind == "msoa" and place.detail:
+        return fold(place.detail)
+    if place.kind == "place" and place.detail and ", " in place.detail:
+        return fold(place.detail.rsplit(", ", 1)[1])
+    return None
+
+
+def _within_scopes(store: Store, candidates: list[Place], scopes: list[str]) -> list[Place]:
+    """Keep the candidates inside every scope named after the comma ("Morningside,
+    Edinburgh", "Stirling, Scotland"): a nation by name in any language, a council by
+    name. A scope that names nothing known is ignored."""
+    keep = candidates
+    for scope in scopes:
+        nation = store.nation_aliases.get(fold(scope))
+        if nation:
+            keep = [p for p in keep if nation_of(p) == nation]
+            continue
+        councils = [p for p in _candidates(store, scope, limit=10) if p.kind == "lad"]
+        if not councils:
+            continue
+        council = councils[0]
+        names = {fold(council.name), fold(council.name_en or council.name)}
+        keep = [
+            p
+            for p in keep
+            if (p.kind == "lad" and p.code == council.code) or _council_of(p) in names
+        ]
+    return keep
+
+
+def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
+    """Rank candidate places for free text, best first.
+
+    A postcode, an area code or a nation's name is exact. "Place, Scope" (one or more
+    scopes after commas) searches the place and keeps the results inside the scope: a
+    nation or a council, in any language the pack knows.
+    """
+    query = query.strip()
+    if not query:
+        return []
+    for exact in (
+        lookup_postcode(store, query),
+        lookup_code(store, query),
+        lookup_nation(store, query),
+    ):
+        if exact:
+            return [exact]
+    parts = [p.strip() for p in query.split(",") if p.strip()]
+    if len(parts) >= 2:
+        scoped = _within_scopes(store, _candidates(store, parts[0]), parts[1:])
+        if scoped:
+            return scoped[:limit]
+    return _candidates(store, query)[:limit]
 
 
 def resolve_point(store: Store, ref: str) -> tuple[Point, str]:
