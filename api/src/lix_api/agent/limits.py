@@ -49,12 +49,17 @@ class Limits:
         self.day = today()
         self.spent = 0.0
 
+    # Models that cost nothing: the scripted answers of the tests and the recorded
+    # conversations of the demo. They are never held back by a budget real models spent
+    FREE_MODELS = ("test", "replay")
+
     @classmethod
     def from_env(cls) -> "Limits":
+        free = os.environ.get("LIX_MODEL", "") in cls.FREE_MODELS
         return cls(
             session_turns=int(os.environ.get("LIX_SESSION_TURNS", 30)),
             rate_per_minute=int(os.environ.get("LIX_RATE_PER_MINUTE", 20)),
-            daily_budget=float(os.environ.get("LIX_DAILY_BUDGET") or 1.0),
+            daily_budget=0.0 if free else float(os.environ.get("LIX_DAILY_BUDGET") or 1.0),
         )
 
     def _roll(self) -> None:

@@ -403,3 +403,19 @@ def test_a_question_about_one_measure_ranks_by_it_and_colours_the_map(client):
     snapshot = next(e for e in events if e["type"] == "STATE_SNAPSHOT")["snapshot"]
     assert snapshot["map"]["layer"] == "indicator:noise_exposure"
     assert snapshot["map"]["highlighted"] == [r["code"] for r in result["results"]]
+
+
+def test_free_models_ignore_the_budget_real_models_spent(monkeypatch):
+    """The scripted and recorded assistants cost nothing: a day's real spend in the log
+    must not refuse them (the release pass and the clip recordings hit this)."""
+    from lix_api.agent.limits import Limits
+
+    monkeypatch.setenv("LIX_MODEL", "replay")
+    monkeypatch.setenv("LIX_DAILY_BUDGET", "1")
+    limits = Limits.from_env()
+    limits.spent = 3.8
+    assert limits.admit(1) is None
+    monkeypatch.setenv("LIX_MODEL", "openrouter:anthropic/claude-haiku-5.5")
+    limits = Limits.from_env()
+    limits.spent = 3.8
+    assert "budget" in (limits.admit(1) or "")
