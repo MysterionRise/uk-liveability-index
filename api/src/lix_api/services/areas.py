@@ -159,8 +159,7 @@ def area_profile(
         | (
             {"theme_gap"}
             if any(
-                scores.get(f"theme__{t}") is None
-                for t in store.theme_gaps.get(row["nation"], [])
+                scores.get(f"theme__{t}") is None for t in store.theme_gaps.get(row["nation"], [])
             )
             else set()
         )
