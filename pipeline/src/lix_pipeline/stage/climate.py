@@ -171,3 +171,45 @@ def stage_climate() -> pl.LazyFrame:
         f"wet days {df['rain_days'].median():.0f}"
     )
     return df.lazy()
+
+
+HOT_DAY_COLUMNS = {
+    "HSD_0120_median": "hot_days_baseline",
+    "HSD_2_median": "hot_days_2c",
+    "HSD_4_median": "hot_days_4c",
+}
+
+
+def stage_ukcp_hot_days() -> pl.LazyFrame:
+    """UKCP18's local projections of hot summer days per MSOA, Intermediate Zone or (in
+    Northern Ireland) district electoral area, copied down to every small area inside
+    (``broadcast_msoa``): the 2001–2020 baseline and the counts at 2 and 4 °C of global
+    warming (median of the ensemble)."""
+    raw = pl.read_parquet(data_dir("raw") / "ukcp_hot_days" / "ukcp_hot_days.parquet")
+    code = next(c for c in raw.columns if c.upper() == "CODE")
+    values = raw.select(
+        pl.col(code).cast(pl.Utf8).str.strip_chars().alias("code"),
+        *[
+            pl.col(src).cast(pl.Float64, strict=False).alias(dst)
+            for src, dst in HOT_DAY_COLUMNS.items()
+            if src in raw.columns
+        ],
+    ).unique("code")
+    geo = pl.read_parquet(data_dir("staged") / "geo_lsoa.parquet")
+    key = (
+        pl.when(pl.col("nation") == "N")
+        .then(pl.col("dea_cd") if "dea_cd" in geo.columns else pl.lit(None, pl.Utf8))
+        .otherwise(pl.col("msoa21cd"))
+    )
+    out = (
+        geo.select("lsoa21cd", key.alias("code"))
+        .join(values, on="code", how="left")
+        .with_columns(pl.lit("broadcast_msoa").alias("quality"))
+        .drop("code")
+        .sort("lsoa21cd")
+    )
+    logger.info(
+        f"{out.height:,} areas; hot summer days at 2 °C: median "
+        f"{out['hot_days_2c'].median():.1f}, {out['hot_days_2c'].null_count():,} without a value"
+    )
+    return out.lazy()

@@ -267,6 +267,88 @@ def stage_sg_attainment() -> pl.LazyFrame:
     return out.lazy()
 
 
+# Department of Education workbooks → phase and type group
+DE_FILES = {
+    "de_schools_primary": ("Primary", "Northern Irish grant-aided schools"),
+    "de_schools_post_primary": ("Secondary", "Northern Irish grant-aided schools"),
+    "de_schools_special": ("Special", "Special schools"),
+}
+
+
+def de_pupils(enrolments: pl.DataFrame) -> pl.DataFrame:
+    """``urn, pupils`` from a DE Enrolments sheet: the total column when there is one,
+    else the sum of the year-group columns."""
+    ref = next(c for c in enrolments.columns if c.strip().lower() == "deni ref")
+    totals = [c for c in enrolments.columns if c.strip().lower().startswith("total")]
+    if totals:
+        total = next((c for c in totals if "total" in c.lower().split(":")[-1]), totals[-1])
+        expr = pl.col(total).cast(pl.Float64, strict=False)
+    else:
+        years = [c for c in enrolments.columns if c not in (ref,) and ":" in c]
+        expr = pl.sum_horizontal([pl.col(c).cast(pl.Float64, strict=False) for c in years])
+    return enrolments.select(
+        pl.col(ref).cast(pl.Utf8).str.strip_chars().alias("urn_text"),
+        expr.round().cast(pl.Int32).alias("pupils"),
+    )
+
+
+def stage_de_schools() -> pl.LazyFrame:
+    """Northern Ireland's grant-aided primary, post-primary and special schools from the
+    Department of Education's school-level workbooks, shaped like the GIAS table: no
+    inspection grades or results are published, so quality is not available; the DE
+    reference number is the ``urn``; located by postcode."""
+    from lix_pipeline.stage.geo_ni import load_sheet
+
+    frames = []
+    for slug, (phase, group) in DE_FILES.items():
+        path = data_dir("raw") / slug / f"{slug}.xlsx"
+        if not path.exists():
+            logger.warning(f"{path} not fetched")
+            continue
+        ref = load_sheet(path, "Reference Data", "DENI ref")
+        ref = ref.rename({c: c.strip() for c in ref.columns})
+        df = ref.select(
+            pl.col("DENI ref").cast(pl.Utf8).str.strip_chars().alias("urn_text"),
+            pl.col("School name").str.strip_chars().alias("name"),
+            pl.lit(phase).alias("phase"),
+            pl.col("School Type").alias("type"),
+            pl.lit(group).alias("type_group"),
+            pl.lit(None, pl.Int16).alias("low_age"),
+            pl.lit(None, pl.Int16).alias("high_age"),
+            pl.lit(None, pl.Utf8).alias("gender"),
+            pl.col("Management Type").alias("admissions_policy"),
+            pl.lit("No Nursery Classes").alias("nursery_provision"),
+            pl.lit(None, pl.Utf8).alias("sixth_form"),
+            pl.lit(None, pl.Int32).alias("capacity"),
+            pl.col("Postcode").str.strip_chars().alias("postcode"),
+            pl.lit(None, pl.Utf8).alias("welsh_medium"),
+            pl.col("District Council (2014)").alias("local_authority"),
+        ).filter(pl.col("urn_text").is_not_null())
+        import fastexcel
+
+        sheets = fastexcel.read_excel(path).sheet_names
+        if "Enrolments" in sheets:
+            df = df.join(
+                de_pupils(load_sheet(path, "Enrolments", "DENI ref")), on="urn_text", how="left"
+            )
+        else:
+            df = df.with_columns(pl.lit(None, pl.Int32).alias("pupils"))
+        frames.append(df)
+    if not frames:
+        raise FileNotFoundError("No Department of Education school workbooks fetched")
+    df = pl.concat(frames, how="diagonal_relaxed")
+    # DE references are seven digits for schools (pre-school settings carry letters and
+    # are not in these files)
+    df = df.with_columns(pl.col("urn_text").cast(pl.Int64, strict=False).alias("urn")).drop(
+        "urn_text"
+    )
+    from lix_pipeline.stage.health import geocode_postcodes
+
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("N",)))
+    logger.info(f"{df.height:,} grant-aided schools in Northern Ireland (DE)")
+    return df.lazy()
+
+
 def stage_schools() -> pl.LazyFrame:
     """One table of schools for every active nation: GIAS, the Welsh list and the Scottish
     school roll, each row saying which (``source``)."""
@@ -289,6 +371,12 @@ def stage_schools() -> pl.LazyFrame:
         frames.append(
             pl.read_parquet(data_dir("staged") / "sg_schools.parquet").with_columns(
                 pl.lit("sg").alias("source")
+            )
+        )
+    if "N" in active_nations():
+        frames.append(
+            pl.read_parquet(data_dir("staged") / "de_schools.parquet").with_columns(
+                pl.lit("de").alias("source")
             )
         )
     df = pl.concat(frames, how="diagonal_relaxed").sort("urn")

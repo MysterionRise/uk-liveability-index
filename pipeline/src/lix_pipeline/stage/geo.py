@@ -132,6 +132,51 @@ def stage_dz11_dz22() -> pl.LazyFrame:
     return weights.lazy()
 
 
+def stage_soa01_sdz21() -> pl.LazyFrame:
+    """Super Output Area 2001 → Super Data Zone 2021 weights for Northern Ireland (the
+    deprivation measure and the capital value bands are still on the 2001 areas).
+
+    No open postcode lookup bridges the two (the Central Postcode Directory is
+    licensed), so the weights come from the Data Zones: each zone's population-weighted
+    centroid falls in one 2001 area and carries its Census 2021 residents, and a Super
+    Data Zone's weights are its residents' shares by 2001 area.
+    """
+    from lix_pipeline.geo.boundaries import load_boundaries
+    from lix_pipeline.geo.crosswalk import build_from_points, crosswalk_problems, summary
+    from lix_pipeline.stage.geo_ni import load_sheet, read_centroids, read_dz_lookup
+
+    spec = load_nations().nations["N"]
+    soa = load_boundaries("osni_soa01_boundaries", code_column="SOA_CODE")
+    folder = data_dir("raw") / "nisra_census_2021_p1"
+    a01 = next(iter(sorted(folder.glob("**/census-2021-ms-a01.xlsx"))), None)
+    if a01 is None:
+        raise FileNotFoundError(f"No census-2021-ms-a01.xlsx under {folder}")
+    people = load_sheet(a01, "DZ", "Geography")
+    code = next(c for c in people.columns if c.strip().lower() == "geography code")
+    count = next(c for c in people.columns if c.strip().lower().startswith("all usual residents"))
+    people = people.select(
+        pl.col(code).cast(pl.Utf8).str.strip_chars().alias("oa21cd"),
+        pl.col(count).cast(pl.Float64, strict=False).alias("population"),
+    ).filter(pl.col("oa21cd").str.starts_with("N20"))
+    points = (
+        read_centroids(spec.input_crs, level="data-zone")
+        .rename({"lsoa21cd": "oa21cd", "pwc_x": "x", "pwc_y": "y"})
+        .join(read_dz_lookup().rename({"lsoa21cd": "sdz21cd"}), on="oa21cd", how="inner")
+        .join(people, on="oa21cd", how="left")
+        .select("sdz21cd", "x", "y", "population")
+    )
+    weights = build_from_points(points, soa, new_key="sdz21cd", old_key="soa01cd")
+    zones = set(read_dz_lookup()["lsoa21cd"].to_list())
+    problems = crosswalk_problems(weights, zones, new_key="sdz21cd")
+    if problems:
+        raise ValueError("Super Output Area crosswalk: " + "; ".join(problems))
+    logger.info(
+        f"Super Output Area 2001 → Super Data Zone 2021 crosswalk: "
+        f"{summary(weights, key='soa01cd', new_key='sdz21cd')}"
+    )
+    return weights.lazy()
+
+
 def _name_in(lang: str) -> pl.Expr:
     """The OS Open Names form in ``lang`` (``cym``, ``gla``), if the place has one."""
     return (

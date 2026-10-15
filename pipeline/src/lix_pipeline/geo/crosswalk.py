@@ -1,4 +1,6 @@
-"""Data Zone 2011 → Data Zone 2022 weights, for sources still published on the 2011 zones.
+"""Weights from one small-area geography to another, for sources still published on an
+older one: Scotland's Data Zones 2011 → 2022, Northern Ireland's Super Output Areas
+2001 → Super Data Zones 2021.
 
 Scotland redrew its Data Zones after the 2022 census (6,976 → 7,392) and SIMD 2020 is still
 on the old ones; no official lookup between the two exists. The weights come from
@@ -50,6 +52,41 @@ def build_dz11_dz22(
     return pairs
 
 
+def build_from_points(
+    points: pl.DataFrame, old_polygons, new_key: str, old_key: str
+) -> pl.DataFrame:
+    """Weights per (new area, old area) from population points, where no postcode lookup
+    exists (Northern Ireland's Central Postcode Directory is not open): each point is a
+    Data Zone's population-weighted centroid carrying its residents and lies in one old
+    area, so a new area's weights are the shares of its residents by old area.
+
+    ``points``: new_key, x, y, population (in the polygons' CRS). ``old_polygons``: a
+    GeoDataFrame indexed by the old area's code. A new area whose points carry no
+    population counts each point once.
+    """
+    from lix_pipeline.geo.joins import points_to_lsoa
+
+    polys = old_polygons[["geometry"]].reset_index()
+    polys = polys.rename(columns={polys.columns[0]: "lsoa21cd"})
+    located = (
+        points_to_lsoa(points, x="x", y="y", polygons=polys)
+        .rename({"lsoa21cd": old_key})
+        .filter(pl.col(old_key).is_not_null())
+    )
+    total = located.group_by(new_key).agg(pl.col("population").fill_null(0).sum().alias("t"))
+    located = located.join(total, on=new_key).with_columns(
+        pl.when(pl.col("t") > 0).then(pl.col("population").fill_null(0)).otherwise(1.0).alias("w")
+    )
+    return (
+        located.group_by(new_key, old_key)
+        .agg(pl.col("w").sum().alias("w"))
+        .with_columns((pl.col("w") / pl.col("w").sum().over(new_key)).alias("weight"))
+        .with_columns((pl.col("weight").max().over(new_key) >= DOMINANT).alias("dominant"))
+        .select(old_key, new_key, "weight", "dominant")
+        .sort(new_key, old_key)
+    )
+
+
 def crosswalk(
     values: pl.DataFrame,
     weights: pl.DataFrame,
@@ -57,11 +94,13 @@ def crosswalk(
     how: str = "mean",
     key: str = "dz11cd",
     out_key: str = "lsoa21cd",
+    new_key: str = "dz22cd",
 ) -> pl.DataFrame:
-    """Bring ``columns`` of a table keyed by 2011 zone onto the 2022 zones.
+    """Bring ``columns`` of a table keyed by the old area (``key``) onto the new areas
+    (``new_key`` in the weights, written as ``out_key``).
 
-    ``mean``: population-weighted mean over the 2011 zones with a value (a rate, a score);
-    ``sum``: the 2011 zones' counts apportioned by weight.
+    ``mean``: population-weighted mean over the old areas with a value (a rate, a score);
+    ``sum``: the old areas' counts apportioned by weight.
     """
     joined = weights.join(values.select(key, *columns), on=key, how="inner")
     if how == "mean":
@@ -78,33 +117,40 @@ def crosswalk(
         aggs = [(pl.col(c) * pl.col("weight")).sum().alias(c) for c in columns]
     else:
         raise ValueError(f"how must be mean or sum, not {how!r}")
-    return joined.group_by("dz22cd").agg(*aggs).rename({"dz22cd": out_key}).sort(out_key)
+    return joined.group_by(new_key).agg(*aggs).rename({new_key: out_key}).sort(out_key)
 
 
-def crosswalk_problems(weights: pl.DataFrame, zones: set[str] | None = None) -> list[str]:
-    """What would make the weights unusable: a 2022 zone without weights, or weights that
+def crosswalk_problems(
+    weights: pl.DataFrame, zones: set[str] | None = None, new_key: str = "dz22cd"
+) -> list[str]:
+    """What would make the weights unusable: a new area without weights, or weights that
     do not sum to one."""
     problems = []
-    sums = weights.group_by("dz22cd").agg(pl.col("weight").sum().alias("s"))
+    sums = weights.group_by(new_key).agg(pl.col("weight").sum().alias("s"))
     off = sums.filter((pl.col("s") - 1).abs() > 1e-6)
     if off.height:
         problems.append(f"{off.height} zones whose weights do not sum to 1")
     if zones is not None:
-        missing = sorted(zones - set(sums["dz22cd"].to_list()))
+        missing = sorted(zones - set(sums[new_key].to_list()))
         if missing:
             problems.append(f"{len(missing)} zones without weights, e.g. {missing[:5]}")
     return problems
 
 
-def summary(weights: pl.DataFrame, ranks: pl.DataFrame | None = None) -> dict:
+def summary(
+    weights: pl.DataFrame,
+    ranks: pl.DataFrame | None = None,
+    key: str = "dz11cd",
+    new_key: str = "dz22cd",
+) -> dict:
     """The numbers the build reports: how clean the match is, and how little mixing
-    moves SIMD's ranks.
+    moves the index's ranks.
 
-    ``ranks``: dz11cd, rank (SIMD 2020v2 overall rank). The crosswalked rank of a zone
-    assembled from several 2011 zones is compared with its largest part's rank; a
+    ``ranks``: key, rank (the overall rank on the old areas). The crosswalked rank of an
+    area assembled from several old ones is compared with its largest part's rank; a
     Spearman correlation near 1 means the mixing changes little.
     """
-    per_zone = weights.group_by("dz22cd").agg(
+    per_zone = weights.group_by(new_key).agg(
         pl.col("weight").max().alias("top"), pl.len().alias("parts")
     )
     out = {
@@ -115,15 +161,17 @@ def summary(weights: pl.DataFrame, ranks: pl.DataFrame | None = None) -> dict:
         "mean_top_weight": round(float(per_zone["top"].mean()), 4),
     }
     if ranks is not None:
-        mixed = per_zone.filter(pl.col("parts") > 1).select("dz22cd")
-        walked = crosswalk(ranks, weights, ["rank"], how="mean", out_key="dz22cd")
+        mixed = per_zone.filter(pl.col("parts") > 1).select(new_key)
+        walked = crosswalk(
+            ranks, weights, ["rank"], how="mean", key=key, out_key=new_key, new_key=new_key
+        )
         top_part = (
             weights.sort("weight", descending=True)
-            .unique("dz22cd", keep="first")
-            .join(ranks, on="dz11cd")
-            .select("dz22cd", pl.col("rank").alias("top_rank"))
+            .unique(new_key, keep="first")
+            .join(ranks, on=key)
+            .select(new_key, pl.col("rank").alias("top_rank"))
         )
-        both = mixed.join(walked, on="dz22cd").join(top_part, on="dz22cd")
+        both = mixed.join(walked, on=new_key).join(top_part, on=new_key)
         out["mixed_zones"] = both.height
         out["spearman_mixed"] = round(
             float(both.select(pl.corr("rank", "top_rank", method="spearman")).item()), 4

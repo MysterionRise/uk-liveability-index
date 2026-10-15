@@ -132,8 +132,8 @@ indicators:
     unit: score
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, S]
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
+    coverage: [E, W, S, N]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries]
     builder: common:deprivation
     params: {column: crime_score}
     role: diagnostic
@@ -377,8 +377,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest GP practice.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S]
-    sources: [ods_gp, nspl, phs_gp_practices]
+    coverage: [E, W, S, N]
+    sources: [ods_gp, nspl, phs_gp_practices, bso_gp_list_sizes]
     builder: health:nearest_gp
     normalise: threshold
     good: 1000
@@ -432,8 +432,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest NHS community pharmacy.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S]  # NHSBSA in England, OpenStreetMap in Wales, PHS dispenser list in Scotland
-    sources: [nhsbsa_pharmacies, osm_wales, nspl, phs_pharmacies]
+    coverage: [E, W, S, N]  # NHSBSA in England, OpenStreetMap in Wales, PHS dispenser list in Scotland
+    sources: [nhsbsa_pharmacies, osm_wales, nspl, phs_pharmacies, bso_dispensing]
     builder: common:nearest
     params: {slug: pharmacies}
     normalise: threshold
@@ -449,8 +449,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest dental practice with an NHS contract.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S]
-    sources: [ods_dentists, nspl, phs_dentists]
+    coverage: [E, W, S, N]
+    sources: [ods_dentists, nspl, phs_dentists, bso_dental]
     builder: common:nearest
     params: {slug: ods_dentists}
     normalise: threshold
@@ -502,8 +502,8 @@ indicators:
     unit: index 0–1
     direction: higher_better
     benchmark: nation
-    coverage: [E, W, S]  # Welsh and Scottish schools count as present but ungraded
-    sources: [gias, wg_schools, ofsted_schools, nspl, sg_school_roll]
+    coverage: [E, W, S, N]  # Welsh and Scottish schools count as present but ungraded
+    sources: [gias, wg_schools, ofsted_schools, nspl, sg_school_roll, de_schools_primary, de_schools_post_primary]
     builder: education:school_choice
     params: {cap: 4}
     normalise: scale
@@ -541,8 +541,8 @@ indicators:
     description: Nurseries, pre-schools and school nursery classes within 1km, each weighted by its Ofsted grade and distance.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S]  # Ofsted in England, OpenStreetMap in Wales, the Care Inspectorate in Scotland
-    sources: [ofsted_childcare, osm_wales, gias, wg_schools, nspl, care_inspectorate, sg_school_roll]
+    coverage: [E, W, S, N]  # Ofsted in England, OpenStreetMap in Wales, the Care Inspectorate in Scotland
+    sources: [ofsted_childcare, osm_wales, gias, wg_schools, nspl, care_inspectorate, sg_school_roll, de_schools_nursery, de_schools_preschool]
     builder: education:nursery_access
     params: {radius_m: 1000, cap: 3}
     normalise: scale
@@ -704,8 +704,8 @@ indicators:
     description: Pubs within a 15-minute walk that hold a food hygiene rating of 4 or 5 from the last three years, weighted by distance, with a small bonus for real ale, food or outdoor seating.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S]
-    sources: [osm_england, osm_wales, overture_pubs, fsa_fhrs, nspl, osm_scotland]
+    coverage: [E, W, S, N]
+    sources: [osm_england, osm_wales, overture_pubs, fsa_fhrs, nspl, osm_scotland, osm_ireland]
     builder: pubs:well_run_pub_access
     params: {radius_m: 1200, cap: 3}
     normalise: scale
@@ -717,8 +717,8 @@ indicators:
     description: Cafés and restaurants within 800m, weighted by distance.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S]
-    sources: [osm_england, osm_wales, nspl, osm_scotland]
+    coverage: [E, W, S, N]
+    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {values: [cafe, restaurant], radius_m: 800, cap: 6}
     normalise: scale
@@ -730,8 +730,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest supermarket.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S]
-    sources: [osm_england, osm_wales, nspl, osm_scotland]
+    coverage: [E, W, S, N]
+    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_nearest
     params: {values: [supermarket]}
     normalise: threshold
@@ -760,8 +760,8 @@ indicators:
     description: Sports centres, gyms and swimming pools open to the public within 2km, weighted by distance (OpenStreetMap).
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S]
-    sources: [osm_england, osm_wales, osm_scotland, nspl]
+    coverage: [E, W, S, N]
+    sources: [osm_england, osm_wales, osm_scotland, nspl, osm_ireland]
     builder: amenities:osm_access
     params: {values: [sports_centre, fitness_centre, swimming_pool], radius_m: 2000, cap: 10, exclude: {access: [private]}}
     normalise: scale
@@ -799,8 +799,8 @@ indicators:
     description: Libraries, cinemas, theatres, arts centres, museums and galleries within 2km.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S]
-    sources: [osm_england, osm_wales, nspl, osm_scotland]
+    coverage: [E, W, S, N]
+    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {values: [library, cinema, theatre, arts_centre, museum, gallery], radius_m: 2000, cap: 3}
     normalise: scale
@@ -840,8 +840,8 @@ indicators:
     unit: £
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, S]
-    sources: [price_paid, nspl, ros_house_prices]
+    coverage: [E, W, S, N]
+    sources: [price_paid, nspl, ros_house_prices, lps_house_prices_ward, osni_ward12_boundaries]
     builder: housing:median_price
     weight: 2.0
     caveats: Lower prices score as more affordable; the scale reflects price, not value. In Scotland the Registers of Scotland publish annual medians per 2011 data zone (the latest calendar year, about two years behind the Land Registry file), suppressed under five sales; they come onto the 2022 zones through the postcode crosswalk, and a zone without a price takes its intermediate zone's.
@@ -853,8 +853,8 @@ indicators:
     unit: score
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, S]  # IoD in England, WIMD in Wales, SIMD in Scotland (see stage/deprivation.py)
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
+    coverage: [E, W, S, N]  # IoD in England, WIMD in Wales, SIMD in Scotland (see stage/deprivation.py)
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries]
     builder: common:deprivation
     params: {column: housing_score}
 
@@ -885,6 +885,20 @@ indicators:
     params: {band: d}
     weight: 0.5
     caveats: The same for every neighbourhood in a council area; a home's bill depends on its band. Welsh bands are derived from each authority's average band D using the statutory ratios.
+
+  - id: domestic_rates
+    theme: housing
+    label: Domestic rates (typical home)
+    description: Annual domestic rates bill for a home at the area's median capital value, from the regional rate and the council's district rate (Northern Ireland).
+    unit: £ a year
+    direction: lower_better
+    benchmark: nation
+    coverage: [N]
+    sources: [ni_domestic_rates, lps_capital_value_bands, osni_soa01_boundaries, nspl]
+    builder: housing:domestic_rates
+    weight: 0.5
+    substitute_for: council_tax
+    caveats: Northern Ireland charges rates on a home's capital value rather than council tax by band; the bill shown is for a home at the middle of the area's 2016 value mix, so it moves with local values as well as the poundage.
 
   - id: price_to_income
     theme: housing
@@ -939,8 +953,8 @@ indicators:
     unit: rate
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, S]
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
+    coverage: [E, W, S, N]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries]
     builder: common:deprivation
     params: {column: income_score}
     overlap_group: income_work
@@ -952,8 +966,8 @@ indicators:
     unit: rate
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, S]
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
+    coverage: [E, W, S, N]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries]
     builder: common:deprivation
     params: {column: employment_score}
     role: context
@@ -991,8 +1005,8 @@ indicators:
     unit: score
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, S]
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
+    coverage: [E, W, S, N]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries]
     builder: common:deprivation
     params: {column: health_score}
     overlap_group: population_health
@@ -1032,8 +1046,8 @@ indicators:
     unit: score
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, S]
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population]
+    coverage: [E, W, S, N]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries]
     builder: common:deprivation
     params: {column: imd_score}
     role: context
@@ -1244,3 +1258,15 @@ indicators:
     builder: environment:optional_column
     params: {slug: climate, column: snow_days}
     role: context
+
+  - id: future_hot_days
+    theme: climate
+    label: Hot summer days in a 2°C world
+    description: Days a year above the local hot-summer-day threshold once the world has warmed by 2°C, from the Met Office's UKCP18 local projections for the area's neighbourhood.
+    unit: days a year
+    direction: lower_better
+    sources: [ukcp_hot_days]
+    builder: environment:optional_column
+    params: {slug: ukcp_hot_days, column: hot_days_2c}
+    role: context
+    caveats: A projection for the MSOA, Intermediate Zone or district electoral area, copied to every small area inside; the threshold is local (the 95th percentile of the 1981–2000 summer), so the count says how much more often such days would come, not how hot they are.

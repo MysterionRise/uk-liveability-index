@@ -56,7 +56,9 @@ def stage_childcare() -> pl.LazyFrame:
                 pl.lit("care_inspectorate").alias("source")
             )
         )
-    others = [n for n in active_nations() if n not in ("E", "S")]
+    if "N" in active_nations():
+        frames.append(_de_nurseries().with_columns(pl.lit("de").alias("source")))
+    others = [n for n in active_nations() if n not in ("E", "S", "N")]
     if others:
         osm = pl.read_parquet(data_dir("staged") / "osm_pois.parquet").filter(
             pl.col("value").is_in(["kindergarten", "childcare"])
@@ -70,6 +72,45 @@ def stage_childcare() -> pl.LazyFrame:
         logger.info(f"{osm.height:,} OpenStreetMap nurseries in {others}")
         frames.append(osm)
     return pl.concat(frames, how="diagonal_relaxed").lazy()
+
+
+DE_NURSERY_FILES = {"de_schools_nursery": "nursery school", "de_schools_preschool": "pre-school"}
+
+
+def _de_nurseries() -> pl.DataFrame:
+    """Northern Ireland's nursery schools and funded pre-school settings from the
+    Department of Education's workbooks (places from the enrolment total; no
+    inspection grades, so quality is "expected")."""
+    from lix_pipeline.stage.geo_ni import load_sheet
+    from lix_pipeline.stage.schools import de_pupils
+
+    frames = []
+    for slug, subtype in DE_NURSERY_FILES.items():
+        path = data_dir("raw") / slug / f"{slug}.xlsx"
+        if not path.exists():
+            logger.warning(f"{path} not fetched")
+            continue
+        ref = load_sheet(path, "Reference Data", "DENI ref")
+        ref = ref.rename({c: c.strip() for c in ref.columns})
+        name_col = next(c for c in ref.columns if c.lower() in ("school name", "centre name"))
+        df = ref.select(
+            pl.col("DENI ref").cast(pl.Utf8).str.strip_chars().alias("urn"),
+            pl.col(name_col).str.strip_chars().alias("name"),
+            pl.lit(subtype).alias("subtype"),
+            pl.col("Postcode").str.strip_chars().alias("postcode"),
+        ).filter(pl.col("urn").is_not_null())
+        pupils = de_pupils(load_sheet(path, "Enrolments", "DENI ref")).rename(
+            {"urn_text": "urn", "pupils": "places"}
+        )
+        frames.append(df.join(pupils, on="urn", how="left"))
+    if not frames:
+        raise FileNotFoundError("No Department of Education nursery workbooks fetched")
+    df = pl.concat(frames).with_columns(
+        pl.lit(NEUTRAL).alias("quality"), pl.lit("not inspected").alias("quality_source")
+    )
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("N",)))
+    logger.info(f"{df.height:,} nursery schools and pre-school settings in Northern Ireland (DE)")
+    return df
 
 
 CI_KEY_QUESTIONS = [

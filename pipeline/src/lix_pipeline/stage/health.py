@@ -55,8 +55,33 @@ def stage_ods_gp() -> pl.LazyFrame:
     df = geocode_postcodes(df).filter(in_scope("lsoa21cd")).drop("role", "status")
     if "S" in active_nations():
         df = pl.concat([df, _phs_gp_practices()], how="diagonal_relaxed")
+    if "N" in active_nations():
+        df = pl.concat([df, _bso_gp_practices()], how="diagonal_relaxed")
     logger.info(f"{df.height:,} active GP practices")
     return df.lazy()
+
+
+def _bso_gp_practices() -> pl.DataFrame:
+    """Northern Ireland's GP practices from the Business Services Organisation's reference
+    file, with their registered patients."""
+    raw = pl.read_csv(
+        data_dir("raw") / "bso_gp_list_sizes" / "bso_gp_list_sizes.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    raw = raw.rename({c: c.strip() for c in raw.columns})
+    df = raw.select(
+        pl.col("PracNo").str.strip_chars().alias("practice_code"),
+        pl.col("PracticeName").str.strip_chars().alias("name"),
+        pl.col("Postcode").str.strip_chars().alias("postcode"),
+        pl.lit(None, pl.Utf8).alias("open_date"),
+        pl.lit(None, pl.Utf8).alias("close_date"),
+        pl.col("LCG").alias("commissioner"),
+        pl.col("Registered_Patients").cast(pl.Int32, strict=False).alias("list_size"),
+    ).filter(pl.col("practice_code").is_not_null() & pl.col("postcode").is_not_null())
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("N",)))
+    logger.info(f"{df.height:,} GP practices in Northern Ireland (BSO)")
+    return df
 
 
 def _phs_gp_practices() -> pl.DataFrame:
@@ -142,8 +167,29 @@ def stage_ods_dentists() -> pl.LazyFrame:
     df = geocode_postcodes(df).filter(in_scope("lsoa21cd")).drop("status")
     if "S" in active_nations():
         df = pl.concat([df, _phs_dentists()], how="diagonal_relaxed")
+    if "N" in active_nations():
+        df = pl.concat([df, _bso_dentists()], how="diagonal_relaxed")
     logger.info(f"{df.height:,} active dental practices")
     return df.lazy()
+
+
+def _bso_dentists() -> pl.DataFrame:
+    """Northern Ireland's health-service dental surgeries (BSO's surgery list)."""
+    raw = pl.read_csv(
+        data_dir("raw") / "bso_dental" / "bso_dental.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    raw = raw.rename({c: c.strip() for c in raw.columns})
+    postcode = next(c for c in raw.columns if c.upper() == "POSTCODE")
+    address = next(c for c in raw.columns if c.upper() == "ADDRESS")
+    df = raw.select(
+        pl.col(address).str.strip_chars().alias("name"),
+        pl.col(postcode).str.strip_chars().alias("postcode"),
+    ).filter(pl.col("postcode").is_not_null())
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("N",)))
+    logger.info(f"{df.height:,} dental surgeries in Northern Ireland (BSO)")
+    return df
 
 
 def _phs_dentists() -> pl.DataFrame:
@@ -186,7 +232,9 @@ def stage_pharmacies() -> pl.LazyFrame:
         )
     if "S" in active_nations():
         frames.append(_phs_pharmacies())
-    others = [n for n in active_nations() if n not in ("E", "S")]
+    if "N" in active_nations():
+        frames.append(_bso_pharmacies())
+    others = [n for n in active_nations() if n not in ("E", "S", "N")]
     if others:
         osm = pl.read_parquet(data_dir("staged") / "osm_pois.parquet").filter(
             pl.col("value") == "pharmacy"
@@ -215,6 +263,33 @@ def _phs_pharmacies() -> pl.DataFrame:
     )
     df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("S",)))
     logger.info(f"{df.height:,} community pharmacies in Scotland (PHS)")
+    return df
+
+
+def _bso_pharmacies() -> pl.DataFrame:
+    """Northern Ireland's community pharmacies: every contractor that dispensed in the
+    month, from BSO's dispensing-by-contractor file (no standalone list is published)."""
+    raw = pl.read_csv(
+        data_dir("raw") / "bso_dispensing" / "bso_dispensing.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    raw = raw.rename({c: c.strip() for c in raw.columns})
+    code = next(c for c in raw.columns if c.lower() == "chemist")
+    name = next(c for c in raw.columns if c.lower() == "contractor name")
+    postcode = next(c for c in raw.columns if c.lower() == "contractor postcode")
+    df = (
+        raw.select(
+            pl.col(code).str.strip_chars().alias("pharmacy_code"),
+            pl.col(name).str.strip_chars().alias("name"),
+            pl.col(postcode).str.strip_chars().alias("postcode"),
+        )
+        .filter(pl.col("pharmacy_code").is_not_null() & pl.col("postcode").is_not_null())
+        .unique("pharmacy_code")
+        .with_columns(pl.lit("bso").alias("source"))
+    )
+    df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("N",)))
+    logger.info(f"{df.height:,} community pharmacies in Northern Ireland (BSO)")
     return df
 
 

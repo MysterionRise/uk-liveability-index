@@ -145,6 +145,8 @@ indicators:
   air_frost_days: {label: Diwrnodau o rew yn yr aer, description: "Diwrnodau y flwyddyn pan fo tymheredd yr aer yn disgyn o dan 0°C, cyfartaledd 1991–2020."}
   summer_days: {label: Diwrnodau o haf, description: "Diwrnodau y flwyddyn pan fo'r tymheredd yn cyrraedd 25°C, cyfartaledd 1991–2020."}
   wind_speed: {label: Gwynt, description: "Cyflymder cyfartalog y gwynt ar 10m, cyfartaledd 1991–2020."}
+  future_hot_days: {label: Diwrnodau poeth o haf mewn byd 2°C yn gynhesach, description: "Diwrnodau y flwyddyn uwchlaw trothwy lleol diwrnod poeth o haf unwaith y bydd y byd wedi cynhesu 2°C, o ragamcanion lleol UKCP18 y Swyddfa Dywydd."}
+  domestic_rates: {label: Ardrethi domestig (cartref nodweddiadol), description: "Bil ardrethi domestig blynyddol cartref ar werth cyfalaf canolrifol yr ardal, o'r gyfradd ranbarthol a chyfradd ardal y cyngor (Gogledd Iwerddon)."}
   snow_days: {label: Diwrnodau ag eira ar lawr, description: "Diwrnodau y flwyddyn ag eira ar lawr am 9am, cyfartaledd 1991–2020."}
 
 # What the interface calls each nation's areas (one, several)

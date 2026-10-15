@@ -191,6 +191,64 @@ def scotland_density() -> pl.DataFrame:
     )
 
 
+# Northern Ireland's Census 2021 main statistics published at Super Data Zone level
+# (most tables stop at ward level): population, density and single year of age
+NI_TABLES = {"census_ts001": "a01", "census_ts006": "a14", "census_ts007a": "a09"}
+
+
+def _ni_workbook(table: str):
+    for folder in sorted(data_dir("raw").glob("nisra_census_2021_p*")):
+        found = sorted(folder.glob(f"**/census-2021-ms-{table}.xlsx"))
+        if found:
+            return found[0]
+    raise FileNotFoundError(f"No census-2021-ms-{table}.xlsx under data/raw/nisra_census_2021_p*")
+
+
+def ni_census_table(slug: str) -> pl.DataFrame:
+    """One Census 2021 table's Northern Irish rows from NISRA's main statistics workbook
+    (the ``SDZ`` sheet), named like the England and Wales columns."""
+    from lix_pipeline.stage.geo_ni import load_sheet
+
+    sheet = load_sheet(_ni_workbook(NI_TABLES[slug]), "SDZ", "Geography")
+    sheet = sheet.rename({c: str(c).strip() for c in sheet.columns})
+    code = next(c for c in sheet.columns if c.lower() == "geography code")
+    zones = sheet.filter(pl.col(code).cast(pl.Utf8).str.starts_with("N21"))
+    key = pl.col(code).cast(pl.Utf8).str.strip_chars().alias("lsoa21cd")
+    if slug == "census_ts001":
+        total = next(c for c in zones.columns if c.lower().startswith("all usual residents"))
+        return zones.select(key, pl.col(total).cast(pl.Float64, strict=False).alias("total"))
+    if slug == "census_ts006":
+        people = next(c for c in zones.columns if c.lower().startswith("all usual residents"))
+        area = next(c for c in zones.columns if c.lower().startswith("area (hectares)"))
+        return zones.select(
+            key,
+            (
+                pl.col(people).cast(pl.Float64, strict=False)
+                / (pl.col(area).cast(pl.Float64, strict=False) / 100)
+            ).alias("persons_per_square_kilometre"),
+        )
+    # census_ts007a: "All usual residents: Aged N years" columns → the five-year bands
+    ages = {}
+    for c in zones.columns:
+        low = c.lower()
+        if not low.startswith("all usual residents:"):
+            continue
+        m = re.search(r"(\d+)", low.split(":", 1)[1])
+        if m:
+            ages[c] = int(m.group(1))
+    total = next(c for c in zones.columns if c.lower() == "all usual residents")
+    return zones.select(
+        key,
+        pl.col(total).cast(pl.Float64, strict=False).alias("total"),
+        *[
+            pl.sum_horizontal(
+                [pl.col(c).cast(pl.Float64, strict=False) for c, a in ages.items() if a in band]
+            ).alias(name)
+            for name, band in _AGE_BANDS.items()
+        ],
+    )
+
+
 def stage_census_table(slug: str) -> pl.LazyFrame:
     """Stage one census_tsNNN table at small-area level for the active nations: the
     Census 2021 bulk file for England and Wales, Scotland's Census 2022 for Scotland."""
@@ -201,6 +259,8 @@ def stage_census_table(slug: str) -> pl.LazyFrame:
         frames.append(_england_wales(slug))
     if "S" in active_nations() and (slug in SCOTLAND_TABLES or slug == "census_ts006"):
         frames.append(scotland_census_table(slug))
+    if "N" in active_nations() and slug in NI_TABLES:
+        frames.append(ni_census_table(slug))
     out = pl.concat(frames, how="diagonal_relaxed").filter(in_scope("lsoa21cd")).sort("lsoa21cd")
     logger.info(f"[{slug}] {out.height:,} areas, {out.width - 1} measures")
     return out.lazy()

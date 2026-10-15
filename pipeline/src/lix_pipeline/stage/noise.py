@@ -38,7 +38,28 @@ NOISE_SOURCES: dict[str, dict[str, dict[str, str]]] = {
         "all": {"lden": "sepa_noise_all_lden"},
         "industry": {"lden": "sepa_noise_industry_lden"},
     },
+    # Northern Ireland: round 3 contour polygons (DAERA), one shapefile per source
+    "N": {
+        "all": {"lden": "daera_noise_r3"},
+        "road": {"lden": "daera_noise_r3"},
+        "rail": {"lden": "daera_noise_r3"},
+        "air": {"lden": "daera_noise_r3"},
+        "industry": {"lden": "daera_noise_r3"},
+    },
 }
+# Contour shapefiles per kind inside a polygon source (globs under its raw folder)
+CONTOUR_FILES: dict[str, dict[str, list[str]]] = {
+    "daera_noise_r3": {
+        "all": ["**/R3_con_lden.shp"],
+        "road": ["**/R3_agg_road_lden.shp", "**/R3_mroad_lden.shp"],
+        "rail": ["**/R3_agg_rail_lden.shp", "**/R3_mrail_lden.shp"],
+        "air": ["**/R3_bca_lden.shp", "**/R3_bia_lden.shp"],
+        "industry": ["**/R3_agg_ind_lden.shp"],
+    }
+}
+# DAERA's gridcode is the top of a 5 dB band (54 = 50–54.9 dB … 74 = 70–74.9; 1000 = 75+):
+# a home takes the band's floor, as the rasters' cells hold the modelled level
+CONTOUR_BANDS = {54: 50.0, 59: 55.0, 64: 60.0, 69: 65.0, 74: 70.0, 1000: 75.0}
 KINDS = ("road", "rail", "air", "industry", "all")
 # 55 dB Lden is the level at which the Environmental Noise Directive counts people as
 # exposed, but at that level the answer depends on whether minor roads were mapped, which
@@ -55,7 +76,40 @@ def _tiles(slug: str) -> list[Path]:
     return sorted((data_dir("raw") / slug).glob("**/*.tif"))
 
 
-def noise_at_homes(homes: pl.DataFrame, layers: dict[str, list[Path]]) -> pl.DataFrame:
+def _contours(slug: str, kind: str) -> list[Path]:
+    folder = data_dir("raw") / slug
+    return sorted(
+        p for pattern in CONTOUR_FILES.get(slug, {}).get(kind, []) for p in folder.glob(pattern)
+    )
+
+
+def contour_db_at_points(paths: list[Path], x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """The noise level under each point from contour polygons: the floor of the loudest
+    band any of the files puts it in, NaN where none does."""
+    import geopandas as gpd
+
+    from lix_core.geo import working_crs
+    from lix_pipeline.geo.contours import band_at_points
+
+    out = np.full(len(x), np.nan)
+    for path in paths:
+        polys = gpd.read_file(path, columns=["gridcode"])
+        if polys.crs is not None and polys.crs.to_epsg() != working_crs():
+            polys = polys.to_crs(working_crs())
+        polys = polys.assign(db=polys["gridcode"].map(CONTOUR_BANDS))
+        unknown = polys["db"].isna().sum()
+        if unknown:
+            raise ValueError(f"{path.name}: {unknown} polygons with an unknown gridcode")
+        level = band_at_points(polys, "db", x, y)
+        out = np.where(np.isnan(out), level, np.fmax(out, level))
+    return out
+
+
+def noise_at_homes(
+    homes: pl.DataFrame,
+    layers: dict[str, list[Path]],
+    contours: dict[str, list[Path]] | None = None,
+) -> pl.DataFrame:
     """Per area: the share of residential postcodes at or above 60 dB Lden from any mapped
     kind (and at 55 and 65), each kind's own share at 60 and at 55, the share from road
     or rail alone at 60, and the mean of the loudest kind.
@@ -72,8 +126,11 @@ def noise_at_homes(homes: pl.DataFrame, layers: dict[str, list[Path]]) -> pl.Dat
         for kind, tiles in layers.items()
         if tiles
     }
+    for kind, paths in (contours or {}).items():
+        if paths:
+            sampled[kind] = np.nan_to_num(contour_db_at_points(paths, x, y), nan=0.0)
     if not sampled:
-        raise ValueError("noise_at_homes needs at least one grid")
+        raise ValueError("noise_at_homes needs at least one grid or contour set")
     db_columns = [pl.Series(f"{kind}_db", values) for kind, values in sampled.items()]
     loudest = pl.max_horizontal([f"{kind}_db" for kind in sampled])
     surface = [k for k in ("road", "rail") if k in sampled]
@@ -115,8 +172,9 @@ def stage_noise() -> pl.LazyFrame:
         if nation not in active_nations():
             continue
         layers = {kind: _tiles(slugs["lden"]) for kind, slugs in kinds.items()}
+        contours = {kind: _contours(slugs["lden"], kind) for kind, slugs in kinds.items()}
         pts = homes.filter(nation_of("lsoa21cd") == nation)
-        df = noise_at_homes(pts, layers)
+        df = noise_at_homes(pts, layers, contours)
         noisy = df.select((pl.col("share_any_60") * pl.col("n_postcodes")).sum()).item()
         logger.info(
             f"{nation}: {df.height:,} areas from {pts.height:,} postcodes over {sorted(layers)}; "

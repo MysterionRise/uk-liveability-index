@@ -127,4 +127,6 @@ nations:
     ruc_map: {Urban: urban, Mixed: town, Rural: rural}
     pseudo_region: true  # NSPL: N99999999
     demo_upper: [N09000003]  # Belfast
-    theme_gaps: []
+    # No open school inspection grades or results exist, so education is shown as
+    # limited data and left out of the Northern Irish overall score
+    theme_gaps: [education]

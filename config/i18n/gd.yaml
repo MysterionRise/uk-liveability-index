@@ -160,4 +160,6 @@ indicators:
   air_frost_days: {label: Làithean reothaidh, description: "Làithean sa bhliadhna nuair a thuiteas teòthachd an adhair fo 0°C, cuibheasachd 1991–2020."}
   summer_days: {label: Làithean samhraidh, description: "Làithean sa bhliadhna nuair a ruigeas an teòthachd 25°C, cuibheasachd 1991–2020."}
   wind_speed: {label: Gaoth, description: "Astar cuibheasach na gaoithe aig 10m, cuibheasachd 1991–2020."}
+  future_hot_days: {label: Làithean teth samhraidh ann an saoghal 2°C nas blàithe, description: "Làithean sa bhliadhna os cionn stairsneach ionadail latha teth samhraidh aon uair 's gu bheil an saoghal air blàthachadh 2°C, bho ro-mheasaidhean ionadail UKCP18 Oifis na Sìde."}
+  domestic_rates: {label: Reataichean dachaigheil (dachaigh àbhaisteach), description: "Bile bliadhnail nan reataichean dachaigheil airson dachaigh aig luach-calpa meadhanail na sgìre, bhon reata roinneil agus reata sgìreil na comhairle (Èirinn a Tuath)."}
   snow_days: {label: Làithean le sneachd na laighe, description: "Làithean sa bhliadhna le sneachd air an talamh aig 9m, cuibheasachd 1991–2020."}

@@ -73,8 +73,32 @@ def stage_naptan() -> pl.LazyFrame:
         .filter(pl.col("mode").is_not_null() & pl.col("x").is_not_null())
         .collect()
     )
+    from lix_core.codes import active_nations
+
+    if "N" in active_nations():
+        df = pl.concat([df, _translink_stations()], how="vertical_relaxed")
     logger.info(f"{df.height:,} active stops: {dict(df['mode'].value_counts().rows())}")
     return df.lazy()
+
+
+def _translink_stations() -> pl.DataFrame:
+    """Northern Ireland's railway stations and halts from the NI Railways TransXChange
+    file (NaPTAN stops at Great Britain)."""
+    from lix_pipeline.stage.geo import lonlat_to_bng
+    from lix_pipeline.stage.txc import txc_stops
+
+    folder = data_dir("raw") / "translink_rail_txc"
+    stops = txc_stops(folder)
+    x, y = lonlat_to_bng(stops["lon"], stops["lat"])
+    out = stops.select(
+        pl.col("stop_id").alias("atco_code"),
+        "name",
+        pl.lit(None, pl.Utf8).alias("locality"),
+        pl.lit("RPL").alias("stop_type"),
+        pl.lit("rail").alias("mode"),
+    ).with_columns(pl.Series("x", x), pl.Series("y", y))
+    logger.info(f"{out.height:,} railway stations in Northern Ireland (Translink)")
+    return out
 
 
 # Ofcom output-area columns (residential premises) → our names
@@ -148,9 +172,12 @@ def stage_bods_gtfs() -> pl.LazyFrame:
     borders; a stop in several feeds keeps its busiest count.
     """
     feeds = gtfs_feeds()
-    if not feeds:
-        raise FileNotFoundError("No GTFS feed fetched for the active nations")
+    txc = txc_feeds()
+    if not feeds and not txc:
+        raise FileNotFoundError("No GTFS or TransXChange feed fetched for the active nations")
     frames = [_gtfs_departures(data_dir("raw") / slug) for slug in feeds]
+    frames += [_txc_departures(data_dir("raw") / slug) for slug in txc]
+    feeds = feeds + txc
     df = (
         pl.concat(frames)
         .sort("departures", descending=True)
@@ -159,6 +186,38 @@ def stage_bods_gtfs() -> pl.LazyFrame:
     )
     logger.info(f"{df.height:,} stops served across {feeds}")
     return df.lazy()
+
+
+def txc_feeds() -> list[str]:
+    """Registry slugs ``translink_*_txc`` that cover an active nation and have been fetched
+    (TransXChange timetables, read by lix_pipeline.stage.txc)."""
+    from lix_core.codes import active_nations
+    from lix_core.config import load_registry
+
+    active = set(active_nations())
+    return [
+        slug
+        for slug, spec in load_registry().items()
+        if slug.startswith("translink_")
+        and slug.endswith("_txc")
+        and active & set(spec.coverage)
+        and (data_dir("raw") / slug).is_dir()
+    ]
+
+
+def _txc_departures(root) -> pl.DataFrame:
+    from lix_pipeline.stage.geo import lonlat_to_bng
+    from lix_pipeline.stage.txc import txc_departures
+
+    df = txc_departures(root)
+    x, y = lonlat_to_bng(df["lon"], df["lat"])
+    df = df.with_columns(x=x, y=y)
+    day = df["reference_day"][0] if df.height else None
+    logger.info(
+        f"{root.name}: {df.height:,} stops served on {day}; "
+        f"median {df['per_hour'].median():.1f} departures an hour (07:00–19:00)"
+    )
+    return df
 
 
 def _gtfs_departures(root) -> pl.DataFrame:

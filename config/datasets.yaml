@@ -1782,7 +1782,7 @@ osm_scotland:
 # check date on every row; the lockfile records their checksum like any download.
 
 ae_sites:
-  coverage: [E, W, S]
+  coverage: [E, W, S, N]
   title: Emergency departments and urgent-care sites (curated list)
   theme: health
   access: {type: curated, path: config/data/ae_sites.csv}

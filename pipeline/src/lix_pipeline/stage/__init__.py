@@ -25,6 +25,7 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "lps_house_prices_ward",
         "osni_ward12_boundaries",
         "nspl",
+        *LOW_BOUNDARIES,
     ],
     "population": ["pop_lsoa_mye", "nrs_sape", "nisra_sdz_mye"],
     "geo_lsoa": [
@@ -80,16 +81,15 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "ea_flood_postcodes": ["ea_flood_postcodes", "nspl"],
     "ofcom_broadband": ["ofcom_broadband", "oa_lookup"],
     "wg_schools": ["wg_schools", *LOW_BOUNDARIES],
-    "schools": [
-        "gias",
-        "wg_schools",
-        "sg_school_roll",
+    "schools": ["gias", "wg_schools", "sg_school_roll", *LOW_BOUNDARIES],
+    "de_schools": [
         "de_schools_primary",
         "de_schools_post_primary",
         "de_schools_special",
         "nspl",
-        *LOW_BOUNDARIES,
     ],
+    "os_greenspace": ["os_greenspace", "osm_ireland", *LOW_BOUNDARIES],
+    "naptan": ["naptan", "translink_rail_txc"],
     "childcare": [
         "ofsted_childcare",
         "care_inspectorate",
@@ -162,10 +162,14 @@ STAGE_READS: dict[str, list[str]] = {
     "fsa_fhrs": ["nspl"],
     "ea_flood_postcodes": ["nspl"],
     "ea_flood_all_postcodes": ["nspl"],
-    "schools": ["gias", "wg_schools", "sg_schools"],
+    "schools": ["gias", "wg_schools", "sg_schools", "de_schools"],
+    "de_schools": ["nspl"],
+    "ukcp_hot_days": ["geo_lsoa"],
+    "os_greenspace": ["osm_pois"],
+    "voa_ctsop": ["soa01_sdz21"],
     "care_inspectorate": ["nspl"],
     "wg_ks4_la": ["geo_lsoa"],
-    "childcare": ["ofsted_childcare", "care_inspectorate", "osm_pois"],
+    "childcare": ["ofsted_childcare", "care_inspectorate", "osm_pois", "nspl"],
     "pharmacies": ["nhsbsa_pharmacies", "osm_pois", "nspl"],
     "ofcom_broadband": ["oa_lookup"],
     "council_tax": ["geo_lsoa"],
@@ -174,7 +178,7 @@ STAGE_READS: dict[str, list[str]] = {
     "tree_cover": ["nspl"],
     "night_lights": ["nspl"],
     "climate": ["nspl"],
-    "deprivation": ["iod_2025", "dz11_dz22"],
+    "deprivation": ["iod_2025", "dz11_dz22", "soa01_sdz21"],
 }
 
 
@@ -243,6 +247,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "oa_lookup": geo.stage_oa_lookup,
         "lsoa11_lsoa21": geo.stage_lsoa11_lsoa21,
         "dz11_dz22": geo.stage_dz11_dz22,  # Scotland: needs staged nspl
+        "soa01_sdz21": geo.stage_soa01_sdz21,  # Northern Ireland: raw NISRA files only
         "geo_lsoa": geo.stage_geo_lsoa,  # needs staged nspl and population
         "places": geo.stage_places,
         "price_paid": stage_price_paid,
@@ -256,6 +261,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "gias": schools.stage_gias,
         "wg_schools": schools.stage_wg_schools,
         "sg_schools": schools.stage_sg_schools,
+        "de_schools": schools.stage_de_schools,  # Northern Ireland: needs staged nspl
         "sg_attainment": schools.stage_sg_attainment,
         "schools": schools.stage_schools,  # needs staged gias, wg_schools and sg_schools
         "wg_ks4_la": schools.stage_wg_ks4_la,  # needs staged geo_lsoa
@@ -294,5 +300,6 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "tree_cover": landcover.stage_tree_cover,  # needs staged nspl
         "night_lights": night_lights.stage_night_lights,  # manual source; needs staged nspl
         "climate": climate.stage_climate,  # manual source; needs staged nspl
+        "ukcp_hot_days": climate.stage_ukcp_hot_days,  # needs staged geo_lsoa
         "deprivation": stage_deprivation,  # needs staged iod_2025
     }

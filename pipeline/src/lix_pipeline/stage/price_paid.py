@@ -156,6 +156,10 @@ def stage_price_paid(
         scotland = _scotland()
         if scotland is not None:
             df = pl.concat([df, scotland], how="diagonal_relaxed").sort("lsoa21cd")
+    if "N" in active_nations():
+        ni = _northern_ireland()
+        if ni is not None:
+            df = pl.concat([df, ni], how="diagonal_relaxed").sort("lsoa21cd")
     return df.lazy()
 
 
@@ -275,3 +279,117 @@ def _scotland() -> pl.DataFrame | None:
         f"Intermediate Zone"
     )
     return out
+
+
+def _plain(expr: pl.Expr) -> pl.Expr:
+    """A ward or council name as a join key: upper case, letters and digits only."""
+    return expr.str.to_uppercase().str.replace_all(r"[^A-Z0-9]+", " ").str.strip_chars()
+
+
+def _lps_ward_years(raw: pl.DataFrame) -> pl.DataFrame:
+    return raw.select(
+        _plain(pl.col("District")).alias("district"),
+        _plain(pl.col("Ward")).alias("ward"),
+        pl.col("SaleYr").cast(pl.Int32, strict=False).alias("year"),
+        pl.col("Ward_VerifiedSales").cast(pl.Float64, strict=False).alias("sales"),
+        pl.col("Reporting_MedianPrice").cast(pl.Float64, strict=False).alias("median"),
+    ).filter(pl.col("year").is_not_null())
+
+
+def _lps_summary(ward_years: pl.DataFrame, latest: int) -> pl.DataFrame:
+    """Per ward: the latest year's median and sales, the year before's median, and the
+    last five years pooled (a sales-weighted mean of the medians)."""
+    five = (
+        ward_years.filter(pl.col("year") > latest - 5)
+        .group_by("district", "ward")
+        .agg(
+            (
+                (pl.col("median") * pl.col("sales")).sum()
+                / pl.col("sales").filter(pl.col("median").is_not_null()).sum()
+            )
+            .fill_nan(None)
+            .alias("median_price_5y"),
+            pl.col("sales").sum().alias("transaction_count_5y"),
+        )
+    )
+    now = ward_years.filter(pl.col("year") == latest).select(
+        "district",
+        "ward",
+        pl.col("median").alias("median_price_12m"),
+        pl.col("sales").alias("transaction_count_12m"),
+    )
+    prev = ward_years.filter(pl.col("year") == latest - 1).select(
+        "district", "ward", pl.col("median").alias("median_prev")
+    )
+    return five.join(now, on=["district", "ward"], how="left").join(
+        prev, on=["district", "ward"], how="left"
+    )
+
+
+def _northern_ireland() -> pl.DataFrame | None:
+    """Northern Ireland's Super Data Zones from Land & Property Services' annual
+    statistics by electoral ward (medians suppressed under 30 sales): each zone takes the
+    ward its population-weighted centroid falls in, flagged ``broadcast_msoa`` (a ward
+    is the coarser area), with the latest calendar year as the 12 months and the latest
+    five pooled. None until fetched."""
+    from lix_pipeline.geo.boundaries import load_boundaries
+    from lix_pipeline.geo.joins import points_to_lsoa
+
+    folder = data_dir("raw") / "lps_house_prices_ward"
+    files = sorted(folder.glob("*.csv"))
+    if not files:
+        logger.warning(f"{folder} not fetched: Northern Irish prices skipped")
+        return None
+    raw = pl.concat(
+        [pl.read_csv(f, infer_schema_length=0, encoding="utf8-lossy") for f in files],
+        how="vertical_relaxed",
+    )
+    ward_years = _lps_ward_years(raw)
+    latest = int(ward_years.filter(pl.col("median").is_not_null())["year"].max())
+    per_ward = _lps_summary(ward_years, latest)
+
+    wards = load_boundaries("osni_ward12_boundaries", code_column="WardCode")
+    name_col = next(c for c in wards.columns if c.upper() == "WARDNAME")
+    ward_names = pl.DataFrame(
+        {"ward_cd": wards.index.to_list(), "ward_nm": wards[name_col].astype(str).to_list()}
+    )
+    zones = (
+        pl.read_parquet(data_dir("staged") / "geo_lsoa.parquet")
+        .filter(pl.col("nation") == "N")
+        .select("lsoa21cd", pl.col("pwc_x").alias("x"), pl.col("pwc_y").alias("y"), "lad_nm")
+    )
+    polys = wards[["geometry"]].reset_index().rename(columns={"lsoa21cd": "ward_cd"})
+    polys = polys.rename(columns={"ward_cd": "lsoa21cd"})
+    located = (
+        points_to_lsoa(zones.rename({"lsoa21cd": "zone"}), x="x", y="y", polygons=polys)
+        .rename({"lsoa21cd": "ward_cd", "zone": "lsoa21cd"})
+        .join(ward_names, on="ward_cd", how="left")
+        .with_columns(
+            _plain(pl.col("lad_nm")).alias("district"), _plain(pl.col("ward_nm")).alias("ward")
+        )
+    )
+    out = located.join(per_ward, on=["district", "ward"], how="left").with_columns(
+        ((pl.col("median_price_12m") - pl.col("median_prev")) / pl.col("median_prev") * 100).alias(
+            "yoy_change_pct"
+        ),
+        pl.when(pl.col("median_price_12m").is_not_null())
+        .then(pl.lit("broadcast_msoa"))
+        .otherwise(pl.lit("missing"))
+        .alias("quality"),
+        pl.lit(date(latest, 12, 31)).alias("as_of"),
+    )
+    unmatched = out.filter(pl.col("transaction_count_5y").is_null()).height
+    logger.info(
+        f"Land & Property Services {latest}: {out.height:,} Super Data Zones, "
+        f"{out['median_price_12m'].null_count():,} without a price, {unmatched} with no ward match"
+    )
+    return out.select(
+        "lsoa21cd",
+        "median_price_12m",
+        "transaction_count_12m",
+        "median_price_5y",
+        "transaction_count_5y",
+        "yoy_change_pct",
+        "quality",
+        "as_of",
+    )

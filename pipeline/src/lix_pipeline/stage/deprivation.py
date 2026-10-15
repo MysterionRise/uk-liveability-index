@@ -1,5 +1,6 @@
 """One deprivation table for every nation: IoD 2025 in England, WIMD 2025 in Wales, SIMD
-2020 in Scotland (on the 2022 Data Zones through the crosswalk).
+2020 in Scotland (on the 2022 Data Zones through the crosswalk), NIMDM 2017 in Northern
+Ireland (on the 2021 Super Data Zones through the Super Output Area crosswalk).
 
 The indices are built the same way (income and employment domains are rates of people
 affected; the others are weighted combinations) but by different governments on
@@ -167,6 +168,62 @@ def _scotland() -> pl.DataFrame:
     return out.select(*COLUMNS, "access_score", "crime_rate_1000")
 
 
+# NIMDM 2017 rank columns → harmonised domain names (ranks become within-NI scores)
+NIMDM_RANKS = {
+    "MDM_rank": "imd_score",
+    "D3_Health_rank": "health_score",
+    "P4_Education_rank": "education_score",
+    "P5_Access_rank": "access_score",
+    "D7_CD_rank": "crime_score",
+    "D6_LivEnv_rank": "housing_score",
+}
+
+
+def _northern_ireland() -> pl.DataFrame:
+    """NIMDM 2017 on the 2021 Super Data Zones: every rank becomes a within-NI score and
+    the income and employment rates stay rates; values cross from the 890 Super Output
+    Areas of 2001 as population-weighted means (``soa01_sdz21``); the overall rank and
+    decile are recomputed on the new zones. ``access_score`` (proximity to services)
+    feeds the connectivity substitute."""
+    from lix_pipeline.geo.crosswalk import crosswalk
+
+    raw = pl.read_csv(
+        data_dir("raw") / "nimdm_2017" / "nimdm_2017.csv",
+        infer_schema_length=0,
+        encoding="utf8-lossy",
+    )
+    raw = raw.rename({c: c.strip() for c in raw.columns})
+    missing = [
+        c for c in [*NIMDM_RANKS, "SOA2001", "Income_perc", "Empl_perc"] if c not in raw.columns
+    ]
+    if missing:
+        raise ValueError(f"NIMDM file lacks columns {missing}; has {raw.columns[:20]}")
+    n = pl.col("MDM_rank").cast(pl.Float64, strict=False).count()
+    values = raw.select(
+        pl.col("SOA2001").str.strip_chars().alias("soa01cd"),
+        *[
+            rank_to_score(pl.col(src).cast(pl.Float64, strict=False), n).alias(dst)
+            for src, dst in NIMDM_RANKS.items()
+        ],
+        pl.col("Income_perc").cast(pl.Float64, strict=False).alias("income_score"),
+        pl.col("Empl_perc").cast(pl.Float64, strict=False).alias("employment_score"),
+    )
+    columns = [*NIMDM_RANKS.values(), "income_score", "employment_score"]
+    weights = pl.read_parquet(data_dir("staged") / "soa01_sdz21.parquet")
+    out = crosswalk(values, weights, columns, how="mean", key="soa01cd", new_key="sdz21cd")
+    out = out.with_columns(
+        pl.col("imd_score").rank("ordinal", descending=True).cast(pl.Int32).alias("imd_rank")
+    ).with_columns(
+        ((pl.col("imd_rank") - 1) * 10 // pl.col("imd_rank").count() + 1)
+        .cast(pl.Int32)
+        .alias("imd_decile"),
+        pl.lit(None, pl.Float64).alias("outdoors_score"),
+        pl.lit(None, pl.Float64).alias("crime_rate_1000"),
+    )
+    logger.info(f"NIMDM 2017 on {out.height:,} Super Data Zones 2021")
+    return out.select(*COLUMNS, "access_score", "crime_rate_1000")
+
+
 def stage_deprivation() -> pl.LazyFrame:
     frames = []
     if "E" in active_nations():
@@ -175,6 +232,8 @@ def stage_deprivation() -> pl.LazyFrame:
         frames.append(_wales())
     if "S" in active_nations():
         frames.append(_scotland())
+    if "N" in active_nations():
+        frames.append(_northern_ireland())
     df = pl.concat(frames, how="diagonal_relaxed").sort("lsoa21cd")
     logger.info(f"Deprivation: {df.height:,} LSOAs across {active_nations()}")
     return df.lazy()

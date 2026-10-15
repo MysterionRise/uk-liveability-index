@@ -56,6 +56,18 @@ def msoa_income(ctx, column: str) -> pl.DataFrame:
     return df.rename({column: "value"})
 
 
+def domestic_rates(ctx) -> pl.DataFrame:
+    """Annual domestic rates bill for a home at the area's median capital value: the
+    council's district rate plus the regional rate, in the pound (Northern Ireland)."""
+    rates = broadcast(ctx.staged("council_tax"), ["rate_poundage"], "lad", "lad_cd", geo=ctx.geo)
+    values = ctx.staged("voa_ctsop").select("lsoa21cd", "capital_value_median")
+    return rates.join(values, on="lsoa21cd", how="left").select(
+        "lsoa21cd",
+        (pl.col("rate_poundage") * pl.col("capital_value_median")).round(0).alias("value"),
+        "quality",
+    )
+
+
 def council_tax(ctx, band: str = "d") -> pl.DataFrame:
     """Annual council tax for a band in the billing authority (all precepts)."""
     col = f"band_{band}"

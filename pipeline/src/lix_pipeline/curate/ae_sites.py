@@ -3,10 +3,11 @@
     python -m lix_pipeline.curate.ae_sites
 
 Scotland's rows come from Public Health Scotland's accident and emergency site list (every
-site that reports emergency activity, with its department type and postcode). England's
-and Wales's come from OpenStreetMap hospitals tagged ``emergency=yes`` (no official open
-site list exists: NHS ODS carries no emergency-department flag), with the rows marked
-type 1 unless their name says minor injuries, urgent care or similar. Each row records
+site that reports emergency activity, with its department type and postcode). England's,
+Wales's and Northern Ireland's come from OpenStreetMap hospitals tagged ``emergency=yes``
+(no official open site list exists: NHS ODS carries no emergency-department flag), with
+the rows marked type 1 unless their name says minor injuries, urgent care or similar. Each
+row records
 its source and the date it was compiled, so the list can be checked and corrected by
 hand.
 """
@@ -62,7 +63,7 @@ def scotland_rows(today: str) -> list[dict]:
     return rows
 
 
-def osm_rows(today: str, nations: tuple[str, ...] = ("E", "W")) -> list[dict]:
+def osm_rows(today: str, nations: tuple[str, ...] = ("E", "W", "N")) -> list[dict]:
     pois = pl.read_parquet(data_dir("staged") / "osm_pois.parquet")
     if "emergency" not in pois.columns:
         raise ValueError("osm_pois lacks the emergency tag: re-run `lix stage --slug osm_pois`")

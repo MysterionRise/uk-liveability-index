@@ -65,8 +65,24 @@ def stage_council_tax() -> pl.LazyFrame:
     scotland = data_dir("raw") / "sg_council_tax" / "sg_council_tax.xlsx"
     if "S" in active_nations() and scotland.exists():
         out = pl.concat([out, _sg_council_tax(scotland)], how="vertical_relaxed")
+    if "N" in active_nations():
+        out = pl.concat([out, _ni_domestic_rates()], how="diagonal_relaxed")
     logger.info(f"{out.height} billing authorities; Band D median £{out['band_d'].median():,.0f}")
     return out.lazy()
+
+
+def _ni_domestic_rates() -> pl.DataFrame:
+    """Northern Ireland has domestic rates, not council tax: the regional rate plus each
+    council's district rate, in the pound of a home's capital value (``rate_poundage``;
+    the bands stay null)."""
+    raw = pl.read_csv(data_dir("raw") / "ni_domestic_rates" / "ni_domestic_rates.csv")
+    out = raw.select(
+        pl.col("lad_cd"),
+        pl.col("council").alias("authority"),
+        pl.col("total_rate").cast(pl.Float64).alias("rate_poundage"),
+    )
+    logger.info(f"{out.height} councils' domestic rate poundages")
+    return out
 
 
 # Council tax bands are fixed multiples of band D (ninths); Wales's band I (21/9) is left out
@@ -203,6 +219,8 @@ def stage_voa_ctsop() -> pl.LazyFrame:
     out = totals.join(bands, on="lsoa21cd", how="left")
     if "S" in active_nations():
         out = pl.concat([out, _nrs_dwellings()], how="diagonal_relaxed")
+    if "N" in active_nations():
+        out = pl.concat([out, _lps_dwellings()], how="diagonal_relaxed")
     out = out.sort("lsoa21cd")
     logger.info(f"{out.height:,} LSOAs, {out['dwellings'].sum():,.0f} dwellings")
     return out.lazy()
@@ -231,5 +249,82 @@ def _nrs_dwellings() -> pl.DataFrame:
     )
     logger.info(
         f"Scotland {year}: {out.height:,} Data Zones, {out['dwellings'].sum():,.0f} dwellings"
+    )
+    return out
+
+
+# LPS capital value bands (April 2016) in order, and their edges in pounds; the open top
+# band is taken to run to twice its floor for the median
+CAPITAL_VALUE_BANDS = [
+    "Up to £40000",
+    "£40001 to £52000",
+    "£52001 to £68000",
+    "£68001 to £88000",
+    "£88001 to £120000",
+    "£120001 to £160000",
+    "£160001 to £320000",
+    "more than £320000",
+]
+CAPITAL_VALUE_EDGES = [0, 40_000, 52_000, 68_000, 88_000, 120_000, 160_000, 320_000, 640_000]
+
+
+def median_from_bands(counts: list[float], edges: list[float]) -> float | None:
+    """The median of values known only by band, interpolated within the band that holds
+    the middle home."""
+    total = sum(counts)
+    if total <= 0:
+        return None
+    half = total / 2
+    before = 0.0
+    for i, n in enumerate(counts):
+        if before + n >= half and n > 0:
+            return edges[i] + (half - before) / n * (edges[i + 1] - edges[i])
+        before += n
+    return None
+
+
+def _lps_dwellings() -> pl.DataFrame:
+    """Northern Ireland's homes by capital value band per 2001 Super Output Area (LPS,
+    April 2016), brought onto the 2021 Super Data Zones by apportioning the counts;
+    the eight bands stand in the ``band_a``–``band_h`` columns and the area's median
+    capital value feeds the domestic rates figure."""
+    from lix_pipeline.geo.crosswalk import crosswalk
+
+    path = data_dir("raw") / "lps_capital_value_bands" / "lps_capital_value_bands.csv"
+    text = path.read_bytes().decode("latin-1")
+    raw = pl.read_csv(text.encode("utf-8"), infer_schema_length=0)
+    raw = raw.rename({c: c.strip() for c in raw.columns})
+    raw = raw.select(
+        pl.col("SOA2001").str.strip_chars().alias("soa01cd"),
+        pl.col("Capital Value").str.strip_chars().alias("band"),
+        pl.col("Number_of_Properties").cast(pl.Float64, strict=False).fill_null(0).alias("n"),
+    )
+    unknown = sorted(set(raw["band"].unique()) - set(CAPITAL_VALUE_BANDS))
+    if unknown:
+        raise ValueError(f"Unexpected capital value bands {unknown}")
+    wide = raw.pivot(on="band", index="soa01cd", values="n", aggregate_function="sum")
+    for band in CAPITAL_VALUE_BANDS:
+        if band not in wide.columns:
+            wide = wide.with_columns(pl.lit(0.0).alias(band))
+    letters = {band: f"band_{chr(ord('a') + i)}" for i, band in enumerate(CAPITAL_VALUE_BANDS)}
+    wide = wide.rename(letters).with_columns(
+        pl.sum_horizontal(list(letters.values())).alias("dwellings")
+    )
+    medians = [
+        median_from_bands([row[c] for c in letters.values()], CAPITAL_VALUE_EDGES)
+        for row in wide.iter_rows(named=True)
+    ]
+    wide = wide.with_columns(pl.Series("capital_value_median", medians, dtype=pl.Float64))
+    weights = pl.read_parquet(data_dir("staged") / "soa01_sdz21.parquet")
+    counts = crosswalk(
+        wide, weights, ["dwellings", *letters.values()], how="sum", key="soa01cd", new_key="sdz21cd"
+    )
+    value = crosswalk(
+        wide, weights, ["capital_value_median"], how="mean", key="soa01cd", new_key="sdz21cd"
+    )
+    out = counts.join(value, on="lsoa21cd", how="left")
+    logger.info(
+        f"{out.height:,} Super Data Zones, {out['dwellings'].sum():,.0f} homes by capital value "
+        f"(2016); median value £{out['capital_value_median'].median():,.0f}"
     )
     return out

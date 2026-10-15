@@ -49,7 +49,37 @@ def stage_os_greenspace() -> pl.LazyFrame:
     logger.info(
         f"{df.height:,} pedestrian access points to {df['site_id'].n_unique():,} green spaces"
     )
+    from lix_core.codes import active_nations
+
+    if "N" in active_nations():
+        df = pl.concat([df, _osm_parks(("N",))], how="diagonal_relaxed")
     return df.lazy()
+
+
+def _osm_parks(nations: tuple[str, ...]) -> pl.DataFrame:
+    """Parks from OpenStreetMap where OS Open Greenspace stops (Northern Ireland): each
+    park's representative point stands for one entrance, so a large park with many ways
+    in counts once; documented as a method difference."""
+    from lix_core.codes import nation_of
+    from lix_pipeline.geo.joins import points_to_lsoa
+
+    osm = pl.read_parquet(data_dir("staged") / "osm_pois.parquet").filter(
+        (pl.col("key") == "leisure") & (pl.col("value") == "park")
+    )
+    osm = points_to_lsoa(osm.select("osm_type", "osm_id", "name", "x", "y"), x="x", y="y")
+    osm = osm.filter(nation_of("lsoa21cd").is_in(list(nations)))
+    out = osm.select(
+        pl.concat_str([pl.lit("osm:"), pl.col("osm_type"), pl.col("osm_id").cast(pl.Utf8)]).alias(
+            "site_id"
+        ),
+        pl.lit("Pedestrian").alias("access_type"),
+        "x",
+        "y",
+        pl.lit("Public Park Or Garden").alias("function"),
+        pl.col("name").alias("site_name"),
+    )
+    logger.info(f"{out.height:,} OpenStreetMap parks in {list(nations)}")
+    return out
 
 
 FLOOD_BANDS = ("High", "Medium", "Low", "VeryLow")
