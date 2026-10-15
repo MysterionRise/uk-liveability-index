@@ -124,6 +124,40 @@ def _to_display_units(cells: pl.DataFrame, column: str, units: str) -> pl.DataFr
     return cells
 
 
+# A postcode on reclaimed land or a pier can sit in a cell the grid leaves blank (sea);
+# its area takes the nearest land cell within this distance
+NEAREST_CELL_M = 3000
+
+
+def _fill_from_nearest_cells(
+    cells: pl.DataFrame, homes: pl.DataFrame, sampled: pl.DataFrame, column: str
+) -> pl.DataFrame:
+    """Areas none of whose postcodes found a cell (docks, harbours: Leith, Southampton's
+    waterfront) take the nearest land cell within NEAREST_CELL_M of each postcode."""
+    from scipy.spatial import cKDTree
+
+    missing = homes.filter(~pl.col("lsoa21cd").is_in(sampled["lsoa21cd"].implode()))
+    if missing.is_empty():
+        return sampled
+    tree = cKDTree(cells.select("x", "y").to_numpy().astype(float))
+    dist, idx = tree.query(
+        missing.select("east1m", "north1m").to_numpy().astype(float),
+        distance_upper_bound=NEAREST_CELL_M,
+    )
+    found = np.isfinite(dist)
+    if not found.any():
+        return sampled
+    values = cells["value"].to_numpy()[idx[found]]
+    filled = (
+        missing.filter(pl.Series(found))
+        .with_columns(pl.Series(column, values))
+        .group_by("lsoa21cd")
+        .agg(pl.col(column).mean(), pl.len().alias(f"_n_{column}"))
+    )
+    logger.info(f"{column}: {filled.height} areas took the nearest land cell")
+    return pl.concat([sampled, filled], how="vertical_relaxed")
+
+
 def climate_at_homes(homes: pl.DataFrame, files: dict[str, Path]) -> pl.DataFrame:
     """Per area: the mean over its postcodes of each variable's cell value."""
     out: pl.DataFrame | None = None
@@ -136,6 +170,7 @@ def climate_at_homes(homes: pl.DataFrame, files: dict[str, Path]) -> pl.DataFram
         sampled = sample_grid_at_points(cells, homes, "value").rename(
             {"value": column, "n_points": f"_n_{column}"}
         )
+        sampled = _fill_from_nearest_cells(cells, homes, sampled, column)
         logger.info(f"{column}: {sampled.height:,} areas from {cells.height:,} cells ({units})")
         out = (
             sampled if out is None else out.join(sampled, on="lsoa21cd", how="full", coalesce=True)

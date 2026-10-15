@@ -1268,7 +1268,7 @@ wheels = [
 
 [[package]]
 name = "lix-api"
-version = "0.4.1"
+version = "0.5.0"
 source = { editable = "api" }
 dependencies = [
     { name = "duckdb" },
@@ -1304,7 +1304,7 @@ requires-dist = [
 
 [[package]]
 name = "lix-core"
-version = "0.4.1"
+version = "0.5.0"
 source = { editable = "core" }
 dependencies = [
     { name = "numpy" },
@@ -1328,7 +1328,7 @@ requires-dist = [
 
 [[package]]
 name = "lix-pipeline"
-version = "0.4.1"
+version = "0.5.0"
 source = { editable = "pipeline" }
 dependencies = [
     { name = "duckdb" },
@@ -3436,7 +3436,7 @@ wheels = [
 
 [[package]]
 name = "uk-liveability-index"
-version = "0.4.1"
+version = "0.5.0"
 source = { virtual = "." }
 dependencies = [
     { name = "lix-api" },

@@ -152,3 +152,20 @@ def test_newest_period_wins(tmp_path, monkeypatch):
     for period in ("198101-201012", "199101-202012"):
         (folder / f"sun_hadukgrid_uk_1km_ann-30y_{period}.nc").write_bytes(b"")
     assert haduk_file("sun", "ann").name.endswith("199101-202012.nc")
+
+
+def test_a_postcode_in_a_blank_cell_takes_the_nearest_land_cell():
+    """Docks and piers sit in cells the grid leaves blank: their area reads the nearest
+    land cell within 3 km rather than nothing."""
+    from lix_pipeline.stage.climate import _fill_from_nearest_cells
+
+    cells = pl.DataFrame({"x": [500, 1500], "y": [500, 500], "value": [10.0, 20.0]})
+    homes = pl.DataFrame({
+        "lsoa21cd": ["A", "B", "C"],
+        "east1m": [600, 1900, 9000],   # A in the first cell, B 400 m off the second, C far out
+        "north1m": [600, 1200, 9000],
+    })  # fmt: skip
+    sampled = pl.DataFrame({"lsoa21cd": ["A"], "v": [10.0], "_n_v": [1]})
+    out = _fill_from_nearest_cells(cells, homes, sampled, "v").sort("lsoa21cd")
+    assert out["lsoa21cd"].to_list() == ["A", "B"]
+    assert out["v"].to_list() == [10.0, 20.0]

@@ -1,8 +1,8 @@
 {
-  "schema_version": 3,
-  "generated_at": "2026-10-13T15:28:22+00:00",
+  "schema_version": 4,
+  "generated_at": "2026-10-15T11:14:19+00:00",
   "data_release": null,
-  "data_to": "2026-10-13",
+  "data_to": "2026-10-15",
   "geography": {
     "country": {
       "code": "UK",
@@ -55,7 +55,12 @@
             "labels": "councils"
           }
         },
-        "theme_gaps": []
+        "theme_gaps": [],
+        "names": {
+          "cy": "Lloegr",
+          "gd": "Sasainn",
+          "ga": "Sasana"
+        }
       },
       "W": {
         "name": "Wales",
@@ -92,7 +97,12 @@
             "labels": "councils"
           }
         },
-        "theme_gaps": []
+        "theme_gaps": [],
+        "names": {
+          "cy": "Cymru",
+          "gd": "A' Chuimrigh",
+          "ga": "An Bhreatain Bheag"
+        }
       },
       "S": {
         "name": "Scotland",
@@ -129,21 +139,72 @@
             "labels": "council areas"
           }
         },
-        "theme_gaps": []
+        "theme_gaps": [],
+        "names": {
+          "cy": "Yr Alban",
+          "gd": "Alba",
+          "ga": "Albain"
+        }
+      },
+      "N": {
+        "name": "Northern Ireland",
+        "ctry_cd": "N92000002",
+        "bbox": [
+          -8.2,
+          54.0,
+          -5.4,
+          55.4
+        ],
+        "levels": {
+          "oa": {
+            "official": "Data Zone 2021",
+            "count": null,
+            "label": "data zone",
+            "labels": "data zones"
+          },
+          "low": {
+            "official": "Super Data Zone 2021",
+            "count": 850,
+            "label": "super data zone",
+            "labels": "super data zones"
+          },
+          "mid": {
+            "official": "Super Data Zone 2021",
+            "count": 850,
+            "label": "super data zone",
+            "labels": "super data zones"
+          },
+          "upper": {
+            "official": "Local government district",
+            "count": 11,
+            "label": "council",
+            "labels": "councils"
+          }
+        },
+        "theme_gaps": [
+          "education"
+        ],
+        "names": {
+          "cy": "Gogledd Iwerddon",
+          "gd": "\u00c8irinn a Tuath",
+          "ga": "Tuaisceart \u00c9ireann"
+        }
       }
     },
     "active": [
       "E",
       "W",
-      "S"
+      "S",
+      "N"
     ],
     "area_counts": {
       "E": 653,
+      "N": 175,
       "S": 653,
       "W": 218
     }
   },
-  "lsoa_count": 1524,
+  "lsoa_count": 1699,
   "demo": true,
   "quality_levels": [
     "ok",
@@ -161,6 +222,10 @@
     },
     {
       "code": "cy",
+      "status": "draft"
+    },
+    {
+      "code": "ga",
       "status": "draft"
     },
     {
@@ -202,6 +267,10 @@
         "community": {
           "label": "Cymuned a lles",
           "description": "Incwm, gwaith ac iechyd y bobl sy'n byw yno."
+        },
+        "climate": {
+          "label": "Hinsawdd",
+          "description": "Heulwen, glaw a pha mor gynnes yw'r haf a pha mor dyner yw'r gaeaf, o gyfartaleddau deng mlynedd ar hugain."
         }
       },
       "presets": {
@@ -219,7 +288,7 @@
         },
         "retiree": {
           "label": "Wedi ymddeol",
-          "description": "Diogelwch, gwasanaethau iechyd, aer gl\u00e2n ac ardal dawelach."
+          "description": "Diogelwch, gwasanaethau iechyd, aer gl\u00e2n, heulwen ac ardal dawelach."
         },
         "commuter": {
           "label": "Cymudwr",
@@ -249,7 +318,14 @@
         "years_income": "blynyddoedd o incwm",
         "years": "blynyddoedd",
         "people_km2": "pobl fesul km\u00b2",
-        "radiance": "nW/cm\u00b2/sr"
+        "radiance": "nW/cm\u00b2/sr",
+        "hours_year": "oriau y flwyddyn",
+        "days_year": "diwrnodau y flwyddyn",
+        "celsius": "\u00b0C",
+        "mm_year": "mm y flwyddyn",
+        "m_s": "m/s",
+        "within_1500m": "o fewn 1.5km",
+        "patients_per_practice": "cleifion fesul practis"
       },
       "flags": {
         "imputed": "Mae'r ffigurau troseddu yma'n amcangyfrifon: nid yw Heddlu Manceinion Fwyaf yn cyhoeddi data ar lefel stryd.",
@@ -269,6 +345,14 @@
         "noise_exposure": {
           "label": "Cartrefi mewn s\u0175n trafnidiaeth neu ddiwydiant",
           "description": "Cyfran y cartrefi lle mae'r s\u0175n a fapiwyd yn cyfartalu 60 dB Lden neu fwy (ffyrdd a rheilffyrdd yng Nghymru a Lloegr; pob ffynhonnell a fapiwyd yn yr Alban)."
+        },
+        "aircraft_noise": {
+          "label": "Cartrefi mewn s\u0175n awyrennau",
+          "description": "Cyfran y cartrefi lle mae s\u0175n awyrennau'n cyfartalu 55 dB Lden neu fwy, o amgylch yr un ar bymtheg o feysydd awyr a fapiwyd yn Lloegr."
+        },
+        "industrial_noise": {
+          "label": "Cartrefi mewn s\u0175n diwydiannol",
+          "description": "Cyfran y cartrefi lle mae s\u0175n diwydiannol yn cyfartalu 55 dB Lden neu fwy, ym mhum dinas fapiedig yr Alban."
         },
         "rail_service": {
           "label": "Gwasanaeth rheilffordd gerllaw",
@@ -483,7 +567,7 @@
           "description": "Newid yn y pris gwerthu canolrifol, y 12 mis diwethaf yn erbyn y 12 mis cynt."
         },
         "council_tax": {
-          "label": "Treth gyngor (Band D)",
+          "label": "Treth gyngor (cyfradd Band D y cyngor)",
           "description": "Treth gyngor flynyddol ar gartref Band D, gan gynnwys taliadau'r sir, yr heddlu, t\u00e2n a chyngor cymuned cyfartalog."
         },
         "price_to_income": {
@@ -557,6 +641,66 @@
         "sustainable_commute": {
           "label": "Cerdded, beicio neu drafnidiaeth gyhoeddus i'r gwaith",
           "description": "Cyfran y gweithwyr sy'n cymudo ar droed, ar feic neu ar drafnidiaeth gyhoeddus (Cyfrifiad 2021, yn ystod cyfyngiadau COVID-19)."
+        },
+        "sunshine": {
+          "label": "Heulwen",
+          "description": "Oriau o heulwen lachar y flwyddyn, cyfartaledd 1991\u20132020 (HadUK-Grid, 1km)."
+        },
+        "wet_days": {
+          "label": "Diwrnodau gwlyb",
+          "description": "Diwrnodau y flwyddyn ag o leiaf 1mm o law, cyfartaledd 1991\u20132020."
+        },
+        "summer_warmth": {
+          "label": "Cynhesrwydd yr haf",
+          "description": "Tymheredd uchaf dyddiol cyfartalog Mehefin i Awst, cyfartaledd 1991\u20132020 (\u00b0C)."
+        },
+        "winter_mildness": {
+          "label": "Tynerwch y gaeaf",
+          "description": "Tymheredd isaf dyddiol cyfartalog Rhagfyr i Chwefror, cyfartaledd 1991\u20132020 (\u00b0C)."
+        },
+        "rainfall": {
+          "label": "Glawiad",
+          "description": "Glawiad y flwyddyn mewn milimetrau, cyfartaledd 1991\u20132020."
+        },
+        "air_frost_days": {
+          "label": "Diwrnodau o rew yn yr aer",
+          "description": "Diwrnodau y flwyddyn pan fo tymheredd yr aer yn disgyn o dan 0\u00b0C, cyfartaledd 1991\u20132020."
+        },
+        "summer_days": {
+          "label": "Diwrnodau o haf",
+          "description": "Diwrnodau y flwyddyn pan fo'r tymheredd yn cyrraedd 25\u00b0C, cyfartaledd 1991\u20132020."
+        },
+        "wind_speed": {
+          "label": "Gwynt",
+          "description": "Cyflymder cyfartalog y gwynt ar 10m, cyfartaledd 1991\u20132020."
+        },
+        "future_hot_days": {
+          "label": "Diwrnodau poeth o haf mewn byd 2\u00b0C yn gynhesach",
+          "description": "Diwrnodau y flwyddyn uwchlaw trothwy lleol diwrnod poeth o haf unwaith y bydd y byd wedi cynhesu 2\u00b0C, o ragamcanion lleol UKCP18 y Swyddfa Dywydd."
+        },
+        "domestic_rates": {
+          "label": "Ardrethi domestig (cartref nodweddiadol)",
+          "description": "Bil ardrethi domestig blynyddol cartref ar werth cyfalaf canolrifol yr ardal, o'r gyfradd ranbarthol a chyfradd ardal y cyngor (Gogledd Iwerddon)."
+        },
+        "snow_days": {
+          "label": "Diwrnodau ag eira ar lawr",
+          "description": "Diwrnodau y flwyddyn ag eira ar lawr am 9am, cyfartaledd 1991\u20132020."
+        },
+        "council_tax_typical": {
+          "label": "Treth gyngor (cartref nodweddiadol yma)",
+          "description": "Yr hyn mae cartref nodweddiadol yn yr ardal yn ei dalu mewn treth gyngor, t\u00e2l pob band wedi'i bwysoli yn \u00f4l faint o gartrefi'r ardal sydd yn y band hwnnw."
+        },
+        "gp_list_size": {
+          "label": "Cleifion fesul practis meddyg teulu gerllaw",
+          "description": "Cleifion cofrestredig fesul practis yn y practisau meddyg teulu ger cartrefi, wedi'u pwysoli yn \u00f4l pellter."
+        },
+        "allotment_distance": {
+          "label": "Pellter i'r rhandiroedd agosaf",
+          "description": "Pellter cyfartalog mewn llinell syth o gartrefi i'r rhandiroedd neu'r man tyfu cymunedol agosaf."
+        },
+        "ev_charging": {
+          "label": "Pwyntiau gwefru cyhoeddus gerllaw",
+          "description": "Gorsafoedd gwefru cerbydau trydan cyhoeddus o fewn 1.5km i gartrefi, ar gyfartaledd (OpenStreetMap)."
         }
       },
       "levels": {
@@ -601,6 +745,548 @@
             "one": "ardal cyngor",
             "other": "ardaloedd cyngor"
           }
+        },
+        "N": {
+          "low": {
+            "one": "parth data uwch",
+            "other": "parthau data uwch"
+          },
+          "mid": {
+            "one": "parth data uwch",
+            "other": "parthau data uwch"
+          },
+          "upper": {
+            "one": "cyngor",
+            "other": "cynghorau"
+          }
+        }
+      }
+    },
+    "ga": {
+      "themes": {
+        "safety": {
+          "label": "S\u00e1bh\u00e1ilteacht",
+          "description": "Coireacht agus iompar frithsh\u00f3isialta a taifeadadh san \u00e1it a bhfuil c\u00f3na\u00ed ar dhaoine."
+        },
+        "environment": {
+          "label": "Timpeallacht",
+          "description": "Aer glan, sr\u00e1ideanna ci\u00faine, crainn agus sp\u00e1sanna glasa in aice l\u00e1imhe, agus riosca tuilte."
+        },
+        "health": {
+          "label": "Seirbh\u00eds\u00ed sl\u00e1inte",
+          "description": "C\u00e9 chomh h\u00e9asca is at\u00e1 s\u00e9 do ch\u00f3naitheoir\u00ed docht\u00fair teaghlaigh, c\u00f3gaiseoir n\u00f3 fiacl\u00f3ir a fheice\u00e1il."
+        },
+        "education": {
+          "label": "Scoileanna agus c\u00faram leana\u00ed",
+          "description": "Scoileanna agus na\u00edonra\u00ed maithe faoi rochtain."
+        },
+        "transport": {
+          "label": "Iompar agus nascacht",
+          "description": "C\u00e9 chomh maith is a nascann ceantar le poist agus le seirbh\u00eds\u00ed ar gach modh, agus a leathanbhanda."
+        },
+        "amenities": {
+          "label": "\u00c1iseanna agus saol na ho\u00edche",
+          "description": "Siopa\u00ed, caif\u00e9anna, tithe t\u00e1bhairne dea-re\u00e1cht\u00e1ilte, f\u00f3ill\u00edocht agus cult\u00far in aice l\u00e1imhe."
+        },
+        "housing": {
+          "label": "Tith\u00edocht agus inacmhainneacht",
+          "description": "An m\u00e9id a chosna\u00edonn tithe agus bail an stoic tith\u00edochta."
+        },
+        "community": {
+          "label": "Pobal agus foll\u00e1ine",
+          "description": "Ioncam, obair agus sl\u00e1inte na ndaoine a ch\u00f3na\u00edonn ann."
+        },
+        "climate": {
+          "label": "Aer\u00e1id",
+          "description": "Grian, b\u00e1isteach agus c\u00e9 chomh te is at\u00e1 an samhradh agus c\u00e9 chomh s\u00e9imh is at\u00e1 an geimhreadh, \u00f3 mhe\u00e1in tr\u00edocha bliain."
+        }
+      },
+      "presets": {
+        "balanced": {
+          "label": "Cothrom",
+          "description": "Comhaireann gach t\u00e9ama go cothrom."
+        },
+        "family": {
+          "label": "Teaghlach le leana\u00ed",
+          "description": "Scoileanna agus na\u00edonra\u00ed maithe, s\u00e1bh\u00e1ilteacht agus sp\u00e1sanna glasa ar dt\u00fas."
+        },
+        "young_professional": {
+          "label": "Gairm\u00ed \u00f3g",
+          "description": "Naisc, ruda\u00ed le d\u00e9anamh agus tithe t\u00e1bhairne maithe; is l\u00fa t\u00e1bhacht na scoileanna."
+        },
+        "retiree": {
+          "label": "Ar scor",
+          "description": "S\u00e1bh\u00e1ilteacht, seirbh\u00eds\u00ed sl\u00e1inte, aer glan, grian agus ceantar n\u00edos ci\u00faine."
+        },
+        "commuter": {
+          "label": "Comait\u00e9ir",
+          "description": "Naisc thapa le poist, ar iompar poibl\u00ed thar aon rud eile."
+        }
+      },
+      "units": {
+        "gbp": "\u00a3",
+        "gbp_year": "\u00a3 sa bhliain",
+        "pct": "%",
+        "pct_homes": "% de thithe",
+        "pct_pupils": "% de dhalta\u00ed",
+        "pct_working_age": "% de dhaoine 16\u201364",
+        "metres": "m\u00e9adair",
+        "per_1000_year": "in aghaidh 1,000 c\u00f3naitheoir sa bhliain",
+        "score": "sc\u00f3r",
+        "score_100": "sc\u00f3r 0\u2013100",
+        "ugm3": "\u00b5g/m\u00b3",
+        "index": "inn\u00e9acs 0\u20131",
+        "quality": "c\u00e1il\u00edocht 0\u20131",
+        "rating": "r\u00e1t\u00e1il 0\u20131 (Maith = 0.75)",
+        "rate": "r\u00e1ta",
+        "collisions_year": "imbhuailt\u00ed sa bhliain laistigh de 500m",
+        "patients_per_gp": "othair in aghaidh an docht\u00fara teaghlaigh l\u00e1naimseartha",
+        "attainment8": "Gn\u00f3thacht\u00e1il 8",
+        "buses_hour": "busanna san uair",
+        "years_income": "blianta d'ioncam",
+        "years": "blianta",
+        "people_km2": "daoine in aghaidh km\u00b2",
+        "radiance": "nW/cm\u00b2/sr",
+        "hours_year": "uaireanta sa bhliain",
+        "days_year": "laethanta sa bhliain",
+        "celsius": "\u00b0C",
+        "mm_year": "mm sa bhliain",
+        "m_s": "m/s",
+        "within_1500m": "laistigh de 1.5km",
+        "patients_per_practice": "othair in aghaidh an chleachtais"
+      },
+      "flags": {
+        "imputed": "Is meastach\u00e1in iad na figi\u00fair\u00ed coireachta anseo: n\u00ed fhoils\u00edonn P\u00f3il\u00edn\u00ed Greater Manchester sonra\u00ed ar leibh\u00e9al sr\u00e1ide.",
+        "low_n": "Is beag teach a d\u00edoladh anseo le bliain anuas, mar sin t\u00e1 an praghas cobhsaithe i dtreo an cheantair m\u00e1guaird.",
+        "broadcast_lad": "Tagann c\u00e1il\u00edocht na me\u00e1nscoileanna \u00f3 thortha\u00ed scr\u00faduithe na comhairle ar fad, mar n\u00ed fhoils\u00edonn an n\u00e1isi\u00fan seo tortha\u00ed n\u00e1 gr\u00e1id chigireachta in aghaidh na scoile.",
+        "not_available": "N\u00edl roinnt t\u00e1scair\u00ed ar f\u00e1il sa n\u00e1isi\u00fan seo go f\u00f3ill; \u00fas\u00e1ideann an t\u00e9ama na cinn at\u00e1 aige."
+      },
+      "levels": {
+        "E": {
+          "low": {
+            "one": "ceantar beag",
+            "other": "ceantair bheaga"
+          },
+          "mid": {
+            "one": "comharsanacht",
+            "other": "comharsanachta\u00ed"
+          },
+          "upper": {
+            "one": "comhairle",
+            "other": "comhairl\u00ed"
+          }
+        },
+        "W": {
+          "low": {
+            "one": "ceantar beag",
+            "other": "ceantair bheaga"
+          },
+          "mid": {
+            "one": "comharsanacht",
+            "other": "comharsanachta\u00ed"
+          },
+          "upper": {
+            "one": "comhairle",
+            "other": "comhairl\u00ed"
+          }
+        },
+        "S": {
+          "low": {
+            "one": "crios sonra\u00ed",
+            "other": "criosanna sonra\u00ed"
+          },
+          "mid": {
+            "one": "crios idirmhe\u00e1nach",
+            "other": "criosanna idirmhe\u00e1nacha"
+          },
+          "upper": {
+            "one": "ceantar comhairle",
+            "other": "ceantair chomhairle"
+          }
+        },
+        "N": {
+          "low": {
+            "one": "forchrios sonra\u00ed",
+            "other": "forchriosanna sonra\u00ed"
+          },
+          "mid": {
+            "one": "forchrios sonra\u00ed",
+            "other": "forchriosanna sonra\u00ed"
+          },
+          "upper": {
+            "one": "comhairle",
+            "other": "comhairl\u00ed"
+          }
+        }
+      },
+      "indicators": {
+        "crime_violence": {
+          "label": "Cionta for\u00e9igneacha agus gn\u00e9asacha",
+          "description": "For\u00e9igean agus cionta gn\u00e9asacha a taifeadadh in aghaidh 1,000 c\u00f3naitheoir sa bhliain (me\u00e1n 36 m\u00ed)."
+        },
+        "crime_burglary": {
+          "label": "Buirgl\u00e9ireacht",
+          "description": "Buirgl\u00e9ireachta\u00ed a taifeadadh in aghaidh 1,000 c\u00f3naitheoir sa bhliain."
+        },
+        "crime_asb": {
+          "label": "Iompar frithsh\u00f3isialta",
+          "description": "Eachtra\u00ed iompair fhrithsh\u00f3isialta a tuairisc\u00edodh in aghaidh 1,000 c\u00f3naitheoir sa bhliain."
+        },
+        "crime_theft": {
+          "label": "Rob\u00e1il, gada\u00edocht agus coireacht feithicl\u00ed",
+          "description": "Rob\u00e1il, gada\u00edocht \u00f3n duine, coireacht feithicl\u00ed agus gada\u00edocht rothar in aghaidh 1,000 c\u00f3naitheoir sa bhliain."
+        },
+        "crime_damage_disorder": {
+          "label": "Dam\u00e1iste coiri\u00fail agus ord poibl\u00ed",
+          "description": "Dam\u00e1iste coiri\u00fail, coirloscadh agus cionta oird phoibl\u00ed in aghaidh 1,000 c\u00f3naitheoir sa bhliain."
+        },
+        "road_danger": {
+          "label": "Imbhuailt\u00ed b\u00f3thair tromch\u00faiseacha in aice l\u00e1imhe",
+          "description": "Imbhuailt\u00ed b\u00f3thair inar mara\u00edodh n\u00f3 inar gorta\u00edodh duine go dona laistigh de 500m de thithe, sa bhliain (me\u00e1n 5 bliana)."
+        },
+        "iod_crime": {
+          "label": "Sc\u00f3r fearainn coireachta IoD 2025",
+          "description": "Riosca samhaltaithe \u00edospairt phearsanta agus maoine (sonra\u00ed 2021\u20132023)."
+        },
+        "recorded_crime": {
+          "label": "Coireacht a taifeadadh (SIMD)",
+          "description": "Coireanna a taifeadadh in aghaidh 1,000 c\u00f3naitheoir sa bhliain in Inn\u00e9acs Ild\u00edothachta na hAlban 2020, tugtha chuig criosanna sonra\u00ed 2022."
+        },
+        "no2": {
+          "label": "D\u00e9-ocsa\u00edd n\u00edtrigine (NO\u2082)",
+          "description": "Me\u00e1n-NO\u2082 c\u00falra bliant\u00fail san \u00e1it a gc\u00f3na\u00edonn daoine (samhail 1km Defra)."
+        },
+        "pm25": {
+          "label": "M\u00ednfh\u00edne\u00e1in (PM2.5)",
+          "description": "Me\u00e1n-PM2.5 c\u00falra bliant\u00fail san \u00e1it a gc\u00f3na\u00edonn daoine (samhail 1km Defra)."
+        },
+        "green_space_access": {
+          "label": "P\u00e1irceanna agus sp\u00e1sanna glasa in aice l\u00e1imhe",
+          "description": "Beala\u00ed isteach i bp\u00e1irceanna, i ngaird\u00edn\u00ed agus i bp\u00e1irceanna imeartha poibl\u00ed laistigh de shi\u00fal\u00f3id 1km, ualaithe de r\u00e9ir faid."
+        },
+        "play_spaces": {
+          "label": "Cl\u00f3is s\u00fagartha in aice l\u00e1imhe",
+          "description": "Beala\u00ed isteach i sp\u00e1sanna s\u00fagartha poibl\u00ed laistigh de 800m de thithe, ualaithe de r\u00e9ir faid."
+        },
+        "flood_risk": {
+          "label": "Tithe i mbaol tuilte",
+          "description": "Sciar de thithe i mbaol ard n\u00f3 me\u00e1nach tuilte \u00f3 aibhneacha, \u00f3n bhfarraige n\u00f3 \u00f3 uisce dromchla (seans 1% sa bhliain ar a laghad)."
+        },
+        "flood_rivers_sea": {
+          "label": "Tithe i mbaol \u00f3 aibhneacha n\u00f3 \u00f3n bhfarraige",
+          "description": "Sciar de thithe i mbaol ard n\u00f3 me\u00e1nach tuilte \u00f3 aibhneacha n\u00f3 \u00f3n bhfarraige amh\u00e1in (seans 1% sa bhliain ar a laghad)."
+        },
+        "noise_exposure": {
+          "label": "Tithe i dtorann iompair n\u00f3 tionscla\u00edoch",
+          "description": "Sciar de thithe ina sroicheann torann map\u00e1ilte 60 dB Lden n\u00f3 n\u00edos m\u00f3 thar an l\u00e1, an tr\u00e1thn\u00f3na agus an o\u00edche (b\u00f3ithre, iarnr\u00f3id agus aer\u00e1rtha\u00ed i Sasana; b\u00f3ithre agus iarnr\u00f3id sa Bhreatain Bheag; gach foinse mhap\u00e1ilte in Albain)."
+        },
+        "aircraft_noise": {
+          "label": "Tithe i dtorann aer\u00e1rtha\u00ed",
+          "description": "Sciar de thithe ina bhfuil torann aer\u00e1rtha\u00ed 55 dB Lden n\u00f3 n\u00edos m\u00f3 ar an me\u00e1n, timpeall na s\u00e9 aerfort d\u00e9ag at\u00e1 map\u00e1ilte i Sasana."
+        },
+        "industrial_noise": {
+          "label": "Tithe i dtorann tionscla\u00edoch",
+          "description": "Sciar de thithe ina bhfuil torann tionscla\u00edoch 55 dB Lden n\u00f3 n\u00edos m\u00f3 ar an me\u00e1n, i gc\u00faig chathair mhap\u00e1ilte na hAlban."
+        },
+        "road_rail_noise": {
+          "label": "Tithe i dtorann b\u00f3thair n\u00f3 iarnr\u00f3id",
+          "description": "Sciar de thithe ina sroicheann torann b\u00f3thair n\u00f3 iarnr\u00f3id 60 dB Lden n\u00f3 n\u00edos m\u00f3 thar an l\u00e1, an tr\u00e1thn\u00f3na agus an o\u00edche, \u00f3 na mapa\u00ed torainn strait\u00e9iseacha."
+        },
+        "tree_canopy": {
+          "label": "Cl\u00fadach crann timpeall tithe",
+          "description": "Sciar den talamh laistigh de 500m de thithe a ranga\u00edonn cl\u00fadach tal\u00fan satail\u00edte mar chl\u00fadach crann (ESA WorldCover, 10m)."
+        },
+        "light_pollution": {
+          "label": "Solas na ho\u00edche",
+          "description": "Me\u00e1nrada\u00edocht o\u00edche laistigh de 1km de thithe, \u00f3 chomhioml\u00e1n bliant\u00fail satail\u00edte VIIRS (nW/cm\u00b2/sr)."
+        },
+        "iod_outdoors": {
+          "label": "Timpeallacht ch\u00f3naithe amuigh IoD 2025",
+          "description": "C\u00e1il\u00edocht aeir agus timpist\u00ed tr\u00e1chta b\u00f3thair (fofhearann IoD 2025)."
+        },
+        "hospital_ae_distance": {
+          "label": "Fad chuig an rann\u00f3g \u00e9igeand\u00e1la is gaire",
+          "description": "Me\u00e1nfhad d\u00edreach \u00f3 thithe chuig an rann\u00f3g \u00e9igeand\u00e1la is gaire faoi sti\u00fair comhairleora."
+        },
+        "hospital_distance": {
+          "label": "Fad chuig an gc\u00faram \u00e9igeand\u00e1la is gaire",
+          "description": "Me\u00e1nfhad d\u00edreach \u00f3 thithe chuig an rann\u00f3g \u00e9igeand\u00e1la n\u00f3 an t-aonad mionghortuithe is gaire."
+        },
+        "gp_distance": {
+          "label": "Fad chuig an gcleachtas docht\u00fara teaghlaigh is gaire",
+          "description": "Me\u00e1nfhad d\u00edreach \u00f3 thithe chuig an gcleachtas docht\u00fara teaghlaigh is gaire."
+        },
+        "patients_per_gp": {
+          "label": "Othair in aghaidh an docht\u00fara teaghlaigh",
+          "description": "Othair chl\u00e1raithe in aghaidh an docht\u00fara teaghlaigh ch\u00e1ilithe l\u00e1naimseartha ag na cleachtais a \u00fas\u00e1ideann c\u00f3naitheoir\u00ed."
+        },
+        "gp_quality": {
+          "label": "R\u00e1t\u00e1lacha cleachtas docht\u00fair\u00ed teaghlaigh",
+          "description": "R\u00e1t\u00e1lacha CQC na gcleachtas docht\u00fair\u00ed teaghlaigh a bhfuil c\u00f3naitheoir\u00ed cl\u00e1raithe leo, ualaithe de r\u00e9ir an l\u00edn a \u00fas\u00e1ideann gach ceann."
+        },
+        "care_homes": {
+          "label": "Tithe altranais dea-r\u00e1t\u00e1ilte in aice l\u00e1imhe",
+          "description": "Leapacha i dtithe altranais a r\u00e1t\u00e1il CQC Maith n\u00f3 S\u00e1rmhaith laistigh de 5km, ualaithe de r\u00e9ir faid."
+        },
+        "pharmacy_distance": {
+          "label": "Fad chuig an gc\u00f3gaslann is gaire",
+          "description": "Me\u00e1nfhad d\u00edreach \u00f3 thithe chuig an gc\u00f3gaslann phobail NHS is gaire."
+        },
+        "dentist_distance": {
+          "label": "Fad chuig an bhfiacl\u00f3ir NHS is gaire",
+          "description": "Me\u00e1nfhad d\u00edreach \u00f3 thithe chuig an gcleachtas fiacl\u00f3ireachta is gaire a bhfuil conradh NHS aige."
+        },
+        "primary_school_quality": {
+          "label": "Bunscoileanna maithe in aice l\u00e1imhe",
+          "description": "C\u00e1il\u00edocht na dtr\u00ed bhunscoil st\u00e1it is gaire (Ofsted agus tortha\u00ed), agus na cinn is gaire ag comhaireamh n\u00edos m\u00f3."
+        },
+        "secondary_school_quality": {
+          "label": "Me\u00e1nscoileanna maithe in aice l\u00e1imhe",
+          "description": "C\u00e1il\u00edocht na dtr\u00ed mhe\u00e1nscoil st\u00e1it is gaire (cigireachta\u00ed agus tortha\u00ed), agus na cinn is gaire ag comhaireamh n\u00edos m\u00f3."
+        },
+        "school_choice": {
+          "label": "Rogha scoileanna maithe",
+          "description": "Bunscoileanna st\u00e1it maithe laistigh de 2km agus me\u00e1nscoileanna laistigh de 5km, ualaithe de r\u00e9ir c\u00e1il\u00edochta agus faid."
+        },
+        "primary_results": {
+          "label": "Tortha\u00ed bunscoile in aice l\u00e1imhe",
+          "description": "Sciar de dhalta\u00ed a shroicheann an caighde\u00e1n a bhfuiltear ag s\u00fail leis sa l\u00e9itheoireacht, sa scr\u00edbhneoireacht agus sa mhatamaitic ag bunscoileanna st\u00e1it laistigh de 2km (me\u00e1n 3 bliana), ualaithe de r\u00e9ir faid."
+        },
+        "secondary_results": {
+          "label": "Tortha\u00ed me\u00e1nscoile in aice l\u00e1imhe",
+          "description": "Me\u00e1nsc\u00f3r Gn\u00f3thacht\u00e1il 8 ag me\u00e1nscoileanna st\u00e1it laistigh de 5km, ualaithe de r\u00e9ir faid."
+        },
+        "nursery_access": {
+          "label": "Na\u00edonra\u00ed maithe in aice l\u00e1imhe",
+          "description": "Na\u00edonra\u00ed, r\u00e9amhscoileanna agus ranganna na\u00edonra scoile laistigh de 1km, gach ceann ualaithe de r\u00e9ir a ghr\u00e1id chigireachta agus faid."
+        },
+        "connectivity_overall": {
+          "label": "Nascacht ioml\u00e1n",
+          "description": "Sc\u00f3r nascachta DfT thar gach modh taistil agus ceann scr\u00edbe."
+        },
+        "connectivity_public_transport": {
+          "label": "Nascacht iompair phoibl\u00ed",
+          "description": "Sc\u00f3r nascachta DfT d'iompar poibl\u00ed chuig gach ceann scr\u00edbe."
+        },
+        "connectivity_walking": {
+          "label": "Insi\u00faltacht",
+          "description": "Sc\u00f3r nascachta DfT do shi\u00fal chuig gach ceann scr\u00edbe."
+        },
+        "connectivity_cycling": {
+          "label": "Nascacht rotha\u00edochta",
+          "description": "Sc\u00f3r nascachta DfT do rotha\u00edocht chuig gach ceann scr\u00edbe."
+        },
+        "access_deprivation": {
+          "label": "Rochtain ar sheirbh\u00eds\u00ed (SIMD agus NIMDM)",
+          "description": "Fearann rochtana geografa\u00ed Inn\u00e9acs Ild\u00edothachta na hAlban 2020 (agus fearann gaireacht seirbh\u00eds\u00ed NIMDM 2017 i dTuaisceart \u00c9ireann): amanna tiom\u00e1na agus iompair phoibl\u00ed chuig docht\u00fair\u00ed teaghlaigh, scoileanna, siopa\u00ed, oifig\u00ed poist agus st\u00e1isi\u00fain pheitril, tugtha chuig criosanna 2021 agus 2022."
+        },
+        "station_distance": {
+          "label": "Fad chuig an st\u00e1isi\u00fan is gaire",
+          "description": "Me\u00e1nfhad d\u00edreach \u00f3 thithe chuig an stad iarnr\u00f3id, meitreo n\u00f3 trama is gaire."
+        },
+        "rail_service": {
+          "label": "Seirbh\u00eds iarnr\u00f3id in aice l\u00e1imhe",
+          "description": "Iontr\u00e1lacha agus imeachta\u00ed bliant\u00fala st\u00e1isi\u00fain (ORR) laistigh de 2km de thithe, ualaithe de r\u00e9ir faid agus s\u00e1ithithe, sa chaoi go gcomhaireann st\u00e1isi\u00fan gn\u00f3thach in aice l\u00e1imhe n\u00edos m\u00f3 n\u00e1 stad beag."
+        },
+        "bus_frequency": {
+          "label": "Minic\u00edocht busanna",
+          "description": "Busanna san uair (laethanta na seachtaine, 07:00\u201319:00) ag an stad is gn\u00f3tha\u00ed laistigh de 400m de thithe."
+        },
+        "gigabit_broadband": {
+          "label": "Leathanbhanda gigibheart",
+          "description": "Sciar de thithe ar f\u00e9idir leo leathanbhanda ar chumas gigibhirt a fh\u00e1il (sn\u00e1ith\u00edn ioml\u00e1n n\u00f3 c\u00e1bla)."
+        },
+        "slow_broadband": {
+          "label": "Tithe gan leathanbhanda cuibheasach",
+          "description": "Sciar de thithe nach f\u00e9idir leo leathanbhanda 10 Mbit/s a fh\u00e1il \u00f3 l\u00edne sheasta n\u00e1 \u00f3 gan sreang seasta."
+        },
+        "well_run_pubs": {
+          "label": "Tithe t\u00e1bhairne dea-re\u00e1cht\u00e1ilte in aice l\u00e1imhe",
+          "description": "Tithe t\u00e1bhairne laistigh de shi\u00fal\u00f3id 15 n\u00f3im\u00e9ad a bhfuil r\u00e1t\u00e1il sl\u00e1inteachais bia 4 n\u00f3 5 acu \u00f3 na tr\u00ed bliana seo caite, ualaithe de r\u00e9ir faid."
+        },
+        "food_and_drink": {
+          "label": "Caif\u00e9anna agus bialanna",
+          "description": "Caif\u00e9anna agus bialanna laistigh de 800m, ualaithe de r\u00e9ir faid."
+        },
+        "supermarket_distance": {
+          "label": "Fad chuig an ollmhargadh is gaire",
+          "description": "Me\u00e1nfhad d\u00edreach \u00f3 thithe chuig an ollmhargadh is gaire."
+        },
+        "shops": {
+          "label": "Siopa\u00ed in aice l\u00e1imhe",
+          "description": "Siopa\u00ed de gach cine\u00e1l laistigh de 800m, ualaithe de r\u00e9ir faid."
+        },
+        "leisure": {
+          "label": "\u00c1iseanna sp\u00f3irt agus acla\u00edochta",
+          "description": "Ionaid sp\u00f3irt, giomanna agus linnte sn\u00e1mha at\u00e1 ar oscailt don phobal laistigh de 2km, ualaithe de r\u00e9ir faid (OpenStreetMap)."
+        },
+        "leisure_facilities": {
+          "label": "\u00c1iseanna sp\u00f3irt (Active Places)",
+          "description": "Halla\u00ed sp\u00f3irt, giomanna, linnte, sti\u00faideonna, c\u00fairteanna agus p\u00e1irceanna at\u00e1 ar oscailt don phobal laistigh de 2km i gcl\u00e1r Active Places Sport England, ualaithe de r\u00e9ir faid."
+        },
+        "swimming_pool_distance": {
+          "label": "Fad chuig an linn sn\u00e1mha phoibl\u00ed is gaire",
+          "description": "Me\u00e1nfhad d\u00edreach \u00f3 thithe chuig an linn sn\u00e1mha is gaire at\u00e1 ar oscailt don phobal."
+        },
+        "culture": {
+          "label": "Leabharlanna, picti\u00farlanna, amharclanna agus m\u00fasaeim",
+          "description": "Leabharlanna, picti\u00farlanna, amharclanna, ionaid eala\u00edon, m\u00fasaeim agus d\u00e1nlanna laistigh de 2km."
+        },
+        "fast_food": {
+          "label": "Siopa\u00ed mearbhia in aice l\u00e1imhe",
+          "description": "Siopa\u00ed mearbhia laistigh de 800m."
+        },
+        "gambling": {
+          "label": "Siopa\u00ed geallghlacad\u00f3ra agus casa\u00edn\u00f3nna in aice l\u00e1imhe",
+          "description": "Siopa\u00ed geallghlacad\u00f3ra, ionaid chearrbhachais agus casa\u00edn\u00f3nna laistigh de 800m."
+        },
+        "house_price": {
+          "label": "Praghas t\u00ed tipici\u00fail",
+          "description": "Praghas d\u00edola me\u00e1nach thar an 12 mh\u00ed seo caite, cobhsaithe i dtreo an cheantair m\u00e1guaird nuair is beag d\u00edolach\u00e1n at\u00e1 ann."
+        },
+        "housing_condition": {
+          "label": "Bail na tith\u00edochta",
+          "description": "Fearann tith\u00edochta an inn\u00e9acs d\u00edothachta (tithe i ndroch-chaoi n\u00f3 gan t\u00e9amh l\u00e1rnach; in Albain, pl\u00f3d\u00fa agus gan t\u00e9amh l\u00e1rnach; i dTuaisceart \u00c9ireann, an timpeallacht mhaireacht\u00e1la)."
+        },
+        "price_change": {
+          "label": "Athr\u00fa ar phraghsanna tithe",
+          "description": "Athr\u00fa ar an bpraghas d\u00edola me\u00e1nach, an 12 mh\u00ed seo caite i gcompar\u00e1id leis an 12 mh\u00ed roimhe sin."
+        },
+        "council_tax": {
+          "label": "C\u00e1in chomhairle (r\u00e1ta Bhanda D na comhairle)",
+          "description": "Muirear bliant\u00fail na comhairle ar theach Bhanda D, lena n-\u00e1ir\u00edtear muirir chontae, ph\u00f3il\u00edn\u00ed, d\u00f3ite\u00e1in agus par\u00f3iste ar an me\u00e1n; an r\u00e1ta mar a ch\u00e9ile a fhoils\u00edonn gach comhairle."
+        },
+        "domestic_rates": {
+          "label": "R\u00e1ta\u00ed t\u00ed (teach tipici\u00fail)",
+          "description": "Bille r\u00e1ta\u00ed t\u00ed bliant\u00fail do theach ag me\u00e1nluach caipitil an cheantair, \u00f3n r\u00e1ta r\u00e9igi\u00fanach agus \u00f3 r\u00e1ta ceantair na comhairle (Tuaisceart \u00c9ireann)."
+        },
+        "council_tax_typical": {
+          "label": "C\u00e1in chomhairle (teach tipici\u00fail anseo)",
+          "description": "An m\u00e9id a \u00edocann teach tipici\u00fail sa cheantar i gc\u00e1in chomhairle, muirear gach banda ualaithe de r\u00e9ir an l\u00edn tithe sa cheantar at\u00e1 sa bhanda sin."
+        },
+        "price_to_income": {
+          "label": "Praghas i gcompar\u00e1id le hioncam \u00e1iti\u00fail",
+          "description": "Praghas t\u00ed tipici\u00fail roinnte ar mhe\u00e1nioncam glan teaghlaigh an cheantair."
+        },
+        "new_builds": {
+          "label": "Tithe a t\u00f3gadh \u00f3 2000",
+          "description": "Sciar de thithe a t\u00f3gadh in 2000 n\u00f3 ina dhiaidh."
+        },
+        "period_homes": {
+          "label": "Tithe a t\u00f3gadh roimh 1919",
+          "description": "Sciar de thithe a t\u00f3gadh roimh 1919."
+        },
+        "lower_band_homes": {
+          "label": "Tithe i mbanda\u00ed c\u00e1nach comhairle A\u2013B",
+          "description": "Sciar de thithe sa d\u00e1 bhanda c\u00e1nach comhairle is \u00edsle (na tithe is saoire ag luachanna 1991)."
+        },
+        "income_deprivation": {
+          "label": "D\u00edothacht ioncaim",
+          "description": "Sciar de ch\u00f3naitheoir\u00ed ar ioncam \u00edseal (fearann ioncaim an inn\u00e9acs d\u00edothachta)."
+        },
+        "employment_deprivation": {
+          "label": "D\u00edothacht fosta\u00edochta",
+          "description": "Sciar de ch\u00f3naitheoir\u00ed in aois oibre at\u00e1 d\u00edfhostaithe d\u00e1 n-ainneoin f\u00e9in (fearann fosta\u00edochta an inn\u00e9acs d\u00edothachta)."
+        },
+        "claimant_rate": {
+          "label": "R\u00e1ta \u00e9ilitheoir\u00ed",
+          "description": "C\u00f3naitheoir\u00ed ag \u00e9ileamh sochar a bhaineann le d\u00edfhosta\u00edocht, mar sciar de na daoine 16\u201364 (an mh\u00ed is d\u00e9ana\u00ed)."
+        },
+        "household_income": {
+          "label": "Ioncam teaghlaigh",
+          "description": "Me\u00e1nioncam glan teaghlaigh sa cheantar n\u00edos leithne (MSOA), roimh chostais tith\u00edochta."
+        },
+        "health_deprivation": {
+          "label": "Sl\u00e1inte agus m\u00edchumas",
+          "description": "B\u00e1s roimh am, tinneas agus m\u00edchumas (fearann d\u00edothachta sl\u00e1inte agus m\u00edchumais an inn\u00e9acs d\u00edothachta)."
+        },
+        "life_expectancy": {
+          "label": "Ionchas saoil",
+          "description": "Ionchas saoil ag breith sa cheantar n\u00edos leithne (MSOA), me\u00e1n fear agus ban, 2019\u201323."
+        },
+        "good_health": {
+          "label": "Dea-shl\u00e1inte (f\u00e9intuairiscithe)",
+          "description": "C\u00f3naitheoir\u00ed a thuairisc\u00edonn a sl\u00e1inte mar mhaith n\u00f3 an-mhaith (Daon\u00e1ireamh 2021; 2022 in Albain)."
+        },
+        "imd": {
+          "label": "Inn\u00e9acs Ild\u00edothachta",
+          "description": "Sc\u00f3r d\u00edothachta ioml\u00e1n; gan sc\u00f3r mar forlu\u00edonn a fhearainn ar th\u00e1scair\u00ed eile."
+        },
+        "population_density": {
+          "label": "Dl\u00fas daonra",
+          "description": "C\u00f3naitheoir\u00ed in aghaidh an chilim\u00e9adair chearnaigh (Daon\u00e1ireamh 2021; 2022 in Albain)."
+        },
+        "households_with_children": {
+          "label": "Teaghlaigh le leana\u00ed cleithi\u00fanacha",
+          "description": "Sciar de theaghlaigh le leana\u00ed cleithi\u00fanacha (Daon\u00e1ireamh 2021; 2022 in Albain)."
+        },
+        "aged_65_plus": {
+          "label": "C\u00f3naitheoir\u00ed 65 n\u00f3 n\u00edos sine",
+          "description": "Sciar de ch\u00f3naitheoir\u00ed at\u00e1 65 bliana d'aois n\u00f3 n\u00edos sine (Daon\u00e1ireamh 2021; 2022 in Albain)."
+        },
+        "owner_occupied": {
+          "label": "Tithe \u00fain\u00e9ir-\u00e1itithe",
+          "description": "Sciar de theaghlaigh ar leo a dteach go hioml\u00e1n n\u00f3 le morg\u00e1iste (Daon\u00e1ireamh 2021; 2022 in Albain)."
+        },
+        "no_car": {
+          "label": "Teaghlaigh gan charr",
+          "description": "Sciar de theaghlaigh gan charr n\u00e1 veain (Daon\u00e1ireamh 2021; 2022 in Albain)."
+        },
+        "sustainable_commute": {
+          "label": "Si\u00fal, rotha\u00edocht n\u00f3 iompar poibl\u00ed chun na hoibre",
+          "description": "Sciar d'oibrithe a thaisteala\u00edonn chun na hoibre de shi\u00fal na gcos, ar rothar n\u00f3 ar iompar poibl\u00ed (Daon\u00e1ireamh 2021, le linn srianta COVID-19; 2022 in Albain)."
+        },
+        "sunshine": {
+          "label": "Grian",
+          "description": "Uaireanta de sholas geal na gr\u00e9ine sa bhliain, me\u00e1n 1991\u20132020 (HadUK-Grid, 1km)."
+        },
+        "wet_days": {
+          "label": "Laethanta fliucha",
+          "description": "Laethanta sa bhliain le 1mm b\u00e1ist\u00ed ar a laghad, me\u00e1n 1991\u20132020."
+        },
+        "summer_warmth": {
+          "label": "Teas an tsamhraidh",
+          "description": "Me\u00e1nteocht uasta laeth\u00fail \u00f3 Mheitheamh go L\u00fanasa, me\u00e1n 1991\u20132020 (\u00b0C)."
+        },
+        "winter_mildness": {
+          "label": "S\u00e9imhe an gheimhridh",
+          "description": "Me\u00e1nteocht \u00edosta laeth\u00fail \u00f3 Nollaig go Feabhra, me\u00e1n 1991\u20132020 (\u00b0C)."
+        },
+        "rainfall": {
+          "label": "B\u00e1isteach",
+          "description": "B\u00e1isteach sa bhliain i millim\u00e9adair, me\u00e1n 1991\u20132020."
+        },
+        "air_frost_days": {
+          "label": "Laethanta sioc aeir",
+          "description": "Laethanta sa bhliain nuair a thiteann teocht an aeir faoi 0\u00b0C, me\u00e1n 1991\u20132020."
+        },
+        "summer_days": {
+          "label": "Laethanta samhraidh",
+          "description": "Laethanta sa bhliain nuair a shroicheann an teocht 25\u00b0C, me\u00e1n 1991\u20132020."
+        },
+        "wind_speed": {
+          "label": "Gaoth",
+          "description": "Me\u00e1nluas na gaoithe ag 10m, me\u00e1n 1991\u20132020."
+        },
+        "snow_days": {
+          "label": "Laethanta le sneachta ina lu\u00ed",
+          "description": "Laethanta sa bhliain le sneachta ar an talamh ag 9rn, me\u00e1n 1991\u20132020."
+        },
+        "future_hot_days": {
+          "label": "Laethanta teo samhraidh i ndomhan 2\u00b0C n\u00edos teo",
+          "description": "Laethanta sa bhliain os cionn tairseach \u00e1iti\u00fail lae theo samhraidh nuair a bheidh an domhan 2\u00b0C n\u00edos teo, \u00f3 r\u00e9amh-mheastach\u00e1in \u00e1iti\u00fala UKCP18 Oifig na hAimsire."
+        },
+        "gp_list_size": {
+          "label": "Othair in aghaidh an chleachtais docht\u00fara teaghlaigh in aice l\u00e1imhe",
+          "description": "Othair chl\u00e1raithe in aghaidh an chleachtais ag na cleachtais docht\u00fair\u00ed teaghlaigh in aice le tithe, ualaithe de r\u00e9ir faid."
+        },
+        "allotment_distance": {
+          "label": "Fad chuig na leithdh\u00e1ilt\u00ed is gaire",
+          "description": "Me\u00e1nfhad d\u00edreach \u00f3 thithe chuig na leithdh\u00e1ilt\u00ed n\u00f3 an sp\u00e1s f\u00e1is pobail is gaire."
+        },
+        "ev_charging": {
+          "label": "Point\u00ed luchtaithe poibl\u00ed in aice l\u00e1imhe",
+          "description": "St\u00e1isi\u00fain luchtaithe feithicl\u00ed leictreacha poibl\u00ed laistigh de 1.5km de thithe, ar an me\u00e1n (OpenStreetMap)."
         }
       }
     },
@@ -637,6 +1323,10 @@
         "community": {
           "label": "Coimhearsnachd agus sunnd",
           "description": "Teachd-a-steach, obair agus sl\u00e0inte nan daoine a tha a' fuireach ann."
+        },
+        "climate": {
+          "label": "Gn\u00e0th-sh\u00ecde",
+          "description": "Grian, uisge agus cho bl\u00e0th 's a tha an samhradh agus cho ci\u00f9in 's a tha an geamhradh, bho chuibheasachdan deich bliadhna fichead."
         }
       },
       "presets": {
@@ -684,7 +1374,14 @@
         "years_income": "bliadhnaichean de theachd-a-steach",
         "years": "bliadhnaichean",
         "people_km2": "daoine gach km\u00b2",
-        "radiance": "nW/cm\u00b2/sr"
+        "radiance": "nW/cm\u00b2/sr",
+        "hours_year": "uairean sa bhliadhna",
+        "days_year": "l\u00e0ithean sa bhliadhna",
+        "celsius": "\u00b0C",
+        "mm_year": "mm sa bhliadhna",
+        "m_s": "m/s",
+        "within_1500m": "taobh a-staigh 1.5km",
+        "patients_per_practice": "euslaintich gach cleachdadh"
       },
       "flags": {
         "imputed": "Is e tuairmsean a th' anns na figearan eucoir an seo: chan eil Poileas Greater Manchester a' foillseachadh d\u00e0ta aig \u00ecre sr\u00e0ide.",
@@ -733,6 +1430,20 @@
           "upper": {
             "one": "sg\u00ecre comhairle",
             "other": "sg\u00ecrean comhairle"
+          }
+        },
+        "N": {
+          "low": {
+            "one": "\u00e0rd-sh\u00f2n d\u00e0ta",
+            "other": "\u00e0rd-sh\u00f2naichean d\u00e0ta"
+          },
+          "mid": {
+            "one": "\u00e0rd-sh\u00f2n d\u00e0ta",
+            "other": "\u00e0rd-sh\u00f2naichean d\u00e0ta"
+          },
+          "upper": {
+            "one": "comhairle",
+            "other": "comhairlean"
           }
         }
       },
@@ -796,6 +1507,14 @@
         "noise_exposure": {
           "label": "Dachaighean ann am fuaim c\u00f2mhdhail no gn\u00ecomhachais",
           "description": "Cuid de dhachaighean far a bheil fuaim mapaichte a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche (rathaidean agus r\u00e8ile ann an Sasainn agus sa Chuimrigh; gach t\u00f9s mapaichte ann an Alba)."
+        },
+        "aircraft_noise": {
+          "label": "Dachaighean ann am fuaim itealain",
+          "description": "Cuid de na dachaighean far a bheil fuaim itealain a' cuibheasachadh 55 dB Lden no barrachd, timcheall nan sia puirt-adhair deug a tha air am mapadh ann an Sasainn."
+        },
+        "industrial_noise": {
+          "label": "Dachaighean ann am fuaim gn\u00ecomhachais",
+          "description": "Cuid de na dachaighean far a bheil fuaim gn\u00ecomhachais a' cuibheasachadh 55 dB Lden no barrachd, ann an c\u00f2ig bailtean mapaichte na h-Alba."
         },
         "road_rail_noise": {
           "label": "Dachaighean ann am fuaim rathaid no r\u00e8ile",
@@ -962,7 +1681,7 @@
           "description": "Atharrachadh sa phr\u00ecs reic mheadhanach, na 12 m\u00ecosan a dh'fhalbh an aghaidh nan 12 m\u00ecosan roimhe."
         },
         "council_tax": {
-          "label": "C\u00ecs comhairle (Bann D)",
+          "label": "C\u00ecs comhairle (reata Bann D na comhairle)",
           "description": "C\u00ecs comhairle bhliadhnail air dachaigh Bann D, a' gabhail a-steach cosgaisean siorrachd, poilis, teine agus paraiste cuibheasach."
         },
         "price_to_income": {
@@ -1036,6 +1755,66 @@
         "sustainable_commute": {
           "label": "Coiseachd, baidhsagal no c\u00f2mhdhail phoblach gu obair",
           "description": "Cuid de luchd-obrach a' siubhal gu obair air chois, air baidhsagal no air c\u00f2mhdhail phoblaich (Cunntas-sluaigh 2021, r\u00e8 bacaidhean COVID-19; 2022 ann an Alba)."
+        },
+        "sunshine": {
+          "label": "Grian",
+          "description": "Uairean de dhe\u00e0rrsadh gr\u00e8ine sa bhliadhna, cuibheasachd 1991\u20132020 (HadUK-Grid, 1km)."
+        },
+        "wet_days": {
+          "label": "L\u00e0ithean fliuch",
+          "description": "L\u00e0ithean sa bhliadhna le co-dhi\u00f9 1mm de dh'uisge, cuibheasachd 1991\u20132020."
+        },
+        "summer_warmth": {
+          "label": "Bl\u00e0ths an t-samhraidh",
+          "description": "Te\u00f2thachd as \u00e0irde l\u00e0itheil chuibheasach bhon \u00d2gmhios chun L\u00f9nastal, cuibheasachd 1991\u20132020 (\u00b0C)."
+        },
+        "winter_mildness": {
+          "label": "Ci\u00f9ineas a' gheamhraidh",
+          "description": "Te\u00f2thachd as \u00ecsle l\u00e0itheil chuibheasach bhon D\u00f9bhlachd chun Ghearran, cuibheasachd 1991\u20132020 (\u00b0C)."
+        },
+        "rainfall": {
+          "label": "Uisge",
+          "description": "Uisge sa bhliadhna ann am milleameatairean, cuibheasachd 1991\u20132020."
+        },
+        "air_frost_days": {
+          "label": "L\u00e0ithean reothaidh",
+          "description": "L\u00e0ithean sa bhliadhna nuair a thuiteas te\u00f2thachd an adhair fo 0\u00b0C, cuibheasachd 1991\u20132020."
+        },
+        "summer_days": {
+          "label": "L\u00e0ithean samhraidh",
+          "description": "L\u00e0ithean sa bhliadhna nuair a ruigeas an te\u00f2thachd 25\u00b0C, cuibheasachd 1991\u20132020."
+        },
+        "wind_speed": {
+          "label": "Gaoth",
+          "description": "Astar cuibheasach na gaoithe aig 10m, cuibheasachd 1991\u20132020."
+        },
+        "future_hot_days": {
+          "label": "L\u00e0ithean teth samhraidh ann an saoghal 2\u00b0C nas bl\u00e0ithe",
+          "description": "L\u00e0ithean sa bhliadhna os cionn stairsneach ionadail latha teth samhraidh aon uair 's gu bheil an saoghal air bl\u00e0thachadh 2\u00b0C, bho ro-mheasaidhean ionadail UKCP18 Oifis na S\u00ecde."
+        },
+        "domestic_rates": {
+          "label": "Reataichean dachaigheil (dachaigh \u00e0bhaisteach)",
+          "description": "Bile bliadhnail nan reataichean dachaigheil airson dachaigh aig luach-calpa meadhanail na sg\u00ecre, bhon reata roinneil agus reata sg\u00ecreil na comhairle (\u00c8irinn a Tuath)."
+        },
+        "snow_days": {
+          "label": "L\u00e0ithean le sneachd na laighe",
+          "description": "L\u00e0ithean sa bhliadhna le sneachd air an talamh aig 9m, cuibheasachd 1991\u20132020."
+        },
+        "council_tax_typical": {
+          "label": "C\u00ecs comhairle (dachaigh \u00e0bhaisteach an seo)",
+          "description": "Na ph\u00e0igheas dachaigh \u00e0bhaisteach san sg\u00ecre ann an c\u00ecs comhairle, cosgais gach bann air a cuideamachadh a r\u00e8ir cia mheud de dhachaighean na sg\u00ecre a tha sa bhann sin."
+        },
+        "gp_list_size": {
+          "label": "Euslaintich gach cleachdadh dotair faisg air l\u00e0imh",
+          "description": "Euslaintich cl\u00e0raichte gach cleachdadh aig na cleachdaidhean dotair faisg air dachaighean, air an cuideamachadh a r\u00e8ir astair."
+        },
+        "allotment_distance": {
+          "label": "Astar chun nan leasan-\u00e0itich as fhaisge",
+          "description": "Astar cuibheasach d\u00ecreach bho dhachaighean chun nan leasan-\u00e0itich no an \u00e0ite f\u00e0s coimhearsnachd as fhaisge."
+        },
+        "ev_charging": {
+          "label": "Puingean cosgais poblach faisg air l\u00e0imh",
+          "description": "St\u00e8iseanan cosgais charbadan dealain poblach taobh a-staigh 1.5km de dhachaighean, sa chumantas (OpenStreetMap)."
         }
       }
     }
@@ -1075,8 +1854,13 @@
     "house_price",
     "housing_condition",
     "council_tax",
+    "domestic_rates",
     "income_deprivation",
-    "health_deprivation"
+    "health_deprivation",
+    "sunshine",
+    "wet_days",
+    "summer_warmth",
+    "winter_mildness"
   ],
   "indicators": [
     {
@@ -1089,7 +1873,8 @@
       "benchmark": "nation",
       "coverage": [
         "E",
-        "W"
+        "W",
+        "N"
       ],
       "sources": [
         "police_crime",
@@ -1123,7 +1908,8 @@
       "benchmark": "nation",
       "coverage": [
         "E",
-        "W"
+        "W",
+        "N"
       ],
       "sources": [
         "police_crime",
@@ -1157,7 +1943,8 @@
       "benchmark": "nation",
       "coverage": [
         "E",
-        "W"
+        "W",
+        "N"
       ],
       "sources": [
         "police_crime",
@@ -1191,7 +1978,8 @@
       "benchmark": "nation",
       "coverage": [
         "E",
-        "W"
+        "W",
+        "N"
       ],
       "sources": [
         "police_crime",
@@ -1228,7 +2016,8 @@
       "benchmark": "nation",
       "coverage": [
         "E",
-        "W"
+        "W",
+        "N"
       ],
       "sources": [
         "police_crime",
@@ -1264,10 +2053,16 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "stats19",
+        "psni_collisions_2021",
+        "psni_collisions_2022",
+        "psni_collisions_2023",
+        "psni_collisions_2024",
+        "psni_collisions_2025",
         "nspl"
       ],
       "builder": "common:count_within",
@@ -1304,7 +2099,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "iod_2025",
@@ -1313,7 +2109,9 @@
         "simd_2020_ranks",
         "simd_2020_indicators",
         "simd_postcode_lookup",
-        "nrs_oa22_population"
+        "nrs_oa22_population",
+        "nimdm_2017",
+        "osni_soa01_boundaries"
       ],
       "builder": "common:deprivation",
       "params": {
@@ -1441,17 +2239,19 @@
       "id": "green_space_access",
       "theme": "environment",
       "label": "Parks and green spaces nearby",
-      "description": "Entrances to public parks, gardens and playing fields within a 1km walk, weighted by distance.",
+      "description": "Entrances to public parks, gardens and playing fields within a 1km walk, weighted by distance (in Northern Ireland, OpenStreetMap parks and pitches).",
       "unit": "index 0\u20131",
       "direction": "higher_better",
       "benchmark": "uk",
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "os_greenspace",
+        "osm_ireland",
         "nspl"
       ],
       "builder": "common:access",
@@ -1473,7 +2273,7 @@
       "weight": 0.75,
       "role": "scored",
       "overlap_group": null,
-      "caveats": "Counts public parks and playing fields, not open countryside, so villages surrounded by fields and footpaths score lower than they feel.",
+      "caveats": "Counts public parks and playing fields, not open countryside, so villages surrounded by fields and footpaths score lower than they feel. Northern Ireland has no open greenspace product, so its parks, gardens and pitches come from OpenStreetMap and are measured to the site's nearest edge rather than its entrances.",
       "substitute_for": [],
       "unit_code": "index"
     },
@@ -1481,17 +2281,19 @@
       "id": "play_spaces",
       "theme": "environment",
       "label": "Play areas nearby",
-      "description": "Entrances to public play spaces within 800m of homes, weighted by distance.",
+      "description": "Entrances to public play spaces within 800m of homes, weighted by distance (in Northern Ireland, OpenStreetMap playgrounds).",
       "unit": "index 0\u20131",
       "direction": "higher_better",
       "benchmark": "uk",
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "os_greenspace",
+        "osm_ireland",
         "nspl"
       ],
       "builder": "common:access",
@@ -1515,6 +2317,46 @@
       "caveats": null,
       "substitute_for": [],
       "unit_code": "index"
+    },
+    {
+      "id": "allotment_distance",
+      "theme": "environment",
+      "label": "Distance to nearest allotments",
+      "description": "Average straight-line distance from homes to the nearest allotments or community growing space.",
+      "unit": "metres",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "os_greenspace",
+        "osm_ireland",
+        "nspl"
+      ],
+      "builder": "common:nearest",
+      "params": {
+        "slug": "os_greenspace",
+        "column": "function",
+        "values": [
+          "Allotments Or Community Growing Spaces"
+        ],
+        "beyond_cap": 20000
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "Distance to the site, not whether a plot is free; waiting lists run to years in many towns. Northern Ireland's sites come from OpenStreetMap.",
+      "substitute_for": [],
+      "unit_code": "metres"
     },
     {
       "id": "flood_risk",
@@ -1610,21 +2452,24 @@
       "id": "noise_exposure",
       "theme": "environment",
       "label": "Homes in transport or industrial noise",
-      "description": "Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road and rail in England and Wales; every mapped source in Scotland).",
+      "description": "Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road, rail and aircraft in England; road and rail in Wales; every mapped source in Scotland and Northern Ireland).",
       "unit": "% of homes",
       "direction": "lower_better",
       "benchmark": "uk",
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "defra_noise_road_lden",
         "defra_noise_rail_lden",
+        "defra_noise_air_lden",
         "wg_noise_road_lden",
         "wg_noise_rail_lden",
         "sepa_noise_all_lden",
+        "daera_noise_r3",
         "nspl"
       ],
       "builder": "environment:percent",
@@ -1640,7 +2485,7 @@
       "weight": 1.0,
       "role": "scored",
       "overlap_group": "noise",
-      "caveats": "Each home is read from the 10m noise grid at its postcode. England's and Wales's maps hold road and rail only; Scotland's consolidated map adds airports and industry. The cut-off is 60 dB Lden, a busy road's level, because minor roads are mapped only inside the larger towns in England.",
+      "caveats": "Each home is read from the 10m noise grid at its postcode and the loudest mapped source counts. England's maps hold road, rail and the sixteen mapped airports, Wales's road and rail only, Scotland's consolidated map every source including industry, and Northern Ireland's round 3 (2017) contours road, rail, industry and Belfast City Airport in the Belfast and Derry agglomerations plus the major roads and railways between them. The cut-off is 60 dB Lden, a busy road's level, because minor roads are mapped only inside the larger towns in England.",
       "substitute_for": [],
       "unit_code": "pct_homes"
     },
@@ -1654,19 +2499,21 @@
       "benchmark": "uk",
       "coverage": [
         "E",
-        "W"
+        "W",
+        "N"
       ],
       "sources": [
         "defra_noise_road_lden",
         "defra_noise_rail_lden",
         "wg_noise_road_lden",
         "wg_noise_rail_lden",
+        "daera_noise_r3",
         "nspl"
       ],
       "builder": "environment:percent",
       "params": {
         "slug": "noise",
-        "column": "share_any_60"
+        "column": "share_road_rail_60"
       },
       "normalise": "threshold",
       "log1p": false,
@@ -1677,6 +2524,74 @@
       "role": "context",
       "overlap_group": "noise",
       "caveats": "Each home is read from the 10m noise grid at its postcode. England's maps cover every road inside the larger towns and cities and only major roads elsewhere, while Wales's cover every road, so the cut-off is 60 dB Lden, a busy road's level, rather than the 55 dB at which the Environmental Noise Directive counts people as exposed and at which ordinary streets would count only where they were mapped. Aircraft and industry are not included.",
+      "substitute_for": [],
+      "unit_code": "pct_homes"
+    },
+    {
+      "id": "aircraft_noise",
+      "theme": "environment",
+      "label": "Homes in aircraft noise",
+      "description": "Share of homes where aircraft noise averages 55 dB Lden or more over the day, evening and night, around the sixteen airports England maps and Belfast City Airport.",
+      "unit": "% of homes",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "N"
+      ],
+      "sources": [
+        "defra_noise_air_lden",
+        "daera_noise_r3",
+        "nspl"
+      ],
+      "builder": "environment:percent",
+      "params": {
+        "slug": "noise",
+        "column": "share_air_55"
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "The 55 dB Lden contours of Heathrow, Gatwick, Stansted, Luton, London City, Southend, Manchester, Liverpool, Birmingham, East Midlands, Leeds Bradford, Newcastle, Bristol, Bournemouth and Southampton for 2021, a year with fewer flights than usual; homes beyond those contours read 0 whatever smaller airfields they hear.",
+      "substitute_for": [],
+      "unit_code": "pct_homes"
+    },
+    {
+      "id": "industrial_noise",
+      "theme": "environment",
+      "label": "Homes in industrial noise",
+      "description": "Share of homes where industrial noise averages 55 dB Lden or more over the day, evening and night, in Scotland's five mapped cities and Northern Ireland's two agglomerations.",
+      "unit": "% of homes",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "S",
+        "N"
+      ],
+      "sources": [
+        "sepa_noise_industry_lden",
+        "daera_noise_r3",
+        "nspl"
+      ],
+      "builder": "environment:percent",
+      "params": {
+        "slug": "noise",
+        "column": "share_industry_55"
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "Mapped only in Aberdeen, Dundee, Edinburgh, Falkirk and Glasgow, and in Belfast and Derry (2017); elsewhere in Scotland and Northern Ireland the value is 0 rather than unknown.",
       "substitute_for": [],
       "unit_code": "pct_homes"
     },
@@ -1794,7 +2709,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "ae_sites",
@@ -1817,7 +2733,7 @@
       "weight": 0.75,
       "role": "scored",
       "overlap_group": null,
-      "caveats": "Scotland's departments come from Public Health Scotland's list; England's and Wales's from OpenStreetMap hospitals tagged with an emergency department, which may include some minor injury units.",
+      "caveats": "Scotland's departments come from Public Health Scotland's list; England's and Wales's from OpenStreetMap hospitals tagged with an emergency department, which may include some minor injury units. Homes with nothing within 50km read 50km, the search cap, not a measured distance.",
       "substitute_for": [],
       "unit_code": "metres"
     },
@@ -1832,7 +2748,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "ae_sites",
@@ -1856,7 +2773,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": null,
-      "caveats": null,
+      "caveats": "Homes with nothing within 50km read 50km, the search cap, not a measured distance.",
       "substitute_for": [],
       "unit_code": "metres"
     },
@@ -1871,12 +2788,14 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "ods_gp",
         "nspl",
-        "phs_gp_practices"
+        "phs_gp_practices",
+        "bso_gp_list_sizes"
       ],
       "builder": "health:nearest_gp",
       "params": {},
@@ -1920,6 +2839,42 @@
       "caveats": "Excludes GPs in training; practices reporting under one full-time GP are left out of the average.",
       "substitute_for": [],
       "unit_code": "patients_per_gp"
+    },
+    {
+      "id": "gp_list_size",
+      "theme": "health",
+      "label": "Patients per GP practice nearby",
+      "description": "Registered patients per practice at the GP practices near homes, weighted by distance.",
+      "unit": "patients per practice",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "ods_gp",
+        "gp_registrations",
+        "phs_gp_practices",
+        "bso_gp_list_sizes",
+        "nspl"
+      ],
+      "builder": "health:gp_list_size",
+      "params": {
+        "radius_m": 2000
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "Patients per practice, not per doctor: a large practice may have many GPs. The honest measure where GP headcounts are not published (everywhere but England).",
+      "substitute_for": [],
+      "unit_code": "patients_per_practice"
     },
     {
       "id": "gp_quality",
@@ -1993,13 +2948,15 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "nhsbsa_pharmacies",
         "osm_wales",
         "nspl",
-        "phs_pharmacies"
+        "phs_pharmacies",
+        "bso_dispensing"
       ],
       "builder": "common:nearest",
       "params": {
@@ -2028,12 +2985,14 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "ods_dentists",
         "nspl",
-        "phs_dentists"
+        "phs_dentists",
+        "bso_dental"
       ],
       "builder": "common:nearest",
       "params": {
@@ -2160,14 +3119,17 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "gias",
         "wg_schools",
         "ofsted_schools",
         "nspl",
-        "sg_school_roll"
+        "sg_school_roll",
+        "de_schools_primary",
+        "de_schools_post_primary"
       ],
       "builder": "education:school_choice",
       "params": {
@@ -2274,7 +3236,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "ofsted_childcare",
@@ -2283,7 +3246,9 @@
         "wg_schools",
         "nspl",
         "care_inspectorate",
-        "sg_school_roll"
+        "sg_school_roll",
+        "de_schools_nursery",
+        "de_schools_preschool"
       ],
       "builder": "education:nursery_access",
       "params": {
@@ -2439,9 +3404,11 @@
       "direction": "lower_better",
       "benchmark": "nation",
       "coverage": [
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
+        "nimdm_2017",
         "simd_2020_ranks",
         "simd_postcode_lookup",
         "nrs_oa22_population",
@@ -2476,10 +3443,12 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "naptan",
+        "translink_rail_txc",
         "nspl"
       ],
       "builder": "common:nearest",
@@ -2500,9 +3469,51 @@
       "weight": 0.75,
       "role": "context",
       "overlap_group": "rail_access",
-      "caveats": null,
+      "caveats": "Homes with nothing within 50km read 50km, the search cap, not a measured distance.",
       "substitute_for": [],
       "unit_code": "metres"
+    },
+    {
+      "id": "ev_charging",
+      "theme": "transport",
+      "label": "Public charge points nearby",
+      "description": "Public electric-vehicle charging stations within 1.5km of homes, on average (OpenStreetMap).",
+      "unit": "within 1.5km",
+      "direction": "higher_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "osm_england",
+        "osm_wales",
+        "osm_scotland",
+        "osm_ireland",
+        "nspl"
+      ],
+      "builder": "common:count_within",
+      "params": {
+        "slug": "osm_pois",
+        "column": "value",
+        "values": [
+          "charging_station"
+        ],
+        "radius_m": 1500
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "Counts charging stations mapped in OpenStreetMap, not sockets or their speed; the national chargepoint registry closed in 2024, so mapping completeness varies by area.",
+      "substitute_for": [],
+      "unit_code": "within_1500m"
     },
     {
       "id": "rail_service",
@@ -2552,13 +3563,16 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "bods_gtfs",
         "bods_gtfs_wales",
         "nspl",
-        "bods_gtfs_scotland"
+        "bods_gtfs_scotland",
+        "translink_metro_txc",
+        "translink_ulsterbus_txc"
       ],
       "builder": "common:nearby_max",
       "params": {
@@ -2657,7 +3671,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "osm_england",
@@ -2665,7 +3680,8 @@
         "overture_pubs",
         "fsa_fhrs",
         "nspl",
-        "osm_scotland"
+        "osm_scotland",
+        "osm_ireland"
       ],
       "builder": "pubs:well_run_pub_access",
       "params": {
@@ -2680,7 +3696,7 @@
       "weight": 1.0,
       "role": "scored",
       "overlap_group": null,
-      "caveats": "Hygiene ratings measure how well a pub is run, not the beer or the atmosphere. Scotland's hygiene scheme grades Pass or Improvement Required rather than 0\u20135, so there a pub counts as well run when it passed within the last three years.",
+      "caveats": "Hygiene ratings measure how well a pub is run, not the beer or the atmosphere. Scotland's hygiene scheme grades Pass or Improvement Required rather than 0\u20135 and inspects on a longer cycle, so there a pub counts as well run when it passed within the last five years.",
       "substitute_for": [],
       "unit_code": "index"
     },
@@ -2695,13 +3711,15 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "osm_england",
         "osm_wales",
         "nspl",
-        "osm_scotland"
+        "osm_scotland",
+        "osm_ireland"
       ],
       "builder": "amenities:osm_access",
       "params": {
@@ -2735,13 +3753,15 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "osm_england",
         "osm_wales",
         "nspl",
-        "osm_scotland"
+        "osm_scotland",
+        "osm_ireland"
       ],
       "builder": "amenities:osm_nearest",
       "params": {
@@ -2772,13 +3792,15 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "osm_england",
         "osm_wales",
         "nspl",
-        "osm_scotland"
+        "osm_scotland",
+        "osm_ireland"
       ],
       "builder": "amenities:osm_access",
       "params": {
@@ -2809,13 +3831,15 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "osm_england",
         "osm_wales",
         "osm_scotland",
-        "nspl"
+        "nspl",
+        "osm_ireland"
       ],
       "builder": "amenities:osm_access",
       "params": {
@@ -2923,13 +3947,15 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "osm_england",
         "osm_wales",
         "nspl",
-        "osm_scotland"
+        "osm_scotland",
+        "osm_ireland"
       ],
       "builder": "amenities:osm_access",
       "params": {
@@ -2967,13 +3993,15 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "osm_england",
         "osm_wales",
         "nspl",
-        "osm_scotland"
+        "osm_scotland",
+        "osm_ireland"
       ],
       "builder": "amenities:osm_access",
       "params": {
@@ -3006,13 +4034,15 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "osm_england",
         "osm_wales",
         "nspl",
-        "osm_scotland"
+        "osm_scotland",
+        "osm_ireland"
       ],
       "builder": "amenities:osm_access",
       "params": {
@@ -3048,12 +4078,15 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "price_paid",
         "nspl",
-        "ros_house_prices"
+        "ros_house_prices",
+        "lps_house_prices_ward",
+        "osni_ward12_boundaries"
       ],
       "builder": "housing:median_price",
       "params": {},
@@ -3080,7 +4113,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "iod_2025",
@@ -3089,7 +4123,9 @@
         "simd_2020_ranks",
         "simd_2020_indicators",
         "simd_postcode_lookup",
-        "nrs_oa22_population"
+        "nrs_oa22_population",
+        "nimdm_2017",
+        "osni_soa01_boundaries"
       ],
       "builder": "common:deprivation",
       "params": {
@@ -3118,11 +4154,13 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "price_paid",
-        "ros_house_prices"
+        "ros_house_prices",
+        "lps_house_prices_ward"
       ],
       "builder": "common:column",
       "params": {
@@ -3137,15 +4175,15 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": null,
-      "caveats": "Noisy where sales are few; in Scotland the change is between calendar years.",
+      "caveats": "Noisy where sales are few; in Scotland and Northern Ireland the change is between calendar years, and a Northern Irish ward whose median is suppressed in either year has none.",
       "substitute_for": [],
       "unit_code": "pct"
     },
     {
       "id": "council_tax",
       "theme": "housing",
-      "label": "Council tax (Band D)",
-      "description": "Annual council tax on a Band D home, including county, police, fire and average parish charges.",
+      "label": "Council tax (council's Band D rate)",
+      "description": "The council's annual charge for a Band D home, including county, police, fire and average parish charges; the like-for-like rate every council publishes.",
       "unit": "\u00a3 a year",
       "direction": "lower_better",
       "benchmark": "nation",
@@ -3172,6 +4210,70 @@
       "role": "scored",
       "overlap_group": null,
       "caveats": "The same for every neighbourhood in a council area; a home's bill depends on its band. Welsh bands are derived from each authority's average band D using the statutory ratios.",
+      "substitute_for": [],
+      "unit_code": "gbp_year"
+    },
+    {
+      "id": "domestic_rates",
+      "theme": "housing",
+      "label": "Domestic rates (typical home)",
+      "description": "Annual domestic rates bill for a home at the area's median capital value, from the regional rate and the council's district rate (Northern Ireland).",
+      "unit": "\u00a3 a year",
+      "direction": "lower_better",
+      "benchmark": "nation",
+      "coverage": [
+        "N"
+      ],
+      "sources": [
+        "ni_domestic_rates",
+        "lps_capital_value_bands",
+        "osni_soa01_boundaries",
+        "nspl"
+      ],
+      "builder": "housing:domestic_rates",
+      "params": {},
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 0.5,
+      "role": "scored",
+      "overlap_group": null,
+      "caveats": "Northern Ireland charges rates on a home's capital value rather than council tax by band; the bill shown is for a home at the middle of the area's 2016 value mix, so it moves with local values as well as the poundage.",
+      "substitute_for": [
+        "council_tax"
+      ],
+      "unit_code": "gbp_year"
+    },
+    {
+      "id": "council_tax_typical",
+      "theme": "housing",
+      "label": "Council tax (typical home here)",
+      "description": "What a typical home in the area pays in council tax, each band's charge weighted by how many of the area's homes are in that band.",
+      "unit": "\u00a3 a year",
+      "direction": "lower_better",
+      "benchmark": "nation",
+      "coverage": [
+        "E",
+        "W"
+      ],
+      "sources": [
+        "council_tax",
+        "wg_council_tax",
+        "voa_ctsop"
+      ],
+      "builder": "housing:council_tax_typical",
+      "params": {},
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "Uses the council's charge per band and the area's band mix, so an area of band A terraces reads about two thirds of the council's Band D rate; discounts and exemptions are not included.",
       "substitute_for": [],
       "unit_code": "gbp_year"
     },
@@ -3322,7 +4424,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "iod_2025",
@@ -3331,7 +4434,9 @@
         "simd_2020_ranks",
         "simd_2020_indicators",
         "simd_postcode_lookup",
-        "nrs_oa22_population"
+        "nrs_oa22_population",
+        "nimdm_2017",
+        "osni_soa01_boundaries"
       ],
       "builder": "common:deprivation",
       "params": {
@@ -3345,7 +4450,7 @@
       "weight": 1.0,
       "role": "scored",
       "overlap_group": "income_work",
-      "caveats": null,
+      "caveats": "In Wales the value is the WIMD 2025 income domain's within-nation percentile (0\u2013100, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).",
       "substitute_for": [],
       "unit_code": "rate"
     },
@@ -3360,7 +4465,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "iod_2025",
@@ -3369,7 +4475,9 @@
         "simd_2020_ranks",
         "simd_2020_indicators",
         "simd_postcode_lookup",
-        "nrs_oa22_population"
+        "nrs_oa22_population",
+        "nimdm_2017",
+        "osni_soa01_boundaries"
       ],
       "builder": "common:deprivation",
       "params": {
@@ -3383,7 +4491,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": "income_work",
-      "caveats": null,
+      "caveats": "In Wales the value is the WIMD 2025 employment domain's within-nation percentile (0\u2013100, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).",
       "substitute_for": [],
       "unit_code": "rate"
     },
@@ -3459,7 +4567,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "iod_2025",
@@ -3468,7 +4577,9 @@
         "simd_2020_ranks",
         "simd_2020_indicators",
         "simd_postcode_lookup",
-        "nrs_oa22_population"
+        "nrs_oa22_population",
+        "nimdm_2017",
+        "osni_soa01_boundaries"
       ],
       "builder": "common:deprivation",
       "params": {
@@ -3565,7 +4676,8 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "iod_2025",
@@ -3574,7 +4686,9 @@
         "simd_2020_ranks",
         "simd_2020_indicators",
         "simd_postcode_lookup",
-        "nrs_oa22_population"
+        "nrs_oa22_population",
+        "nimdm_2017",
+        "osni_soa01_boundaries"
       ],
       "builder": "common:deprivation",
       "params": {
@@ -3603,12 +4717,14 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "census_ts006",
         "scotland_census_2022",
-        "sg_dz22_boundaries"
+        "sg_dz22_boundaries",
+        "nisra_census_2021_p1"
       ],
       "builder": "common:column",
       "params": {
@@ -3677,11 +4793,13 @@
       "coverage": [
         "E",
         "W",
-        "S"
+        "S",
+        "N"
       ],
       "sources": [
         "census_ts007a",
-        "scotland_census_2022"
+        "scotland_census_2022",
+        "nisra_census_2021_p1"
       ],
       "builder": "community:census_share",
       "params": {
@@ -3817,6 +4935,355 @@
       "caveats": null,
       "substitute_for": [],
       "unit_code": "pct"
+    },
+    {
+      "id": "sunshine",
+      "theme": "climate",
+      "label": "Sunshine",
+      "description": "Hours of bright sunshine a year, averaged over 1991\u20132020 (HadUK-Grid, 1km).",
+      "unit": "hours a year",
+      "direction": "higher_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "haduk_grid",
+        "nspl"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "climate",
+        "column": "sunshine_hours"
+      },
+      "normalise": "threshold",
+      "log1p": false,
+      "good": 1750.0,
+      "bad": 1250.0,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "scored",
+      "overlap_group": null,
+      "caveats": "A 1km grid interpolated from sunshine recorders, so hills and coasts are smoothed; thirty-year averages say what is usual, not what any year brought.",
+      "substitute_for": [],
+      "unit_code": "hours_year"
+    },
+    {
+      "id": "wet_days",
+      "theme": "climate",
+      "label": "Wet days",
+      "description": "Days a year with at least 1mm of rain, averaged over 1991\u20132020.",
+      "unit": "days a year",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "haduk_grid",
+        "nspl"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "climate",
+        "column": "rain_days"
+      },
+      "normalise": "threshold",
+      "log1p": false,
+      "good": 120.0,
+      "bad": 200.0,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "scored",
+      "overlap_group": "rain",
+      "caveats": "Counts days, not amounts, so a drizzly place reads wetter than one with the same rainfall in fewer downpours; rainfall in millimetres is shown beside it.",
+      "substitute_for": [],
+      "unit_code": "days_year"
+    },
+    {
+      "id": "summer_warmth",
+      "theme": "climate",
+      "label": "Summer warmth",
+      "description": "Mean daily maximum temperature in June to August, averaged over 1991\u20132020 (\u00b0C).",
+      "unit": "\u00b0C",
+      "direction": "higher_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "haduk_grid",
+        "nspl"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "climate",
+        "column": "summer_tmax"
+      },
+      "normalise": "threshold",
+      "log1p": false,
+      "good": 21.0,
+      "bad": 16.0,
+      "scale_max": 1.0,
+      "weight": 0.75,
+      "role": "scored",
+      "overlap_group": "summer",
+      "caveats": "Warmer counts as better here; the days above 25\u00b0C are shown beside it for anyone who would rather not have them.",
+      "substitute_for": [],
+      "unit_code": "celsius"
+    },
+    {
+      "id": "winter_mildness",
+      "theme": "climate",
+      "label": "Winter mildness",
+      "description": "Mean daily minimum temperature in December to February, averaged over 1991\u20132020 (\u00b0C).",
+      "unit": "\u00b0C",
+      "direction": "higher_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "haduk_grid",
+        "nspl"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "climate",
+        "column": "winter_tmin"
+      },
+      "normalise": "threshold",
+      "log1p": false,
+      "good": 3.0,
+      "bad": 0.0,
+      "scale_max": 1.0,
+      "weight": 0.75,
+      "role": "scored",
+      "overlap_group": "winter",
+      "caveats": "Night-time lows, which drive frost and heating bills; coasts and cities read milder than the hills behind them.",
+      "substitute_for": [],
+      "unit_code": "celsius"
+    },
+    {
+      "id": "rainfall",
+      "theme": "climate",
+      "label": "Rainfall",
+      "description": "Rainfall a year in millimetres, averaged over 1991\u20132020.",
+      "unit": "mm a year",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "haduk_grid",
+        "nspl"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "climate",
+        "column": "rainfall_mm"
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": "rain",
+      "caveats": null,
+      "substitute_for": [],
+      "unit_code": "mm_year"
+    },
+    {
+      "id": "air_frost_days",
+      "theme": "climate",
+      "label": "Days of air frost",
+      "description": "Days a year when the air temperature falls below 0\u00b0C, averaged over 1991\u20132020.",
+      "unit": "days a year",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "haduk_grid",
+        "nspl"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "climate",
+        "column": "air_frost_days"
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": "winter",
+      "caveats": null,
+      "substitute_for": [],
+      "unit_code": "days_year"
+    },
+    {
+      "id": "summer_days",
+      "theme": "climate",
+      "label": "Summer days",
+      "description": "Days a year when the temperature reaches 25\u00b0C, averaged over 1991\u20132020.",
+      "unit": "days a year",
+      "direction": "higher_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "haduk_grid",
+        "nspl"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "climate",
+        "column": "summer_days"
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": "summer",
+      "caveats": null,
+      "substitute_for": [],
+      "unit_code": "days_year"
+    },
+    {
+      "id": "wind_speed",
+      "theme": "climate",
+      "label": "Wind",
+      "description": "Mean wind speed at 10m, averaged over 1991\u20132020.",
+      "unit": "m/s",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "haduk_grid",
+        "nspl"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "climate",
+        "column": "wind_ms"
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": null,
+      "substitute_for": [],
+      "unit_code": "m_s"
+    },
+    {
+      "id": "snow_days",
+      "theme": "climate",
+      "label": "Days with snow lying",
+      "description": "Days a year with snow on the ground at 9am, averaged over 1991\u20132020.",
+      "unit": "days a year",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "haduk_grid",
+        "nspl"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "climate",
+        "column": "snow_days"
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": null,
+      "substitute_for": [],
+      "unit_code": "days_year"
+    },
+    {
+      "id": "future_hot_days",
+      "theme": "climate",
+      "label": "Hot summer days in a 2\u00b0C world",
+      "description": "Days a year above the local hot-summer-day threshold once the world has warmed by 2\u00b0C, from the Met Office's UKCP18 local projections for the area's neighbourhood.",
+      "unit": "days a year",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N"
+      ],
+      "sources": [
+        "ukcp_hot_days"
+      ],
+      "builder": "environment:optional_column",
+      "params": {
+        "slug": "ukcp_hot_days",
+        "column": "hot_days_2c"
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "A projection for the MSOA, Intermediate Zone or district electoral area, copied to every small area inside; the threshold is local (the 95th percentile of the 1981\u20132000 summer), so the count says how much more often such days would come, not how hot they are.",
+      "substitute_for": [],
+      "unit_code": "days_year"
     }
   ],
   "themes": {
@@ -3851,6 +5318,10 @@
     "community": {
       "label": "Community & wellbeing",
       "description": "Income, work and health of the people who live there."
+    },
+    "climate": {
+      "label": "Climate",
+      "description": "Sunshine, rain and how warm the summers and mild the winters are, from thirty-year averages."
     }
   },
   "default_preset": "balanced",
@@ -3866,7 +5337,8 @@
         "transport": 1.0,
         "amenities": 1.0,
         "housing": 1.0,
-        "community": 1.0
+        "community": 1.0,
+        "climate": 1.0
       },
       "indicators": {}
     },
@@ -3881,7 +5353,8 @@
         "transport": 0.75,
         "amenities": 0.75,
         "housing": 1.5,
-        "community": 1.0
+        "community": 1.0,
+        "climate": 0.75
       },
       "indicators": {
         "nursery_access": 1.5,
@@ -3900,7 +5373,8 @@
         "transport": 2.0,
         "amenities": 2.5,
         "housing": 1.5,
-        "community": 0.5
+        "community": 0.5,
+        "climate": 0.5
       },
       "indicators": {
         "well_run_pubs": 1.5,
@@ -3909,7 +5383,7 @@
     },
     "retiree": {
       "label": "Retired",
-      "description": "Safety, health services, clean air and a quieter area.",
+      "description": "Safety, health services, clean air, sunshine and a quieter area.",
       "themes": {
         "safety": 2.0,
         "environment": 1.5,
@@ -3918,12 +5392,14 @@
         "transport": 1.0,
         "amenities": 1.0,
         "housing": 1.0,
-        "community": 1.0
+        "community": 1.0,
+        "climate": 1.25
       },
       "indicators": {
         "gp_distance": 1.5,
         "pharmacy_distance": 1.5,
-        "noise_exposure": 1.5
+        "noise_exposure": 1.5,
+        "sunshine": 1.5
       }
     },
     "commuter": {
@@ -3937,7 +5413,8 @@
         "transport": 3.0,
         "amenities": 1.0,
         "housing": 1.5,
-        "community": 0.75
+        "community": 0.75,
+        "climate": 0.5
       },
       "indicators": {}
     }
@@ -3964,13 +5441,13 @@
       "title": "Emergency departments and urgent-care sites (curated list)",
       "licence": "OGL-3.0",
       "attribution": "Contains Public Health Scotland data licensed under the Open Government Licence v3.0 and OpenStreetMap data \u00a9 OpenStreetMap contributors (ODbL 1.0).",
-      "version": "86b1636e9eb653f8",
-      "fetched_version": "86b1636e9eb653f8",
-      "fetched_at": "2026-10-13T13:07:11+00:00",
+      "version": "88f6e2ba9641dc12",
+      "fetched_version": "88f6e2ba9641dc12",
+      "fetched_at": "2026-10-15T10:45:57+00:00",
       "period": {
-        "label": "13 October 2026",
-        "start": "2026-10-13",
-        "end": "2026-10-13",
+        "label": "15 October 2026",
+        "start": "2026-10-15",
+        "end": "2026-10-15",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -3983,11 +5460,11 @@
       "attribution": "Department for Transport, Bus Open Data Service, licensed under the Open Government Licence v3.0.",
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-13T13:01:22.630930+00:00",
+      "fetched_at": "2026-10-15T10:40:28.323412+00:00",
       "period": {
-        "label": "timetable for 27 October 2026",
-        "start": "2026-10-27",
-        "end": "2026-10-27",
+        "label": "timetable for 3 November 2026",
+        "start": "2026-11-03",
+        "end": "2026-11-03",
         "kind": "day"
       },
       "cadence": "daily",
@@ -4000,11 +5477,11 @@
       "attribution": "Department for Transport, Bus Open Data Service, licensed under the Open Government Licence v3.0.",
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-13T11:24:41.949874+00:00",
+      "fetched_at": "2026-10-15T10:45:26.954089+00:00",
       "period": {
-        "label": "timetable for 27 October 2026",
-        "start": "2026-10-27",
-        "end": "2026-10-27",
+        "label": "timetable for 3 November 2026",
+        "start": "2026-11-03",
+        "end": "2026-11-03",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -4017,14 +5494,65 @@
       "attribution": "Department for Transport, Bus Open Data Service, licensed under the Open Government Licence v3.0.",
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-13T13:06:35.983880+00:00",
+      "fetched_at": "2026-10-15T10:44:40.098419+00:00",
       "period": {
-        "label": "timetable for 27 October 2026",
-        "start": "2026-10-27",
-        "end": "2026-10-27",
+        "label": "timetable for 3 November 2026",
+        "start": "2026-11-03",
+        "end": "2026-11-03",
         "kind": "day"
       },
       "cadence": "weekly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "bso_dental": {
+      "title": "Dental surgery list (Business Services Organisation)",
+      "licence": "OGL-3.0",
+      "attribution": "Business Services Organisation, general dental services statistics, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/bbfa77f8-444d-49f3-bed3-ae2e50514b08/download/dental-surgery-list-as-at-30th-june-2026.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/bbfa77f8-444d-49f3-bed3-ae2e50514b08/download/dental-surgery-list-as-at-30th-june-2026.csv",
+      "fetched_at": "2026-10-14T15:48:05.494085+00:00",
+      "period": {
+        "label": "June 2026",
+        "start": "2026-06-01",
+        "end": "2026-06-30",
+        "kind": "month"
+      },
+      "cadence": "quarterly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "bso_dispensing": {
+      "title": "Dispensed items by GP practice and pharmacy, monthly (Business Services Organisation)",
+      "licence": "OGL-3.0",
+      "attribution": "Business Services Organisation, dispensing by contractor, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/ea21e150-a87d-463e-9af7-05848426eea5/download/05.-dispensed-items-by-gp-and-pharmacy-aug-2026.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/ea21e150-a87d-463e-9af7-05848426eea5/download/05.-dispensed-items-by-gp-and-pharmacy-aug-2026.csv",
+      "fetched_at": "2026-10-14T15:48:07.850892+00:00",
+      "period": {
+        "label": "August 2026",
+        "start": "2026-08-01",
+        "end": "2026-08-31",
+        "kind": "month"
+      },
+      "cadence": "monthly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "bso_gp_list_sizes": {
+      "title": "GP practice reference file with registered patients (Business Services Organisation)",
+      "licence": "OGL-3.0",
+      "attribution": "Business Services Organisation, GP practice list sizes, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv",
+      "fetched_at": "2026-10-14T15:48:03.647580+00:00",
+      "period": {
+        "label": "July 2026",
+        "start": "2026-07-01",
+        "end": "2026-07-31",
+        "kind": "month"
+      },
+      "cadence": "quarterly",
       "stale_reason": "none",
       "stale": false
     },
@@ -4181,13 +5709,30 @@
       "stale_reason": "none",
       "stale": false
     },
+    "council_names_ga": {
+      "title": "Irish names of Northern Ireland's councils (curated from Wikidata)",
+      "licence": "CC0-1.0",
+      "attribution": "Irish council names from Wikidata (CC0 1.0).",
+      "version": "9c8c1364f0532226",
+      "fetched_version": "9c8c1364f0532226",
+      "fetched_at": "2026-10-15T10:47:26+00:00",
+      "period": {
+        "label": "14 October 2026",
+        "start": "2026-10-14",
+        "end": "2026-10-14",
+        "kind": "day"
+      },
+      "cadence": "adhoc",
+      "stale_reason": "none",
+      "stale": false
+    },
     "council_names_gd": {
       "title": "Gaelic names of Scotland's council areas (curated from Wikidata)",
       "licence": "CC0-1.0",
       "attribution": "Gaelic council names from Wikidata (CC0 1.0).",
       "version": "4064b39ef7904c61",
       "fetched_version": "4064b39ef7904c61",
-      "fetched_at": "2026-10-13T13:07:11+00:00",
+      "fetched_at": "2026-10-15T10:45:57+00:00",
       "period": {
         "label": "13 October 2026",
         "start": "2026-10-13",
@@ -4229,6 +5774,108 @@
         "kind": "day"
       },
       "cadence": "monthly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "daera_noise_r3": {
+      "title": "Environmental Noise Directive mapping round 3, noise contours (DAERA)",
+      "licence": "OGL-3.0",
+      "attribution": "Department of Agriculture, Environment and Rural Affairs, Environmental Noise Directive mapping, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/c8501ea9-3dbd-4a06-8f7f-7e3f10a31fe3/resource/0942e115-574c-4ba2-8889-0e465cae091e/download/end_noisedata_round3.zip",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/c8501ea9-3dbd-4a06-8f7f-7e3f10a31fe3/resource/0942e115-574c-4ba2-8889-0e465cae091e/download/end_noisedata_round3.zip",
+      "fetched_at": "2026-10-14T15:48:38.236269+00:00",
+      "period": {
+        "label": "Round 3 (2017)",
+        "start": "2017-01-01",
+        "end": "2017-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "de_schools_nursery": {
+      "title": "Nursery schools 2025/26, school-level data (Department of Education)",
+      "licence": "OGL-3.0",
+      "attribution": "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0.",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20nursery%20schools%20202526%20supp_1.xlsx",
+      "fetched_version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20nursery%20schools%20202526%20supp_1.xlsx",
+      "fetched_at": "2026-10-14T15:48:10.877048+00:00",
+      "period": {
+        "label": "2025/26",
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "kind": "text"
+      },
+      "cadence": "annual",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "de_schools_post_primary": {
+      "title": "Post-primary schools 2025/26, school-level data (Department of Education)",
+      "licence": "OGL-3.0",
+      "attribution": "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0.",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20post%20primary%20schools%20202526%20supp_1.xlsx",
+      "fetched_version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20post%20primary%20schools%20202526%20supp_1.xlsx",
+      "fetched_at": "2026-10-14T15:48:09.872474+00:00",
+      "period": {
+        "label": "2025/26",
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "kind": "text"
+      },
+      "cadence": "annual",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "de_schools_preschool": {
+      "title": "Pre-school settings 2025/26, school-level data (Department of Education)",
+      "licence": "OGL-3.0",
+      "attribution": "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0.",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-04/School%20level%20-%20preschools%20202526.xlsx",
+      "fetched_version": "https://www.education-ni.gov.uk/sites/default/files/2026-04/School%20level%20-%20preschools%20202526.xlsx",
+      "fetched_at": "2026-10-14T15:48:11.912596+00:00",
+      "period": {
+        "label": "2025/26",
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "kind": "text"
+      },
+      "cadence": "annual",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "de_schools_primary": {
+      "title": "Primary schools 2025/26, school-level data (Department of Education)",
+      "licence": "OGL-3.0",
+      "attribution": "Department of Education (Northern Ireland), school enrolment school-level data, licensed under the Open Government Licence v3.0.",
+      "version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20primary%20schools%20202526%20supp_1.xlsx",
+      "fetched_version": "https://www.education-ni.gov.uk/sites/default/files/2026-07/School%20level%20-%20primary%20schools%20202526%20supp_1.xlsx",
+      "fetched_at": "2026-10-14T15:48:08.884390+00:00",
+      "period": {
+        "label": "2025/26",
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "kind": "text"
+      },
+      "cadence": "annual",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "defra_noise_air_lden": {
+      "title": "Defra strategic noise mapping round 4, aircraft noise (Lden, all airports)",
+      "licence": "OGL-3.0",
+      "attribution": "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4).",
+      "version": "dac9cba4-abe7-43bd-b8e9-8a83da52edd8__Airport_Noise_ALL_Lden 26098x48047@10m",
+      "fetched_version": "dac9cba4-abe7-43bd-b8e9-8a83da52edd8__Airport_Noise_ALL_Lden 26098x48047@10m",
+      "fetched_at": "2026-10-15T10:39:02.850936+00:00",
+      "period": {
+        "label": "Round 4 (2021 movements)",
+        "start": "2021-01-01",
+        "end": "2021-12-31",
+        "kind": "text"
+      },
+      "cadence": "adhoc",
       "stale_reason": "none",
       "stale": false
     },
@@ -4372,9 +6019,9 @@
       "title": "Food Standards Agency food hygiene ratings (all establishments)",
       "licence": "OGL-3.0",
       "attribution": "Food Standards Agency food hygiene rating data, licensed under the Open Government Licence v3.0.",
-      "version": "Tue, 13 Oct 2026 01:08:09 GMT",
-      "fetched_version": "Tue, 13 Oct 2026 01:08:09 GMT",
-      "fetched_at": "2026-10-13T13:05:12.346707+00:00",
+      "version": "Thu, 15 Oct 2026 01:07:44 GMT",
+      "fetched_version": "Thu, 15 Oct 2026 01:07:44 GMT",
+      "fetched_at": "2026-10-15T10:43:07.132042+00:00",
       "period": {
         "label": "published October 2026",
         "start": "2026-10-01",
@@ -4389,13 +6036,13 @@
       "title": "Get Information About Schools (all establishments)",
       "licence": "OGL-3.0",
       "attribution": "Department for Education, Get Information About Schools, licensed under the Open Government Licence v3.0.",
-      "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261013.csv",
-      "fetched_version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261013.csv",
-      "fetched_at": "2026-10-13T13:00:21.992930+00:00",
+      "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261015.csv",
+      "fetched_version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261015.csv",
+      "fetched_at": "2026-10-15T10:39:20.447118+00:00",
       "period": {
-        "label": "13 October 2026",
-        "start": "2026-10-13",
-        "end": "2026-10-13",
+        "label": "15 October 2026",
+        "start": "2026-10-15",
+        "end": "2026-10-15",
         "kind": "day"
       },
       "cadence": "daily",
@@ -4406,13 +6053,13 @@
       "title": "Patients registered at a GP practice, by LSOA",
       "licence": "OGL-3.0",
       "attribution": "NHS England, Patients Registered at a GP Practice, licensed under the Open Government Licence v3.0.",
-      "version": "https://files.digital.nhs.uk/93/C90730/gp-reg-pat-prac-lsoa-male-female-July-26.zip",
-      "fetched_version": "https://files.digital.nhs.uk/93/C90730/gp-reg-pat-prac-lsoa-male-female-July-26.zip",
-      "fetched_at": "2026-10-07T16:01:43.333956+00:00",
+      "version": "https://files.digital.nhs.uk/BA/5E0F32/gp-reg-pat-prac-lsoa-male-female-Oct-26.zip",
+      "fetched_version": "https://files.digital.nhs.uk/BA/5E0F32/gp-reg-pat-prac-lsoa-male-female-Oct-26.zip",
+      "fetched_at": "2026-10-15T10:39:16.658951+00:00",
       "period": {
-        "label": "July 2026",
-        "start": "2026-07-01",
-        "end": "2026-07-31",
+        "label": "October 2026",
+        "start": "2026-10-01",
+        "end": "2026-10-31",
         "kind": "month"
       },
       "cadence": "quarterly",
@@ -4433,6 +6080,23 @@
         "kind": "month"
       },
       "cadence": "monthly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "haduk_grid": {
+      "title": "HadUK-Grid 1km climate averages 1991\u20132020 (Met Office)",
+      "licence": "OGL-3.0",
+      "attribution": "Contains Met Office HadUK-Grid data \u00a9 Crown copyright and database right 2026, licensed under the Open Government Licence v3.0.",
+      "version": null,
+      "fetched_version": null,
+      "fetched_at": "2026-10-15T10:45:57+00:00",
+      "period": {
+        "label": "1991\u20132020 averages",
+        "start": "2020-01-01",
+        "end": "2020-12-31",
+        "kind": "text"
+      },
+      "cadence": "annual",
       "stale_reason": "none",
       "stale": false
     },
@@ -4476,11 +6140,11 @@
       "attribution": "Department for Education, Key stage 4 performance, licensed under the Open Government Licence v3.0.",
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-07T22:46:04.877670+00:00",
+      "fetched_at": "2026-10-15T10:39:21.916988+00:00",
       "period": {
-        "label": "downloaded 7 October 2026",
-        "start": "2026-10-07",
-        "end": "2026-10-07",
+        "label": "downloaded 15 October 2026",
+        "start": "2026-10-15",
+        "end": "2026-10-15",
         "kind": "day"
       },
       "cadence": "annual",
@@ -4516,6 +6180,40 @@
         "start": "2026-10-07",
         "end": "2026-10-07",
         "kind": "day"
+      },
+      "cadence": "annual",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "lps_capital_value_bands": {
+      "title": "Domestic properties by capital value band, Super Output Areas, April 2016 (Land & Property Services)",
+      "licence": "OGL-3.0",
+      "attribution": "Land & Property Services, capital value bands, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/3ce743c4-345e-4720-89c6-8dd97ebe24de/resource/5ee621bf-dd42-4b80-9b11-f152188e1879/download/soa-by-council-tax-band-april-2016.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/3ce743c4-345e-4720-89c6-8dd97ebe24de/resource/5ee621bf-dd42-4b80-9b11-f152188e1879/download/soa-by-council-tax-band-april-2016.csv",
+      "fetched_at": "2026-10-14T15:48:01.686841+00:00",
+      "period": {
+        "label": "April 2016",
+        "start": "2016-01-01",
+        "end": "2016-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "lps_house_prices_ward": {
+      "title": "Annual descriptive house price statistics by electoral ward (Land & Property Services)",
+      "licence": "OGL-3.0",
+      "attribution": "Land & Property Services, annual descriptive house price statistics, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/70e841ab-142e-4595-96a5-ffe70c55a5a1/download/newry-mourne-and-down_all-sales.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/cf717c64-0c9c-48cb-b454-2e7c97b603e9/resource/70e841ab-142e-4595-96a5-ffe70c55a5a1/download/newry-mourne-and-down_all-sales.csv",
+      "fetched_at": "2026-10-15T10:46:17.695489+00:00",
+      "period": {
+        "label": "2024",
+        "start": "2024-01-01",
+        "end": "2024-12-31",
+        "kind": "text"
       },
       "cadence": "annual",
       "stale_reason": "none",
@@ -4612,11 +6310,11 @@
       "attribution": "Department for Transport, National Public Transport Access Nodes (NaPTAN), licensed under the Open Government Licence v3.0.",
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-13T13:00:29.460952+00:00",
+      "fetched_at": "2026-10-15T10:39:27.169729+00:00",
       "period": {
-        "label": "downloaded 13 October 2026",
-        "start": "2026-10-13",
-        "end": "2026-10-13",
+        "label": "downloaded 15 October 2026",
+        "start": "2026-10-15",
+        "end": "2026-10-15",
         "kind": "day"
       },
       "cadence": "daily",
@@ -4637,6 +6335,125 @@
         "kind": "month"
       },
       "cadence": "quarterly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "ni_domestic_rates": {
+      "title": "Domestic rate poundages by council, 2026\u201327 (Department of Finance, curated)",
+      "licence": "OGL-3.0",
+      "attribution": "Department of Finance (Northern Ireland), rate poundages, licensed under the Open Government Licence v3.0.",
+      "version": "f0c2e833f55a702b",
+      "fetched_version": "f0c2e833f55a702b",
+      "fetched_at": "2026-10-15T10:46:18+00:00",
+      "period": {
+        "label": "2026\u201327",
+        "start": "2026-01-01",
+        "end": "2026-12-31",
+        "kind": "text"
+      },
+      "cadence": "annual",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "nimdm_2017": {
+      "title": "Northern Ireland Multiple Deprivation Measure 2017, Super Output Area results (NISRA)",
+      "licence": "OGL-3.0",
+      "attribution": "NISRA, Northern Ireland Multiple Deprivation Measure 2017, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/e202fde9-7f0b-4d88-8711-e18a8817cff8/resource/60f31f62-53e7-424c-8fb5-d3b1c66ea277/download/nimdm2017-soa.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/e202fde9-7f0b-4d88-8711-e18a8817cff8/resource/60f31f62-53e7-424c-8fb5-d3b1c66ea277/download/nimdm2017-soa.csv",
+      "fetched_at": "2026-10-14T15:47:42.183336+00:00",
+      "period": {
+        "label": "2017",
+        "start": "2017-01-01",
+        "end": "2017-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "nisra_census_2021_p1": {
+      "title": "Census 2021 main statistics, phase 1 (demography and households), Northern Ireland",
+      "licence": "OGL-3.0",
+      "attribution": "NISRA, Census 2021, licensed under the Open Government Licence v3.0.",
+      "version": "Thu, 30 Nov 2023 08:50:43 GMT",
+      "fetched_version": "Thu, 30 Nov 2023 08:50:43 GMT",
+      "fetched_at": "2026-10-14T15:47:36.441066+00:00",
+      "period": {
+        "label": "2021",
+        "start": "2021-01-01",
+        "end": "2021-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "nisra_dz21_lookup": {
+      "title": "Census 2021 Data Zone and Super Data Zone lookups (NISRA)",
+      "licence": "OGL-3.0",
+      "attribution": "NISRA, Census 2021 output geography lookups, licensed under the Open Government Licence v3.0.",
+      "version": "Tue, 15 Apr 2025 12:48:36 GMT",
+      "fetched_version": "Tue, 15 Apr 2025 12:48:36 GMT",
+      "fetched_at": "2026-10-14T15:47:31.074977+00:00",
+      "period": {
+        "label": "2021 (lookups v3, April 2025)",
+        "start": "2021-01-01",
+        "end": "2021-12-31",
+        "kind": "text"
+      },
+      "cadence": "adhoc",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "nisra_sdz21_boundaries": {
+      "title": "Super Data Zone boundaries 2021, Northern Ireland (NISRA)",
+      "licence": "OGL-3.0",
+      "attribution": "Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0; NISRA, Census 2021 geography.",
+      "version": "Mon, 20 Feb 2023 15:51:02 GMT",
+      "fetched_version": "Mon, 20 Feb 2023 15:51:02 GMT",
+      "fetched_at": "2026-10-14T15:47:28.487864+00:00",
+      "period": {
+        "label": "2021",
+        "start": "2021-01-01",
+        "end": "2021-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "nisra_sdz21_centroids": {
+      "title": "Census 2021 population-weighted centroids, Data Zones and Super Data Zones (NISRA)",
+      "licence": "OGL-3.0",
+      "attribution": "NISRA, Census 2021 population-weighted centroids, licensed under the Open Government Licence v3.0.",
+      "version": "Thu, 05 Oct 2023 13:28:39 GMT",
+      "fetched_version": "Thu, 05 Oct 2023 13:28:39 GMT",
+      "fetched_at": "2026-10-14T15:47:30.017896+00:00",
+      "period": {
+        "label": "2021",
+        "start": "2021-01-01",
+        "end": "2021-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "nisra_sdz_mye": {
+      "title": "Mid-year population estimates for Super Data Zones (NISRA)",
+      "licence": "OGL-3.0",
+      "attribution": "NISRA, mid-year population estimates for small geographical areas, licensed under the Open Government Licence v3.0.",
+      "version": "Thu, 11 Dec 2025 08:32:05 GMT",
+      "fetched_version": "Thu, 11 Dec 2025 08:32:05 GMT",
+      "fetched_at": "2026-10-14T15:47:32.516556+00:00",
+      "period": {
+        "label": "mid-2024",
+        "start": "2024-01-01",
+        "end": "2024-12-31",
+        "kind": "text"
+      },
+      "cadence": "annual",
       "stale_reason": "none",
       "stale": false
     },
@@ -4714,11 +6531,11 @@
       "attribution": "Natural Resources Wales, Flood Risk Assessment Wales, licensed under the Open Government Licence v3.0; contains Natural Resources Wales information \u00a9 Natural Resources Wales and database right.",
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-13T13:06:23.349406+00:00",
+      "fetched_at": "2026-10-15T10:44:27.091573+00:00",
       "period": {
-        "label": "downloaded 13 October 2026",
-        "start": "2026-10-13",
-        "end": "2026-10-13",
+        "label": "downloaded 15 October 2026",
+        "start": "2026-10-15",
+        "end": "2026-10-15",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -4731,11 +6548,11 @@
       "attribution": "Natural Resources Wales, Flood Risk Assessment Wales, licensed under the Open Government Licence v3.0; contains Natural Resources Wales information \u00a9 Natural Resources Wales and database right.",
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-13T13:06:33.416995+00:00",
+      "fetched_at": "2026-10-15T10:44:37.066345+00:00",
       "period": {
-        "label": "downloaded 13 October 2026",
-        "start": "2026-10-13",
-        "end": "2026-10-13",
+        "label": "downloaded 15 October 2026",
+        "start": "2026-10-15",
+        "end": "2026-10-15",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -4797,13 +6614,13 @@
       "title": "NHS ODS dental practices",
       "licence": "OGL-3.0",
       "attribution": "Contains NHS England Organisation Data Service data licensed under the Open Government Licence v3.0.",
-      "version": "\"rppolg608h1c4n9\"",
-      "fetched_version": "\"rppolg608h1c4n9\"",
-      "fetched_at": "2026-10-13T13:00:16.646218+00:00",
+      "version": "\"sbvme0za6v1c4s3\"",
+      "fetched_version": "\"sbvme0za6v1c4s3\"",
+      "fetched_at": "2026-10-15T10:39:14.847958+00:00",
       "period": {
-        "label": "downloaded 13 October 2026",
-        "start": "2026-10-13",
-        "end": "2026-10-13",
+        "label": "downloaded 15 October 2026",
+        "start": "2026-10-15",
+        "end": "2026-10-15",
         "kind": "day"
       },
       "cadence": "daily",
@@ -4967,13 +6784,30 @@
       "title": "OpenStreetMap England extract (Geofabrik)",
       "licence": "ODbL-1.0",
       "attribution": "\u00a9 OpenStreetMap contributors, available under the Open Database Licence (ODbL).",
-      "version": "Mon, 12 Oct 2026 23:31:50 GMT",
-      "fetched_version": "Mon, 12 Oct 2026 23:31:50 GMT",
-      "fetched_at": "2026-10-13T13:05:06.119682+00:00",
+      "version": "Thu, 15 Oct 2026 01:39:40 GMT",
+      "fetched_version": "Thu, 15 Oct 2026 01:39:40 GMT",
+      "fetched_at": "2026-10-15T10:42:26.566098+00:00",
       "period": {
-        "label": "12 October 2026",
-        "start": "2026-10-12",
-        "end": "2026-10-12",
+        "label": "14 October 2026",
+        "start": "2026-10-14",
+        "end": "2026-10-14",
+        "kind": "day"
+      },
+      "cadence": "daily",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "osm_ireland": {
+      "title": "OpenStreetMap Ireland and Northern Ireland extract (Geofabrik)",
+      "licence": "ODbL-1.0",
+      "attribution": "\u00a9 OpenStreetMap contributors, Open Database Licence (ODbL) 1.0.",
+      "version": "Thu, 15 Oct 2026 01:37:54 GMT",
+      "fetched_version": "Thu, 15 Oct 2026 01:37:54 GMT",
+      "fetched_at": "2026-10-15T10:47:26.552369+00:00",
+      "period": {
+        "label": "14 October 2026",
+        "start": "2026-10-14",
+        "end": "2026-10-14",
         "kind": "day"
       },
       "cadence": "daily",
@@ -4984,13 +6818,13 @@
       "title": "OpenStreetMap Scotland extract (Geofabrik)",
       "licence": "ODbL-1.0",
       "attribution": "\u00a9 OpenStreetMap contributors, Open Database Licence (ODbL) 1.0.",
-      "version": "Mon, 12 Oct 2026 23:29:34 GMT",
-      "fetched_version": "Mon, 12 Oct 2026 23:29:34 GMT",
-      "fetched_at": "2026-10-13T11:24:33.737562+00:00",
+      "version": "Thu, 15 Oct 2026 01:39:18 GMT",
+      "fetched_version": "Thu, 15 Oct 2026 01:39:18 GMT",
+      "fetched_at": "2026-10-15T10:45:57.012599+00:00",
       "period": {
-        "label": "12 October 2026",
-        "start": "2026-10-12",
-        "end": "2026-10-12",
+        "label": "14 October 2026",
+        "start": "2026-10-14",
+        "end": "2026-10-14",
         "kind": "day"
       },
       "cadence": "daily",
@@ -5001,26 +6835,60 @@
       "title": "OpenStreetMap Wales extract (Geofabrik)",
       "licence": "ODbL-1.0",
       "attribution": "\u00a9 OpenStreetMap contributors, Open Database Licence (ODbL) 1.0.",
-      "version": "Mon, 12 Oct 2026 23:31:59 GMT",
-      "fetched_version": "Mon, 12 Oct 2026 23:31:59 GMT",
-      "fetched_at": "2026-10-13T13:06:57.577514+00:00",
+      "version": "Thu, 15 Oct 2026 01:38:48 GMT",
+      "fetched_version": "Thu, 15 Oct 2026 01:38:48 GMT",
+      "fetched_at": "2026-10-15T10:44:45.381201+00:00",
       "period": {
-        "label": "12 October 2026",
-        "start": "2026-10-12",
-        "end": "2026-10-12",
+        "label": "14 October 2026",
+        "start": "2026-10-14",
+        "end": "2026-10-14",
         "kind": "day"
       },
       "cadence": "daily",
       "stale_reason": "none",
       "stale": false
     },
+    "osni_soa01_boundaries": {
+      "title": "Super Output Area boundaries 2001, Northern Ireland (NISRA)",
+      "licence": "OGL-3.0",
+      "attribution": "NISRA open data boundaries, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/678697e1-ae71-41f3-abba-0ef5f3f352c2/resource/610bbf1d-eb6a-46d2-b527-58c8ee2bfcda/download/soa.zip",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/678697e1-ae71-41f3-abba-0ef5f3f352c2/resource/610bbf1d-eb6a-46d2-b527-58c8ee2bfcda/download/soa.zip",
+      "fetched_at": "2026-10-14T15:47:45.036220+00:00",
+      "period": {
+        "label": "2001",
+        "start": "2001-01-01",
+        "end": "2001-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "osni_ward12_boundaries": {
+      "title": "Electoral ward boundaries 2012 (in force from 2014), Northern Ireland (OSNI)",
+      "licence": "OGL-3.0",
+      "attribution": "Contains Ordnance Survey of Northern Ireland information licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/987e16f4-19bb-4765-807c-abee92ee3439/resource/e6e5fa2a-7a74-439a-847a-d74dad7583ee/download/osni_open_data_largescale_boundaries_wards_2012.zip",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/987e16f4-19bb-4765-807c-abee92ee3439/resource/e6e5fa2a-7a74-439a-847a-d74dad7583ee/download/osni_open_data_largescale_boundaries_wards_2012.zip",
+      "fetched_at": "2026-10-14T15:47:47.575472+00:00",
+      "period": {
+        "label": "2014 wards",
+        "start": "2014-01-01",
+        "end": "2014-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
     "overture_pubs": {
-      "title": "Overture Maps places, bars and pubs (Great Britain)",
+      "title": "Overture Maps places, bars and pubs (United Kingdom)",
       "licence": "CDLA-Permissive-2.0",
       "attribution": "Overture Maps Foundation, Places (CDLA-Permissive-2.0; includes Foursquare data under Apache-2.0 and AllThePlaces data under CC0).",
-      "version": "2026-09-23.1",
-      "fetched_version": "2026-09-23.1",
-      "fetched_at": "2026-10-07T22:51:31+00:00",
+      "version": "2026-09-23.1+67f1e27f",
+      "fetched_version": "2026-09-23.1+67f1e27f",
+      "fetched_at": "2026-10-15T10:43:01+00:00",
       "period": {
         "label": "23 September 2026",
         "start": "2026-09-23",
@@ -5082,6 +6950,23 @@
       "stale_reason": "none",
       "stale": false
     },
+    "place_names_i18n": {
+      "title": "Welsh, Gaelic and Irish names of the nations' largest cities and towns (curated from Wikidata)",
+      "licence": "CC0-1.0",
+      "attribution": "City and town names in Welsh, Gaelic and Irish from Wikidata (CC0 1.0).",
+      "version": "718977eba9aaeecc",
+      "fetched_version": "718977eba9aaeecc",
+      "fetched_at": "2026-10-15T10:47:26+00:00",
+      "period": {
+        "label": "downloaded 15 October 2026",
+        "start": "2026-10-15",
+        "end": "2026-10-15",
+        "kind": "day"
+      },
+      "cadence": "adhoc",
+      "stale_reason": "none",
+      "stale": false
+    },
     "police_crime": {
       "title": "police.uk street-level crime (latest 36 months)",
       "licence": "OGL-3.0",
@@ -5130,6 +7015,91 @@
         "kind": "month"
       },
       "cadence": "monthly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "psni_collisions_2021": {
+      "title": "Police-recorded injury road traffic collisions 2021 (PSNI)",
+      "licence": "OGL-3.0",
+      "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/9f012abc-02bb-474f-ad1e-38af268e8743/resource/503ad2fb-b3ef-43c0-811d-6b07522f9368/download/collision2021.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/9f012abc-02bb-474f-ad1e-38af268e8743/resource/503ad2fb-b3ef-43c0-811d-6b07522f9368/download/collision2021.csv",
+      "fetched_at": "2026-10-14T15:48:20.558764+00:00",
+      "period": {
+        "label": "2021",
+        "start": "2021-01-01",
+        "end": "2021-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "psni_collisions_2022": {
+      "title": "Police-recorded injury road traffic collisions 2022 (PSNI)",
+      "licence": "OGL-3.0",
+      "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/e352398b-f32c-4f0a-ad15-5bce7448780d/resource/5fe67186-5d35-49cf-89ab-39fcc364a0c9/download/collision2022.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/e352398b-f32c-4f0a-ad15-5bce7448780d/resource/5fe67186-5d35-49cf-89ab-39fcc364a0c9/download/collision2022.csv",
+      "fetched_at": "2026-10-14T15:48:23.181357+00:00",
+      "period": {
+        "label": "2022",
+        "start": "2022-01-01",
+        "end": "2022-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "psni_collisions_2023": {
+      "title": "Police-recorded injury road traffic collisions 2023 (PSNI)",
+      "licence": "OGL-3.0",
+      "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/d484e8d7-d88a-41e5-8ccf-9ff60f637cc6/resource/2db136a3-a82e-457b-bd2a-6a46729097c7/download/collision2023.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/d484e8d7-d88a-41e5-8ccf-9ff60f637cc6/resource/2db136a3-a82e-457b-bd2a-6a46729097c7/download/collision2023.csv",
+      "fetched_at": "2026-10-14T15:48:25.606986+00:00",
+      "period": {
+        "label": "2023",
+        "start": "2023-01-01",
+        "end": "2023-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "psni_collisions_2024": {
+      "title": "Police-recorded injury road traffic collisions 2024 (PSNI)",
+      "licence": "OGL-3.0",
+      "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/bba6af11-b283-432e-8155-c6af9e0da461/resource/b9d5267a-c648-47c1-b97a-dddcf487958b/download/collision2024.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/bba6af11-b283-432e-8155-c6af9e0da461/resource/b9d5267a-c648-47c1-b97a-dddcf487958b/download/collision2024.csv",
+      "fetched_at": "2026-10-14T15:48:27.860690+00:00",
+      "period": {
+        "label": "2024",
+        "start": "2024-01-01",
+        "end": "2024-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "psni_collisions_2025": {
+      "title": "Police-recorded injury road traffic collisions 2025 (PSNI)",
+      "licence": "OGL-3.0",
+      "attribution": "Police Service of Northern Ireland, injury road traffic collision statistics, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/e5ad2f7f-091b-4a9f-b563-e2291cadd464/resource/5828149b-b71e-40f7-ad22-2c839e8f66f4/download/collision2025.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/e5ad2f7f-091b-4a9f-b563-e2291cadd464/resource/5828149b-b71e-40f7-ad22-2c839e8f66f4/download/collision2025.csv",
+      "fetched_at": "2026-10-14T15:48:30.165158+00:00",
+      "period": {
+        "label": "2025",
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "kind": "text"
+      },
+      "cadence": "annual",
       "stale_reason": "none",
       "stale": false
     },
@@ -5242,6 +7212,23 @@
       "version": "Tue, 04 Mar 2025 14:09:48 GMT",
       "fetched_version": "Tue, 04 Mar 2025 14:09:48 GMT",
       "fetched_at": "2026-10-13T11:25:14.813874+00:00",
+      "period": {
+        "label": "Round 4 (2021)",
+        "start": "2021-01-01",
+        "end": "2021-12-31",
+        "kind": "text"
+      },
+      "cadence": "adhoc",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "sepa_noise_industry_lden": {
+      "title": "Noise mapping Scotland round 4, industry (Lden)",
+      "licence": "OGL-3.0",
+      "attribution": "\u00a9 Scottish Government, contains Ordnance Survey data \u00a9 Crown copyright and database right 2024; Noise Mapping Scotland round 4, licensed under the Open Government Licence v3.0.",
+      "version": "Tue, 30 Jul 2024 08:44:20 GMT",
+      "fetched_version": "Tue, 30 Jul 2024 08:44:20 GMT",
+      "fetched_at": "2026-10-13T11:24:45.774872+00:00",
       "period": {
         "label": "Round 4 (2021)",
         "start": "2021-01-01",
@@ -5439,13 +7426,81 @@
       "stale_reason": "none",
       "stale": false
     },
+    "translink_metro_txc": {
+      "title": "Translink Metro and Glider timetables (TransXChange)",
+      "licence": "OGL-3.0",
+      "attribution": "Translink timetable data via OpenDataNI, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/6d9677cf-8d03-4851-985c-16f73f7dd5fb/resource/f2c58049-7ca9-4576-b3bd-1b3d8a8674e0/download/metro-and-glider-final-10-sept-26-1.zip",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/6d9677cf-8d03-4851-985c-16f73f7dd5fb/resource/f2c58049-7ca9-4576-b3bd-1b3d8a8674e0/download/metro-and-glider-final-10-sept-26-1.zip",
+      "fetched_at": "2026-10-14T15:48:16.841149+00:00",
+      "period": {
+        "label": "10 September 2026",
+        "start": "2026-09-10",
+        "end": "2026-09-10",
+        "kind": "day"
+      },
+      "cadence": "monthly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "translink_rail_txc": {
+      "title": "Translink NI Railways and Enterprise timetables (TransXChange)",
+      "licence": "OGL-3.0",
+      "attribution": "Translink timetable data via OpenDataNI, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/e41b1057-b0bd-4419-95eb-77057c8ad6b0/resource/ff8c5dd8-dcfd-4141-a270-df242f114215/download/nir-and-enterprise-10-sept-26.zip",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/e41b1057-b0bd-4419-95eb-77057c8ad6b0/resource/ff8c5dd8-dcfd-4141-a270-df242f114215/download/nir-and-enterprise-10-sept-26.zip",
+      "fetched_at": "2026-10-14T15:48:14.634429+00:00",
+      "period": {
+        "label": "10 September 2026",
+        "start": "2026-09-10",
+        "end": "2026-09-10",
+        "kind": "day"
+      },
+      "cadence": "monthly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "translink_ulsterbus_txc": {
+      "title": "Translink Ulsterbus, Goldliner, town services and Foyle Metro timetables (TransXChange)",
+      "licence": "OGL-3.0",
+      "attribution": "Translink timetable data via OpenDataNI, licensed under the Open Government Licence v3.0.",
+      "version": "https://admin.opendatani.gov.uk/dataset/c1acee5b-a400-46bd-a795-9bf7637ff879/resource/291cbb54-7bb3-4df7-8599-0c8f49a20be6/download/ulsterbus-and-goldline.zip",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/c1acee5b-a400-46bd-a795-9bf7637ff879/resource/291cbb54-7bb3-4df7-8599-0c8f49a20be6/download/ulsterbus-and-goldline.zip",
+      "fetched_at": "2026-10-14T15:48:18.821003+00:00",
+      "period": {
+        "label": "published October 2026",
+        "start": "2026-10-01",
+        "end": "2026-10-31",
+        "kind": "month"
+      },
+      "cadence": "monthly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "ukcp_hot_days": {
+      "title": "Annual count of hot summer days, UKCP18 local projections by sub-local-authority area (Met Office)",
+      "licence": "OGL-3.0",
+      "attribution": "Contains Met Office data licensed under the Open Government Licence v3.0. Contains OS and ONS data \u00a9 Crown copyright and database right 2026.",
+      "version": "2026-07-21T09:42:20+00:00",
+      "fetched_version": "2026-07-21T09:42:20+00:00",
+      "fetched_at": "2026-10-14T15:48:33+00:00",
+      "period": {
+        "label": "UKCP18 projections (2001\u20132020 baseline)",
+        "start": "2001-01-01",
+        "end": "2001-12-31",
+        "kind": "text"
+      },
+      "cadence": "adhoc",
+      "stale_reason": "none",
+      "stale": false
+    },
     "viirs_vnl": {
       "title": "VIIRS annual night-time lights (Earth Observation Group VNL v2.2)",
       "licence": "CC-BY-4.0",
       "attribution": "This product was made utilizing VIIRS Nighttime Lights (VNL v2.2) data produced by the Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines.",
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-13T13:00:14+00:00",
+      "fetched_at": "2026-10-15T10:39:11+00:00",
       "period": {
         "label": "2025",
         "start": "2025-01-01",
@@ -5595,28 +7650,28 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "a66393f4efd9fda371cc2fec85c852ed9f730eab5a9422750d86fae6e77a8a10",
-      "bytes": 1810482
+      "sha256": "8102f447d378a534938de8789fefd999d387fd00c7a89f6326ff4952d42cb346",
+      "bytes": 2346514
     },
     "scores.parquet": {
-      "sha256": "7455d79a75f4766fe96e0a4e3569470c2feb340a932e6e7debecceee329f6407",
-      "bytes": 191889
+      "sha256": "1575c1748758b6ee5c88aa05059b781950067a7cb1930350018226ff9642afd7",
+      "bytes": 243358
     },
     "postcodes.parquet": {
-      "sha256": "48c41552e62ecce2ec3b75361e412218b32a8f4255a79148f1988a33ea504c93",
-      "bytes": 1212993
+      "sha256": "616cc2d19f081c66f43a1adf19a172368c8edd21044a2c8f55fe107f6bff1125",
+      "bytes": 1406542
     },
     "places.parquet": {
-      "sha256": "beb92594e4f0aab5b6d958b56dab6bdc18af4060c9189490ec6e6f39b7bb2508",
-      "bytes": 25375
+      "sha256": "07c09e75fa709a1c27c688706606f847a1fc1ba1575b5b7a7f95e1655f14b2a0",
+      "bytes": 31042
     },
     "areas.parquet": {
-      "sha256": "82831d8c8ad2485afec4195c4cfea0dd738475b3361d515a51f17abc17365be6",
-      "bytes": 23348
+      "sha256": "cb732c927c72416ce33faf5e29c2b8db91395591943ee84d8b2121afa91c8a7e",
+      "bytes": 23929
     },
     "pois.parquet": {
-      "sha256": "37f519cbe4a5f4584fe4ee5089a1b4f23b9c58da0f43d43bf2fdec9b668a4d0c",
-      "bytes": 1375204
+      "sha256": "35db22d129d1083ac5c56da9531f2c934fe72819463196feaa92786cdba56178",
+      "bytes": 1539987
     }
   },
   "correlations": {
@@ -5626,6 +7681,10 @@
       "leisure",
       "supermarket_distance",
       "well_run_pubs",
+      "summer_warmth",
+      "sunshine",
+      "wet_days",
+      "winter_mildness",
       "health_deprivation",
       "income_deprivation",
       "nursery_access",
@@ -5645,6 +7704,7 @@
       "patients_per_gp",
       "pharmacy_distance",
       "council_tax",
+      "domestic_rates",
       "house_price",
       "housing_condition",
       "crime_asb",
@@ -5664,6 +7724,10 @@
       "amenities",
       "amenities",
       "amenities",
+      "climate",
+      "climate",
+      "climate",
+      "climate",
       "community",
       "community",
       "education",
@@ -5682,6 +7746,7 @@
       "health",
       "health",
       "health",
+      "housing",
       "housing",
       "housing",
       "housing",
@@ -5701,36 +7766,41 @@
         1.0,
         0.67,
         0.26,
-        0.54,
         0.55,
+        0.57,
+        0.16,
+        0.11,
+        0.19,
+        0.34,
         -0.2,
         -0.25,
-        0.63,
+        0.62,
         0.11,
-        0.59,
-        0.19,
+        0.6,
+        0.2,
         -0.08,
         0.51,
         -0.43,
-        -0.24,
+        -0.25,
         -0.29,
         0.02,
-        0.54,
+        0.55,
         0.56,
         -0.05,
         0.36,
         -0.23,
         0.51,
         0.13,
+        0.45,
         0.02,
         -0.24,
-        -0.36,
-        -0.28,
+        -0.37,
+        -0.29,
         -0.48,
-        -0.27,
+        -0.28,
         -0.38,
-        -0.61,
-        0.6,
+        -0.62,
+        0.61,
         0.74,
         0.13,
         0.55
@@ -5740,35 +7810,40 @@
         1.0,
         0.25,
         0.5,
-        0.59,
+        0.61,
+        0.2,
+        0.16,
+        0.23,
+        0.34,
         -0.09,
         -0.15,
         0.56,
         0.17,
         0.48,
-        0.24,
+        0.25,
         -0.09,
         0.41,
         -0.43,
         -0.35,
-        -0.31,
-        -0.02,
+        -0.32,
+        -0.01,
         0.43,
         0.5,
-        -0.03,
+        -0.02,
         0.29,
         -0.17,
         0.47,
         0.14,
+        0.26,
         -0.08,
         -0.26,
         -0.38,
-        -0.31,
+        -0.32,
         -0.48,
-        -0.23,
+        -0.24,
         -0.3,
         -0.59,
-        0.55,
+        0.56,
         0.67,
         0.01,
         0.49
@@ -5777,130 +7852,321 @@
         0.26,
         0.25,
         1.0,
-        0.12,
+        0.13,
         0.2,
-        0.02,
-        -0.01,
-        0.21,
         0.14,
         0.2,
-        0.13,
+        0.17,
+        0.26,
+        0.02,
+        -0.0,
+        0.2,
+        0.14,
+        0.2,
+        0.14,
         -0.02,
         0.13,
         -0.2,
         -0.12,
         -0.13,
-        -0.0,
+        0.0,
         0.12,
         0.13,
         -0.01,
-        0.17,
+        0.18,
         -0.05,
         0.1,
         0.06,
-        -0.18,
-        -0.07,
+        0.05,
+        -0.17,
+        -0.06,
         -0.12,
         -0.08,
         -0.14,
         -0.01,
         -0.13,
         -0.22,
-        0.16,
+        0.17,
         0.21,
         -0.03,
-        0.23
+        0.22
       ],
       [
-        0.54,
+        0.55,
         0.5,
-        0.12,
+        0.13,
         1.0,
-        0.42,
-        -0.27,
+        0.43,
+        0.11,
+        0.03,
+        0.13,
+        0.21,
+        -0.28,
         -0.28,
         0.57,
         0.03,
-        0.55,
+        0.56,
         0.09,
         -0.04,
         0.51,
         -0.33,
-        -0.11,
+        -0.12,
         -0.27,
-        0.04,
+        0.05,
         0.61,
-        0.57,
+        0.58,
         -0.07,
         0.33,
-        -0.21,
-        0.62,
+        -0.2,
+        0.63,
         0.11,
+        0.42,
         0.17,
         -0.03,
-        -0.31,
-        -0.19,
+        -0.32,
+        -0.2,
         -0.39,
         -0.31,
         -0.33,
-        -0.52,
-        0.58,
+        -0.53,
+        0.6,
         0.63,
         0.31,
         0.35
       ],
       [
-        0.55,
-        0.59,
+        0.57,
+        0.61,
         0.2,
-        0.42,
+        0.43,
         1.0,
-        -0.11,
-        -0.08,
-        0.45,
-        0.12,
-        0.42,
+        0.21,
         0.17,
-        0.01,
-        0.37,
+        0.22,
+        0.29,
+        -0.12,
+        -0.09,
+        0.47,
+        0.12,
+        0.43,
+        0.17,
+        -0.01,
+        0.4,
         -0.32,
         -0.27,
-        -0.34,
-        0.0,
-        0.38,
-        0.42,
+        -0.31,
+        0.01,
+        0.4,
+        0.44,
         0.02,
-        0.23,
+        0.24,
         -0.13,
-        0.39,
-        0.08,
-        0.05,
-        -0.2,
-        -0.3,
+        0.4,
+        0.07,
+        0.24,
+        0.06,
+        -0.21,
+        -0.31,
         -0.23,
         -0.33,
-        -0.18,
-        -0.24,
-        -0.5,
-        0.42,
+        -0.19,
+        -0.29,
+        -0.51,
+        0.47,
         0.54,
+        0.06,
+        0.42
+      ],
+      [
+        0.16,
+        0.2,
+        0.14,
+        0.11,
+        0.21,
+        1.0,
+        0.69,
+        0.75,
+        0.33,
+        0.2,
+        0.04,
+        0.2,
+        0.16,
+        0.3,
+        0.29,
+        0.11,
+        0.08,
+        -0.35,
+        -0.14,
+        -0.74,
+        0.12,
+        0.12,
+        0.12,
+        -0.18,
+        0.17,
+        -0.24,
+        0.09,
+        0.19,
+        0.2,
+        -0.34,
+        0.1,
+        0.0,
+        -0.02,
+        -0.19,
+        0.12,
+        -0.19,
+        -0.26,
+        0.25,
+        0.15,
+        -0.03,
+        0.22
+      ],
+      [
+        0.11,
+        0.16,
+        0.2,
+        0.03,
+        0.17,
+        0.69,
+        1.0,
+        0.71,
+        0.51,
+        0.23,
+        0.09,
+        0.07,
+        0.08,
+        0.07,
+        0.2,
+        0.15,
+        0.0,
+        -0.11,
+        -0.09,
+        -0.41,
+        0.01,
+        0.04,
+        0.03,
+        -0.1,
+        0.0,
+        -0.08,
+        0.02,
+        0.06,
+        -0.11,
+        -0.35,
+        0.1,
+        0.03,
+        0.16,
+        0.04,
+        0.16,
+        -0.0,
+        -0.15,
+        0.12,
+        -0.03,
+        -0.14,
+        0.14
+      ],
+      [
+        0.19,
+        0.23,
+        0.17,
+        0.13,
+        0.22,
+        0.75,
+        0.71,
+        1.0,
+        0.29,
+        0.18,
+        0.02,
+        0.24,
+        0.21,
+        0.25,
+        0.23,
         0.05,
-        0.4
+        0.11,
+        -0.31,
+        -0.13,
+        -0.66,
+        -0.09,
+        0.12,
+        0.11,
+        -0.18,
+        0.16,
+        -0.33,
+        0.12,
+        0.21,
+        -0.03,
+        -0.31,
+        0.11,
+        -0.11,
+        -0.05,
+        -0.21,
+        0.09,
+        -0.03,
+        -0.29,
+        0.13,
+        0.2,
+        -0.02,
+        0.21
+      ],
+      [
+        0.34,
+        0.34,
+        0.26,
+        0.21,
+        0.29,
+        0.33,
+        0.51,
+        0.29,
+        1.0,
+        -0.09,
+        -0.14,
+        0.3,
+        0.1,
+        0.4,
+        0.15,
+        0.06,
+        0.18,
+        -0.43,
+        -0.22,
+        -0.34,
+        -0.06,
+        0.21,
+        0.24,
+        -0.11,
+        0.27,
+        -0.16,
+        0.19,
+        0.07,
+        0.08,
+        -0.15,
+        -0.11,
+        -0.19,
+        -0.07,
+        -0.26,
+        -0.1,
+        -0.18,
+        -0.42,
+        0.22,
+        0.41,
+        -0.0,
+        0.36
       ],
       [
         -0.2,
         -0.09,
         0.02,
-        -0.27,
-        -0.11,
+        -0.28,
+        -0.12,
+        0.2,
+        0.23,
+        0.18,
+        -0.09,
         1.0,
         0.84,
-        -0.27,
+        -0.26,
         0.3,
         -0.29,
         0.29,
         0.02,
-        -0.33,
+        -0.32,
         0.14,
         0.04,
         0.02,
@@ -5912,15 +8178,16 @@
         0.11,
         -0.3,
         -0.0,
+        -0.86,
         -0.7,
         0.23,
-        0.45,
+        0.46,
         0.31,
         0.33,
         0.72,
         0.63,
-        0.34,
-        -0.37,
+        0.35,
+        -0.38,
         -0.32,
         -0.24,
         -0.08
@@ -5928,77 +8195,87 @@
       [
         -0.25,
         -0.15,
-        -0.01,
+        -0.0,
         -0.28,
-        -0.08,
+        -0.09,
+        0.04,
+        0.09,
+        0.02,
+        -0.14,
         0.84,
         1.0,
-        -0.35,
-        0.21,
-        -0.35,
-        0.19,
-        0.07,
         -0.34,
+        0.21,
+        -0.34,
+        0.18,
+        0.07,
+        -0.33,
         0.26,
         0.07,
+        0.15,
         0.16,
-        0.16,
-        -0.24,
-        -0.31,
+        -0.23,
+        -0.3,
         0.13,
-        -0.2,
+        -0.19,
         0.22,
         -0.29,
         -0.08,
+        -0.5,
         -0.52,
         0.25,
         0.51,
         0.34,
-        0.44,
-        0.73,
+        0.43,
+        0.72,
         0.65,
         0.4,
-        -0.37,
+        -0.32,
         -0.4,
-        -0.19,
+        -0.18,
         -0.16
       ],
       [
-        0.63,
+        0.62,
         0.56,
-        0.21,
+        0.2,
         0.57,
-        0.45,
-        -0.27,
-        -0.35,
+        0.47,
+        0.2,
+        0.07,
+        0.24,
+        0.3,
+        -0.26,
+        -0.34,
         1.0,
         0.17,
         0.78,
         0.19,
         -0.06,
-        0.6,
+        0.62,
         -0.58,
-        -0.19,
-        -0.44,
-        0.0,
+        -0.2,
+        -0.46,
+        0.02,
         0.56,
         0.6,
         -0.14,
         0.49,
-        -0.35,
+        -0.34,
         0.59,
         0.21,
+        0.39,
         0.03,
         -0.2,
-        -0.37,
+        -0.36,
         -0.29,
-        -0.55,
-        -0.3,
+        -0.54,
+        -0.29,
         -0.34,
         -0.69,
-        0.59,
+        0.55,
         0.84,
-        0.3,
+        0.29,
         0.51
       ],
       [
@@ -6007,6 +8284,10 @@
         0.14,
         0.03,
         0.12,
+        0.16,
+        0.08,
+        0.21,
+        0.1,
         0.3,
         0.21,
         0.17,
@@ -6023,9 +8304,10 @@
         0.07,
         -0.03,
         0.16,
-        -0.12,
+        -0.11,
         0.05,
         0.23,
+        null,
         -0.4,
         0.02,
         0.03,
@@ -6040,87 +8322,101 @@
         0.19
       ],
       [
-        0.59,
+        0.6,
         0.48,
         0.2,
-        0.55,
-        0.42,
+        0.56,
+        0.43,
+        0.3,
+        0.07,
+        0.25,
+        0.4,
         -0.29,
-        -0.35,
+        -0.34,
         0.78,
         0.2,
         1.0,
         0.24,
         0.01,
         0.57,
-        -0.74,
-        -0.22,
-        -0.63,
-        0.09,
-        0.58,
+        -0.73,
+        -0.23,
+        -0.62,
+        0.1,
+        0.59,
         0.58,
         -0.16,
         0.64,
-        -0.38,
-        0.56,
+        -0.37,
+        0.57,
         0.26,
-        0.04,
+        0.46,
+        0.05,
         -0.16,
-        -0.33,
+        -0.34,
         -0.34,
         -0.62,
-        -0.28,
+        -0.29,
         -0.4,
         -0.74,
-        0.53,
+        0.58,
         0.89,
         0.38,
         0.52
       ],
       [
-        0.19,
-        0.24,
-        0.13,
+        0.2,
+        0.25,
+        0.14,
         0.09,
         0.17,
         0.29,
-        0.19,
+        0.2,
+        0.23,
+        0.15,
+        0.29,
+        0.18,
         0.19,
         0.37,
         0.24,
         1.0,
         0.01,
         0.05,
-        -0.24,
+        -0.25,
         -0.14,
-        -0.26,
-        0.14,
-        0.1,
+        -0.27,
+        0.15,
+        0.11,
         0.1,
         0.02,
         0.12,
-        -0.04,
+        -0.05,
         0.06,
-        0.15,
-        -0.4,
+        0.16,
+        null,
+        -0.41,
         -0.01,
-        -0.01,
-        -0.06,
-        -0.15,
-        0.19,
+        -0.02,
+        -0.07,
+        -0.17,
+        0.18,
         0.13,
-        -0.14,
+        -0.15,
         0.04,
-        0.21,
-        -0.06,
-        0.24
+        0.22,
+        -0.05,
+        0.25
       ],
       [
         -0.08,
         -0.09,
         -0.02,
         -0.04,
-        0.01,
+        -0.01,
+        0.11,
+        0.15,
+        0.05,
+        0.06,
         0.02,
         0.07,
         -0.06,
@@ -6140,6 +8436,7 @@
         0.1,
         -0.01,
         -0.05,
+        null,
         0.03,
         0.09,
         0.17,
@@ -6158,37 +8455,42 @@
         0.41,
         0.13,
         0.51,
-        0.37,
+        0.4,
+        0.08,
+        0.0,
+        0.11,
+        0.18,
+        -0.32,
         -0.33,
-        -0.34,
-        0.6,
+        0.62,
         0.02,
         0.57,
         0.05,
         -0.04,
         1.0,
-        -0.33,
+        -0.34,
         -0.04,
-        -0.21,
-        0.03,
+        -0.24,
+        0.05,
         0.51,
         0.5,
         -0.07,
         0.36,
-        -0.25,
+        -0.24,
         0.53,
         0.15,
+        0.4,
         0.18,
         -0.07,
-        -0.35,
-        -0.2,
-        -0.39,
-        -0.33,
+        -0.34,
+        -0.19,
+        -0.38,
+        -0.32,
         -0.35,
         -0.5,
-        0.51,
+        0.46,
         0.62,
-        0.32,
+        0.31,
         0.36
       ],
       [
@@ -6197,14 +8499,18 @@
         -0.2,
         -0.33,
         -0.32,
+        -0.35,
+        -0.11,
+        -0.31,
+        -0.43,
         0.14,
         0.26,
         -0.58,
         -0.24,
-        -0.74,
-        -0.24,
+        -0.73,
+        -0.25,
         0.03,
-        -0.33,
+        -0.34,
         1.0,
         0.34,
         0.71,
@@ -6213,170 +8519,191 @@
         -0.39,
         0.16,
         -0.5,
-        0.35,
+        0.34,
         -0.33,
         -0.3,
-        0.14,
+        -0.19,
+        0.13,
         0.21,
-        0.28,
+        0.27,
         0.38,
-        0.61,
-        0.19,
+        0.6,
+        0.18,
         0.23,
-        0.61,
+        0.6,
         -0.28,
         -0.71,
-        -0.14,
+        -0.13,
         -0.46
       ],
       [
-        -0.24,
+        -0.25,
         -0.35,
         -0.12,
-        -0.11,
+        -0.12,
         -0.27,
-        0.04,
-        0.07,
-        -0.19,
+        -0.14,
+        -0.09,
         -0.13,
         -0.22,
+        0.04,
+        0.07,
+        -0.2,
+        -0.13,
+        -0.23,
         -0.14,
         0.09,
         -0.04,
         0.34,
         1.0,
         0.25,
-        0.04,
-        -0.07,
-        -0.14,
-        0.04,
-        -0.14,
-        0.12,
-        -0.07,
+        0.03,
         -0.08,
-        0.07,
+        -0.15,
+        0.04,
+        -0.15,
+        0.12,
+        -0.08,
+        -0.08,
+        -0.14,
+        0.06,
         0.28,
         0.27,
         0.31,
-        0.36,
+        0.37,
         0.16,
         0.2,
         0.37,
-        -0.16,
+        -0.2,
         -0.32,
         0.19,
         -0.27
       ],
       [
         -0.29,
-        -0.31,
+        -0.32,
         -0.13,
         -0.27,
+        -0.31,
+        -0.74,
+        -0.41,
+        -0.66,
         -0.34,
         0.02,
-        0.16,
-        -0.44,
+        0.15,
+        -0.46,
         -0.25,
-        -0.63,
-        -0.26,
+        -0.62,
+        -0.27,
         -0.09,
-        -0.21,
+        -0.24,
         0.71,
         0.25,
         1.0,
-        -0.07,
+        -0.09,
         -0.28,
         -0.31,
         0.23,
         -0.37,
-        0.45,
-        -0.28,
+        0.44,
+        -0.29,
         -0.32,
+        -0.26,
         0.17,
-        0.01,
-        0.21,
-        0.3,
-        0.55,
+        0.02,
+        0.2,
+        0.29,
+        0.52,
         0.11,
         0.22,
-        0.53,
-        -0.24,
+        0.52,
+        -0.29,
         -0.59,
-        -0.13,
+        -0.12,
         -0.35
       ],
       [
         0.02,
-        -0.02,
-        -0.0,
-        0.04,
+        -0.01,
         0.0,
+        0.05,
+        0.01,
+        0.12,
+        0.01,
+        -0.09,
+        -0.06,
         0.15,
         0.16,
-        0.0,
+        0.02,
         0.13,
-        0.09,
-        0.14,
         0.1,
-        0.03,
+        0.15,
+        0.1,
+        0.05,
         0.01,
-        0.04,
-        -0.07,
+        0.03,
+        -0.09,
         1.0,
-        0.16,
-        0.08,
+        0.18,
+        0.09,
         0.02,
         0.07,
         0.12,
-        0.11,
+        0.12,
         -0.02,
+        0.05,
         -0.17,
         0.15,
+        0.12,
+        0.06,
+        0.04,
         0.13,
-        0.07,
         0.04,
-        0.14,
         0.04,
-        0.05,
-        0.04,
+        0.08,
         -0.02,
         0.04,
         0.02
       ],
       [
-        0.54,
+        0.55,
         0.43,
         0.12,
         0.61,
-        0.38,
+        0.4,
+        0.12,
+        0.04,
+        0.12,
+        0.21,
         -0.25,
-        -0.24,
+        -0.23,
         0.56,
         0.08,
-        0.58,
-        0.1,
+        0.59,
+        0.11,
         0.0,
         0.51,
         -0.33,
-        -0.07,
+        -0.08,
         -0.28,
-        0.16,
+        0.18,
         1.0,
         0.59,
         -0.07,
-        0.37,
+        0.38,
         -0.19,
-        0.63,
+        0.64,
         0.11,
+        0.4,
         0.14,
         0.05,
-        -0.26,
+        -0.27,
         -0.15,
-        -0.35,
-        -0.26,
+        -0.36,
+        -0.27,
         -0.3,
-        -0.5,
-        0.55,
+        -0.51,
+        0.57,
         0.62,
         0.36,
         0.38
@@ -6385,10 +8712,14 @@
         0.56,
         0.5,
         0.13,
-        0.57,
-        0.42,
+        0.58,
+        0.44,
+        0.12,
+        0.03,
+        0.11,
+        0.24,
         -0.29,
-        -0.31,
+        -0.3,
         0.6,
         0.07,
         0.58,
@@ -6396,24 +8727,25 @@
         -0.03,
         0.5,
         -0.39,
-        -0.14,
+        -0.15,
         -0.31,
-        0.08,
+        0.09,
         0.59,
         1.0,
         -0.09,
         0.33,
-        -0.2,
-        0.65,
+        -0.19,
+        0.66,
         0.13,
+        0.4,
         0.15,
         -0.11,
         -0.3,
         -0.22,
         -0.41,
-        -0.29,
+        -0.3,
         -0.36,
-        -0.54,
+        -0.55,
         0.68,
         0.66,
         0.27,
@@ -6421,10 +8753,14 @@
       ],
       [
         -0.05,
-        -0.03,
+        -0.02,
         -0.01,
         -0.07,
         0.02,
+        -0.18,
+        -0.1,
+        -0.18,
+        -0.11,
         0.04,
         0.13,
         -0.14,
@@ -6444,6 +8780,7 @@
         0.29,
         -0.08,
         -0.17,
+        null,
         0.08,
         -0.02,
         0.07,
@@ -6453,18 +8790,22 @@
         null,
         0.13,
         null,
-        -0.12,
+        -0.11,
         -0.04,
         -0.12
       ],
       [
         0.36,
         0.29,
-        0.17,
+        0.18,
         0.33,
-        0.23,
+        0.24,
+        0.17,
+        0.0,
+        0.16,
+        0.27,
         -0.17,
-        -0.2,
+        -0.19,
         0.49,
         0.16,
         0.64,
@@ -6472,25 +8813,26 @@
         -0.0,
         0.36,
         -0.5,
-        -0.14,
+        -0.15,
         -0.37,
         0.07,
-        0.37,
+        0.38,
         0.33,
         -0.06,
         1.0,
-        -0.31,
+        -0.3,
         0.36,
         0.15,
+        0.22,
         -0.02,
         -0.08,
         -0.23,
         -0.26,
         -0.44,
-        -0.16,
+        -0.17,
         -0.28,
         -0.5,
-        0.28,
+        0.32,
         0.58,
         0.27,
         0.34
@@ -6499,74 +8841,84 @@
         -0.23,
         -0.17,
         -0.05,
-        -0.21,
+        -0.2,
         -0.13,
+        -0.24,
+        -0.08,
+        -0.33,
+        -0.16,
         0.11,
         0.22,
-        -0.35,
-        -0.12,
-        -0.38,
-        -0.04,
+        -0.34,
+        -0.11,
+        -0.37,
+        -0.05,
         0.1,
-        -0.25,
-        0.35,
+        -0.24,
+        0.34,
         0.12,
-        0.45,
+        0.44,
         0.12,
         -0.19,
-        -0.2,
+        -0.19,
         0.29,
-        -0.31,
+        -0.3,
         1.0,
-        -0.21,
+        -0.2,
         -0.34,
+        null,
         0.04,
-        0.0,
+        -0.0,
         0.23,
-        0.15,
-        0.34,
+        0.14,
+        0.33,
         0.14,
         null,
         0.34,
         null,
-        -0.33,
-        -0.13,
+        -0.32,
+        -0.12,
         -0.26
       ],
       [
         0.51,
         0.47,
         0.1,
-        0.62,
-        0.39,
+        0.63,
+        0.4,
+        0.09,
+        0.02,
+        0.12,
+        0.19,
         -0.3,
         -0.29,
         0.59,
         0.05,
-        0.56,
+        0.57,
         0.06,
         -0.01,
         0.53,
         -0.33,
-        -0.07,
-        -0.28,
-        0.11,
-        0.63,
-        0.65,
+        -0.08,
+        -0.29,
+        0.12,
+        0.64,
+        0.66,
         -0.08,
         0.36,
-        -0.21,
+        -0.2,
         1.0,
         0.12,
+        0.44,
         0.19,
         0.02,
         -0.29,
         -0.17,
         -0.36,
-        -0.29,
+        -0.3,
         -0.34,
         -0.52,
-        0.61,
+        0.63,
         0.62,
         0.35,
         0.33
@@ -6576,13 +8928,17 @@
         0.14,
         0.06,
         0.11,
-        0.08,
+        0.07,
+        0.19,
+        0.06,
+        0.21,
+        0.07,
         -0.0,
         -0.08,
         0.21,
         0.23,
         0.26,
-        0.15,
+        0.16,
         -0.05,
         0.15,
         -0.3,
@@ -6596,6 +8952,7 @@
         -0.34,
         0.12,
         1.0,
+        null,
         -0.15,
         0.01,
         -0.09,
@@ -6610,21 +8967,68 @@
         0.2
       ],
       [
+        0.45,
+        0.26,
+        0.05,
+        0.42,
+        0.24,
+        0.2,
+        -0.11,
+        -0.03,
+        0.08,
+        -0.86,
+        -0.5,
+        0.39,
+        null,
+        0.46,
+        null,
+        null,
+        0.4,
+        -0.19,
+        -0.14,
+        -0.26,
+        0.05,
+        0.4,
+        0.4,
+        null,
+        0.22,
+        null,
+        0.44,
+        null,
+        1.0,
+        0.66,
+        -0.14,
+        -0.59,
+        -0.33,
+        -0.44,
+        -0.66,
+        null,
+        -0.47,
+        0.47,
+        null,
+        0.27,
+        null
+      ],
+      [
         0.02,
         -0.08,
-        -0.18,
+        -0.17,
         0.17,
-        0.05,
+        0.06,
+        -0.34,
+        -0.35,
+        -0.31,
+        -0.15,
         -0.7,
         -0.52,
         0.03,
         -0.4,
-        0.04,
-        -0.4,
+        0.05,
+        -0.41,
         0.03,
         0.18,
-        0.14,
-        0.07,
+        0.13,
+        0.06,
         0.17,
         -0.17,
         0.14,
@@ -6634,15 +9038,16 @@
         0.04,
         0.19,
         -0.15,
+        0.66,
         1.0,
         -0.16,
         -0.2,
-        -0.11,
-        -0.02,
+        -0.12,
+        -0.03,
         -0.51,
         -0.46,
         -0.11,
-        0.36,
+        0.35,
         0.05,
         0.24,
         -0.15
@@ -6650,9 +9055,13 @@
       [
         -0.24,
         -0.26,
-        -0.07,
+        -0.06,
         -0.03,
-        -0.2,
+        -0.21,
+        0.1,
+        0.1,
+        0.11,
+        -0.11,
         0.23,
         0.25,
         -0.2,
@@ -6663,15 +9072,16 @@
         -0.07,
         0.21,
         0.28,
-        0.01,
+        0.02,
         0.15,
         0.05,
         -0.11,
         -0.02,
         -0.08,
-        0.0,
+        -0.0,
         0.02,
         0.01,
+        -0.14,
         -0.16,
         1.0,
         0.14,
@@ -6680,75 +9090,85 @@
         0.14,
         0.6,
         0.27,
-        -0.45,
+        -0.43,
         -0.24,
         0.09,
         -0.17
       ],
       [
-        -0.36,
+        -0.37,
         -0.38,
         -0.12,
+        -0.32,
         -0.31,
-        -0.3,
-        0.45,
-        0.51,
-        -0.37,
+        0.0,
         0.03,
-        -0.33,
-        -0.01,
+        -0.11,
+        -0.19,
+        0.46,
+        0.51,
+        -0.36,
+        0.03,
+        -0.34,
+        -0.02,
         0.17,
-        -0.35,
-        0.28,
+        -0.34,
         0.27,
-        0.21,
-        0.13,
-        -0.26,
+        0.27,
+        0.2,
+        0.12,
+        -0.27,
         -0.3,
         0.07,
         -0.23,
         0.23,
         -0.29,
         -0.09,
+        -0.59,
         -0.2,
         0.14,
         1.0,
         0.51,
         0.59,
-        0.62,
+        0.63,
         null,
         0.46,
-        null,
+        -0.62,
         -0.42,
         0.01,
         -0.27
       ],
       [
-        -0.28,
-        -0.31,
+        -0.29,
+        -0.32,
         -0.08,
-        -0.19,
+        -0.2,
         -0.23,
+        -0.02,
+        0.16,
+        -0.05,
+        -0.07,
         0.31,
         0.34,
         -0.29,
         -0.04,
         -0.34,
-        -0.06,
+        -0.07,
         0.15,
-        -0.2,
+        -0.19,
         0.38,
         0.31,
-        0.3,
-        0.07,
+        0.29,
+        0.06,
         -0.15,
         -0.22,
         0.03,
         -0.26,
-        0.15,
+        0.14,
         -0.17,
         -0.22,
-        -0.11,
+        -0.33,
+        -0.12,
         0.3,
         0.51,
         1.0,
@@ -6756,7 +9176,7 @@
         0.49,
         null,
         0.41,
-        null,
+        -0.43,
         -0.4,
         0.03,
         -0.24
@@ -6767,72 +9187,82 @@
         -0.14,
         -0.39,
         -0.33,
+        -0.19,
+        0.04,
+        -0.21,
+        -0.26,
         0.33,
-        0.44,
-        -0.55,
+        0.43,
+        -0.54,
         -0.11,
         -0.62,
-        -0.15,
+        -0.17,
         0.19,
-        -0.39,
-        0.61,
-        0.36,
-        0.55,
+        -0.38,
+        0.6,
+        0.37,
+        0.52,
         0.04,
-        -0.35,
+        -0.36,
         -0.41,
         0.15,
         -0.44,
-        0.34,
+        0.33,
         -0.36,
         -0.33,
-        -0.02,
+        -0.44,
+        -0.03,
         0.25,
         0.59,
         0.69,
         1.0,
-        0.52,
+        0.53,
         null,
-        0.63,
-        null,
+        0.62,
+        -0.52,
         -0.67,
         -0.1,
         -0.45
       ],
       [
-        -0.27,
-        -0.23,
+        -0.28,
+        -0.24,
         -0.01,
         -0.31,
-        -0.18,
+        -0.19,
+        0.12,
+        0.16,
+        0.09,
+        -0.1,
         0.72,
-        0.73,
-        -0.3,
+        0.72,
+        -0.29,
         0.25,
-        -0.28,
-        0.19,
+        -0.29,
+        0.18,
         0.1,
-        -0.33,
-        0.19,
+        -0.32,
+        0.18,
         0.16,
         0.11,
-        0.14,
-        -0.26,
-        -0.29,
+        0.13,
+        -0.27,
+        -0.3,
         0.05,
-        -0.16,
+        -0.17,
         0.14,
-        -0.29,
+        -0.3,
         -0.05,
+        -0.66,
         -0.51,
         0.14,
-        0.62,
+        0.63,
         0.49,
-        0.52,
+        0.53,
         1.0,
         null,
-        0.41,
-        null,
+        0.42,
+        -0.6,
         -0.36,
         -0.11,
         -0.15
@@ -6842,7 +9272,11 @@
         -0.3,
         -0.13,
         -0.33,
-        -0.24,
+        -0.29,
+        -0.19,
+        -0.0,
+        -0.03,
+        -0.18,
         0.63,
         0.65,
         -0.34,
@@ -6862,6 +9296,7 @@
         null,
         -0.34,
         0.03,
+        null,
         -0.46,
         0.6,
         null,
@@ -6876,79 +9311,89 @@
         -0.26
       ],
       [
-        -0.61,
+        -0.62,
         -0.59,
         -0.22,
-        -0.52,
-        -0.5,
-        0.34,
+        -0.53,
+        -0.51,
+        -0.26,
+        -0.15,
+        -0.29,
+        -0.42,
+        0.35,
         0.4,
         -0.69,
         -0.09,
         -0.74,
-        -0.14,
+        -0.15,
         0.03,
         -0.5,
-        0.61,
+        0.6,
         0.37,
-        0.53,
-        0.05,
-        -0.5,
-        -0.54,
+        0.52,
+        0.04,
+        -0.51,
+        -0.55,
         0.13,
         -0.5,
         0.34,
         -0.52,
         -0.19,
+        -0.47,
         -0.11,
         0.27,
         0.46,
         0.41,
-        0.63,
-        0.41,
+        0.62,
+        0.42,
         0.47,
         1.0,
-        -0.57,
+        -0.6,
         -0.81,
         -0.21,
         -0.52
       ],
       [
+        0.61,
+        0.56,
+        0.17,
         0.6,
+        0.47,
+        0.25,
+        0.12,
+        0.13,
+        0.22,
+        -0.38,
+        -0.32,
         0.55,
-        0.16,
-        0.58,
-        0.42,
-        -0.37,
-        -0.37,
-        0.59,
         null,
-        0.53,
+        0.58,
         0.04,
         0.09,
-        0.51,
+        0.46,
         -0.28,
-        -0.16,
-        -0.24,
-        0.04,
-        0.55,
+        -0.2,
+        -0.29,
+        0.08,
+        0.57,
         0.68,
         null,
-        0.28,
+        0.32,
         null,
-        0.61,
+        0.63,
         -0.06,
-        0.36,
+        0.47,
+        0.35,
+        -0.43,
+        -0.62,
+        -0.43,
+        -0.52,
+        -0.6,
         -0.45,
-        null,
-        null,
-        null,
-        null,
-        -0.45,
-        -0.57,
+        -0.6,
         1.0,
         null,
-        0.21,
+        0.22,
         0.37
       ],
       [
@@ -6957,12 +9402,16 @@
         0.21,
         0.63,
         0.54,
+        0.15,
+        -0.03,
+        0.2,
+        0.41,
         -0.32,
         -0.4,
         0.84,
         0.15,
         0.89,
-        0.21,
+        0.22,
         -0.13,
         0.62,
         -0.71,
@@ -6971,11 +9420,12 @@
         -0.02,
         0.62,
         0.66,
-        -0.12,
+        -0.11,
         0.58,
-        -0.33,
+        -0.32,
         0.62,
         0.27,
+        null,
         0.05,
         -0.24,
         -0.42,
@@ -6994,26 +9444,31 @@
         0.01,
         -0.03,
         0.31,
-        0.05,
+        0.06,
+        -0.03,
+        -0.14,
+        -0.02,
+        -0.0,
         -0.24,
-        -0.19,
-        0.3,
+        -0.18,
+        0.29,
         -0.05,
         0.38,
-        -0.06,
+        -0.05,
         0.1,
-        0.32,
-        -0.14,
-        0.19,
+        0.31,
         -0.13,
+        0.19,
+        -0.12,
         0.04,
         0.36,
         0.27,
         -0.04,
         0.27,
-        -0.13,
+        -0.12,
         0.35,
         0.06,
+        0.27,
         0.24,
         0.09,
         0.01,
@@ -7022,7 +9477,7 @@
         -0.11,
         -0.13,
         -0.21,
-        0.21,
+        0.22,
         0.29,
         1.0,
         0.07
@@ -7030,15 +9485,19 @@
       [
         0.55,
         0.49,
-        0.23,
+        0.22,
         0.35,
-        0.4,
+        0.42,
+        0.22,
+        0.14,
+        0.21,
+        0.36,
         -0.08,
         -0.16,
         0.51,
         0.19,
         0.52,
-        0.24,
+        0.25,
         -0.1,
         0.36,
         -0.46,
@@ -7052,6 +9511,7 @@
         -0.26,
         0.33,
         0.2,
+        null,
         -0.15,
         -0.17,
         -0.27,
@@ -7074,6 +9534,7 @@
     "E08000035",
     "E06000043",
     "W06000015",
-    "S12000036"
+    "S12000036",
+    "N09000003"
   ]
 }
