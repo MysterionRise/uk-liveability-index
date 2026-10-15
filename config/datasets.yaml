@@ -2056,12 +2056,12 @@ ni_domestic_rates:
   landing_page: https://www.finance-ni.gov.uk/articles/rate-poundages
   description: The regional and each council's district domestic rate in the pound for 2026–27, copied from the Department of Finance's page; the rates bill is the poundage times a home's capital value.
   licence: OGL-3.0
-  licence_verified: false
+  licence_verified: true
   attribution: "Department of Finance (Northern Ireland), rate poundages, licensed under the Open Government Licence v3.0."
   cadence: annual
   period: "2026–27"
   size_hint: 1KB
-  notes: The page carries no licence line of its own (NI departmental sites publish under the OGL; confirmation requested); a web table rather than a file, so the figures are kept as a curated list with the date they were read.
+  notes: "The page carries no licence line of its own; the department's Crown copyright page (https://www.finance-ni.gov.uk/crown-copyright, checked 2026-10-15) says the website's information may be used and re-used free of charge under the Open Government Licence, logos and OSNI-branded LPS mapping excepted. A web table rather than a file, so the figures are kept as a curated list with the date they were read."
 
 bso_gp_list_sizes:
   coverage: [N]
