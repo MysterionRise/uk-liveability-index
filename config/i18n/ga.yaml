@@ -1,0 +1,175 @@
+# Gaeilge labels for the data: themes, indicators (label, description), presets, the
+# profile flags and the words for each nation's area tiers. English stays in
+# indicators.yaml and weights.yaml; anything missing here falls back to it. `_meta.status`
+# is "draft" until a fluent reviewer signs it off (see docs/i18n.md). Drafted 15 October
+# 2026 for the Northern Ireland release (#70).
+_meta: {status: draft, reviewer: null, date: 2026-10-15}
+
+themes:
+  safety: {label: Sábháilteacht, description: "Coireacht agus iompar frithshóisialta a taifeadadh san áit a bhfuil cónaí ar dhaoine."}
+  environment: {label: Timpeallacht, description: "Aer glan, sráideanna ciúine, crainn agus spásanna glasa in aice láimhe, agus riosca tuilte."}
+  health: {label: Seirbhísí sláinte, description: "Cé chomh héasca is atá sé do chónaitheoirí dochtúir teaghlaigh, cógaiseoir nó fiaclóir a fheiceáil."}
+  education: {label: Scoileanna agus cúram leanaí, description: "Scoileanna agus naíonraí maithe faoi rochtain."}
+  transport: {label: Iompar agus nascacht, description: "Cé chomh maith is a nascann ceantar le poist agus le seirbhísí ar gach modh, agus a leathanbhanda."}
+  amenities: {label: Áiseanna agus saol na hoíche, description: "Siopaí, caiféanna, tithe tábhairne dea-reáchtáilte, fóillíocht agus cultúr in aice láimhe."}
+  housing: {label: Tithíocht agus inacmhainneacht, description: "An méid a chosnaíonn tithe agus bail an stoic tithíochta."}
+  community: {label: Pobal agus folláine, description: "Ioncam, obair agus sláinte na ndaoine a chónaíonn ann."}
+  climate: {label: Aeráid, description: "Grian, báisteach agus cé chomh te is atá an samhradh agus cé chomh séimh is atá an geimhreadh, ó mheáin tríocha bliain."}
+
+presets:
+  balanced: {label: Cothrom, description: "Comhaireann gach téama go cothrom."}
+  family: {label: Teaghlach le leanaí, description: "Scoileanna agus naíonraí maithe, sábháilteacht agus spásanna glasa ar dtús."}
+  young_professional: {label: Gairmí óg, description: "Naisc, rudaí le déanamh agus tithe tábhairne maithe; is lú tábhacht na scoileanna."}
+  retiree: {label: Ar scor, description: "Sábháilteacht, seirbhísí sláinte, aer glan, grian agus ceantar níos ciúine."}
+  commuter: {label: Comaitéir, description: "Naisc thapa le poist, ar iompar poiblí thar aon rud eile."}
+
+units:
+  gbp: "£"
+  gbp_year: "£ sa bhliain"
+  pct: "%"
+  pct_homes: "% de thithe"
+  pct_pupils: "% de dhaltaí"
+  pct_working_age: "% de dhaoine 16–64"
+  metres: méadair
+  per_1000_year: "in aghaidh 1,000 cónaitheoir sa bhliain"
+  score: scór
+  score_100: "scór 0–100"
+  ugm3: "µg/m³"
+  index: "innéacs 0–1"
+  quality: "cáilíocht 0–1"
+  rating: "rátáil 0–1 (Maith = 0.75)"
+  rate: ráta
+  collisions_year: "imbhuailtí sa bhliain laistigh de 500m"
+  patients_per_gp: "othair in aghaidh an dochtúra teaghlaigh lánaimseartha"
+  attainment8: "Gnóthachtáil 8"
+  buses_hour: "busanna san uair"
+  years_income: "blianta d'ioncam"
+  years: blianta
+  people_km2: "daoine in aghaidh km²"
+  radiance: "nW/cm²/sr"
+  hours_year: "uaireanta sa bhliain"
+  days_year: "laethanta sa bhliain"
+  celsius: "°C"
+  mm_year: "mm sa bhliain"
+  m_s: "m/s"
+  within_1500m: "laistigh de 1.5km"
+  patients_per_practice: "othair in aghaidh an chleachtais"
+
+flags:
+  imputed: "Is meastacháin iad na figiúirí coireachta anseo: ní fhoilsíonn Póilíní Greater Manchester sonraí ar leibhéal sráide."
+  low_n: "Is beag teach a díoladh anseo le bliain anuas, mar sin tá an praghas cobhsaithe i dtreo an cheantair máguaird."
+  broadcast_lad: "Tagann cáilíocht na meánscoileanna ó thorthaí scrúduithe na comhairle ar fad, mar ní fhoilsíonn an náisiún seo torthaí ná gráid chigireachta in aghaidh na scoile."
+  not_available: "Níl roinnt táscairí ar fáil sa náisiún seo go fóill; úsáideann an téama na cinn atá aige."
+
+# What the interface calls each nation's areas (one, several)
+levels:
+  E:
+    low: {one: ceantar beag, other: ceantair bheaga}
+    mid: {one: comharsanacht, other: comharsanachtaí}
+    upper: {one: comhairle, other: comhairlí}
+  W:
+    low: {one: ceantar beag, other: ceantair bheaga}
+    mid: {one: comharsanacht, other: comharsanachtaí}
+    upper: {one: comhairle, other: comhairlí}
+  S:
+    low: {one: crios sonraí, other: criosanna sonraí}
+    mid: {one: crios idirmheánach, other: criosanna idirmheánacha}
+    upper: {one: ceantar comhairle, other: ceantair chomhairle}
+  N:
+    low: {one: forchrios sonraí, other: forchriosanna sonraí}
+    mid: {one: forchrios sonraí, other: forchriosanna sonraí}
+    upper: {one: comhairle, other: comhairlí}
+
+indicators:
+  crime_violence: {label: Cionta foréigneacha agus gnéasacha, description: "Foréigean agus cionta gnéasacha a taifeadadh in aghaidh 1,000 cónaitheoir sa bhliain (meán 36 mí)."}
+  crime_burglary: {label: Buirgléireacht, description: "Buirgléireachtaí a taifeadadh in aghaidh 1,000 cónaitheoir sa bhliain."}
+  crime_asb: {label: Iompar frithshóisialta, description: "Eachtraí iompair fhrithshóisialta a tuairiscíodh in aghaidh 1,000 cónaitheoir sa bhliain."}
+  crime_theft: {label: "Robáil, gadaíocht agus coireacht feithiclí", description: "Robáil, gadaíocht ón duine, coireacht feithiclí agus gadaíocht rothar in aghaidh 1,000 cónaitheoir sa bhliain."}
+  crime_damage_disorder: {label: Damáiste coiriúil agus ord poiblí, description: "Damáiste coiriúil, coirloscadh agus cionta oird phoiblí in aghaidh 1,000 cónaitheoir sa bhliain."}
+  road_danger: {label: Imbhuailtí bóthair tromchúiseacha in aice láimhe, description: "Imbhuailtí bóthair inar maraíodh nó inar gortaíodh duine go dona laistigh de 500m de thithe, sa bhliain (meán 5 bliana)."}
+  iod_crime: {label: Scór fearainn coireachta IoD 2025, description: "Riosca samhaltaithe íospairt phearsanta agus maoine (sonraí 2021–2023)."}
+  recorded_crime: {label: Coireacht a taifeadadh (SIMD), description: "Coireanna a taifeadadh in aghaidh 1,000 cónaitheoir sa bhliain in Innéacs Ildíothachta na hAlban 2020, tugtha chuig criosanna sonraí 2022."}
+  no2: {label: Dé-ocsaíd nítrigine (NO₂), description: "Meán-NO₂ cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}
+  pm25: {label: Mínfhíneáin (PM2.5), description: "Meán-PM2.5 cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}
+  green_space_access: {label: Páirceanna agus spásanna glasa in aice láimhe, description: "Bealaí isteach i bpáirceanna, i ngairdíní agus i bpáirceanna imeartha poiblí laistigh de shiúlóid 1km, ualaithe de réir faid."}
+  play_spaces: {label: Clóis súgartha in aice láimhe, description: "Bealaí isteach i spásanna súgartha poiblí laistigh de 800m de thithe, ualaithe de réir faid."}
+  flood_risk: {label: Tithe i mbaol tuilte, description: "Sciar de thithe i mbaol ard nó meánach tuilte ó aibhneacha, ón bhfarraige nó ó uisce dromchla (seans 1% sa bhliain ar a laghad)."}
+  flood_rivers_sea: {label: Tithe i mbaol ó aibhneacha nó ón bhfarraige, description: "Sciar de thithe i mbaol ard nó meánach tuilte ó aibhneacha nó ón bhfarraige amháin (seans 1% sa bhliain ar a laghad)."}
+  noise_exposure: {label: Tithe i dtorann iompair nó tionsclaíoch, description: "Sciar de thithe ina sroicheann torann mapáilte 60 dB Lden nó níos mó thar an lá, an tráthnóna agus an oíche (bóithre, iarnróid agus aerárthaí i Sasana; bóithre agus iarnróid sa Bhreatain Bheag; gach foinse mhapáilte in Albain)."}
+  aircraft_noise: {label: Tithe i dtorann aerárthaí, description: "Sciar de thithe ina bhfuil torann aerárthaí 55 dB Lden nó níos mó ar an meán, timpeall na sé aerfort déag atá mapáilte i Sasana."}
+  industrial_noise: {label: Tithe i dtorann tionsclaíoch, description: "Sciar de thithe ina bhfuil torann tionsclaíoch 55 dB Lden nó níos mó ar an meán, i gcúig chathair mhapáilte na hAlban."}
+  road_rail_noise: {label: Tithe i dtorann bóthair nó iarnróid, description: "Sciar de thithe ina sroicheann torann bóthair nó iarnróid 60 dB Lden nó níos mó thar an lá, an tráthnóna agus an oíche, ó na mapaí torainn straitéiseacha."}
+  tree_canopy: {label: Clúdach crann timpeall tithe, description: "Sciar den talamh laistigh de 500m de thithe a rangaíonn clúdach talún satailíte mar chlúdach crann (ESA WorldCover, 10m)."}
+  light_pollution: {label: Solas na hoíche, description: "Meánradaíocht oíche laistigh de 1km de thithe, ó chomhiomlán bliantúil satailíte VIIRS (nW/cm²/sr)."}
+  iod_outdoors: {label: Timpeallacht chónaithe amuigh IoD 2025, description: "Cáilíocht aeir agus timpistí tráchta bóthair (fofhearann IoD 2025)."}
+  hospital_ae_distance: {label: Fad chuig an rannóg éigeandála is gaire, description: "Meánfhad díreach ó thithe chuig an rannóg éigeandála is gaire faoi stiúir comhairleora."}
+  hospital_distance: {label: Fad chuig an gcúram éigeandála is gaire, description: "Meánfhad díreach ó thithe chuig an rannóg éigeandála nó an t-aonad mionghortuithe is gaire."}
+  gp_distance: {label: Fad chuig an gcleachtas dochtúra teaghlaigh is gaire, description: "Meánfhad díreach ó thithe chuig an gcleachtas dochtúra teaghlaigh is gaire."}
+  patients_per_gp: {label: Othair in aghaidh an dochtúra teaghlaigh, description: "Othair chláraithe in aghaidh an dochtúra teaghlaigh cháilithe lánaimseartha ag na cleachtais a úsáideann cónaitheoirí."}
+  gp_quality: {label: Rátálacha cleachtas dochtúirí teaghlaigh, description: "Rátálacha CQC na gcleachtas dochtúirí teaghlaigh a bhfuil cónaitheoirí cláraithe leo, ualaithe de réir an lín a úsáideann gach ceann."}
+  care_homes: {label: Tithe altranais dea-rátáilte in aice láimhe, description: "Leapacha i dtithe altranais a rátáil CQC Maith nó Sármhaith laistigh de 5km, ualaithe de réir faid."}
+  pharmacy_distance: {label: Fad chuig an gcógaslann is gaire, description: "Meánfhad díreach ó thithe chuig an gcógaslann phobail NHS is gaire."}
+  dentist_distance: {label: Fad chuig an bhfiaclóir NHS is gaire, description: "Meánfhad díreach ó thithe chuig an gcleachtas fiaclóireachta is gaire a bhfuil conradh NHS aige."}
+  primary_school_quality: {label: Bunscoileanna maithe in aice láimhe, description: "Cáilíocht na dtrí bhunscoil stáit is gaire (Ofsted agus torthaí), agus na cinn is gaire ag comhaireamh níos mó."}
+  secondary_school_quality: {label: Meánscoileanna maithe in aice láimhe, description: "Cáilíocht na dtrí mheánscoil stáit is gaire (cigireachtaí agus torthaí), agus na cinn is gaire ag comhaireamh níos mó."}
+  school_choice: {label: Rogha scoileanna maithe, description: "Bunscoileanna stáit maithe laistigh de 2km agus meánscoileanna laistigh de 5km, ualaithe de réir cáilíochta agus faid."}
+  primary_results: {label: Torthaí bunscoile in aice láimhe, description: "Sciar de dhaltaí a shroicheann an caighdeán a bhfuiltear ag súil leis sa léitheoireacht, sa scríbhneoireacht agus sa mhatamaitic ag bunscoileanna stáit laistigh de 2km (meán 3 bliana), ualaithe de réir faid."}
+  secondary_results: {label: Torthaí meánscoile in aice láimhe, description: "Meánscór Gnóthachtáil 8 ag meánscoileanna stáit laistigh de 5km, ualaithe de réir faid."}
+  nursery_access: {label: Naíonraí maithe in aice láimhe, description: "Naíonraí, réamhscoileanna agus ranganna naíonra scoile laistigh de 1km, gach ceann ualaithe de réir a ghráid chigireachta agus faid."}
+  connectivity_overall: {label: Nascacht iomlán, description: "Scór nascachta DfT thar gach modh taistil agus ceann scríbe."}
+  connectivity_public_transport: {label: Nascacht iompair phoiblí, description: "Scór nascachta DfT d'iompar poiblí chuig gach ceann scríbe."}
+  connectivity_walking: {label: Insiúltacht, description: "Scór nascachta DfT do shiúl chuig gach ceann scríbe."}
+  connectivity_cycling: {label: Nascacht rothaíochta, description: "Scór nascachta DfT do rothaíocht chuig gach ceann scríbe."}
+  access_deprivation: {label: Rochtain ar sheirbhísí (SIMD agus NIMDM), description: "Fearann rochtana geografaí Innéacs Ildíothachta na hAlban 2020 (agus fearann gaireacht seirbhísí NIMDM 2017 i dTuaisceart Éireann): amanna tiomána agus iompair phoiblí chuig dochtúirí teaghlaigh, scoileanna, siopaí, oifigí poist agus stáisiúin pheitril, tugtha chuig criosanna 2021 agus 2022."}
+  station_distance: {label: Fad chuig an stáisiún is gaire, description: "Meánfhad díreach ó thithe chuig an stad iarnróid, meitreo nó trama is gaire."}
+  rail_service: {label: Seirbhís iarnróid in aice láimhe, description: "Iontrálacha agus imeachtaí bliantúla stáisiúin (ORR) laistigh de 2km de thithe, ualaithe de réir faid agus sáithithe, sa chaoi go gcomhaireann stáisiún gnóthach in aice láimhe níos mó ná stad beag."}
+  bus_frequency: {label: Minicíocht busanna, description: "Busanna san uair (laethanta na seachtaine, 07:00–19:00) ag an stad is gnóthaí laistigh de 400m de thithe."}
+  gigabit_broadband: {label: Leathanbhanda gigibheart, description: "Sciar de thithe ar féidir leo leathanbhanda ar chumas gigibhirt a fháil (snáithín iomlán nó cábla)."}
+  slow_broadband: {label: Tithe gan leathanbhanda cuibheasach, description: "Sciar de thithe nach féidir leo leathanbhanda 10 Mbit/s a fháil ó líne sheasta ná ó gan sreang seasta."}
+  well_run_pubs: {label: Tithe tábhairne dea-reáchtáilte in aice láimhe, description: "Tithe tábhairne laistigh de shiúlóid 15 nóiméad a bhfuil rátáil sláinteachais bia 4 nó 5 acu ó na trí bliana seo caite, ualaithe de réir faid."}
+  food_and_drink: {label: Caiféanna agus bialanna, description: "Caiféanna agus bialanna laistigh de 800m, ualaithe de réir faid."}
+  supermarket_distance: {label: Fad chuig an ollmhargadh is gaire, description: "Meánfhad díreach ó thithe chuig an ollmhargadh is gaire."}
+  shops: {label: Siopaí in aice láimhe, description: "Siopaí de gach cineál laistigh de 800m, ualaithe de réir faid."}
+  leisure: {label: Áiseanna spóirt agus aclaíochta, description: "Ionaid spóirt, giomanna agus linnte snámha atá ar oscailt don phobal laistigh de 2km, ualaithe de réir faid (OpenStreetMap)."}
+  leisure_facilities: {label: Áiseanna spóirt (Active Places), description: "Hallaí spóirt, giomanna, linnte, stiúideonna, cúirteanna agus páirceanna atá ar oscailt don phobal laistigh de 2km i gclár Active Places Sport England, ualaithe de réir faid."}
+  swimming_pool_distance: {label: Fad chuig an linn snámha phoiblí is gaire, description: "Meánfhad díreach ó thithe chuig an linn snámha is gaire atá ar oscailt don phobal."}
+  culture: {label: "Leabharlanna, pictiúrlanna, amharclanna agus músaeim", description: "Leabharlanna, pictiúrlanna, amharclanna, ionaid ealaíon, músaeim agus dánlanna laistigh de 2km."}
+  fast_food: {label: Siopaí mearbhia in aice láimhe, description: "Siopaí mearbhia laistigh de 800m."}
+  gambling: {label: Siopaí geallghlacadóra agus casaínónna in aice láimhe, description: "Siopaí geallghlacadóra, ionaid chearrbhachais agus casaínónna laistigh de 800m."}
+  house_price: {label: Praghas tí tipiciúil, description: "Praghas díola meánach thar an 12 mhí seo caite, cobhsaithe i dtreo an cheantair máguaird nuair is beag díolachán atá ann."}
+  housing_condition: {label: Bail na tithíochta, description: "Fearann tithíochta an innéacs díothachta (tithe i ndroch-chaoi nó gan téamh lárnach; in Albain, plódú agus gan téamh lárnach; i dTuaisceart Éireann, an timpeallacht mhaireachtála)."}
+  price_change: {label: Athrú ar phraghsanna tithe, description: "Athrú ar an bpraghas díola meánach, an 12 mhí seo caite i gcomparáid leis an 12 mhí roimhe sin."}
+  council_tax: {label: Cáin chomhairle (ráta Bhanda D na comhairle), description: "Muirear bliantúil na comhairle ar theach Bhanda D, lena n-áirítear muirir chontae, phóilíní, dóiteáin agus paróiste ar an meán; an ráta mar a chéile a fhoilsíonn gach comhairle."}
+  domestic_rates: {label: Rátaí tí (teach tipiciúil), description: "Bille rátaí tí bliantúil do theach ag meánluach caipitil an cheantair, ón ráta réigiúnach agus ó ráta ceantair na comhairle (Tuaisceart Éireann)."}
+  council_tax_typical: {label: Cáin chomhairle (teach tipiciúil anseo), description: "An méid a íocann teach tipiciúil sa cheantar i gcáin chomhairle, muirear gach banda ualaithe de réir an lín tithe sa cheantar atá sa bhanda sin."}
+  price_to_income: {label: Praghas i gcomparáid le hioncam áitiúil, description: "Praghas tí tipiciúil roinnte ar mheánioncam glan teaghlaigh an cheantair."}
+  new_builds: {label: Tithe a tógadh ó 2000, description: "Sciar de thithe a tógadh in 2000 nó ina dhiaidh."}
+  period_homes: {label: Tithe a tógadh roimh 1919, description: "Sciar de thithe a tógadh roimh 1919."}
+  lower_band_homes: {label: Tithe i mbandaí cánach comhairle A–B, description: "Sciar de thithe sa dá bhanda cánach comhairle is ísle (na tithe is saoire ag luachanna 1991)."}
+  income_deprivation: {label: Díothacht ioncaim, description: "Sciar de chónaitheoirí ar ioncam íseal (fearann ioncaim an innéacs díothachta)."}
+  employment_deprivation: {label: Díothacht fostaíochta, description: "Sciar de chónaitheoirí in aois oibre atá dífhostaithe dá n-ainneoin féin (fearann fostaíochta an innéacs díothachta)."}
+  claimant_rate: {label: Ráta éilitheoirí, description: "Cónaitheoirí ag éileamh sochar a bhaineann le dífhostaíocht, mar sciar de na daoine 16–64 (an mhí is déanaí)."}
+  household_income: {label: Ioncam teaghlaigh, description: "Meánioncam glan teaghlaigh sa cheantar níos leithne (MSOA), roimh chostais tithíochta."}
+  health_deprivation: {label: Sláinte agus míchumas, description: "Bás roimh am, tinneas agus míchumas (fearann díothachta sláinte agus míchumais an innéacs díothachta)."}
+  life_expectancy: {label: Ionchas saoil, description: "Ionchas saoil ag breith sa cheantar níos leithne (MSOA), meán fear agus ban, 2019–23."}
+  good_health: {label: Dea-shláinte (féintuairiscithe), description: "Cónaitheoirí a thuairiscíonn a sláinte mar mhaith nó an-mhaith (Daonáireamh 2021; 2022 in Albain)."}
+  imd: {label: Innéacs Ildíothachta, description: "Scór díothachta iomlán; gan scór mar forluíonn a fhearainn ar tháscairí eile."}
+  population_density: {label: Dlús daonra, description: "Cónaitheoirí in aghaidh an chiliméadair chearnaigh (Daonáireamh 2021; 2022 in Albain)."}
+  households_with_children: {label: Teaghlaigh le leanaí cleithiúnacha, description: "Sciar de theaghlaigh le leanaí cleithiúnacha (Daonáireamh 2021; 2022 in Albain)."}
+  aged_65_plus: {label: Cónaitheoirí 65 nó níos sine, description: "Sciar de chónaitheoirí atá 65 bliana d'aois nó níos sine (Daonáireamh 2021; 2022 in Albain)."}
+  owner_occupied: {label: Tithe úinéir-áitithe, description: "Sciar de theaghlaigh ar leo a dteach go hiomlán nó le morgáiste (Daonáireamh 2021; 2022 in Albain)."}
+  no_car: {label: Teaghlaigh gan charr, description: "Sciar de theaghlaigh gan charr ná veain (Daonáireamh 2021; 2022 in Albain)."}
+  sustainable_commute: {label: "Siúl, rothaíocht nó iompar poiblí chun na hoibre", description: "Sciar d'oibrithe a thaistealaíonn chun na hoibre de shiúl na gcos, ar rothar nó ar iompar poiblí (Daonáireamh 2021, le linn srianta COVID-19; 2022 in Albain)."}
+  sunshine: {label: Grian, description: "Uaireanta de sholas geal na gréine sa bhliain, meán 1991–2020 (HadUK-Grid, 1km)."}
+  wet_days: {label: Laethanta fliucha, description: "Laethanta sa bhliain le 1mm báistí ar a laghad, meán 1991–2020."}
+  summer_warmth: {label: Teas an tsamhraidh, description: "Meánteocht uasta laethúil ó Mheitheamh go Lúnasa, meán 1991–2020 (°C)."}
+  winter_mildness: {label: Séimhe an gheimhridh, description: "Meánteocht íosta laethúil ó Nollaig go Feabhra, meán 1991–2020 (°C)."}
+  rainfall: {label: Báisteach, description: "Báisteach sa bhliain i milliméadair, meán 1991–2020."}
+  air_frost_days: {label: Laethanta sioc aeir, description: "Laethanta sa bhliain nuair a thiteann teocht an aeir faoi 0°C, meán 1991–2020."}
+  summer_days: {label: Laethanta samhraidh, description: "Laethanta sa bhliain nuair a shroicheann an teocht 25°C, meán 1991–2020."}
+  wind_speed: {label: Gaoth, description: "Meánluas na gaoithe ag 10m, meán 1991–2020."}
+  snow_days: {label: Laethanta le sneachta ina luí, description: "Laethanta sa bhliain le sneachta ar an talamh ag 9rn, meán 1991–2020."}
+  future_hot_days: {label: Laethanta teo samhraidh i ndomhan 2°C níos teo, description: "Laethanta sa bhliain os cionn tairseach áitiúil lae theo samhraidh nuair a bheidh an domhan 2°C níos teo, ó réamh-mheastacháin áitiúla UKCP18 Oifig na hAimsire."}
+  gp_list_size: {label: Othair in aghaidh an chleachtais dochtúra teaghlaigh in aice láimhe, description: "Othair chláraithe in aghaidh an chleachtais ag na cleachtais dochtúirí teaghlaigh in aice le tithe, ualaithe de réir faid."}
+  allotment_distance: {label: Fad chuig na leithdháiltí is gaire, description: "Meánfhad díreach ó thithe chuig na leithdháiltí nó an spás fáis pobail is gaire."}
+  ev_charging: {label: Pointí luchtaithe poiblí in aice láimhe, description: "Stáisiúin luchtaithe feithiclí leictreacha poiblí laistigh de 1.5km de thithe, ar an meán (OpenStreetMap)."}

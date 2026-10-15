@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import cy from "../messages/cy.json";
 import en from "../messages/en.json";
+import ga from "../messages/ga.json";
 import gd from "../messages/gd.json";
 
 // Placeholders sit in narrow boxes (the header search is about 170 px, the chat input
@@ -18,6 +19,7 @@ describe("placeholders fit their inputs", () => {
         ["en", en],
         ["cy", cy],
         ["gd", gd],
+        ["ga", ga],
       ] as const) {
         const text = pick(messages as typeof en);
         expect(text.length, `${locale}: "${text}"`).toBeLessThanOrEqual(limit);

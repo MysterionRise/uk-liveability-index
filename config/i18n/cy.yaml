@@ -169,3 +169,7 @@ levels:
     low: {one: parth data, other: parthau data}
     mid: {one: parth canolradd, other: parthau canolradd}
     upper: {one: ardal cyngor, other: ardaloedd cyngor}
+  N:
+    low: {one: parth data uwch, other: parthau data uwch}
+    mid: {one: parth data uwch, other: parthau data uwch}
+    upper: {one: cyngor, other: cynghorau}

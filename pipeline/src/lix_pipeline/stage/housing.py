@@ -67,7 +67,11 @@ def stage_council_tax() -> pl.LazyFrame:
         out = pl.concat([out, _sg_council_tax(scotland)], how="vertical_relaxed")
     if "N" in active_nations():
         out = pl.concat([out, _ni_domestic_rates()], how="diagonal_relaxed")
-    logger.info(f"{out.height} billing authorities; Band D median £{out['band_d'].median():,.0f}")
+    band_d = out["band_d"].median() if "band_d" in out.columns else None
+    logger.info(
+        f"{out.height} billing authorities; Band D median "
+        f"{'£' + format(band_d, ',.0f') if band_d is not None else 'n/a'}"
+    )
     return out.lazy()
 
 

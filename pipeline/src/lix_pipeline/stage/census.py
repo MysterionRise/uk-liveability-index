@@ -236,7 +236,11 @@ def ni_census_table(slug: str) -> pl.DataFrame:
         m = re.search(r"(\d+)", low.split(":", 1)[1])
         if m:
             ages[c] = int(m.group(1))
-    total = next(c for c in zones.columns if c.lower() == "all usual residents")
+    total = next(
+        c
+        for c in zones.columns
+        if c.lower().startswith("all usual residents") and "all ages" in c.lower()
+    )
     return zones.select(
         key,
         pl.col(total).cast(pl.Float64, strict=False).alias("total"),

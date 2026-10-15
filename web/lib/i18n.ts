@@ -8,6 +8,7 @@
  */
 import cy from "@/messages/cy.json";
 import en from "@/messages/en.json";
+import ga from "@/messages/ga.json";
 import gd from "@/messages/gd.json";
 
 export const LOCALES = ["en", "cy", "gd", "ga"] as const;
@@ -50,6 +51,7 @@ export const MESSAGES: Partial<Record<Locale, Messages>> = {
   en: en as Messages,
   cy: cy as Messages,
   gd: gd as Messages,
+  ga: ga as Messages,
 };
 
 export function isLocale(value: unknown): value is Locale {

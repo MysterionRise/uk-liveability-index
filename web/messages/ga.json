@@ -1,0 +1,288 @@
+{
+  "_meta": {
+    "status": "draft",
+    "reviewer": null,
+    "date": "2026-10-15"
+  },
+  "Nations": {
+    "uk": "an RA",
+    "E": "Sasana",
+    "W": "an Bhreatain Bheag",
+    "S": "Albain",
+    "N": "Tuaisceart Éireann",
+    "and": "agus",
+    "E_W": "Sasana agus an Bhreatain Bheag"
+  },
+  "Header": {
+    "title": "Innéacs Inchónaitheachta na RA",
+    "blurb": "{count, number} comharsanacht in {coverage}, scóráilte ó shonraí oscailte",
+    "demoBlurb": "Tacar sonraí taispeána: {count, number} comharsanacht, scóráilte ó shonraí oscailte",
+    "demoBadge": "sonraí taispeána",
+    "demoBadgeTitle": "Píosa beag den tógáil iomlán; tá na peircintílí ar an léarscáil i gcomparáid leis na ceantair seo",
+    "howScoresWork": "Conas a oibríonn na scóir",
+    "sources": "Foinsí",
+    "about": "Maidir leis",
+    "loading": "Na comharsanachtaí á lódáil…",
+    "loadError": "Níorbh fhéidir linn na scóir a lódáil ({error}). An bhfuil an API ag rith (<code>make api</code>) agus ar ritheadh <code>make score tiles</code>?",
+    "language": "Teanga",
+    "theme": "Dreach"
+  },
+  "Theme": {
+    "system": "Uathoibríoch",
+    "light": "Geal",
+    "dark": "Dorcha"
+  },
+  "SidePanel": {
+    "tabs": {
+      "assistant": "Cúntóir",
+      "weights": "Ualaí",
+      "area": "Ceantar",
+      "shortlist": "Gearrliosta",
+      "analyst": "Anailísí"
+    },
+    "shortlistCount": "Gearrliosta ({count})",
+    "panels": "Painéil",
+    "analystTitle": "Mód anailísí: dáiltí, forluí táscairí agus SQL",
+    "chatPlaceholder": "Fiafraigh faoi chomharsanacht…",
+    "chatWelcome": "Conas is féidir liom cabhrú leat inniu?",
+    "chatDisclaimer": "Is féidir le IS botúin a dhéanamh. Deimhnigh eolas tábhachtach.",
+    "send": "Seol",
+    "moreOptions": "Tuilleadh roghanna",
+    "suggestions": {
+      "familyTitle": "Oiriúnach do theaghlaigh in aice le Leeds",
+      "familyMessage": "Tá beirt pháistí óga againn agus buiséad £350k. Cá háit ar chóir dúinn breathnú timpeall Leeds?",
+      "pubsTitle": "Tithe tábhairne maithe in aice láimhe",
+      "pubsMessage": "Taispeáin dom tithe tábhairne maithe in aice le SW1A 1AA",
+      "compareTitle": "Cuir dhá áit i gcomparáid",
+      "compareMessage": "Cuir Headingley agus Chapel Allerton i gcomparáid",
+      "explainTitle": "Mínigh scór",
+      "explainMessage": "Cén fáth a bhfaigheann lár chathair Manchester scór íseal ar shábháilteacht?"
+    }
+  },
+  "Onboarding": {
+    "title": "Aimsigh comharsanacht a oireann duit",
+    "blurb": "Gach comharsanacht in {coverage}, scóráilte ó shonraí oscailte. Tá ceantair theal níos fearr ná an gnáth, ceantair oráiste níos measa. Zúmáil isteach agus cliceáil ar cheantar le fáil amach cén fáth, nó fiafraigh den chúntóir.",
+    "whoIsLooking": "Cé atá ag breathnú?",
+    "skip": "Léim thairis",
+    "personas": {
+      "family": "Teaghlach le leanaí",
+      "young_professional": "Gairmí óg",
+      "retiree": "Ar scor",
+      "commuter": "Comaitéir",
+      "balanced": "Cothrom"
+    }
+  },
+  "Search": {
+    "placeholder": "Postchód nó áit",
+    "noMatches": "Gan aon mheaitseáil in {coverage}",
+    "searching": "Ag cuardach…",
+    "unavailable": "Níl an cuardach ar fáil",
+    "kinds": {
+      "postcode": "Postchód",
+      "place": "Áit",
+      "region": "Réigiún",
+      "nation": "Náisiún"
+    }
+  },
+  "BuildInfo": {
+    "version": "Leagan {version}",
+    "dataBuilt": "sonraí tógtha {date}",
+    "dataTo": "sonraí go {date}",
+    "dataRelease": "eisiúint sonraí {tag}",
+    "demo": "tacar sonraí taispeána",
+    "sourceCode": "cód foinseach",
+    "disclaimer": "Chun comharsanachtaí a iniúchadh, ní chun comhairle maoine, airgeadais ná dlí a thabhairt."
+  },
+  "Weights": {
+    "startFromPreset": "Tosaigh ó réamhshocrú",
+    "howMuch": "Cé chomh mór is a chomhaireann gach téama",
+    "reset": "Athshocraigh",
+    "weightOf": "ualach {theme}",
+    "colourBy": "Dathaigh an léarscáil de réir",
+    "overall": "Scór iomlán",
+    "themes": "Téamaí",
+    "indicators": "Táscairí",
+    "compareAgainst": "Cuir i gcomparáid le",
+    "compare": {
+      "uk": "Gach ceantar san innéacs",
+      "nation": "Ceantair sa náisiún céanna",
+      "urban_rural": "Ceantair den chineál uirbeach/tuaithe céanna"
+    },
+    "compareHint": {
+      "uk": "Peircintílí thar gach ceantar scóráilte.",
+      "nation": "Peircintílí laistigh de gach náisiún; fanann na scóir mar atá.",
+      "urban_rural": "Ní mheastar bailte beaga i gcoinne lár cathracha móra."
+    }
+  },
+  "Band": {
+    "1": "An cúigiú is ísle",
+    "2": "Faoin ngnáth",
+    "3": "Meán",
+    "4": "Os cionn an ghnáith",
+    "5": "An cúigiú is airde",
+    "betterThan": "níos fearr ná {pct, number}% den RA"
+  },
+  "Quality": {
+    "imputed": "meastachán",
+    "low_n": "beagán díolachán",
+    "broadcast_msoa": "ceantar níos leithne",
+    "broadcast_lad": "ar fud na comhairle",
+    "not_available": "níl ar fáil anseo",
+    "missing": "gan sonraí"
+  },
+  "Legend": {
+    "against": {
+      "uk": "I gcoinne gach ceantair in {coverage}",
+      "nation": "I gcoinne ceantar sa náisiún céanna",
+      "urban_rural": "I gcoinne ceantar den chineál uirbeach/tuaithe céanna"
+    },
+    "worse": "níos measa",
+    "typical": "tipiciúil",
+    "better": "níos fearr",
+    "noData": "Gan sonraí"
+  },
+  "Map": {
+    "hover": "{name}: níos fearr ná {pct, number}% den RA",
+    "hoverNoName": "níos fearr ná {pct, number}% den RA",
+    "overall": "Iomlán",
+    "withinNation": "{label} (laistigh den náisiún)",
+    "withinUrbanRural": "{label} (vs ceantair uirbeacha/tuaithe comhchosúla)"
+  },
+  "Docs": {
+    "nav": "Doiciméadú",
+    "method": "Modheolaíocht",
+    "validation": "Bailíochtú",
+    "evals": "Measúnuithe an chúntóra",
+    "sources": "Foinsí agus ceadúnais",
+    "backToMap": "Ar ais chuig an léarscáil",
+    "englishOnly": "Níl an leathanach seo ar fáil ach i mBéarla."
+  },
+  "Registry": {
+    "working": {
+      "rank_areas": "Ceantair á rangú…",
+      "get_area_profile": "Próifíl an cheantair á tógáil…",
+      "compare_areas": "Comparáid á déanamh…",
+      "nearest_pois": "Áiteanna in aice láimhe á n-aimsiú…",
+      "explain_score": "An scór á ríomh…",
+      "set_weights": "Na hualaí á n-athrú…",
+      "show_on_map": "An léarscáil á bogadh…",
+      "run_sql": "An cheist á rith…",
+      "search_place": "An áit á cuardach…",
+      "list_indicators": "Táscairí á liostú…",
+      "add_to_shortlist": "Á shábháil ar do ghearrliosta…",
+      "remove_from_shortlist": "Do ghearrliosta á nuashonrú…"
+    },
+    "running": "{name} á rith…",
+    "noResult": "{name}: gan toradh",
+    "weightsSet": "Ualaí socraithe:",
+    "mapUpdated": "Léarscáil nuashonraithe · dathaithe de réir {layer}",
+    "shortlistSaved": "Gearrliosta: {count, plural, one {# sábháilte} two {# sábháilte} few {# sábháilte} many {# sábháilte} other {# sábháilte}}",
+    "found": "Aimsithe: {places}",
+    "nothing": "faic",
+    "indicatorsCount": "{count, plural, one {# táscaire} two {# tháscaire} few {# tháscaire} many {# dtáscaire} other {# táscaire}}"
+  },
+  "Profile": {
+    "subtitle": "{area} · {ruc} · {population, number} cónaitheoir",
+    "overallOf100": "/ 100 iomlán ({preset})",
+    "rangeTitle": "Raon 5–95% de pheircintíl na RA nuair a bhogtar ualach gach téama thart ar an gceathrú cuid",
+    "range": "Le hualaí beagán difriúil: níos fearr ná {lo, number}–{hi, number}% den RA",
+    "betterThan": "Níos fearr ná {pct, number}% den RA",
+    "localMedian": "airmheán {area}",
+    "ukMedian": "airmheán na RA",
+    "strengths": "Láidreachtaí",
+    "weakerSpots": "Laigí",
+    "showOnMap": "Taispeáin ar an léarscáil",
+    "inShortlist": "Ar an ngearrliosta",
+    "addToShortlist": "Cuir leis an ngearrliosta",
+    "copyLink": "Cóipeáil an nasc",
+    "linkCopied": "Nasc cóipeáilte",
+    "copyPrompt": "Cóipeáil an nasc seo",
+    "note": "Is scóir 0–100 iad (níos airde níos fearr). Is faid dhíreacha iad."
+  },
+  "Poi": {
+    "titles": {
+      "well_run_pub": "Tithe tábhairne dea-reáchtáilte",
+      "pub": "Tithe tábhairne",
+      "gp": "Cleachtais dochtúirí teaghlaigh",
+      "primary_school": "Bunscoileanna",
+      "secondary_school": "Meánscoileanna",
+      "nursery": "Naíonraí",
+      "supermarket": "Ollmhargaí"
+    },
+    "near": "{title} in aice le {place}",
+    "found": "{count, plural, one {# aimsithe} two {# aimsithe} few {# aimsithe} many {# aimsithe} other {# aimsithe}}",
+    "none": "Faic laistigh den fhad — bain triail as ga níos mó.",
+    "hygiene": "Rátáil sláinteachais bia {rating}/5",
+    "realAle": "fíorleann",
+    "inspection": "Cáilíocht chigireachta {score}/100",
+    "unnamed": "Gan ainm",
+    "note": "Fad díreach. Foinse: {sources}."
+  },
+  "Ranked": {
+    "title": "Na {count, number} {tier} is fearr {where}",
+    "areas": "ceantar",
+    "inPlace": "i {place}",
+    "inCoverage": "in {coverage}",
+    "subtitle": "{count, number} ag meaitseáil · ualú: {preset}",
+    "closeCall": "an-ghar",
+    "closeCallTitle": "Fanann sna {n, number} is fearr faoi {pct, number}% d'ualaí inchreidte",
+    "rankedBy": "{count, number} ag meaitseáil · rangaithe de réir {label}",
+    "overallScore": "iomlán {score}",
+    "typicalPrice": "praghas tipiciúil {price}",
+    "note": "Cliceáil ar cheantar lena thaispeáint ar an léarscáil.",
+    "closeCallNote": "“An-ghar”: d'fhéadfadh athruithe beaga ar na hualaí é a chur as an liosta seo."
+  },
+  "Comparison": {
+    "title": "Taobh le taobh",
+    "subtitle": "Ualú: {preset}",
+    "overall": "Iomlán",
+    "note": "Marcálann cló trom an scór is fearr i ngach sraith. Is meáin ualaithe de réir daonra iad ceantair níos mó agus comhairlí."
+  },
+  "Explainer": {
+    "title": "Cén fáth a bhfaigheann {name} {score}",
+    "subtitle": "Cuireann gach téama a sciar den ualach × a scór (ualú: {preset})",
+    "notScored": "(gan scór)",
+    "caveats": "Rabhaidh ({count, number})",
+    "sources": "Foinsí ({count, number})",
+    "dataAsOf": "sonraí amhail {date}",
+    "staleNewer": "foilsíodh eagrán níos nuaí",
+    "staleOld": "níos sine ná a ghnáth-thimthriall nuashonraithe",
+    "note": "Is scóir 0–100 iad scóir na dtáscairí (níos airde níos fearr)."
+  },
+  "Sql": {
+    "title": "Toradh na ceiste",
+    "rows": "{count, plural, one {# shraith} two {# shraith} few {# shraith} many {# sraith} other {# sraith}}",
+    "truncated": "(an chéad 5,000)",
+    "download": "Íoslódáil CSV",
+    "showing": "Ag taispeáint 200 sraith; tá gach ceann sa CSV."
+  },
+  "AreaPanel": {
+    "empty": "Cliceáil ar cheantar ar an léarscáil (zúmáil isteach le comharsanachtaí a fheiceáil) nó fiafraigh den chúntóir faoi áit.",
+    "loading": "Á lódáil…",
+    "error": "Níorbh fhéidir linn an ceantar seo a lódáil: {error}"
+  },
+  "Shortlist": {
+    "empty": "Níl aon cheantar sábháilte go fóill. Úsáid “Cuir leis an ngearrliosta” ar cheantar, nó iarr ar an gcúntóir ceann a shábháil.",
+    "remove": "Bain",
+    "compareThese": "Cuir iad seo i gcomparáid",
+    "compareFirst": "Cuir an chéad {count, number} i gcomparáid",
+    "compareError": "Níorbh fhéidir linn comparáid a dhéanamh: {error}"
+  },
+  "Analyst": {
+    "sqlLabel": "SQL (DuckDB, léamh amháin) thar na táblaí lsoa, pois, areas, places, indicators",
+    "running": "Á rith…",
+    "run": "Rith an cheist"
+  },
+  "Histogram": {
+    "caption": "{label}: comharsanachtaí de réir scóir",
+    "aria": "Histeagram de {label}",
+    "selected": "roghnaithe {value, number}",
+    "hover": "{lo}–{hi}: {count, plural, one {# chomharsanacht} two {# chomharsanacht} few {# chomharsanacht} many {# gcomharsanacht} other {# comharsanacht}}"
+  },
+  "Heatmap": {
+    "caption": "Cé chomh mór is a fhorluíonn táscairí scóráilte (ρ Spearman thar gach comharsanacht scóráilte)",
+    "aria": "Maitrís comhghaolaithe na dtáscairí scóráilte",
+    "legendHint": "Grúpálann boscaí gach téama",
+    "pair": "{a} × {b}: ρ {rho}"
+  }
+}

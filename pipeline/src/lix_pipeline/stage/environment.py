@@ -354,6 +354,16 @@ def stage_flood() -> pl.LazyFrame:
         scotland = _sepa_homes_at_risk()
         logger.info(f"Scotland: {scotland.height:,} Data Zones with homes in SEPA flood extents")
         frames.append(scotland)
+    if not frames:
+        # No active nation has an open flood map (Northern Ireland's is licensed): an
+        # empty table, so the indicators read not_available through their coverage
+        logger.warning(f"No flood source covers {active_nations()}: empty flood table")
+        schema = {
+            "lsoa21cd": pl.Utf8,
+            **dict.fromkeys(COUNT_COLUMNS, pl.Float64),
+            "estimated": pl.Boolean,
+        }
+        return pl.DataFrame(schema=schema).lazy()
     return (
         pl.concat(frames, how="diagonal_relaxed")
         .with_columns(pl.col(c).fill_null(0) for c in COUNT_COLUMNS)

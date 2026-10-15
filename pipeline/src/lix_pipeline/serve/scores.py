@@ -48,7 +48,7 @@ GEO_COLUMNS = [
 ]  # fmt: skip
 # The areas' names in the other languages (null where a nation has none): Welsh from the
 # ONS and Commons Library files, Gaelic council names from the curated list
-NAME_COLUMNS = ["lsoa21nm_cy", "msoa_name_cy", "lad_nm_cy", "lad_nm_gd"]
+NAME_COLUMNS = ["lsoa21nm_cy", "msoa_name_cy", "lad_nm_cy", "lad_nm_gd", "lad_nm_ga"]
 
 
 def _sha256(path: Path) -> str:

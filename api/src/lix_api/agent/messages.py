@@ -62,6 +62,23 @@ MESSAGES: dict[str, dict[str, str]] = {
         "unknown": "Chaidh rudeigin ceàrr fhad 's a bha mi a' freagairt; feuch ri faighneachd "
         "a-rithist. {still_works}",
     },
+    "ga": {
+        "still_works": "Oibríonn an léarscáil, na hualaí agus leathanaigh na gceantar i gcónaí.",
+        "usage_limit": "Theastaigh níos mó céimeanna uaidh sin ná mar atá ceadaithe dom d'aon "
+        "cheist amháin, mar sin stop mé. Bain triail as rud amháin a iarraidh ag an am.",
+        "tool_retry": "Níorbh fhéidir liom na sonraí a bhí uaim a fháil chuige sin. Bain triail "
+        "as é a chur i bhfocail eile, nó ainmnigh baile nó postchód.",
+        "key_rejected": "Diúltaíodh eochair API an chúntóra; seiceáil in .env í. {still_works}",
+        "out_of_credit": "Tá cuntas samhla an chúntóra as creidmheas. {still_works}",
+        "busy": "Tá an tsamhail teanga gnóthach faoi láthair; bain triail eile as i gceann "
+        "nóiméid. {still_works}",
+        "model_problem": "Bhí fadhb ag seirbhís na samhla teanga; bain triail eile as. "
+        "{still_works}",
+        "no_response": "Níor fhreagair an tsamhail teanga; bain triail eile as i gceann "
+        "tamaill. {still_works}",
+        "unknown": "Chuaigh rud éigin amú agus mé ag freagairt; bain triail as fiafraí arís. "
+        "{still_works}",
+    },
 }
 
 

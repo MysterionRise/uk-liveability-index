@@ -8,6 +8,15 @@ from lix_pipeline.indicators.common import impute_by_proxy
 GREATER_MANCHESTER = "E23000005"
 
 
+def _iod_crime_scores(ctx) -> pl.DataFrame:
+    """IoD 2025's crime domain for the Greater Manchester imputation; empty in a build
+    without England (the table is not staged there)."""
+    try:
+        return ctx.staged("iod_2025").select("lsoa21cd", "crime_score")
+    except FileNotFoundError:
+        return pl.DataFrame(schema={"lsoa21cd": pl.Utf8, "crime_score": pl.Float64})
+
+
 def crime_rate(ctx, types: list[str]) -> pl.DataFrame:
     """Annualised crimes of ``types`` per 1,000 residents.
 
@@ -25,7 +34,7 @@ def crime_rate(ctx, types: list[str]) -> pl.DataFrame:
     df = (
         ctx.geo.select("lsoa21cd", "population", "pfa_cd")
         .join(annual, on="lsoa21cd", how="left")
-        .join(ctx.staged("iod_2025").select("lsoa21cd", "crime_score"), on="lsoa21cd", how="left")
+        .join(_iod_crime_scores(ctx), on="lsoa21cd", how="left")
     )
     gmp = pl.col("pfa_cd") == GREATER_MANCHESTER
     df = df.with_columns(
