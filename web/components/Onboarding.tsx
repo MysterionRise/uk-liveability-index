@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useSyncExternalStore } from "react";
 
 import { useData, useLiveability } from "@/components/AppData";
+import { usePanel } from "@/components/PanelContext";
+import { ProfileBox } from "@/components/ProfileBox";
 import { useCoverageIn } from "@/lib/copy";
 import { useLabels } from "@/lib/labels";
 
@@ -43,10 +45,12 @@ function dismiss() {
 // arrives (it is the largest text on a first visit) and in the interface language
 const PERSONAS = ["family", "young_professional", "retiree", "commuter", "balanced"] as const;
 
-/** First visit: pick who you are (sets the weights) and how to read the map. */
+/** First visit: pick who you are, or say it in a sentence (sets the weights), and how
+ * to read the map. */
 export function Onboarding() {
   const { manifest } = useData();
   const { update } = useLiveability();
+  const { setTab } = usePanel();
   const t = useTranslations("Onboarding");
   const coverageIn = useCoverageIn();
   const labels = useLabels();
@@ -74,13 +78,23 @@ export function Onboarding() {
             data-testid={`persona-${id}`}
             title={manifest ? labels.presetDescription(id) : undefined}
             onClick={() => {
-              update((s) => ({ ...s, preset: id, theme_weights: {}, indicator_weights: {} }));
+              update((s) => ({ ...s, preset: id, theme_weights: {}, indicator_weights: {}, profile: null }));
               dismiss();
             }}
           >
             {t(`personas.${id}`)}
           </button>
         ))}
+      </div>
+      <p className="mt-3 text-xs font-medium text-[var(--text-secondary)]">{t("orDescribe")}</p>
+      <div className="mt-1.5">
+        <ProfileBox
+          compact
+          onDone={() => {
+            dismiss();
+            setTab("weights");
+          }}
+        />
       </div>
       <button className="mt-3 text-xs text-[var(--text-muted)] underline" onClick={dismiss}>
         {t("skip")}

@@ -753,6 +753,18 @@
           "title": "Preset",
           "type": "string"
         },
+        "profile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProfileRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The generated profile the weights come from, if any"
+        },
         "shortlist": {
           "items": {
             "$ref": "#/$defs/ShortlistItem"
@@ -1056,6 +1068,34 @@
         "lon"
       ],
       "title": "Point",
+      "type": "object"
+    },
+    "ProfileRef": {
+      "description": "The generated weighting profile the sliders start from, as the page keeps it.",
+      "properties": {
+        "description": {
+          "default": "",
+          "description": "What the user typed; kept on the page, never stored",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 40,
+          "title": "Name",
+          "type": "string"
+        },
+        "rationale": {
+          "default": "",
+          "maxLength": 200,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ProfileRef",
       "type": "object"
     },
     "RankResult": {
@@ -1639,6 +1679,93 @@
         "label"
       ],
       "title": "ThemeScore",
+      "type": "object"
+    },
+    "WeightProfile": {
+      "description": "A named weighting built from a description of the user: a base preset plus\noverrides, never a new preset of its own.",
+      "properties": {
+        "engine": {
+          "description": "model: the configured model \u00b7 rules: word matching",
+          "enum": [
+            "model",
+            "rules"
+          ],
+          "title": "Engine",
+          "type": "string"
+        },
+        "engine_reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "free_model",
+                "no_key",
+                "budget",
+                "model_error"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Why the rules engine was used instead of the model",
+          "title": "Engine Reason"
+        },
+        "indicator_weights": {
+          "additionalProperties": {
+            "maximum": 3,
+            "minimum": 0.25,
+            "type": "number"
+          },
+          "description": "Multipliers on scored indicators",
+          "title": "Indicator Weights",
+          "type": "object"
+        },
+        "locale": {
+          "default": "en",
+          "enum": [
+            "en",
+            "cy",
+            "gd",
+            "ga"
+          ],
+          "title": "Locale",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 40,
+          "title": "Name",
+          "type": "string"
+        },
+        "preset": {
+          "description": "Base preset id",
+          "title": "Preset",
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 200,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "theme_weights": {
+          "additionalProperties": {
+            "maximum": 3,
+            "minimum": 0,
+            "type": "number"
+          },
+          "description": "Overrides on the preset's theme weights",
+          "title": "Theme Weights",
+          "type": "object"
+        }
+      },
+      "required": [
+        "preset",
+        "name",
+        "rationale",
+        "engine"
+      ],
+      "title": "WeightProfile",
       "type": "object"
     }
   },

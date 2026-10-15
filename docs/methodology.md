@@ -177,6 +177,19 @@ indicators, and the map recolours immediately. The browser recomputes the scores
 with the same maths as the pipeline; both are tested against the same golden cases in
 [`contracts/fixtures/scoring_golden.json`](../contracts/fixtures/scoring_golden.json).
 
+A sentence about yourself ("young professional, one child starting primary school, I
+need sunshine") becomes a **profile**: the closest preset plus overrides on the theme
+weights and multipliers on single indicators, with a short name and a one-sentence
+rationale. A profile is never a new preset: it is composed by the same
+`resolve_weights` as the sliders, so a profile's scores are reproducible from its base
+preset and overrides alone. The configured language model proposes the overrides
+(ids checked against the catalogue, weights clamped to 0–3 and multipliers to 0.25–3,
+a rationale with a number in it replaced); without a key, over the daily budget, or in
+the no-key demo, a deterministic word-matching engine in
+[`api/src/lix_api/services/profiles.py`](../api/src/lix_api/services/profiles.py)
+does the same from curated phrases in the four interface languages, and the result
+says which engine ran. Steering by a protected characteristic is ignored by both.
+
 ## 5. Missing and imperfect data
 
 | Problem | Treatment | Flag |

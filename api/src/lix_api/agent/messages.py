@@ -25,6 +25,15 @@ MESSAGES: dict[str, dict[str, str]] = {
         "model_problem": "The language model service had a problem; try again. {still_works}",
         "no_response": "The language model didn't respond; try again in a moment. {still_works}",
         "unknown": "Something went wrong while I was answering; try asking again. {still_works}",
+        # A profile built by matching words: {preset}, {themes}, {indicators} are labels
+        "profile_rationale": "Starts from {preset}; {themes} count more, and {indicators} weigh "
+        "more within their themes.",
+        "profile_rationale_themes": "Starts from {preset}; {themes} count more.",
+        "profile_rationale_less": "Starts from {preset}; {themes} count less.",
+        "profile_rationale_indicators": "Starts from {preset}; {indicators} weigh more within "
+        "their themes.",
+        "profile_rationale_plain": "Nothing in the description matched a theme or measure, so "
+        "it starts from {preset}.",
     },
     "cy": {
         "still_works": "Mae'r map, y pwysau a thudalennau'r ardaloedd yn dal i weithio.",
@@ -42,6 +51,14 @@ MESSAGES: dict[str, dict[str, str]] = {
         "no_response": "Ni ymatebodd y model iaith; rhowch gynnig arall arni mewn eiliad. "
         "{still_works}",
         "unknown": "Aeth rhywbeth o'i le wrth i mi ateb; ceisiwch ofyn eto. {still_works}",
+        "profile_rationale": "Yn dechrau o {preset}; mae {themes} yn cyfrif mwy, ac mae "
+        "{indicators} yn pwyso mwy o fewn eu themâu.",
+        "profile_rationale_themes": "Yn dechrau o {preset}; mae {themes} yn cyfrif mwy.",
+        "profile_rationale_less": "Yn dechrau o {preset}; mae {themes} yn cyfrif llai.",
+        "profile_rationale_indicators": "Yn dechrau o {preset}; mae {indicators} yn pwyso mwy o "
+        "fewn eu themâu.",
+        "profile_rationale_plain": "Nid oedd dim yn y disgrifiad yn cyfateb i thema na mesur, "
+        "felly mae'n dechrau o {preset}.",
     },
     "gd": {
         "still_works": "Tha am mapa, na cuideaman agus duilleagan nan sgìrean ag obair fhathast.",
@@ -61,6 +78,16 @@ MESSAGES: dict[str, dict[str, str]] = {
         "{still_works}",
         "unknown": "Chaidh rudeigin ceàrr fhad 's a bha mi a' freagairt; feuch ri faighneachd "
         "a-rithist. {still_works}",
+        "profile_rationale": "A' tòiseachadh bho {preset}; tha {themes} a' cunntadh barrachd, "
+        "agus tha {indicators} nas truime am broinn an cuspairean.",
+        "profile_rationale_themes": "A' tòiseachadh bho {preset}; tha {themes} a' cunntadh "
+        "barrachd.",
+        "profile_rationale_less": "A' tòiseachadh bho {preset}; tha {themes} a' cunntadh nas "
+        "lugha.",
+        "profile_rationale_indicators": "A' tòiseachadh bho {preset}; tha {indicators} nas "
+        "truime am broinn an cuspairean.",
+        "profile_rationale_plain": "Cha do mhaids dad san tuairisgeul cuspair no tomhas, mar sin "
+        "tha e a' tòiseachadh bho {preset}.",
     },
     "ga": {
         "still_works": "Oibríonn an léarscáil, na hualaí agus leathanaigh na gceantar i gcónaí.",
@@ -78,15 +105,24 @@ MESSAGES: dict[str, dict[str, str]] = {
         "tamaill. {still_works}",
         "unknown": "Chuaigh rud éigin amú agus mé ag freagairt; bain triail as fiafraí arís. "
         "{still_works}",
+        "profile_rationale": "Ag tosú ó {preset}; comhaireann {themes} níos mó, agus tá níos "
+        "mó meáchain ag {indicators} laistigh dá dtéamaí.",
+        "profile_rationale_themes": "Ag tosú ó {preset}; comhaireann {themes} níos mó.",
+        "profile_rationale_less": "Ag tosú ó {preset}; comhaireann {themes} níos lú.",
+        "profile_rationale_indicators": "Ag tosú ó {preset}; tá níos mó meáchain ag "
+        "{indicators} laistigh dá dtéamaí.",
+        "profile_rationale_plain": "Níor mheaitseáil aon rud sa chur síos téama ná tomhas, mar "
+        "sin tosaíonn sé ó {preset}.",
     },
 }
 
 
-def message(key: str, locale: str = "en") -> str:
+def message(key: str, locale: str = "en", **values: str) -> str:
     """A fixed assistant message in ``locale``, English where no translation exists."""
     texts = MESSAGES.get(locale) or MESSAGES["en"]
     text = texts.get(key) or MESSAGES["en"][key]
-    return text.format(still_works=texts.get("still_works") or MESSAGES["en"]["still_works"])
+    still = texts.get("still_works") or MESSAGES["en"]["still_works"]
+    return text.format(still_works=still, **values)
 
 
 def language_instruction(locale: str) -> str | None:

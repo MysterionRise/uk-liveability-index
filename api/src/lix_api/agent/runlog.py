@@ -51,8 +51,8 @@ def run_cost(responses: list[ModelResponse], usage) -> float | None:
     return float(cost) if cost is not None else None
 
 
-def run_record(result, started: float) -> dict:
-    """One JSON-able line describing a finished run."""
+def run_record(result, started: float, kind: str = "chat") -> dict:
+    """One JSON-able line describing a finished run (``kind``: chat or profile)."""
     messages = result.new_messages()
     responses = [m for m in messages if isinstance(m, ModelResponse)]
     tools = [p.tool_name for m in responses for p in m.parts if isinstance(p, ToolCallPart)]
@@ -60,6 +60,7 @@ def run_record(result, started: float) -> dict:
     cost = run_cost(responses, usage)
     return {
         "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "kind": kind,
         "model": model_name(),
         "models": sorted({m.model_name for m in responses if m.model_name}),
         "tools": tools,
@@ -72,16 +73,16 @@ def run_record(result, started: float) -> dict:
     }
 
 
-def log_run(result, started: float, path: Path | None = None) -> dict | None:
+def log_run(result, started: float, path: Path | None = None, kind: str = "chat") -> dict | None:
     """Append the run to the JSONL log and return it; never let logging break a reply."""
     try:
-        record = run_record(result, started)
+        record = run_record(result, started, kind)
         path = path or data_dir("logs") / "agent.jsonl"
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "a") as f:
             f.write(json.dumps(record) + "\n")
         logger.info(
-            f"turn: {record['tools'] or 'no tools'} in {record['seconds']}s, "
+            f"{kind}: {record['tools'] or 'no tools'} in {record['seconds']}s, "
             f"{record['input_tokens']}+{record['output_tokens']} tokens"
             + (f", cost {record['cost']:.4f}" if record["cost"] is not None else "")
         )

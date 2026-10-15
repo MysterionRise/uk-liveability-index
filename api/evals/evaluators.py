@@ -80,6 +80,8 @@ def _check(actual: Any, op: str, value: Any) -> bool:
         return hasattr(actual, "__len__") and len(actual) == int(value)
     if op == "gte":
         return float(actual) >= float(value)
+    if op == "lte":
+        return float(actual) <= float(value)
     raise ValueError(f"Unknown op {op!r}")
 
 
@@ -246,9 +248,28 @@ class Grounded(Evaluator):
         return _ok(not bad, f"unsupported numbers {bad}" if bad else "")
 
 
-def evaluators_for(expect: dict) -> list[Evaluator]:
-    """The evaluators a case's ``expect`` block asks for (NoError always)."""
+@dataclass
+class ModelEngine(Evaluator):
+    """A profile case on a real model must come from the model, not the rules fallback
+    (on the scripted or recorded model the rules are the engine, and that passes)."""
+
+    def evaluate(self, ctx: EvaluatorContext) -> EvaluationReason:
+        from lix_api.agent.limits import limits
+        from lix_api.agent.models import model_name
+
+        engine = ctx.output.state.get("engine")
+        reason = ctx.output.state.get("engine_reason")
+        if model_name() in limits.FREE_MODELS:
+            return _ok(engine == "rules", f"engine={engine} on a free model")
+        return _ok(engine == "model", f"engine={engine} ({reason})")
+
+
+def evaluators_for(expect: dict, kind: str = "chat") -> list[Evaluator]:
+    """The evaluators a case's ``expect`` block asks for (NoError always; a profile case
+    also checks which engine built the profile)."""
     out: list[Evaluator] = [NoError()]
+    if kind == "profile":
+        out.append(ModelEngine())
     if expect.get("tools"):
         out.append(ToolsInOrder(tools=expect["tools"]))
     if expect.get("tools_any"):

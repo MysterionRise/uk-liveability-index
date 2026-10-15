@@ -7,6 +7,7 @@ so the sliders move and the map recolours as the assistant works.
 """
 
 import functools
+import inspect
 import logging
 from typing import Literal
 
@@ -18,7 +19,7 @@ from pydantic_ai.ui import StateDeps
 
 from lix_api.agent.messages import language_instruction
 from lix_api.agent.models import build_model, model_settings
-from lix_api.agent.state import LiveabilityState, ShortlistItem
+from lix_api.agent.state import LiveabilityState, ProfileRef, ShortlistItem
 from lix_api.models import (
     AreaProfile,
     Comparison,
@@ -30,8 +31,8 @@ from lix_api.models import (
     PoiResult,
     RankResult,
 )
-from lix_api.services import areas, catalogue, compare, explain, pois, ranking, search
-from lix_api.services.scoring import match_preset, match_themes, resolve_weights
+from lix_api.services import areas, catalogue, compare, explain, pois, profiles, ranking, search
+from lix_api.services.scoring import match_indicator, match_preset, match_themes, resolve_weights
 from lix_api.store import get_store
 from lix_core.config import NATION_NAMES
 
@@ -60,7 +61,11 @@ How to work:
 - Names can be ambiguous ("Clapham" is in London and in North Yorkshire). If a tool
   picks a place the user probably didn't mean, say which one you used.
 - When the user describes priorities ("we have two kids", "I commute to Manchester"),
-  call set_weights before ranking so the sliders and map reflect them.
+  call set_weights before ranking so the sliders and map reflect them. When they
+  describe themselves rather than name a preset or a slider ("young professional, one
+  child starting school, I need sunshine"), call set_profile with their words: it builds
+  a named profile the page keeps; to refine one, pass the whole description again with
+  what changed.
 - Rank at "msoa" level (neighbourhoods of ~8,000 people) for broad questions, at
   "lsoa" level when the user wants street-scale detail, and at "lad" level to compare
   whole councils.
@@ -105,17 +110,31 @@ def _recoverable(fn):
     """Turn "couldn't find that place" style errors into a retry prompt for the model,
     instead of failing the whole turn: it can then try another spelling or explain."""
 
+    def retry_from(e: Exception) -> ModelRetry:
+        if isinstance(e, pl.exceptions.PolarsError):
+            # A bug in a query (a missing or duplicated column) should not end the turn:
+            # tell the model the tool failed so it can answer another way, and log it
+            logger.exception(f"{fn.__name__} failed inside Polars")
+            return ModelRetry(f"{fn.__name__} failed on those arguments; try another way")
+        return ModelRetry(str(e))
+
+    if inspect.iscoroutinefunction(fn):
+
+        @functools.wraps(fn)
+        async def async_wrapper(*args, **kwargs):
+            try:
+                return await fn(*args, **kwargs)
+            except (LookupError, ValueError, pl.exceptions.PolarsError) as e:
+                raise retry_from(e) from e
+
+        return async_wrapper
+
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
         try:
             return fn(*args, **kwargs)
-        except (LookupError, ValueError) as e:
-            raise ModelRetry(str(e)) from e
-        except pl.exceptions.PolarsError as e:
-            # A bug in a query (a missing or duplicated column) should not end the turn:
-            # tell the model the tool failed so it can answer another way, and log it
-            logger.exception(f"{fn.__name__} failed inside Polars")
-            raise ModelRetry(f"{fn.__name__} failed on those arguments; try another way") from e
+        except (LookupError, ValueError, pl.exceptions.PolarsError) as e:
+            raise retry_from(e) from e
 
     return wrapper
 
@@ -177,6 +196,13 @@ def _state_lines(s: LiveabilityState) -> str:
         lines.append(f"  theme weights adjusted by the user: {s.theme_weights}")
     if s.indicator_weights:
         lines.append(f"  indicator multipliers: {s.indicator_weights}")
+    if s.profile:
+        described = (
+            f' (the user described themselves as: "{s.profile.description}")'
+            if s.profile.description
+            else ""
+        )
+        lines.append(f"  profile '{s.profile.name}': {s.profile.rationale}{described}")
     lines.append(f"Mode: {s.mode}" + (" (SQL and charts available)" if s.mode == "analyst" else ""))
     if s.map.selected:
         lines.append(f"Area open on the page: {s.map.selected}")
@@ -188,7 +214,11 @@ def _state_lines(s: LiveabilityState) -> str:
 
 def _weights(ctx: RunContext[Deps]) -> dict:
     s = ctx.deps.state
-    return {"preset": s.preset, "theme_weights": s.theme_weights or None}
+    return {
+        "preset": s.preset,
+        "theme_weights": s.theme_weights or None,
+        "indicator_weights": s.indicator_weights or None,
+    }
 
 
 def _locale(ctx: RunContext[Deps]) -> dict:
@@ -357,13 +387,38 @@ def set_weights(
     if theme_weights:
         s.theme_weights = {**s.theme_weights, **match_themes(store, theme_weights)}
     if indicator_weights:
-        s.indicator_weights = {**s.indicator_weights, **indicator_weights}
+        # Lenient keys ("broadband"), unknown ones dropped rather than silently ignored
+        matched = {match_indicator(store, k) or k: v for k, v in indicator_weights.items()}
+        s.indicator_weights = {**s.indicator_weights, **matched}
     name, themes, multipliers = resolve_weights(
         store, s.preset, s.theme_weights, s.indicator_weights
     )
     return _with_state(
         ctx, {"preset": name, "theme_weights": themes, "indicator_weights": multipliers}
     )
+
+
+# Changes the shared state: tools called after it in the same turn see the change
+@agent.tool(sequential=True)
+@_recoverable
+async def set_profile(ctx: RunContext[Deps], description: str) -> ToolReturn:
+    """Build or refine the user's weighting profile from how they describe themselves
+    ("young professional, one child starting school, I need sunshine"); the sliders and
+    the map follow, and the page keeps the profile under its name.
+
+    Args:
+        description: the user's own words about who they are and what matters; to
+            refine an existing profile, pass the earlier description plus what changed
+    """
+    store, s = get_store(), ctx.deps.state
+    profile = await profiles.profile_from_description(store, description, locale=s.locale)
+    s.preset = profile.preset
+    s.theme_weights = dict(profile.theme_weights)
+    s.indicator_weights = dict(profile.indicator_weights)
+    s.profile = ProfileRef(
+        name=profile.name, description=description[:500], rationale=profile.rationale
+    )
+    return _with_state(ctx, profile.model_dump(mode="json"))
 
 
 # Changes the shared state: tools called after it in the same turn see the change

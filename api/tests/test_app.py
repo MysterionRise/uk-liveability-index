@@ -419,3 +419,75 @@ def test_free_models_ignore_the_budget_real_models_spent(monkeypatch):
     limits = Limits.from_env()
     limits.spent = 3.8
     assert "budget" in (limits.admit(1) or "")
+
+
+OWNER = "I'm a young professional with one child going into primary school and I have a sun deficit"
+
+
+def test_profile_endpoint_uses_the_rules_on_the_test_model(client):
+    r = client.post("/api/v1/profile", json={"description": OWNER})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["engine"] == "rules" and body["engine_reason"] == "free_model"
+    assert body["preset"] == "young_professional" and body["theme_weights"]["education"] == 1.25
+    welsh = client.post("/api/v1/profile", json={"description": OWNER, "locale": "cy"}).json()
+    assert welsh["rationale"].startswith("Yn dechrau o")
+    assert client.post("/api/v1/profile", json={"description": "ab"}).status_code == 422
+
+
+def test_profile_endpoint_refuses_when_rate_limited(client, monkeypatch):
+    from lix_api import main
+    from lix_api.services import profiles
+
+    monkeypatch.setattr(profiles, "engine_choice", lambda model=None: ("model", None))
+    monkeypatch.setattr(main.limits, "rate_per_minute", 0)
+    r = client.post("/api/v1/profile", json={"description": OWNER})
+    assert r.status_code == 429 and "busy" in r.json()["detail"]
+
+
+def test_profile_endpoint_falls_back_when_the_budget_is_spent(client, monkeypatch):
+    from lix_api import main
+
+    monkeypatch.setenv("LIX_MODEL", "openrouter:anthropic/claude-haiku-5.5")
+    monkeypatch.setattr(main.limits, "spent", 99.0)
+    monkeypatch.setattr(main.limits, "daily_budget", 1.0)
+    body = client.post("/api/v1/profile", json={"description": OWNER}).json()
+    assert body["engine"] == "rules" and body["engine_reason"] == "budget"
+
+
+def test_set_profile_tool_updates_the_state(client):
+    events = _agui(client, OWNER)
+    names = [e["toolCallName"] for e in events if e["type"] == "TOOL_CALL_START"]
+    assert names == ["set_profile"]
+    snapshot = next(e for e in events if e["type"] == "STATE_SNAPSHOT")["snapshot"]
+    assert snapshot["profile"]["name"].startswith("Young professional")
+    assert snapshot["profile"]["description"] == OWNER
+    assert snapshot["preset"] == "young_professional"
+    assert snapshot["theme_weights"]["education"] == 1.25
+    assert snapshot["indicator_weights"]["sunshine"] == 2
+
+
+def test_state_lines_mention_the_profile():
+    from lix_api.agent.agent import _state_lines
+    from lix_api.agent.state import LiveabilityState, ProfileRef
+
+    text = _state_lines(
+        LiveabilityState(profile=ProfileRef(name="Sunny parent", rationale="Sun and schools."))
+    )
+    assert "Sunny parent" in text and "Sun and schools." in text
+
+
+def test_profiles_and_comparisons_take_indicator_multipliers(client):
+    r = client.get(
+        "/api/v1/areas/LS6 3HN",
+        params={"preset": "balanced", "indicator_weights": '{"sunshine": 2}'},
+    )
+    assert r.status_code == 200 and r.json()["preset"].endswith("(adjusted)")
+    r = client.get(
+        "/api/v1/compare",
+        params=[("areas", "LS6 3HN"), ("areas", "BN2 9QA"), ("theme_weights", '{"safety": 3}')],
+    )
+    assert r.status_code == 200 and r.json()["preset"].endswith("(adjusted)")
+    assert (
+        client.get("/api/v1/areas/LS6 3HN", params={"indicator_weights": "nope"}).status_code == 400
+    )

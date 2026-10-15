@@ -22,11 +22,12 @@ def compare_areas(
     preset: str | None = None,
     theme_weights: ThemeWeights | None = None,
     locale: str | None = None,
+    indicator_weights: dict[str, float] | None = None,
 ) -> Comparison:
     """``locale`` names the areas in the interface language where the pack has it."""
     if not 2 <= len(refs) <= 5:
         raise ValueError("Compare between 2 and 5 areas")
-    name, themes, multipliers = resolve_weights(store, preset, theme_weights)
+    name, themes, multipliers = resolve_weights(store, preset, theme_weights, indicator_weights)
     scored = pl.concat(
         [store.base_features, scores_for(store, themes, multipliers).drop("lsoa21cd")],
         how="horizontal",

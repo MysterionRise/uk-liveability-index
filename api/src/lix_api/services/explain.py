@@ -21,12 +21,13 @@ def explain_score(
     preset: str | None = None,
     theme_weights: ThemeWeights | None = None,
     locale: str | None = None,
+    indicator_weights: dict[str, float] | None = None,
 ) -> Explanation:
     """``locale`` names the area in the interface language where the pack has it."""
     code = resolve_lsoa(store, ref)
     i = store.lsoa_index[code]
     row = store.features.row(i, named=True)
-    name, themes, multipliers = resolve_weights(store, preset, theme_weights)
+    name, themes, multipliers = resolve_weights(store, preset, theme_weights, indicator_weights)
     scores = scores_for(store, themes, multipliers).row(i, named=True)
 
     if theme is not None:

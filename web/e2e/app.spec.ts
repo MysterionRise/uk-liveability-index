@@ -322,3 +322,68 @@ test("the interface switches to Cymraeg", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "cy-GB");
   await page.getByTestId("locale-toggle").selectOption("en");
 });
+
+// A description of the user becomes a named weighting profile (the scripted model's
+// server builds it by matching words)
+const DESCRIPTION = "I'm a young professional with one child going into primary school and I have a sun deficit";
+
+test("a sentence about yourself builds a profile that survives a reload and a link", async ({ page, browser }) => {
+  await mapReady(page);
+  await page.getByTestId("tab-weights").click();
+  // The welcome card has a box of its own on a first visit: use the panel's
+  const box = page.getByTestId("profile-box");
+  await box.getByTestId("profile-input").fill(DESCRIPTION);
+  await box.getByTestId("profile-build").click();
+  await expect(page.getByTestId("preset-select")).toHaveValue("__profile__", { timeout: 15_000 });
+  await expect(page.getByTestId("profile-card")).toContainText("Young professional");
+  // young_professional education 0.25 + 1 for the primary school, climate 0.25 + 1 for the sun
+  await expect(page.getByTestId("weight-education")).toHaveValue("1.25");
+  await expect(page.getByTestId("weight-climate")).toHaveValue("1.25");
+  expect(page.url()).toContain(encodeURIComponent('"n":'));
+  expect(decodeURIComponent(page.url())).not.toContain("sun deficit");
+
+  // Kept in this browser
+  await page.reload();
+  await expect(page.getByTestId("legend")).toBeVisible({ timeout: 30_000 });
+  await page.getByTestId("tab-weights").click();
+  await expect(page.getByTestId("preset-select")).toHaveValue("__profile__");
+  await expect(page.getByTestId("weight-education")).toHaveValue("1.25");
+
+  // The link carries the weights and the name to a browser that has never seen it
+  const fresh = await browser.newContext();
+  const other = await fresh.newPage();
+  await other.goto(page.url());
+  await expect(other.getByTestId("legend")).toBeVisible({ timeout: 30_000 });
+  await other.getByTestId("tab-weights").click();
+  await expect(other.getByTestId("preset-select")).toHaveValue("__profile__");
+  await expect(other.getByTestId("weight-climate")).toHaveValue("1.25");
+  await expect(other.getByTestId("preset-select").locator("option[value='__profile__']")).toContainText("Young professional");
+  await fresh.close();
+
+  // Clearing it goes back to the base preset
+  await page.getByTestId("profile-clear").click();
+  await expect(page.getByTestId("preset-select")).toHaveValue("young_professional");
+  await expect(page.getByTestId("weight-education")).toHaveValue("0.25");
+});
+
+test("the welcome card's description box builds a profile and opens the weights", async ({ page }) => {
+  await mapReady(page);
+  const box = page.getByTestId("onboarding").getByTestId("profile-input");
+  await box.fill("Retired, my wife has asthma, we want somewhere quiet");
+  await box.press("Enter");
+  await expect(page.getByTestId("onboarding")).toBeHidden({ timeout: 15_000 });
+  await expect(page.getByTestId("tab-weights")).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByTestId("preset-select")).toHaveValue("__profile__");
+  // retiree environment 1.5 + 1 for the asthma
+  await expect(page.getByTestId("weight-environment")).toHaveValue("2.5");
+});
+
+test("the assistant builds a profile from how you describe yourself", async ({ page }) => {
+  await mapReady(page);
+  await ask(page, "I'm retired and have asthma");
+  await expect(page.getByText(en.Registry.profileSet)).toBeVisible({ timeout: 30_000 });
+  await page.getByTestId("tab-weights").click();
+  await expect(page.getByTestId("preset-select")).toHaveValue("__profile__");
+  await expect(page.getByTestId("weight-environment")).toHaveValue("2.5");
+  await expect(page.getByTestId("profile-card")).toContainText("Retired");
+});

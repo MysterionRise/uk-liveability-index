@@ -29,6 +29,16 @@ class ShortlistItem(BaseModel):
     centre: Point | None = None
 
 
+class ProfileRef(BaseModel):
+    """The generated weighting profile the sliders start from, as the page keeps it."""
+
+    name: str = Field(max_length=40)
+    description: str = Field(
+        "", max_length=500, description="What the user typed; kept on the page, never stored"
+    )
+    rationale: str = Field("", max_length=200)
+
+
 class LiveabilityState(BaseModel):
     preset: str = "balanced"
     locale: Literal["en", "cy", "gd", "ga"] = Field(
@@ -39,6 +49,9 @@ class LiveabilityState(BaseModel):
     )
     indicator_weights: dict[str, float] = Field(
         default_factory=dict, description="Multipliers on individual indicators"
+    )
+    profile: ProfileRef | None = Field(
+        None, description="The generated profile the weights come from, if any"
     )
     compare_within: Literal["uk", "nation", "urban_rural"] = Field(
         "uk", description="What percentiles on the map compare against"

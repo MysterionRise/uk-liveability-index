@@ -23,7 +23,7 @@ export function ShortlistPanel() {
     error?: string;
   } | null>(null);
   const codes = state.shortlist.slice(0, MAX_COMPARE).map((i) => i.code);
-  const key = `${codes.join(",")}|${state.preset}`;
+  const key = `${codes.join(",")}|${state.preset}|${JSON.stringify(state.theme_weights)}|${JSON.stringify(state.indicator_weights)}`;
 
   // Restore once, then persist on change
   useEffect(() => {
@@ -107,7 +107,7 @@ export function ShortlistPanel() {
             className="btn"
             data-testid="compare-shortlist"
             onClick={() =>
-              compareAreas(codes, state.preset, locale)
+              compareAreas(codes, state.preset, locale, state.theme_weights, state.indicator_weights)
                 .then((result) => setComparison({ key, result }))
                 .catch((e) =>
                   setComparison({ key, error: String(e.message ?? e) }),

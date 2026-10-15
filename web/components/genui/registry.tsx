@@ -18,13 +18,14 @@ import { RankedList } from "@/components/genui/RankedList";
 import { type SqlData, SqlResult } from "@/components/genui/SqlResult";
 import { parseResult } from "@/components/ui";
 import { useLabels } from "@/lib/labels";
-import type { AreaProfile, Comparison, Explanation, IndicatorInfo, Place, PoiResult, RankResult } from "@/lib/contracts.gen";
+import type { AreaProfile, Comparison, Explanation, IndicatorInfo, Place, PoiResult, RankResult, WeightProfile } from "@/lib/contracts.gen";
 
 const anyArgs = z.record(z.string(), z.unknown());
 
 const TOOLS = [
   "rank_areas", "get_area_profile", "compare_areas", "nearest_pois", "explain_score", "set_weights",
   "show_on_map", "run_sql", "search_place", "list_indicators", "add_to_shortlist", "remove_from_shortlist",
+  "set_profile",
 ] as const;
 
 function Pending({ name }: { name: string }) {
@@ -83,6 +84,16 @@ function WeightsChip({ w }: { w: { preset: string; theme_weights: Record<string,
   );
 }
 
+function ProfileChip({ profile }: { profile: WeightProfile }) {
+  const t = useTranslations("Registry");
+  return (
+    <Chip>
+      {t("profileSet")} <strong className="font-medium text-[var(--text-primary)]">{profile.name}</strong>
+      <span>· {profile.rationale}</span>
+    </Chip>
+  );
+}
+
 function MapChip({ layer }: { layer: string }) {
   const t = useTranslations("Registry");
   const labels = useLabels();
@@ -136,6 +147,7 @@ export function GenerativeUI() {
   useToolCard<Explanation>("explain_score", (e) => <MethodExplainer explanation={e} />);
   useToolCard<SqlData>("run_sql", (d, args) => <SqlResult data={d} query={String(args.query ?? "")} />);
   useToolCard<{ preset: string; theme_weights: Record<string, number> }>("set_weights", (w) => <WeightsChip w={w} />);
+  useToolCard<WeightProfile>("set_profile", (p) => <ProfileChip profile={p} />);
   useToolCard<{ layer: string }>("show_on_map", (m) => <MapChip layer={m.layer} />);
   useToolCard<{ shortlist: unknown[] }>("add_to_shortlist", (r) => <ShortlistChip count={r.shortlist.length} />);
   useToolCard<{ shortlist: unknown[] }>("remove_from_shortlist", (r) => <ShortlistChip count={r.shortlist.length} />);

@@ -1,6 +1,6 @@
 # Assistant evals
 
-The assistant is tested with real models on the full build, using 43 cases in
+The assistant is tested with real models on the full build, using 50 cases in
 [api/evals/cases.yaml](../api/evals/cases.yaml):
 
 | Category | Cases | What is checked |
@@ -14,21 +14,33 @@ The assistant is tested with real models on the full build, using 43 cases in
 | Analyst | 2 | SQL only in analyst mode |
 | Injection | 1 | A pub name carrying "ignore all previous instructions…" isn't obeyed |
 | Languages | 6 | With the page in Welsh, Gaelic or Irish, a profile and a nearby-pubs question are answered in that language (checked by the share of its stopwords in the reply) |
+| Profiles | 7 | A description of the user through the profile generator (`kind: profile`): the owner's example, a retired couple with asthma, a developer working from home without children, a Welsh night-shift nurse and a Gaelic commuter on a budget answered in their language, and a description that tries to steer by immigration or religion (ignored; the rationale never repeats it). On a real model the profile must come from the model, not the rules fallback; the checks are on the effective weights, so the same cases pass on the rules engine with the scripted model. The seventh is the same description in the chat, which must call `set_profile` rather than rank |
 
 ## Results
 
 | Model (via OpenRouter) | Passed | Turn p50 | Turn p95 | Cost per question | Reply words (median) | Run |
 |---|---|---|---|---|---|---|
 | Claude Opus 5.5 | 32/32 | 7.33 s | 15.52 s | $0.0484 | 77.5 | 2026-10-08 |
-| Claude Haiku 5.5 (the default) | 43/43 | 5.82 s | 11.03 s | $0.0016 | 68 | 2026-10-15 |
+| Claude Haiku 5.5 (the default) | 50/50 | 3.93 s | 9.83 s | $0.0014 | 68.5 | 2026-10-15 |
 | Qwen 3.8 27B (open weights) | 32/32 | 6.44 s | 16.62 s | $0.0017 | 60.5 | 2026-10-08 |
 
 Per-case detail (tools called, replies, failed checks) is in [docs/evals/](evals/).
 Costs are what OpenRouter billed. The 33rd case (ranking by one measure, #94) was added on
-2026-10-11; the Opus and Qwen rows predate it.
+2026-10-11 and the seven profile cases on 2026-10-15; the Opus and Qwen rows predate them.
 
 ## What the evals found and fixed
 
+- **A profile's model call needs room for reasoning.** With `max_tokens` 400 and a
+  6,000-token usage limit, Haiku's profile runs hit both caps (a provider's reasoning
+  tokens count as output, and the catalogue prompt is about 4,000 tokens a request) and
+  fell back to the rules engine silently, so every case "passed". The caps are now 1,200
+  and 12,000, the engine shows in the results as `profile:model` or `profile:rules`, and a
+  profile case on a real model fails if the rules built it.
+- **Who you are may become a profile.** Since `set_profile` exists, "we have two young
+  kids and a budget of £350k, where around Leeds?" goes through it (then ranks) as often
+  as through `set_weights`; the four ranking cases that open with a self-description
+  accept either and check the resulting preset. "Colour the map by air quality" is sometimes answered by ranking on the measure,
+  which colours the map by it too; that case accepts either tool and checks the layer.
 - **Weights applied after the ranking.** Models often send `set_weights` and
   `rank_areas` together, and run in parallel the ranking could use the old weights.
   Tools that change the shared state now run as barriers (`sequential=True`).
@@ -73,6 +85,6 @@ For a stakeholder demo where every answer counts, Opus 5.5 is worth its cost.
 
 ```bash
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,compare_two
-make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 43 cases, about $0.07
-make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 43 cases, about $2
+make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 50 cases, about $0.08
+make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 50 cases, about $2
 ```

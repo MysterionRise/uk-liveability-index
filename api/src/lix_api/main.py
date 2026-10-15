@@ -23,7 +23,7 @@ from pydantic_ai.ui import StateDeps
 
 from lix_api.agent.agent import agent
 from lix_api.agent.errors import FriendlyAGUIAdapter
-from lix_api.agent.limits import Limits, reply_model, user_turns
+from lix_api.agent.limits import limits, reply_model, user_turns
 from lix_api.agent.runlog import log_run, usage_limits
 from lix_api.agent.state import LiveabilityState
 from lix_api.mcp_server import mcp
@@ -33,18 +33,19 @@ from lix_api.models import (
     Explanation,
     IndicatorInfo,
     Level,
+    Locale,
     Place,
     PoiResult,
     RankResult,
+    WeightProfile,
 )
-from lix_api.services import areas, catalogue, compare, explain, pois, ranking, search
+from lix_api.services import areas, catalogue, compare, explain, pois, profiles, ranking, search
 from lix_api.services.sql import SqlError, get_guard
 from lix_api.store import get_store
 from lix_core.paths import data_dir
 
 VERSION = version("lix-api")
 mcp_app = mcp.http_app(path="/")
-limits = Limits.from_env()
 
 
 @asynccontextmanager
@@ -123,24 +124,39 @@ def search_place(q: str, limit: Annotated[int, Query(ge=1, le=20)] = 8) -> list[
     return search.search_place(get_store(), q, limit=limit)
 
 
+def _weights_json(name: str, raw: str | None) -> dict[str, float] | None:
+    """A weights map given as a JSON object in a query string."""
+    if not raw:
+        return None
+    try:
+        return {str(k): float(v) for k, v in json.loads(raw).items()}
+    except (ValueError, AttributeError) as e:
+        raise ValueError(f"{name} must be a JSON object of numbers: {e}") from e
+
+
+WEIGHTS_DOC = 'The sliders\' weights as a JSON object, e.g. {"safety": 3}'
+MULTIPLIERS_DOC = 'Indicator multipliers as a JSON object, e.g. {"sunshine": 2}'
+
+
 @app.get(f"{api}/areas/{{ref}}")
 def area_profile(
     ref: str,
     preset: str | None = None,
     locale: str | None = None,
-    theme_weights: str | None = Query(
-        None, description='The sliders\' weights as a JSON object, e.g. {"safety": 3}'
-    ),
+    theme_weights: str | None = Query(None, description=WEIGHTS_DOC),
+    indicator_weights: str | None = Query(None, description=MULTIPLIERS_DOC),
 ) -> AreaProfile:
     """``locale`` (en, cy, gd, ga) picks the language of the area names; ``theme_weights``
-    re-scores the area with the user's sliders (the preset's name reads "(adjusted)")."""
-    weights = None
-    if theme_weights:
-        try:
-            weights = {str(k): float(v) for k, v in json.loads(theme_weights).items()}
-        except (ValueError, AttributeError) as e:
-            raise ValueError(f"theme_weights must be a JSON object of numbers: {e}") from e
-    return areas.area_profile(get_store(), ref, preset=preset, theme_weights=weights, locale=locale)
+    and ``indicator_weights`` re-score the area with the user's sliders and profile (the
+    preset's name reads "(adjusted)")."""
+    return areas.area_profile(
+        get_store(),
+        ref,
+        preset=preset,
+        theme_weights=_weights_json("theme_weights", theme_weights),
+        indicator_weights=_weights_json("indicator_weights", indicator_weights),
+        locale=locale,
+    )
 
 
 class RankRequest(BaseModel):
@@ -176,8 +192,33 @@ def compare_areas(
     areas_: Annotated[list[str], Query(alias="areas")],
     preset: str | None = None,
     locale: str | None = None,
+    theme_weights: str | None = Query(None, description=WEIGHTS_DOC),
+    indicator_weights: str | None = Query(None, description=MULTIPLIERS_DOC),
 ) -> Comparison:
-    return compare.compare_areas(get_store(), areas_, preset=preset, locale=locale)
+    return compare.compare_areas(
+        get_store(),
+        areas_,
+        preset=preset,
+        theme_weights=_weights_json("theme_weights", theme_weights),
+        indicator_weights=_weights_json("indicator_weights", indicator_weights),
+        locale=locale,
+    )
+
+
+class ProfileRequest(BaseModel):
+    description: str = Field(min_length=3, max_length=500)
+    locale: Locale = "en"
+
+
+@app.post(f"{api}/profile")
+async def generate_profile(req: ProfileRequest) -> WeightProfile:
+    """A named weighting from a description of the user: the configured model, or word
+    matching when there is no key, the budget is spent or the model is the scripted one.
+    The description is not stored; the run log keeps the kind, tokens and cost."""
+    engine, _ = profiles.engine_choice()
+    if engine == "model" and (refusal := limits.admit(1)):
+        raise HTTPException(status_code=429, detail=refusal)
+    return await profiles.profile_from_description(get_store(), req.description.strip(), req.locale)
 
 
 @app.get(f"{api}/pois")

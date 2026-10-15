@@ -5,11 +5,14 @@
  * profile caveats come from the manifest's catalogue for the locale (config/i18n), with
  * the manifest's English as the fallback for anything a draft lacks.
  */
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useMemo } from "react";
 
-import { useData } from "@/components/AppData";
+import { useData, useLiveability } from "@/components/AppData";
 import type { Manifest } from "@/lib/data";
+import { presetLabel } from "@/lib/presetLabel";
+
+export { presetLabel };
 
 export interface Labels {
   theme: (id: string) => string;
@@ -49,12 +52,18 @@ export function labelsFor(manifest: Manifest | null, locale: string): Labels {
   };
 }
 
-/** A preset's label for the name the API returns ("balanced (adjusted)" when the weights were changed). */
-export function presetLabel(labels: Labels, preset: string, adjusted: string): string {
-  const suffix = " (adjusted)";
-  return preset.endsWith(suffix)
-    ? `${labels.preset(preset.slice(0, -suffix.length))} ${adjusted}`
-    : labels.preset(preset);
+/** presetLabel bound to the page's language and active profile. */
+export function usePresetLabel(): (preset: string) => string {
+  const labels = useLabels();
+  const { state } = useLiveability();
+  const tw = useTranslations("Weights");
+  const adjusted = tw("adjusted");
+  const name = state.profile?.name;
+  const base = state.preset;
+  return useCallback(
+    (preset: string) => presetLabel(labels.preset, preset, adjusted, name ? { name, preset: base } : null),
+    [labels, adjusted, name, base],
+  );
 }
 
 export function useLabels(): Labels {

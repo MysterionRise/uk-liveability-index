@@ -4,11 +4,16 @@ These are the contract with the front end: `make schemas` exports them as JSON S
 and TypeScript types, so the UI renders exactly what the tools return.
 """
 
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
 Level = Literal["lsoa", "msoa", "lad", "region", "nation"]
+Locale = Literal["en", "cy", "gd", "ga"]
+Weight = Annotated[float, Field(ge=0, le=3)]
+Multiplier = Annotated[float, Field(ge=0.25, le=3)]
+ProfileEngine = Literal["model", "rules"]
+EngineReason = Literal["free_model", "no_key", "budget", "model_error"]
 PlaceKind = Literal["postcode", "place", "lsoa", "msoa", "lad", "region", "nation"]
 
 
@@ -277,3 +282,45 @@ class IndicatorInfo(BaseModel):
     coverage: list[str] = Field(default_factory=list, description="Nation codes it is built for")
     caveats: str | None = None
     sources: list[str]
+
+
+class ProfileDraft(BaseModel):
+    """What the model returns for a description of the user; checked against the
+    catalogue afterwards (ids, bounds, lengths), never trusted as is."""
+
+    preset: str = Field(description="The closest base preset: one of the preset ids listed")
+    theme_weights: dict[str, float] = Field(
+        default_factory=dict,
+        description="Overrides 0–3 on the base preset, only for the themes the description "
+        "changes (2 means twice as important as 1; 0 ignores a theme)",
+    )
+    indicator_weights: dict[str, float] = Field(
+        default_factory=dict,
+        description="Multipliers 0.25–3 on single scored indicators the description singles "
+        "out (2 means twice as important within its theme)",
+    )
+    name: str = Field(description="A short name for this profile, at most 40 characters")
+    rationale: str = Field(
+        description="One sentence, at most 200 characters, with no numbers, saying what was "
+        "turned up or down and why"
+    )
+
+
+class WeightProfile(BaseModel):
+    """A named weighting built from a description of the user: a base preset plus
+    overrides, never a new preset of its own."""
+
+    preset: str = Field(description="Base preset id")
+    theme_weights: dict[str, Weight] = Field(
+        default_factory=dict, description="Overrides on the preset's theme weights"
+    )
+    indicator_weights: dict[str, Multiplier] = Field(
+        default_factory=dict, description="Multipliers on scored indicators"
+    )
+    name: str = Field(max_length=40)
+    rationale: str = Field(max_length=200)
+    locale: Locale = "en"
+    engine: ProfileEngine = Field(description="model: the configured model · rules: word matching")
+    engine_reason: EngineReason | None = Field(
+        None, description="Why the rules engine was used instead of the model"
+    )
