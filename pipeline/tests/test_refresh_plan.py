@@ -140,6 +140,26 @@ class TestIndicatorsServeTiles:
         steps = p.indicator_steps(lock, self.SPECS, nations=["E", "W", "S"])
         assert [s.reason for s in steps] == ["nations changed: E,W → E,W,S"] * 2
 
+    def test_restaged_inputs_rebuild_their_indicators(self, registry, data):
+        """A stager that runs again for its boundaries or nations, not its raw file,
+        still makes the indicators reading its table stale (v0.5.0's first refresh
+        kept the crime, air and broadband tables' Northern Irish rows out of the
+        indicators because police.uk's and Defra's files had not changed)."""
+        specs = [
+            IndicatorSpec(id="crime", theme="safety", label="C", description="", unit="n",
+                          direction="lower_better", sources=["police_crime"],
+                          builder="common:column"),
+            IndicatorSpec(id="bounds", theme="safety", label="B", description="", unit="n",
+                          direction="lower_better", sources=["lsoa_boundaries"],
+                          builder="common:column"),
+            IndicatorSpec(id="other", theme="safety", label="O", description="", unit="n",
+                          direction="lower_better", sources=["s1"], builder="common:column"),
+        ]  # fmt: skip
+        stage = [p.Step("police_crime", "nations changed: E,W → E,W,N")]
+        steps = p.restaged_indicator_steps(stage, registry, ["E", "W", "N"], specs, {"bounds"})
+        assert [(s.name, s.reason) for s in steps] == [("crime", "inputs restaged: police_crime")]
+        assert p.restaged_indicator_steps([], registry, ["E"], specs, set()) == []
+
     def test_serve_and_tiles_steps(self, data, tmp_path):
         root = tmp_path / "repo"
         (root / "config").mkdir(parents=True)

@@ -190,6 +190,34 @@ def indicator_steps(
     return out
 
 
+def restaged_indicator_steps(
+    stage: list[Step],
+    registry: dict,
+    nations: Iterable[str],
+    indicators: Iterable[IndicatorSpec],
+    planned: set[str],
+) -> list[Step]:
+    """Indicators that read a table re-staged in this run. A stager runs again when its
+    boundaries, its nations or its code moved, not only when its raw file did, and the
+    indicator built from its table is then stale whatever the raw checksums say (every
+    Northern Irish crime, air and broadband value was missing after v0.5.0's first
+    refresh, because police.uk's and Defra's files had not changed). An indicator is
+    touched when one of its sources is the stager itself or one of the stager's inputs."""
+    touched: dict[str, str] = {}
+    for step in stage:
+        touched.setdefault(step.name, step.name)
+        for slug in graph.inputs_for(step.name, registry, nations):
+            touched.setdefault(slug, step.name)
+    out = []
+    for spec in indicators:
+        if spec.id in planned:
+            continue
+        stagers = sorted({touched[s] for s in spec.sources if s in touched})
+        if stagers:
+            out.append(Step(spec.id, f"inputs restaged: {', '.join(stagers[:4])}"))
+    return out
+
+
 def indicator_fingerprints(lock: dict, indicators: Iterable[IndicatorSpec]) -> dict:
     return {
         spec.id: {"fingerprint": d, "inputs": p}
@@ -258,11 +286,15 @@ def make_plan(
     root: Path | None = None,
 ) -> RefreshPlan:
     nations = list(nations)
+    indicators = list(indicators)
     plan = RefreshPlan(nations=nations)
     plan.resolve = slugs_in_scope(registry, nations)
     plan.fetch = fetch_steps(lock, registry, plan.resolve)
     plan.stage, plan.skipped = stage_steps(lock, registry, nations, stager_order, force)
     plan.indicators = indicator_steps(lock, indicators, force, nations=nations)
+    plan.indicators += restaged_indicator_steps(
+        plan.stage, registry, nations, indicators, {s.name for s in plan.indicators}
+    )
     plan.serve = serve_step(force, root)
     plan.tiles = tiles_step(lock, nations, force)
     return plan
