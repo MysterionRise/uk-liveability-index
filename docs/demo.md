@@ -28,11 +28,12 @@ make down           # stop
 | 4 | **Assistant**: *We have two young kids and a budget of £350k. Where should we look around Leeds?* | Sliders move to the family preset, a ranked list, outlined areas on the map; "close call" tags | "The assistant uses the same tools and data as the page. It never makes numbers up: every figure comes from a tool. 'Close call' means a slightly different weighting could swap that area out." |
 | 5 | Click the top result | Its profile: theme bars with council and UK medians, strengths and weak spots, "better than X–Y% with slightly different weights" | "Transparent by design: a range, not a false precision, and the local benchmark." |
 | 6 | *Compare Far Headingley and Chapel Allerton* | A side-by-side table | "Neighbourhoods, not single streets, for named places." |
-| 7 | *Show me well-run pubs near LS6 3AA* | Pubs on the map and in a list | "Pubs that are open (in two independent sources) and rated 4–5 for food hygiene in the last three years. Honest about what it measures: how well run, not the beer." |
+| 7 | *Show me well-run pubs near LS6 3AA* | Pubs on the map and in a list | "Pubs that are open (in two independent sources) and rated 4–5 for food hygiene in the last three years (five in Scotland, where inspections are rarer). Honest about what it measures: how well run, not the beer." |
 | 8 | *Why does Manchester city centre score low on safety?* | The score broken down by theme and indicator, with caveats and source dates | "It explains itself, including the caveats: Greater Manchester Police publishes no crime data, so it's estimated, and city centres have few residents but many visitors." |
-| 9 | Search **Hebden Bridge** (top bar) | Flood risk listed as a weak spot | "Data people care about but rarely see together: 24% of homes here are at real flood risk." |
-| 10 | Tick **Analyst**, open the **Analyst** tab | Distribution chart, indicator overlap heatmap, SQL console | "The same data for analysts: read-only SQL over every LSOA, exports with attribution." |
-| 11 | Click **How scores work** → **Validation** | The method, the 25-place face-validity review, the assistant evals | "We test it: 49 face-validity checks, 30 assistant evals across three models." |
+| 9 | *What are the best areas to live in Belfast?* | Belfast's Super Data Zones ranked and outlined; the schools theme shown as limited data | "Four nations, one method: Northern Ireland joined in v0.5.0 with its own sources, and where it publishes less the index says so instead of guessing." |
+| 10 | Search **Hebden Bridge** (top bar) | Flood risk listed as a weak spot | "Data people care about but rarely see together: 24% of homes here are at real flood risk." |
+| 11 | Tick **Analyst**, open the **Analyst** tab | Distribution chart, indicator overlap heatmap, SQL console | "The same data for analysts: read-only SQL over every LSOA, exports with attribution." |
+| 12 | Click **How scores work** → **Validation** | The method, the face-validity review of 47 places, the assistant evals | "We test it: 106 face-validity checks across 47 places, 43 assistant evals across three models." |
 
 Optional extras (also recorded): *Tell me about Hebden Bridge*, *What are the best
 areas in York for retirees?*, *Which areas of Birmingham have the fewest immigrants?*

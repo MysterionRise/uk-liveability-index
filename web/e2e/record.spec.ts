@@ -260,6 +260,11 @@ test("walkthrough", async ({ browser }) => {
   await page.waitForTimeout(4000);
   await ask(page, "Why does Manchester city centre score low on safety?");
   await page.waitForTimeout(6000);
+  // The fourth nation: Belfast's Super Data Zones, ranked and outlined
+  await ask(page, "What are the best areas to live in Belfast?");
+  await page.waitForTimeout(4000);
+  await click(page, page.getByTestId("ranked-list").last().locator("li button").first());
+  await page.waitForTimeout(3000);
   await type(page, page.getByTestId("search").locator("input"), "Hebden Bridge");
   await expect(page.getByRole("option").first()).toContainText("Hebden Bridge", { timeout: 15_000 });
   await click(page, page.getByRole("option").first());

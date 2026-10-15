@@ -33,7 +33,7 @@ cd uk-liveability-index
 make quickstart
 ```
 
-That downloads the newest data release's pack (about 140 MB) and the app's images, and opens
+That downloads the newest data release's pack (about 190 MB) and the app's images, and opens
 http://localhost:3000. Stop it with `make down`.
 
 **The assistant** needs a model key. Put an [OpenRouter](https://openrouter.ai) key in
@@ -50,7 +50,7 @@ with no download.
 council, nation and UK medians, its strengths and weak spots, key facts, and how much
 the result depends on the weights.
 
-![Searching for Hebden Bridge: its profile shows flood risk as a weak spot, with theme scores against the Calderdale and England medians](docs/media/search-profile.gif)
+![Searching for Hebden Bridge: its profile shows flood risk as a weak spot, with theme scores against the Calderdale and UK medians](docs/media/search-profile.gif)
 
 **Ask the assistant** to rank, compare or explain areas, or find well-run pubs, GPs and
 schools nearby. Its answers are live components that move the map.
@@ -64,7 +64,7 @@ over every neighbourhood and CSV export.
 
 **On your phone** it works the same way: pick who you are, ask, tap, search.
 
-<img src="docs/media/tiktok.gif" width="320" alt="The phone layout: choosing family with children recolours England, the assistant ranks family areas in Leeds under £350k, a tap opens a neighbourhood's scores, and a search for Hebden Bridge shows its flood risk">
+<img src="docs/media/tiktok.gif" width="320" alt="The phone layout: choosing family with children recolours the UK, the assistant ranks family areas in Leeds under £350k, a tap opens a neighbourhood's scores, and a search for Hebden Bridge shows its flood risk">
 
 Also: a shortlist with side-by-side comparison, shareable links, light and dark mode, and
 the interface in English or Cymraeg (a draft, until fluent speakers have reviewed it; see
