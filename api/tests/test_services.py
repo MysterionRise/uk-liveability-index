@@ -431,3 +431,50 @@ class TestSubstitutes:
         assert c.stand_ins == {}
         # Wales lacks primary school quality: no value, no substitute
         assert c.areas[1].indicators["primary_school_quality"] is None
+
+
+class TestReleasePassFindings:
+    """Defects the v0.5.0 testing pass found in the API."""
+
+    def test_saturated_scores_are_ordered_by_the_raw_value(self, store):
+        # gp_distance is a threshold score: every home within reach reads 100, and the
+        # tie is broken by the distance itself, nearest first (and furthest first, worst)
+        best = ranking.rank_areas(store, level="lsoa", limit=8, sort_by="indicator:gp_distance")
+        values = [a.sort_value for a in best.results]
+        assert values == sorted(values)
+        worst = ranking.rank_areas(
+            store, level="lsoa", limit=8, sort_by="indicator:gp_distance", direction="worst"
+        )
+        assert [a.sort_value for a in worst.results] == sorted(values, reverse=True)
+
+    def test_a_theme_nobody_in_scope_has_is_refused(self, store):
+        import polars as pl
+
+        from lix_api.services.ranking import Measure, _check_available
+
+        df = pl.DataFrame({"theme__education": [None, None], "nation": ["N", "N"]}).cast(
+            {"theme__education": pl.Float64}
+        )
+        measure = Measure("theme:education", "theme__education", (), label="Schools")
+        with pytest.raises(LookupError, match="not scored in Northern Ireland"):
+            _check_available(store, measure, df)
+
+    def test_a_nation_is_not_an_area(self, store):
+        from lix_api.services.search import resolve_lsoa
+
+        with pytest.raises(LookupError, match="nation"):
+            resolve_lsoa(store, "Wales")
+
+    def test_a_recognised_scope_with_nothing_inside_is_empty(self, store):
+        # Headingley is in Leeds, not in Wales: the scope is known, so no fallback to a
+        # whole-string match that would return Headingley anyway
+        assert search.search_place(store, "Headingley, Wales") == []
+        assert search.search_place(store, "Headingley, Leeds")[0].name == "Headingley"
+
+    def test_explain_matches_the_theme_leniently(self, store):
+        from lix_api.services.explain import explain_score
+
+        out = explain_score(store, "LS6 3HN", theme="Schools")
+        assert [c.theme for c in out.contributions] == ["education"]
+        with pytest.raises(LookupError, match="Unknown theme"):
+            explain_score(store, "LS6 3HN", theme="vibes")

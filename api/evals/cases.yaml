@@ -295,7 +295,7 @@ cases:
 
   - name: bt_postcode_profile
     category: lookup
-    turns: ["How does BT9 6AB score?"]
+    turns: ["How does BT9 6AA score?"]
     expect:
       tools_any: [get_area_profile, search_place]
       reply_any: [belfast, malone, super data zone, northern ireland]
@@ -311,7 +311,7 @@ cases:
 
   - name: irish_pubs
     category: language
-    turns: ["Taispeáin dom tithe tábhairne maithe in aice le BT9 6AB"]
+    turns: ["Taispeáin dom tithe tábhairne maithe in aice le BT9 6AA"]
     state: {locale: ga}
     expect:
       tools_any: [nearest_pois]

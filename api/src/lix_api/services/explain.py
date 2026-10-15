@@ -2,7 +2,13 @@
 
 from lix_api.models import Contribution, Explanation, SourceRef
 from lix_api.services.areas import indicator_value, with_substitutes
-from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
+from lix_api.services.scoring import (
+    ThemeWeights,
+    match_theme,
+    percentile,
+    resolve_weights,
+    scores_for,
+)
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
 
@@ -20,6 +26,11 @@ def explain_score(
     name, themes, multipliers = resolve_weights(store, preset, theme_weights)
     scores = scores_for(store, themes, multipliers).row(i, named=True)
 
+    if theme is not None:
+        matched = match_theme(store, theme)
+        if matched is None:
+            raise LookupError(f"Unknown theme {theme!r}; themes: {', '.join(store.themes)}")
+        theme = matched
     available = {t: w for t, w in themes.items() if scores.get(f"theme__{t}") is not None}
     total = sum(w for w in available.values() if w > 0) or 1.0
     contributions = []
@@ -49,12 +60,25 @@ def explain_score(
         )
     contributions.sort(key=lambda c: c.contribution or 0, reverse=True)
 
-    used = {s for c in contributions for v in c.indicators for s in store.indicators[v.id].sources}
+    # The sources behind this area's nation: an indicator lists every nation's files
+    known = store.manifest["sources"]
+    nation = row.get("nation")
+
+    def covers(slug: str) -> bool:
+        coverage = known.get(slug, {}).get("coverage")
+        return not coverage or nation is None or nation in coverage
+
+    used = {
+        s
+        for c in contributions
+        for v in c.indicators
+        for s in store.indicators[v.id].sources
+        if covers(s)
+    }
     caveats = sorted(
         {store.indicators[v.id].caveats for c in contributions for v in c.indicators
          if store.indicators[v.id].caveats and v.role == "scored"}
     )  # fmt: skip
-    known = store.manifest["sources"]
     sources = [
         SourceRef(
             id=s,
@@ -72,7 +96,11 @@ def explain_score(
         if s in known
     ]
     return Explanation(
-        lsoa21cd=code, name=f"{row['lsoa21nm']} ({row['msoa_name']})", preset=name,
+        lsoa21cd=code,
+        name=row["lsoa21nm"]
+        if row["msoa21cd"] == row["lsoa21cd"]
+        else f"{row['lsoa21nm']} ({row['msoa_name']})",
+        preset=name,
         overall=None if scores.get("overall") is None else round(scores["overall"], 1),
         overall_percentile=percentile(scores.get("overall_pct")),
         contributions=contributions, caveats=caveats, sources=sources,

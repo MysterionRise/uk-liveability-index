@@ -162,19 +162,25 @@ def _council_of(place: Place) -> str | None:
     return None
 
 
-def _within_scopes(store: Store, candidates: list[Place], scopes: list[str]) -> list[Place]:
+def _within_scopes(
+    store: Store, candidates: list[Place], scopes: list[str]
+) -> tuple[list[Place], bool]:
     """Keep the candidates inside every scope named after the comma ("Morningside,
     Edinburgh", "Stirling, Scotland"): a nation by name in any language, a council by
-    name. A scope that names nothing known is ignored."""
+    name. A scope that names nothing known is ignored; the flag says whether any scope
+    was recognised, so "Richmond, Scotland" is empty rather than Richmond in Yorkshire."""
     keep = candidates
+    recognised = False
     for scope in scopes:
         nation = store.nation_aliases.get(fold(scope))
         if nation:
+            recognised = True
             keep = [p for p in keep if nation_of(p) == nation]
             continue
         councils = [p for p in _candidates(store, scope, limit=10) if p.kind == "lad"]
         if not councils:
             continue
+        recognised = True
         council = councils[0]
         names = {fold(council.name), fold(council.name_en or council.name)}
         keep = [
@@ -182,7 +188,7 @@ def _within_scopes(store: Store, candidates: list[Place], scopes: list[str]) -> 
             for p in keep
             if (p.kind == "lad" and p.code == council.code) or _council_of(p) in names
         ]
-    return keep
+    return keep, recognised
 
 
 def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
@@ -204,8 +210,8 @@ def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
             return [exact]
     parts = [p.strip() for p in query.split(",") if p.strip()]
     if len(parts) >= 2:
-        scoped = _within_scopes(store, _candidates(store, parts[0]), parts[1:])
-        if scoped:
+        scoped, recognised = _within_scopes(store, _candidates(store, parts[0]), parts[1:])
+        if scoped or recognised:
             return scoped[:limit]
     return _candidates(store, query)[:limit]
 
@@ -230,6 +236,12 @@ def resolve_lsoa(store: Store, ref: str) -> str:
     if not places:
         raise LookupError(f"Couldn't find an area for {ref!r}")
     top = places[0]
+    if top.kind in ("nation", "region"):
+        # The middle of a nation is not a neighbourhood: a profile needs a place
+        raise LookupError(
+            f"{top.name} is a {top.kind}, not an area: name a place, a postcode or a "
+            "council, or rank within it"
+        )
     if top.lsoa21cd:
         return top.lsoa21cd
     namesake = next(

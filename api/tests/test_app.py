@@ -48,6 +48,21 @@ def test_errors_map_to_status_codes(client):
     assert client.get("/api/v1/search", params={"q": "Leeds", "limit": -1}).status_code == 422
     assert client.post("/api/v1/rank", json={"level": "region"}).status_code == 404
     assert client.post("/api/v1/rank", json={"min_theme_scores": {"vibes": 1}}).status_code == 404
+    # A refusal that quotes an id is still a JSON body (the pass found f-string bodies)
+    r = client.post(
+        "/api/v1/rank", json={"within": "Cardiff", "sort_by": "indicator:primary_school_quality"}
+    )
+    assert r.status_code == 404 and "not available in Wales" in r.json()["detail"]
+    r = client.get('/api/v1/areas/say "hi" there')
+    assert r.status_code == 404 and r.json()["detail"].startswith("Couldn't find")
+    assert client.post("/api/v1/rank", json={"radius_km": -5, "within": "Leeds"}).status_code == 422
+    assert client.post("/api/v1/rank", json={"theme_weights": {"safety": -1}}).status_code == 422
+    assert (
+        client.get(
+            "/api/v1/pois", params={"category": "gp", "near": "LS6 3HN", "limit": 0}
+        ).status_code
+        == 422
+    )
     r = client.post("/api/v1/sql", json={"query": "COPY lsoa TO '/tmp/x'"})
     assert r.status_code == 400 and "SELECT" in r.json()["detail"]
 

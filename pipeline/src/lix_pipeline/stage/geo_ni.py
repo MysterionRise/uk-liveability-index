@@ -64,7 +64,11 @@ def tidy_lookup(sdz: pl.DataFrame, status: pl.DataFrame) -> pl.DataFrame:
     """The zone sheet and the urban/mixed/rural sheet → one row per Super Data Zone."""
     zones = sdz.select(
         pl.col(_col(sdz, "SDZ2021_code")).str.strip_chars().alias("lsoa21cd"),
-        pl.col(_col(sdz, "SDZ2021_name")).str.strip_chars().alias("lsoa21nm"),
+        # NISRA writes "Botanic_H" (the district electoral area and a letter)
+        pl.col(_col(sdz, "SDZ2021_name"))
+        .str.strip_chars()
+        .str.replace_all("_", " ")
+        .alias("lsoa21nm"),
         pl.col(_col(sdz, "DEA2014_code")).str.strip_chars().alias("dea_cd"),
         pl.col(_col(sdz, "DEA2014_name")).str.strip_chars().alias("dea_nm"),
         pl.col(_col(sdz, "LGD2014_code")).str.strip_chars().alias("lad_cd"),

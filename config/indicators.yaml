@@ -639,7 +639,7 @@ indicators:
 
   - id: access_deprivation
     theme: transport
-    label: Access to services (SIMD)
+    label: Access to services (SIMD, NIMDM)
     description: Geographic access domain of the Scottish Index of Multiple Deprivation 2020 (drive and public transport times to GPs, schools, shops, post offices and petrol stations), brought onto 2022 data zones.
     unit: score 0–100
     direction: lower_better
@@ -1015,7 +1015,7 @@ indicators:
     builder: common:deprivation
     params: {column: income_score}
     overlap_group: income_work
-    caveats: In Wales the value is the WIMD 2025 income domain's within-nation percentile (0–100, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).
+    caveats: In Wales the value is the WIMD 2025 income domain's within-nation percentile (0 to 1, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).
 
   - id: employment_deprivation
     theme: community
@@ -1030,7 +1030,7 @@ indicators:
     params: {column: employment_score}
     role: context
     overlap_group: income_work
-    caveats: In Wales the value is the WIMD 2025 employment domain's within-nation percentile (0–100, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).
+    caveats: In Wales the value is the WIMD 2025 employment domain's within-nation percentile (0 to 1, higher is more deprived) rather than a rate, because WIMD publishes the domain as a transformed score; the score is unaffected (ranked within the nation).
 
   - id: claimant_rate
     theme: community

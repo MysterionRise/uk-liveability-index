@@ -89,11 +89,11 @@ def _wales() -> pl.DataFrame:
         # WIMD publishes its income and employment domains as exponentially transformed
         # scores, not the deprivation rates behind them (those are on StatsWales as
         # "indicator data", not yet staged: #104). Until they are, the raw value is the
-        # domain's within-Wales percentile (0–100, higher = more deprived), which the
+        # domain's within-Wales percentile (0–1, higher = more deprived), which the
         # within-nation rank normalisation scores the same and which is not mistaken
         # for a rate
         *[
-            (pl.col(c).rank("average") / pl.col(c).count() * 100).alias(c)
+            (pl.col(c).rank("average") / pl.col(c).count()).alias(c)
             for c in ("income_score", "employment_score")
         ],
     )
@@ -215,8 +215,9 @@ def _northern_ireland() -> pl.DataFrame:
             rank_to_score(pl.col(src).cast(pl.Float64, strict=False), n).alias(dst)
             for src, dst in NIMDM_RANKS.items()
         ],
-        pl.col("Income_perc").cast(pl.Float64, strict=False).alias("income_score"),
-        pl.col("Empl_perc").cast(pl.Float64, strict=False).alias("employment_score"),
+        # NIMDM publishes the rates as percentages; the IoD and SIMD as proportions
+        (pl.col("Income_perc").cast(pl.Float64, strict=False) / 100).alias("income_score"),
+        (pl.col("Empl_perc").cast(pl.Float64, strict=False) / 100).alias("employment_score"),
     )
     columns = [*NIMDM_RANKS.values(), "income_score", "employment_score"]
     weights = pl.read_parquet(data_dir("staged") / "soa01_sdz21.parquet")

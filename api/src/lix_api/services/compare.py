@@ -64,7 +64,12 @@ def compare_areas(
             code = resolve_lsoa(store, ref)
             rows = scored.filter(pl.col("lsoa21cd") == code)
             r = rows.row(0, named=True)
-            label = f"{localised(r, 'lsoa21nm', locale)} ({localised(r, 'msoa_name', locale)})"
+            own_tier = r["msoa21cd"] == r["lsoa21cd"]
+            label = (
+                localised(r, "lsoa21nm", locale)
+                if own_tier
+                else f"{localised(r, 'lsoa21nm', locale)} ({localised(r, 'msoa_name', locale)})"
+            )
             level = "lsoa"
         w = rows["population"].cast(pl.Float64)
 
@@ -98,7 +103,8 @@ def compare_areas(
             if pick and pick not in rows_shown:
                 rows_shown.append(pick)
             if pick and pick != i:
-                stand_ins[pick] = i
+                # The first requested indicator a substitute replaces names the row
+                stand_ins.setdefault(pick, i)
     areas = []
     for code, label, level, overall, pct, themes_, shown in picked:
         values = {pick: value for pick, value in shown.values() if pick}

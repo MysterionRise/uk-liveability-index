@@ -15,9 +15,9 @@ from typing import Annotated, Literal
 
 from fastapi import Body, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from pydantic_ai.ui import StateDeps
 
 from lix_api.agent.agent import agent
@@ -71,16 +71,14 @@ app.add_middleware(
 
 @app.exception_handler(LookupError)
 async def not_found(request: Request, exc: LookupError):
-    return Response(
-        content=f'{{"detail": "{exc}"}}', status_code=404, media_type="application/json"
-    )
+    # Serialised, not formatted: a message quoting an id ("indicator:crime_violence") or
+    # echoing what the user typed must still be valid JSON
+    return JSONResponse({"detail": str(exc)}, status_code=404)
 
 
 @app.exception_handler(ValueError)
 async def bad_request(request: Request, exc: ValueError):
-    return Response(
-        content=f'{{"detail": "{str(exc)}"}}', status_code=400, media_type="application/json"
-    )
+    return JSONResponse({"detail": str(exc)}, status_code=400)
 
 
 @app.get("/health")
@@ -132,7 +130,7 @@ def area_profile(ref: str, preset: str | None = None, locale: str | None = None)
 
 class RankRequest(BaseModel):
     within: str | None = None
-    radius_km: float | None = None
+    radius_km: float | None = Field(None, gt=0, le=200)
     level: Level = "msoa"
     preset: str | None = None
     theme_weights: dict[str, float] | None = None
@@ -144,6 +142,13 @@ class RankRequest(BaseModel):
     sort_by: str = "overall"  # or "theme:<id>" / "indicator:<id>": rank by one measure
     direction: Literal["best", "worst"] = "best"
     locale: str | None = None  # en, cy, gd or ga: the language of the area names
+
+    @field_validator("theme_weights", "indicator_weights")
+    @classmethod
+    def _weights_not_negative(cls, v):
+        if v and any(w < 0 for w in v.values()):
+            raise ValueError("weights cannot be negative")
+        return v
 
 
 @app.post(f"{api}/rank")
@@ -161,8 +166,13 @@ def compare_areas(
 
 
 @app.get(f"{api}/pois")
-def nearest_pois(category: str, near: str, max_km: float = 2.0, limit: int = 10) -> PoiResult:
-    return pois.nearest_pois(get_store(), category, near, min(max_km, 20), min(limit, 50))
+def nearest_pois(
+    category: str,
+    near: str,
+    max_km: Annotated[float, Query(gt=0, le=20)] = 2.0,
+    limit: Annotated[int, Query(ge=1, le=50)] = 10,
+) -> PoiResult:
+    return pois.nearest_pois(get_store(), category, near, max_km, limit)
 
 
 @app.get(f"{api}/explain/{{ref}}")

@@ -33,8 +33,9 @@ AGGREGATE_LEVELS: dict[str, tuple[str, str]] = {
 RANK_LEVELS = ("lsoa", *AGGREGATE_LEVELS)
 
 
-def _within(store: Store, within: str | None, radius_km: float | None):
-    """Filter expression and label for "within" (an area or a place + radius)."""
+def _within(store: Store, within: str | None, radius_km: float | None, lang: str = "en"):
+    """Filter expression and label for "within" (an area or a place + radius); the
+    label names an area in the locale asked for where the pack has that form."""
     if not within:
         return pl.lit(True), None, None
     places = search_place(store, within, limit=1)
@@ -45,7 +46,12 @@ def _within(store: Store, within: str | None, radius_km: float | None):
         column = {"lad": "lad_cd", "region": "rgn_cd", "nation": "ctry_cd", "msoa": "msoa21cd"}[
             place.kind
         ]
-        return pl.col(column) == place.code, place.name, place.bbox
+        label = place.name
+        if lang != "en" and f"name_{lang}" in store.areas.columns:
+            row = store.areas.filter(pl.col("code") == place.code)
+            if row.height and row[f"name_{lang}"][0]:
+                label = row[f"name_{lang}"][0]
+        return pl.col(column) == place.code, label, place.bbox
     centre = place.centre
     km = radius_km or DEFAULT_RADIUS_KM
     dlat = km / 111.0
@@ -68,6 +74,7 @@ class Measure:
     label: str | None = None
     unit: str | None = None
     raw_column: str | None = None
+    raw_higher_better: bool = True
 
     def value(self, row: dict) -> float | None:
         """The figure to show beside the rank: the indicator's raw value, or the score."""
@@ -110,6 +117,7 @@ def sort_measure(store: Store, sort_by: str | None) -> Measure:
                 label=spec.label,
                 unit=spec.unit,
                 raw_column=raw if raw in columns else None,
+                raw_higher_better=spec.direction == "higher_better",
             )
     themes = ", ".join(f"theme:{t}" for t in store.themes)
     raise LookupError(
@@ -145,11 +153,20 @@ def _stand_in(store: Store, indicator_id: str, nations: set[str]) -> str | None:
 
 
 def _check_available(store: Store, measure: Measure, df: pl.DataFrame) -> None:
-    """An indicator ranking over areas that all lack it is a wrong question, not an
-    empty list: say where it is available and what stands in for it."""
-    if measure.sort_by.startswith("indicator:") and df.height:
-        if df[measure.score_column].null_count() < df.height:
-            return
+    """An indicator or theme ranking over areas that all lack it is a wrong question,
+    not an empty list: say where it is available and what stands in for it."""
+    if not df.height or df[measure.score_column].null_count() < df.height:
+        return
+    if measure.sort_by.startswith("theme:"):
+        theme = measure.sort_by.split(":", 1)[1]
+        here = ", ".join(
+            store.nation_names.get(n, n) for n in sorted(df["nation"].unique().to_list())
+        )
+        raise LookupError(
+            f"{measure.label} is not scored in {here}: the nation declares it has too little "
+            "open data for the theme (shown as limited data)"
+        )
+    if measure.sort_by.startswith("indicator:"):
         iid = measure.sort_by.split(":", 1)[1]
         nations = set(df["nation"].unique().to_list())
         here = ", ".join(store.nation_names.get(n, n) for n in sorted(nations))
@@ -231,7 +248,7 @@ def rank_areas(
         [store.features.select(columns), scores.drop("lsoa21cd")],
         how="horizontal",
     )
-    where, label, bbox = _within(store, within, radius_km)
+    where, label, bbox = _within(store, within, radius_km, lang)
     df = df.filter(where)
     if urban is not None:
         df = df.filter(pl.col("urban") == urban)
@@ -268,25 +285,50 @@ def rank_areas(
             *[pl.col(c).fill_nan(None) for c in numeric if c in df.columns],
         )
     else:
+        # "Area (neighbourhood)", or the area alone where it is its own tier
+        own_tier = pl.col("msoa21cd") == pl.col("code")
         df = df.rename({"lsoa21cd": "code"}).with_columns(
-            pl.concat_str(
-                in_locale("lsoa21nm"), pl.lit(" ("), in_locale("msoa_name"), pl.lit(")")
-            ).alias("name"),
-            pl.concat_str(pl.col("lsoa21nm"), pl.lit(" ("), pl.col("msoa_name"), pl.lit(")")).alias(
-                "name_en"
-            ),
+            pl.when(own_tier)
+            .then(in_locale("lsoa21nm"))
+            .otherwise(
+                pl.concat_str(
+                    in_locale("lsoa21nm"), pl.lit(" ("), in_locale("msoa_name"), pl.lit(")")
+                )
+            )
+            .alias("name"),
+            pl.when(own_tier)
+            .then(pl.col("lsoa21nm"))
+            .otherwise(
+                pl.concat_str(pl.col("lsoa21nm"), pl.lit(" ("), pl.col("msoa_name"), pl.lit(")"))
+            )
+            .alias("name_en"),
             in_locale("lad_nm").alias("lad_nm"),
         )
 
     if max_median_price is not None:
         df = df.filter(pl.col("raw__house_price") <= max_median_price)
     for theme, minimum in minimums.items():
+        if df.height and df[f"theme__{theme}"].null_count() == df.height:
+            here = ", ".join(
+                store.nation_names.get(n, n) for n in sorted(df["nation"].unique().to_list())
+            )
+            raise LookupError(
+                f"{store.themes[theme].label} is not scored in {here}, so a minimum on it "
+                "leaves nothing"
+            )
         df = df.filter(pl.col(f"theme__{theme}") >= minimum)
 
     _check_available(store, measure, df)
     df = df.filter(pl.col(measure.score_column).is_not_null())
     candidates = df.height
-    df = df.sort(measure.score_column, descending=direction == "best", nulls_last=True)
+    # A threshold score saturates (every area beyond 50 km reads 0, the sunniest fifth of
+    # the South East reads 100), so ties are broken by the raw value in the same sense
+    best = direction == "best"
+    by, descending = [measure.score_column], [best]
+    if measure.raw_column:
+        by.append(measure.raw_column)
+        descending.append(best if measure.raw_higher_better else not best)
+    df = df.sort(by, descending=descending, nulls_last=True)
     # How robust the top results are to the exact weights (lix_core.uncertainty); a list
     # ranked by one measure does not depend on the weights. The worst-first list is the
     # best-first list of the scores' complements.

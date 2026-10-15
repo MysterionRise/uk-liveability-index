@@ -163,8 +163,12 @@ def area_profile(
     return AreaProfile(
         lsoa21cd=code,
         lsoa_name=localised(row, "lsoa21nm", locale),
-        neighbourhood=localised(row, "msoa_name", locale),
-        neighbourhood_en=english_if_different(row, "msoa_name", locale),
+        # A nation whose small areas are their own mid tier (Northern Ireland) has no
+        # separate neighbourhood to name
+        neighbourhood=localised(row, "msoa_name", locale) if row["msoa21cd"] != code else None,
+        neighbourhood_en=english_if_different(row, "msoa_name", locale)
+        if row["msoa21cd"] != code
+        else None,
         msoa21cd=row["msoa21cd"],
         local_authority=localised(row, "lad_nm", locale),
         local_authority_en=english_if_different(row, "lad_nm", locale),

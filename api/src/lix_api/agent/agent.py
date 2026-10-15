@@ -51,6 +51,8 @@ the tools say so.
 
 How to work:
 - Use the tools for every fact and number. Never estimate scores, prices or distances.
+- Call tools without a preamble: the only text you write is the answer after the
+  results are in (no "let me check the indicator id" lines).
 - The page renders each tool result as a card, table or map, so don't repeat the
   numbers in prose. Keep replies short: at most three sentences (about 60 words) that
   interpret the result (what stands out, the trade-offs, a sensible next step), with
@@ -147,10 +149,27 @@ def coverage_note(store=None) -> str:
     return note
 
 
+# The state line as it stood when each run began, by run id: a tool that changes the
+# state mid-turn (add_to_shortlist, explain_score selecting the area) must not make the
+# next model request read "already on the shortlist" or "area open on the page"
+_TURN_STATE: dict[str, str] = {}
+
+
 @agent.instructions
 def current_state(ctx: RunContext[Deps]) -> str:
     """Per-turn state, after the static instructions (so the cached prefix holds)."""
-    s = ctx.deps.state
+    run_id = getattr(ctx, "run_id", None)
+    if run_id and run_id in _TURN_STATE:
+        return _TURN_STATE[run_id]
+    text = _state_lines(ctx.deps.state)
+    if run_id:
+        if len(_TURN_STATE) > 256:
+            _TURN_STATE.clear()
+        _TURN_STATE[run_id] = text
+    return text
+
+
+def _state_lines(s: LiveabilityState) -> str:
     lines = [coverage_note(), f"Current weighting: preset '{s.preset}'"]
     if language := language_instruction(s.locale):
         lines.insert(0, language)
@@ -163,6 +182,7 @@ def current_state(ctx: RunContext[Deps]) -> str:
         lines.append(f"Area open on the page: {s.map.selected}")
     if s.shortlist:
         lines.append("Shortlist: " + ", ".join(f"{i.name} ({i.code})" for i in s.shortlist))
+    lines.append("(the page's state as this turn began; your own tool calls change it)")
     return "\n".join(lines)
 
 

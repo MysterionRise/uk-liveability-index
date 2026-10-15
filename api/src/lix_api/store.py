@@ -19,7 +19,7 @@ from lix_core.geo import lonlat_to_working
 from lix_core.paths import data_dir
 
 # A name's English form and the other languages' forms, as the pack's columns call them
-NAME_COLUMNS = ("name", "name_cy", "name_gd")
+NAME_COLUMNS = ("name", "name_cy", "name_gd", "name_ga")
 
 
 def to_bng(lon: float, lat: float) -> tuple[float, float]:

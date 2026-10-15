@@ -293,6 +293,7 @@ def manifest(
                 "title": registry[slug].title,
                 "licence": registry[slug].licence,
                 "attribution": registry[slug].attribution,
+                "coverage": list(registry[slug].coverage),
                 "version": lock.get(slug, {}).get("resolved", {}).get("version"),
                 "fetched_version": lock.get(slug, {}).get("fetched", {}).get("version"),
                 "fetched_at": lock.get(slug, {}).get("fetched", {}).get("fetched_at"),
