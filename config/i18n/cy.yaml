@@ -46,11 +46,13 @@ units:
   years: blynyddoedd
   people_km2: "pobl fesul km²"
   radiance: "nW/cm²/sr"
-  hours_year: \"oriau y flwyddyn\"
-  days_year: \"diwrnodau y flwyddyn\"
-  celsius: \"°C\"
-  mm_year: \"mm y flwyddyn\"
-  m_s: \"m/s\"
+  hours_year: "oriau y flwyddyn"
+  days_year: "diwrnodau y flwyddyn"
+  celsius: "°C"
+  mm_year: "mm y flwyddyn"
+  m_s: "m/s"
+  within_1500m: "o fewn 1.5km"
+  patients_per_practice: "cleifion fesul practis"
 
 flags:
   imputed: "Mae'r ffigurau troseddu yma'n amcangyfrifon: nid yw Heddlu Manceinion Fwyaf yn cyhoeddi data ar lefel stryd."
@@ -117,7 +119,7 @@ indicators:
   house_price: {label: Pris tŷ arferol, description: "Pris gwerthu canolrifol dros y 12 mis diwethaf, wedi'i sefydlogi tuag at yr ardal o gwmpas lle mae'r gwerthiannau'n brin."}
   housing_condition: {label: Cyflwr tai, description: Is-barth dan do IoD 2025 (cartrefi mewn cyflwr gwael neu heb wres canolog).}
   price_change: {label: Newid ym mhrisiau tai, description: "Newid yn y pris gwerthu canolrifol, y 12 mis diwethaf yn erbyn y 12 mis cynt."}
-  council_tax: {label: Treth gyngor (Band D), description: "Treth gyngor flynyddol ar gartref Band D, gan gynnwys taliadau'r sir, yr heddlu, tân a chyngor cymuned cyfartalog."}
+  council_tax: {label: Treth gyngor (cyfradd Band D y cyngor), description: "Treth gyngor flynyddol ar gartref Band D, gan gynnwys taliadau'r sir, yr heddlu, tân a chyngor cymuned cyfartalog."}
   price_to_income: {label: Pris o'i gymharu ag incwm lleol, description: Pris tŷ arferol wedi'i rannu ag incwm aelwyd net cymedrig yr ardal.}
   new_builds: {label: Cartrefi a adeiladwyd ers 2000, description: Cyfran y cartrefi a adeiladwyd yn 2000 neu'n ddiweddarach.}
   period_homes: {label: Cartrefi a adeiladwyd cyn 1919, description: Cyfran y cartrefi a adeiladwyd cyn 1919.}
@@ -148,6 +150,10 @@ indicators:
   future_hot_days: {label: Diwrnodau poeth o haf mewn byd 2°C yn gynhesach, description: "Diwrnodau y flwyddyn uwchlaw trothwy lleol diwrnod poeth o haf unwaith y bydd y byd wedi cynhesu 2°C, o ragamcanion lleol UKCP18 y Swyddfa Dywydd."}
   domestic_rates: {label: Ardrethi domestig (cartref nodweddiadol), description: "Bil ardrethi domestig blynyddol cartref ar werth cyfalaf canolrifol yr ardal, o'r gyfradd ranbarthol a chyfradd ardal y cyngor (Gogledd Iwerddon)."}
   snow_days: {label: Diwrnodau ag eira ar lawr, description: "Diwrnodau y flwyddyn ag eira ar lawr am 9am, cyfartaledd 1991–2020."}
+  council_tax_typical: {label: Treth gyngor (cartref nodweddiadol yma), description: "Yr hyn mae cartref nodweddiadol yn yr ardal yn ei dalu mewn treth gyngor, tâl pob band wedi'i bwysoli yn ôl faint o gartrefi'r ardal sydd yn y band hwnnw."}
+  gp_list_size: {label: Cleifion fesul practis meddyg teulu gerllaw, description: "Cleifion cofrestredig fesul practis yn y practisau meddyg teulu ger cartrefi, wedi'u pwysoli yn ôl pellter."}
+  allotment_distance: {label: Pellter i'r rhandiroedd agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r rhandiroedd neu'r man tyfu cymunedol agosaf."}
+  ev_charging: {label: Pwyntiau gwefru cyhoeddus gerllaw, description: "Gorsafoedd gwefru cerbydau trydan cyhoeddus o fewn 1.5km i gartrefi, ar gyfartaledd (OpenStreetMap)."}
 
 # What the interface calls each nation's areas (one, several)
 levels:

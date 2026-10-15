@@ -247,6 +247,10 @@ def build_lookups(features: pl.DataFrame) -> dict:
         .collect()
     )
     places = pl.read_parquet(staged / "places.parquet").filter(pl.col("lsoa21cd").is_not_null())
+    if (staged / "logainm.parquet").exists():
+        from lix_pipeline.stage.logainm import with_irish_names
+
+        places = with_irish_names(places, pl.read_parquet(staged / "logainm.parquet"))
     tables = {
         "postcodes.parquet": postcodes,
         "places.parquet": places.drop("x", "y"),

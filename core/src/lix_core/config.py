@@ -372,6 +372,8 @@ UNIT_CODES: dict[str, str] = {
     "°C": "celsius",
     "mm a year": "mm_year",
     "m/s": "m_s",
+    "within 1.5km": "within_1500m",
+    "patients per practice": "patients_per_practice",
 }
 
 

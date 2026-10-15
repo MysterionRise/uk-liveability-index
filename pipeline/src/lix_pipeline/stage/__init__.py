@@ -133,17 +133,20 @@ STAGE_INPUTS: dict[str, list[str]] = {
     # (every table shares the stager, so each declares the Scottish archive; only the
     # mapped ones read it: see census.SCOTLAND_TABLES)
     **{
-        f"census_ts{t}": [
-            f"census_ts{t}",
-            "scotland_census_2022",
-            "nisra_census_2021_p1",
-            "nisra_census_2021_p2",
-            "nisra_census_2021_p3",
-        ]
-        for t in ("001", "003", "007a", "037", "044", "045", "054", "058", "061", "067")
+        f"census_ts{t}": [f"census_ts{t}", "scotland_census_2022"]
+        for t in ("003", "037", "044", "045", "054", "058", "061", "067")
     },
+    # Northern Ireland publishes only population, density and single year of age at
+    # Super Data Zone level (stage/census.py NI_TABLES); the other tables stop at wards
+    "census_ts001": ["census_ts001", "scotland_census_2022", "nisra_census_2021_p1"],
+    "census_ts007a": ["census_ts007a", "scotland_census_2022", "nisra_census_2021_p1"],
     # Scotland's density: Census 2022 residents over the zone polygons
-    "census_ts006": ["census_ts006", "scotland_census_2022", "sg_dz22_boundaries"],
+    "census_ts006": [
+        "census_ts006",
+        "scotland_census_2022",
+        "sg_dz22_boundaries",
+        "nisra_census_2021_p1",
+    ],
 }
 
 # Staged tables each stager reads (the stager → staged-table edges of the graph)
@@ -218,6 +221,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         health,
         housing,
         landcover,
+        logainm,
         night_lights,
         noise,
         safety,
@@ -301,5 +305,6 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "night_lights": night_lights.stage_night_lights,  # manual source; needs staged nspl
         "climate": climate.stage_climate,  # manual source; needs staged nspl
         "ukcp_hot_days": climate.stage_ukcp_hot_days,  # needs staged geo_lsoa
+        "logainm": logainm.stage_logainm,  # keyed source; skipped without LOGAINM_API_KEY
         "deprivation": stage_deprivation,  # needs staged iod_2025
     }

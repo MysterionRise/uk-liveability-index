@@ -1921,6 +1921,7 @@ nisra_census_2021_p2:
   coverage: [N]
   title: Census 2021 main statistics, phase 2 (health, housing), Northern Ireland
   theme: community
+  priority: P2
   access: {type: http, url: "https://www.nisra.gov.uk/system/files/statistics/census-2021-main-statistics-for-northern-ireland-phase-2-all-tables.zip"}
   format: zip
   extract: ["*.xlsx"]
@@ -1931,11 +1932,13 @@ nisra_census_2021_p2:
   cadence: static
   period: "2021"
   size_hint: 8MB
+  notes: Published at ward level and above only (no Data Zone or Super Data Zone sheets), so nothing reads it yet; kept for the settlement-level tables.
 
 nisra_census_2021_p3:
   coverage: [N]
   title: Census 2021 main statistics, phase 3 (qualifications, work, travel), Northern Ireland
   theme: community
+  priority: P2
   access: {type: http, url: "https://www.nisra.gov.uk/system/files/statistics/census-2021-main-statistics-for-northern-ireland-phase-3-all-tables.zip"}
   format: zip
   extract: ["*.xlsx"]
@@ -1946,6 +1949,7 @@ nisra_census_2021_p3:
   cadence: static
   period: "2021"
   size_hint: 9MB
+  notes: Published at ward level and above only (no Data Zone or Super Data Zone sheets), so nothing reads it yet; kept for the settlement-level tables.
 
 nimdm_2017:
   coverage: [N]
@@ -2408,3 +2412,26 @@ ukcp_hot_days:
   period: "UKCP18 projections (2001–2020 baseline)"
   size_hint: 2MB
   notes: Northern Ireland's rows are district electoral areas (N10), broadcast to the Super Data Zones inside them.
+
+logainm:
+  coverage: [N]
+  title: Placenames Database of Ireland, Northern Ireland's places (Logainm, Gaois)
+  theme: geography
+  access:
+    type: api_key
+    url: "https://www.logainm.ie/api/v1.0/?NorthernIreland=true"
+    env: LOGAINM_API_KEY
+    header: X-Api-Key
+    signup: https://www.gaois.ie/en/technology/developers/
+    page_param: Page
+    per_page_param: PerPage
+    per_page: 1000
+    items_key: Results
+  format: json
+  landing_page: https://www.logainm.ie/en/about/open-data
+  description: Every place in Northern Ireland in the Placenames Database of Ireland, with its Irish and English names, category and coordinates, for the Irish names of settlements.
+  licence: CC-BY-4.0
+  attribution: "Irish-language placename data by Logainm © Government of Ireland and licensed under CC BY 4.0."
+  cadence: monthly
+  size_hint: 20MB
+  notes: Needs a free key from the Gaois Developer Hub (LOGAINM_API_KEY); without it the places keep the Irish forms OpenStreetMap carries. Logainm asks for monthly pulls at most.

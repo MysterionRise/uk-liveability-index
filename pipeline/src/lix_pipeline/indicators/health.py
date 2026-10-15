@@ -83,3 +83,28 @@ def care_homes(ctx, radius_m: float, cap: float) -> pl.DataFrame:
     )
     access = ctx.access(homes, radius_m=radius_m, cap=cap, weight="weight")
     return access.select("lsoa21cd", pl.col("score").alias("value"))
+
+
+def gp_list_size(ctx, radius_m: float = 2000.0) -> pl.DataFrame:
+    """Registered patients per practice at the practices near homes (distance-weighted
+    mean within ``radius_m``, the nearest beyond that). Scotland's and Northern
+    Ireland's lists carry the size; England's comes from the patients registered by
+    practice; Wales publishes none in a machine-readable file."""
+    from lix_pipeline.geo.access import nearby_mean
+
+    gp = ctx.staged("ods_gp")
+    if "list_size" not in gp.columns:
+        gp = gp.with_columns(pl.lit(None, pl.Int32).alias("list_size"))
+    try:
+        patients = (
+            ctx.staged("gp_registrations")
+            .group_by("practice_code")
+            .agg(pl.col("patients").sum().alias("_patients"))
+        )
+        gp = gp.join(patients, on="practice_code", how="left").with_columns(
+            pl.coalesce("list_size", "_patients").alias("list_size")
+        )
+    except FileNotFoundError:
+        pass
+    gp = gp.filter(pl.col("list_size").is_not_null() & (pl.col("list_size") > 0))
+    return nearby_mean(ctx.origins, gp, "list_size", radius_m=radius_m)

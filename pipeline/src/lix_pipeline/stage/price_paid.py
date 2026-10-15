@@ -372,16 +372,26 @@ def _northern_ireland() -> pl.DataFrame | None:
         ((pl.col("median_price_12m") - pl.col("median_prev")) / pl.col("median_prev") * 100).alias(
             "yoy_change_pct"
         ),
+        pl.lit(date(latest, 12, 31)).alias("as_of"),
+    )
+    # A ward with under 30 sales in the year has its median suppressed; the five years
+    # pooled usually clear the bar, so they stand in (the yoy change stays null)
+    pooled = out.filter(
+        pl.col("median_price_12m").is_null() & pl.col("median_price_5y").is_not_null()
+    ).height
+    out = out.with_columns(
+        pl.coalesce("median_price_12m", "median_price_5y").alias("median_price_12m")
+    ).with_columns(
         pl.when(pl.col("median_price_12m").is_not_null())
         .then(pl.lit("broadcast_msoa"))
         .otherwise(pl.lit("missing"))
-        .alias("quality"),
-        pl.lit(date(latest, 12, 31)).alias("as_of"),
+        .alias("quality")
     )
     unmatched = out.filter(pl.col("transaction_count_5y").is_null()).height
     logger.info(
         f"Land & Property Services {latest}: {out.height:,} Super Data Zones, "
-        f"{out['median_price_12m'].null_count():,} without a price, {unmatched} with no ward match"
+        f"{pooled:,} on the five-year median, {out['median_price_12m'].null_count():,} "
+        f"without a price, {unmatched} with no ward match"
     )
     return out.select(
         "lsoa21cd",

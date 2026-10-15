@@ -211,6 +211,19 @@ indicators:
     normalise: scale
     role: context
 
+  - id: allotment_distance
+    theme: environment
+    label: Distance to nearest allotments
+    description: Average straight-line distance from homes to the nearest allotments or community growing space.
+    unit: metres
+    direction: lower_better
+    coverage: [E, W, S, N]  # OS Open Greenspace in Great Britain, OpenStreetMap in Northern Ireland
+    sources: [os_greenspace, osm_ireland, nspl]
+    builder: common:nearest
+    params: {slug: os_greenspace, column: function, values: [Allotments Or Community Growing Spaces], beyond_cap: 20000}
+    role: context
+    caveats: Distance to the site, not whether a plot is free; waiting lists run to years in many towns. Northern Ireland's sites come from OpenStreetMap.
+
   - id: flood_risk
     theme: environment
     label: Homes at risk of flooding
@@ -398,6 +411,19 @@ indicators:
     good: 1500
     bad: 3500
     caveats: Excludes GPs in training; practices reporting under one full-time GP are left out of the average.
+
+  - id: gp_list_size
+    theme: health
+    label: Patients per GP practice nearby
+    description: Registered patients per practice at the GP practices near homes, weighted by distance.
+    unit: patients per practice
+    direction: lower_better
+    coverage: [E, S, N]  # list sizes: NHS England's registrations, Public Health Scotland's and BSO's lists; Wales publishes none
+    sources: [ods_gp, gp_registrations, phs_gp_practices, bso_gp_list_sizes, nspl]
+    builder: health:gp_list_size
+    params: {radius_m: 2000}
+    role: context
+    caveats: "Patients per practice, not per doctor: a large practice may have many GPs. The honest measure where GP headcounts are not published (everywhere but England)."
 
   - id: gp_quality
     theme: health
@@ -641,6 +667,19 @@ indicators:
     role: context
     overlap_group: rail_access
 
+  - id: ev_charging
+    theme: transport
+    label: Public charge points nearby
+    description: Public electric-vehicle charging stations within 1.5km of homes, on average (OpenStreetMap).
+    unit: within 1.5km
+    direction: higher_better
+    coverage: [E, W, S, N]
+    sources: [osm_england, osm_wales, osm_scotland, osm_ireland, nspl]
+    builder: common:count_within
+    params: {slug: osm_pois, column: value, values: [charging_station], radius_m: 1500}
+    role: context
+    caveats: Counts charging stations mapped in OpenStreetMap, not sockets or their speed; the national chargepoint registry closed in 2024, so mapping completeness varies by area.
+
   - id: rail_service
     theme: transport
     label: Rail service nearby
@@ -874,8 +913,8 @@ indicators:
 
   - id: council_tax
     theme: housing
-    label: Council tax (Band D)
-    description: Annual council tax on a Band D home, including county, police, fire and average parish charges.
+    label: Council tax (council's Band D rate)
+    description: The council's annual charge for a Band D home, including county, police, fire and average parish charges; the like-for-like rate every council publishes.
     unit: £ a year
     direction: lower_better
     benchmark: nation
@@ -899,6 +938,19 @@ indicators:
     weight: 0.5
     substitute_for: council_tax
     caveats: Northern Ireland charges rates on a home's capital value rather than council tax by band; the bill shown is for a home at the middle of the area's 2016 value mix, so it moves with local values as well as the poundage.
+
+  - id: council_tax_typical
+    theme: housing
+    label: Council tax (typical home here)
+    description: What a typical home in the area pays in council tax, each band's charge weighted by how many of the area's homes are in that band.
+    unit: £ a year
+    direction: lower_better
+    benchmark: nation
+    coverage: [E, W]  # the VOA stock by band; Scotland publishes three band groups only
+    sources: [council_tax, wg_council_tax, voa_ctsop]
+    builder: housing:council_tax_typical
+    role: context
+    caveats: Uses the council's charge per band and the area's band mix, so an area of band A terraces reads about two thirds of the council's Band D rate; discounts and exemptions are not included.
 
   - id: price_to_income
     theme: housing

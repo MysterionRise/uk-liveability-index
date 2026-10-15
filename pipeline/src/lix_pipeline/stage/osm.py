@@ -35,6 +35,7 @@ POI_KEYS: dict[str, set[str] | None] = {
         "nature_reserve", "dog_park", "golf_course", "ice_rink",
     },
     "tourism": {"museum", "gallery", "attraction", "zoo", "aquarium", "theme_park"},
+    "landuse": {"allotments"},
 }  # fmt: skip
 
 # Extra tags carried through for scoring and display

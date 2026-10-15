@@ -47,11 +47,13 @@ units:
   years: bliadhnaichean
   people_km2: "daoine gach km²"
   radiance: "nW/cm²/sr"
-  hours_year: \"uairean sa bhliadhna\"
-  days_year: \"làithean sa bhliadhna\"
-  celsius: \"°C\"
-  mm_year: \"mm sa bhliadhna\"
-  m_s: \"m/s\"
+  hours_year: "uairean sa bhliadhna"
+  days_year: "làithean sa bhliadhna"
+  celsius: "°C"
+  mm_year: "mm sa bhliadhna"
+  m_s: "m/s"
+  within_1500m: "taobh a-staigh 1.5km"
+  patients_per_practice: "euslaintich gach cleachdadh"
 
 flags:
   imputed: "Is e tuairmsean a th' anns na figearan eucoir an seo: chan eil Poileas Greater Manchester a' foillseachadh dàta aig ìre sràide."
@@ -133,7 +135,7 @@ indicators:
   house_price: {label: Prìs taighe àbhaisteach, description: "Prìs reic mheadhanach thar nan 12 mìosan a dh'fhalbh, air a daingneachadh a dh'ionnsaigh na sgìre mun cuairt far nach eil ach beagan reic."}
   housing_condition: {label: Staid taigheadais, description: "Raon taigheadais a' chlàr-amais bochdainn (dachaighean ann an droch staid no gun teasachadh meadhanach; ann an Alba, tuilleadh is làn agus gun teasachadh meadhanach)."}
   price_change: {label: Atharrachadh prìsean thaighean, description: "Atharrachadh sa phrìs reic mheadhanach, na 12 mìosan a dh'fhalbh an aghaidh nan 12 mìosan roimhe."}
-  council_tax: {label: Cìs comhairle (Bann D), description: "Cìs comhairle bhliadhnail air dachaigh Bann D, a' gabhail a-steach cosgaisean siorrachd, poilis, teine agus paraiste cuibheasach."}
+  council_tax: {label: Cìs comhairle (reata Bann D na comhairle), description: "Cìs comhairle bhliadhnail air dachaigh Bann D, a' gabhail a-steach cosgaisean siorrachd, poilis, teine agus paraiste cuibheasach."}
   price_to_income: {label: Prìs an coimeas ri teachd-a-steach ionadail, description: "Prìs taighe àbhaisteach air a roinn le teachd-a-steach lom teaghlaich cuibheasach na sgìre."}
   new_builds: {label: Dachaighean a thogadh bho 2000, description: "Cuid de dhachaighean a thogadh ann an 2000 no nas fhaide air adhart."}
   period_homes: {label: Dachaighean a thogadh ro 1919, description: "Cuid de dhachaighean a thogadh ro 1919."}
@@ -163,3 +165,7 @@ indicators:
   future_hot_days: {label: Làithean teth samhraidh ann an saoghal 2°C nas blàithe, description: "Làithean sa bhliadhna os cionn stairsneach ionadail latha teth samhraidh aon uair 's gu bheil an saoghal air blàthachadh 2°C, bho ro-mheasaidhean ionadail UKCP18 Oifis na Sìde."}
   domestic_rates: {label: Reataichean dachaigheil (dachaigh àbhaisteach), description: "Bile bliadhnail nan reataichean dachaigheil airson dachaigh aig luach-calpa meadhanail na sgìre, bhon reata roinneil agus reata sgìreil na comhairle (Èirinn a Tuath)."}
   snow_days: {label: Làithean le sneachd na laighe, description: "Làithean sa bhliadhna le sneachd air an talamh aig 9m, cuibheasachd 1991–2020."}
+  council_tax_typical: {label: Cìs comhairle (dachaigh àbhaisteach an seo), description: "Na phàigheas dachaigh àbhaisteach san sgìre ann an cìs comhairle, cosgais gach bann air a cuideamachadh a rèir cia mheud de dhachaighean na sgìre a tha sa bhann sin."}
+  gp_list_size: {label: Euslaintich gach cleachdadh dotair faisg air làimh, description: "Euslaintich clàraichte gach cleachdadh aig na cleachdaidhean dotair faisg air dachaighean, air an cuideamachadh a rèir astair."}
+  allotment_distance: {label: Astar chun nan leasan-àitich as fhaisge, description: "Astar cuibheasach dìreach bho dhachaighean chun nan leasan-àitich no an àite fàs coimhearsnachd as fhaisge."}
+  ev_charging: {label: Puingean cosgais poblach faisg air làimh, description: "Stèiseanan cosgais charbadan dealain poblach taobh a-staigh 1.5km de dhachaighean, sa chumantas (OpenStreetMap)."}

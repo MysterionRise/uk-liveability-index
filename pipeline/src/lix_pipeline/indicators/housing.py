@@ -68,6 +68,25 @@ def domestic_rates(ctx) -> pl.DataFrame:
     )
 
 
+def council_tax_typical(ctx) -> pl.DataFrame:
+    """What a typical home in the area pays: each band's charge weighted by the area's
+    stock in that band (the VOA's counts), so it varies within a council."""
+    bands = [f"band_{b}" for b in "abcdefgh"]
+    charges = broadcast(ctx.staged("council_tax"), bands, "lad", "lad_cd", geo=ctx.geo)
+    stock = ctx.staged("voa_ctsop")
+    missing = [b for b in bands if b not in stock.columns]
+    if missing:
+        stock = stock.with_columns([pl.lit(None, pl.Float64).alias(b) for b in missing])
+    stock = stock.select("lsoa21cd", *[pl.col(b).alias(f"n_{b}") for b in bands])
+    df = charges.join(stock, on="lsoa21cd", how="left")
+    total = pl.sum_horizontal([pl.col(f"n_{b}").fill_null(0) for b in bands])
+    weighted = pl.sum_horizontal([pl.col(f"n_{b}").fill_null(0) * pl.col(b) for b in bands])
+    return df.select(
+        "lsoa21cd",
+        pl.when(total > 0).then(weighted / total).otherwise(None).round(0).alias("value"),
+    )
+
+
 def council_tax(ctx, band: str = "d") -> pl.DataFrame:
     """Annual council tax for a band in the billing authority (all precepts)."""
     col = f"band_{band}"

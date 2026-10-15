@@ -52,21 +52,37 @@ def stage_os_greenspace() -> pl.LazyFrame:
     from lix_core.codes import active_nations
 
     if "N" in active_nations():
-        df = pl.concat([df, _osm_parks(("N",))], how="diagonal_relaxed")
+        df = pl.concat([df, _osm_greenspace(("N",))], how="diagonal_relaxed")
     return df.lazy()
 
 
-def _osm_parks(nations: tuple[str, ...]) -> pl.DataFrame:
-    """Parks from OpenStreetMap where OS Open Greenspace stops (Northern Ireland): each
-    park's representative point stands for one entrance, so a large park with many ways
-    in counts once; documented as a method difference."""
+# OpenStreetMap tags → the OS Open Greenspace function they stand in for
+OSM_GREENSPACE = {
+    ("leisure", "park"): "Public Park Or Garden",
+    ("leisure", "playground"): "Play Space",
+    ("landuse", "allotments"): "Allotments Or Community Growing Spaces",
+}
+
+
+def _osm_greenspace(nations: tuple[str, ...]) -> pl.DataFrame:
+    """Parks, playgrounds and allotments from OpenStreetMap where OS Open Greenspace
+    stops (Northern Ireland): each site's representative point stands for one entrance,
+    so a large park with many ways in counts once; documented as a method difference."""
     from lix_core.codes import nation_of
     from lix_pipeline.geo.joins import points_to_lsoa
 
-    osm = pl.read_parquet(data_dir("staged") / "osm_pois.parquet").filter(
-        (pl.col("key") == "leisure") & (pl.col("value") == "park")
+    osm = pl.read_parquet(data_dir("staged") / "osm_pois.parquet")
+    frames = []
+    for (key, value), function in OSM_GREENSPACE.items():
+        frames.append(
+            osm.filter((pl.col("key") == key) & (pl.col("value") == value)).with_columns(
+                pl.lit(function).alias("function")
+            )
+        )
+    osm = pl.concat(frames)
+    osm = points_to_lsoa(
+        osm.select("osm_type", "osm_id", "name", "x", "y", "function"), x="x", y="y"
     )
-    osm = points_to_lsoa(osm.select("osm_type", "osm_id", "name", "x", "y"), x="x", y="y")
     osm = osm.filter(nation_of("lsoa21cd").is_in(list(nations)))
     out = osm.select(
         pl.concat_str([pl.lit("osm:"), pl.col("osm_type"), pl.col("osm_id").cast(pl.Utf8)]).alias(
@@ -75,10 +91,13 @@ def _osm_parks(nations: tuple[str, ...]) -> pl.DataFrame:
         pl.lit("Pedestrian").alias("access_type"),
         "x",
         "y",
-        pl.lit("Public Park Or Garden").alias("function"),
+        "function",
         pl.col("name").alias("site_name"),
     )
-    logger.info(f"{out.height:,} OpenStreetMap parks in {list(nations)}")
+    logger.info(
+        f"{out.height:,} OpenStreetMap green spaces in {list(nations)}: "
+        f"{dict(out['function'].value_counts().rows())}"
+    )
     return out
 
 
