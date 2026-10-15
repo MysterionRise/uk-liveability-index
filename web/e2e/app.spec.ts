@@ -219,12 +219,14 @@ test("the method and sources pages render the docs", async ({ page }) => {
     "Methodology",
   );
   await page.getByRole("link", { name: en.Docs.sources }).click();
+  // The sources page renders 140-odd registry entries: the dev server's first compile
+  // of the route takes longer than the default expectation on a CI runner
   await expect(
     page.getByRole("heading", { name: "Data licence" }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 30_000 });
   await expect(
     page.getByRole("heading", { name: "Data sources" }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 30_000 });
   await expect(page.locator("article").nth(1)).toContainText("OGL-3.0");
   await expect(page.getByTestId("build-info")).toContainText(
     /Version \d+\.\d+\.\d+ · data built/,
