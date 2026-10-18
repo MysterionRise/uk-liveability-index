@@ -22,3 +22,4 @@ __pycache__/
 
 # Turn logs written when the demo dataset is served (LIX_DATA_DIR=fixtures/demo)
 fixtures/demo/logs/
+data-ie/

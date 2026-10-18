@@ -41,22 +41,33 @@ export interface LevelMeta {
 
 export interface NationMeta {
   name: string;
+  /** The country the nation belongs to (a key of Geography.countries) */
+  country: string;
   ctry_cd: string;
   bbox: [number, number, number, number];
   levels: Record<string, LevelMeta>;
   /** Themes the nation's open data cannot cover: shown as limited data, left out of its overall */
   theme_gaps?: string[];
+  /** The nation's name in the other interface languages */
+  names?: Record<string, string>;
+}
+
+export interface CountryMeta {
+  name: string;
+  /** How copy refers to it ("the UK", "Ireland") */
+  short: string;
+  names?: Record<string, string>;
+  currency: string;
+  locale: string;
+  /** Null where there is no open postcode file (Ireland) */
+  postcode_regex: string | null;
+  bbox: [number, number, number, number];
 }
 
 export interface Geography {
-  country: {
-    code: string;
-    name: string;
-    currency: string;
-    locale: string;
-    bbox: [number, number, number, number];
-    area_key: string;
-  };
+  build: { working_crs: number; area_key: string };
+  /** The countries of the nations in this build */
+  countries: Record<string, CountryMeta>;
   nations: Record<string, NationMeta>;
   /** Nation codes in this build, in config order */
   active: string[];
@@ -273,7 +284,15 @@ export function activeBbox(
   const boxes = geo.active
     .map((c) => geo.nations[c]?.bbox)
     .filter((b): b is NationMeta["bbox"] => !!b);
-  if (boxes.length === 0) return geo.country.bbox;
+  if (boxes.length === 0) {
+    const all = Object.values(geo.countries).map((c) => c.bbox);
+    return [
+      Math.min(...all.map((b) => b[0])),
+      Math.min(...all.map((b) => b[1])),
+      Math.max(...all.map((b) => b[2])),
+      Math.max(...all.map((b) => b[3])),
+    ];
+  }
   return [
     Math.min(...boxes.map((b) => b[0])),
     Math.min(...boxes.map((b) => b[1])),

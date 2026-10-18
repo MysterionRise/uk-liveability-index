@@ -32,7 +32,7 @@ STAGED_READ = re.compile(r'data_dir\("staged"\)\s*/\s*f?"([a-z0-9_]+)\.parquet"'
 RAW_READ = re.compile(r'data_dir\("(?:raw|manual)"\)\s*/\s*"([a-z0-9_]+)"')
 # Helpers that read a staged table on the caller's behalf
 HELPER_STAGED = {
-    "residential_postcodes": "nspl",
+    "residential_postcodes": "homes",
     "geocode_postcodes": "nspl",
     "load_nspl": "nspl",
     "default_nspl_path": "nspl",

@@ -174,3 +174,7 @@ levels:
     low: {one: parth data uwch, other: parthau data uwch}
     mid: {one: parth data uwch, other: parthau data uwch}
     upper: {one: cyngor, other: cynghorau}
+  I:
+    low: {one: ardal fach, other: ardaloedd bach}
+    mid: {one: rhaniad etholiadol, other: rhaniadau etholiadol}
+    upper: {one: cyngor, other: cynghorau}

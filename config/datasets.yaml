@@ -2370,13 +2370,13 @@ daera_noise_r3:
   notes: Round 4 (2021) is published only as a 1 GB geodatabase of rasters and map services, not downloadable layer by layer; the round 3 contours are the open vector set until that is readable.
 
 osm_ireland:
-  coverage: [N]
+  coverage: [N, I]
   title: OpenStreetMap Ireland and Northern Ireland extract (Geofabrik)
   theme: amenities
   access: {type: http, url: "https://download.geofabrik.de/europe/ireland-and-northern-ireland-latest.osm.pbf"}
   format: pbf
   landing_page: https://download.geofabrik.de/europe/ireland-and-northern-ireland.html
-  description: Every OpenStreetMap feature on the island of Ireland, read for Northern Ireland's places of interest, parks, nurseries, pharmacies and settlements; features south of the border fall outside every active area and drop out.
+  description: Every OpenStreetMap feature on the island of Ireland, read for Northern Ireland's and Ireland's places of interest, parks, nurseries, pharmacies, GPs, dentists and settlementsside every active area and drop out.
   licence: ODbL-1.0
   attribution: "© OpenStreetMap contributors, Open Database Licence (ODbL) 1.0."
   cadence: daily
@@ -2448,3 +2448,122 @@ logainm:
   cadence: monthly
   size_hint: 20MB
   notes: Needs a free key from the Gaois Developer Hub (LOGAINM_API_KEY); without it the places keep the Irish forms OpenStreetMap carries. Logainm asks for monthly pulls at most.
+
+# ---------------------------------------------------------------------------------------
+# Ireland (v0.6.0): the Census 2022 geography and census, Tailte Éireann's boundaries and
+# buildings. Everything here is CC BY 4.0 from data.gov.ie and the Tailte Éireann portal.
+# ---------------------------------------------------------------------------------------
+
+cso_sa22_boundaries:
+  coverage: [I]
+  title: CSO Small Areas 2022 boundaries, ungeneralised (Tailte Éireann)
+  theme: geography
+  access:
+    type: arcgis_item
+    query: 'title:"CSO Small Areas - National Statistical Boundaries - 2022 - Ungeneralised" AND owner:TailteEireannMapGenie'
+    title_regex: '^CSO Small Areas - National Statistical Boundaries - 2022 - Ungeneralised'
+    item_type: Feature Service
+    pin: 70a33cbb8bd7406da0d571be28624721
+    mode: hub_export
+    export_format: geoPackage
+    hub: https://data-osi.opendata.arcgis.com
+  format: gpkg
+  landing_page: https://data-osi.opendata.arcgis.com/datasets/osi::cso-small-areas-national-statistical-boundaries-2022-ungeneralised
+  description: The 18,919 Small Areas of Census 2022 (80–120 dwellings each) with their Electoral Division, county, local electoral area and urban area, named in English and Irish, on the Irish Transverse Mercator.
+  licence: CC-BY-4.0
+  attribution: "Contains Tailte Éireann and Central Statistics Office data © Government of Ireland, licensed under CC BY 4.0."
+  cadence: static
+  period: "Census 2022 geography"
+  size_hint: 200MB
+
+cso_ed22_boundaries:
+  coverage: [I]
+  title: CSO Electoral Divisions 2022 boundaries, ungeneralised (Tailte Éireann)
+  theme: geography
+  access:
+    type: arcgis_item
+    query: 'title:"CSO Electoral Divisions - National Statistical Boundaries - 2022 - Ungeneralised" AND owner:TailteEireannMapGenie'
+    title_regex: '^CSO Electoral Divisions - National Statistical Boundaries - 2022 - Ungeneralised'
+    item_type: Feature Service
+    pin: deba50580cc24e4eb9cf50eb3cfebf69
+    mode: hub_export
+    export_format: geoPackage
+    layer: 1
+    hub: https://data-osi.opendata.arcgis.com
+  format: gpkg
+  landing_page: https://data-osi.opendata.arcgis.com/datasets/osi::cso-electoral-divisions-national-statistical-boundaries-2022-ungeneralised
+  description: The 3,417 CSO Electoral Divisions of Census 2022 (whole Small Areas; three amalgamated divisions come in two parts) with their county and local electoral area, named in English and Irish.
+  licence: CC-BY-4.0
+  attribution: "Contains Tailte Éireann and Central Statistics Office data © Government of Ireland, licensed under CC BY 4.0."
+  cadence: static
+  period: "Census 2022 geography"
+  size_hint: 80MB
+
+te_admin_areas:
+  coverage: [I]
+  title: Administrative Areas, National Statutory Boundaries 2019 (Tailte Éireann)
+  theme: geography
+  access:
+    type: arcgis_item
+    query: 'title:"Administrative Areas - National Statutory Boundaries - 2019" AND owner:TailteEireannMapGenie'
+    title_regex: '^Administrative Areas - National Statutory Boundaries - 2019$'
+    item_type: Feature Service
+    pin: d81188d16e804bde81548e982e80c53e
+    mode: featureserver
+    geometry: polygon
+  format: gpkg
+  landing_page: https://data-osi.opendata.arcgis.com/datasets/osi::administrative-areas-national-statutory-boundaries-2019
+  description: The 31 local authorities of Ireland (county, city, and city and county councils) with their county's Irish name and province; the map's outer zoom level there.
+  licence: CC-BY-4.0
+  attribution: "Contains Tailte Éireann data © Government of Ireland, licensed under CC BY 4.0."
+  cadence: static
+  period: "2019 statutory boundaries"
+  size_hint: 30MB
+
+cso_saps22_sa:
+  coverage: [I]
+  title: Census 2022 Small Area Population Statistics (CSO)
+  theme: geography
+  access: {type: http, url: "https://www.cso.ie/en/media/csoie/census/census2022/SAPS_2022_Small_Area_UR_171024.csv"}
+  format: csv
+  landing_page: https://www.cso.ie/en/census/census2022/census2022smallareapopulationstatistics/
+  description: Every Small Area's Census 2022 counts (age, sex, households, tenure, cars, commuting, health, education) with the CSO's six-class urban/rural classification; the population denominators and the urban/rural class of the Irish backbone.
+  licence: CC-BY-4.0
+  attribution: "Central Statistics Office, Census of Population 2022, Small Area Population Statistics, licensed under CC BY 4.0."
+  cadence: static
+  period: "Census 2022 (3 April 2022)"
+  size_hint: 40MB
+
+te_buildings:
+  coverage: [I]
+  title: Buildings, high value dataset (Tailte Éireann)
+  theme: geography
+  access:
+    type: arcgis_item
+    query: 'title:"High Value Dataset - Buildings" AND owner:TailteEireannMapGenie'
+    title_regex: '^High Value Dataset - Buildings$'
+    item_type: Feature Service
+    pin: cd14d445bb6d4af586f4edcfa01da895
+    mode: hub_export
+    export_format: geoPackage
+    hub: https://data-osi.opendata.arcgis.com
+  format: gpkg
+  landing_page: https://data.gov.ie/dataset/high-value-dataset-buildings
+  description: Every permanent roofed building in Ireland (3.8 million footprints, no use attribute); their centroids stand in for homes where there is no open postcode file, after dropping footprints too small or too large to be dwellings.
+  licence: CC-BY-4.0
+  attribution: "Contains Tailte Éireann data © Government of Ireland, licensed under CC BY 4.0."
+  cadence: adhoc
+  size_hint: 1GB
+  notes: The hub export is a 1 GB GeoPackage behind a redirect to blob storage. Footprints between 20 and 1,000 m² are kept as home points (Dublin's median dwelling footprint is about 70 m²); the share dropped is documented in the methodology.
+
+ie_local_authorities:
+  coverage: [I]
+  title: Ireland's local authorities by Census 2022 county code (curated)
+  theme: geography
+  access: {type: curated, path: config/data/ie_local_authorities.csv}
+  format: csv
+  description: The 34 county codes of the Census 2022 Small Area file mapped to the 31 local authorities (the three city-and-county mergers of 2014), with each council's code, English and Irish names and the name Tailte Éireann's boundary file uses.
+  licence: CC0-1.0
+  attribution: "Council names after the Placenames Database of Ireland (logainm.ie); the list itself is CC0 1.0."
+  cadence: adhoc
+  size_hint: 3KB

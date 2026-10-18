@@ -38,7 +38,6 @@ def _arcgis_access(**overrides) -> ArcgisItemAccess:
 @pytest.fixture
 def arcgis_server(httpserver, monkeypatch):
     monkeypatch.setattr(arcgis, "ARCGIS", httpserver.url_for("/sharing/rest"))
-    monkeypatch.setattr(arcgis, "HUB_DOWNLOAD", httpserver.url_for("/hub"))
     return httpserver
 
 
@@ -80,7 +79,14 @@ class TestResolveArcgisItem:
         session = make_session()
 
         hub = _arcgis_access(query=None, pin="fs1", mode="hub_export", export_format="geoPackage")
-        assert arcgis.resolve_item(hub, session)["url"].endswith("/hub/fs1/geoPackage?layers=0")
+        # The ONS geoportal unless the entry names another hub (Tailte Éireann's portal)
+        assert arcgis.resolve_item(hub, session)["url"] == (
+            "https://geoportal.statistics.gov.uk/api/download/v1/items/fs1/geoPackage?layers=0"
+        )
+        osi = hub.model_copy(update={"hub": "https://data-osi.opendata.arcgis.com/", "layer": 1})
+        assert arcgis.resolve_item(osi, session)["url"] == (
+            "https://data-osi.opendata.arcgis.com/api/download/v1/items/fs1/geoPackage?layers=1"
+        )
 
         fs = _arcgis_access(query=None, pin="fs1", mode="featureserver")
         assert arcgis.resolve_item(fs, session)["url"] == (

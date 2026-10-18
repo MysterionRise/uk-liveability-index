@@ -27,7 +27,10 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nspl",
         *LOW_BOUNDARIES,
     ],
-    "population": ["pop_lsoa_mye", "nrs_sape", "nisra_sdz_mye"],
+    "population": ["pop_lsoa_mye", "nrs_sape", "nisra_sdz_mye", "cso_saps22_sa"],
+    # Home points: UK postcodes from the NSPL, Irish building centroids placed in their
+    # Small Areas
+    "homes": ["nspl", "te_buildings", *LOW_BOUNDARIES],
     "geo_lsoa": [
         "oa_lookup",
         "msoa_names",
@@ -50,6 +53,12 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nisra_dz21_lookup",
         "nisra_sdz_mye",
         "council_names_ga",
+        # Ireland (geo_ie): Small Areas, divisions, councils, the census, the curated list
+        "cso_sa22_boundaries",
+        "cso_ed22_boundaries",
+        "te_admin_areas",
+        "cso_saps22_sa",
+        "ie_local_authorities",
     ],
     "oa_lookup": ["oa_lookup", "nrs_oa22_lookup", "nisra_dz21_lookup"],
     # Super Output Area 2001 → Super Data Zone 2021 weights (NIMDM and the capital
@@ -153,12 +162,13 @@ STAGE_INPUTS: dict[str, list[str]] = {
 
 # Staged tables each stager reads (the stager → staged-table edges of the graph)
 STAGE_READS: dict[str, list[str]] = {
-    "geo_lsoa": ["nspl", "population"],
+    "homes": ["nspl"],
+    "geo_lsoa": ["nspl", "population", "homes"],
     "dz11_dz22": ["nspl"],
     "price_paid": ["nspl", "geo_lsoa", "dz11_dz22"],  # Scotland: crosswalk and IZ fallback
-    "defra_pcm_no2": ["nspl"],
-    "defra_pcm_pm25": ["nspl"],
-    "defra_pcm_pm10": ["nspl"],
+    "defra_pcm_no2": ["homes"],
+    "defra_pcm_pm25": ["homes"],
+    "defra_pcm_pm10": ["homes"],
     "ods_gp": ["nspl"],
     "ods_dentists": ["nspl"],
     "ae_sites": ["nspl"],
@@ -179,10 +189,10 @@ STAGE_READS: dict[str, list[str]] = {
     "ofcom_broadband": ["oa_lookup"],
     "council_tax": ["geo_lsoa"],
     "flood": ["ea_flood_all_postcodes", "ea_flood_postcodes", "os_open_uprn", "voa_ctsop"],
-    "noise": ["nspl"],
-    "tree_cover": ["nspl"],
-    "night_lights": ["nspl"],
-    "climate": ["nspl"],
+    "noise": ["homes"],
+    "tree_cover": ["homes"],
+    "night_lights": ["homes"],
+    "climate": ["homes"],
     "deprivation": ["iod_2025", "dz11_dz22", "soa01_sdz21"],
 }
 
@@ -221,6 +231,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         environment,
         geo,
         health,
+        homes,
         housing,
         landcover,
         logainm,
@@ -250,11 +261,12 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "nspl": stage_nspl,
         "iod_2025": stage_iod,
         "population": stage_population,
+        "homes": homes.stage_homes,  # needs staged nspl; Ireland reads raw buildings
         "oa_lookup": geo.stage_oa_lookup,
         "lsoa11_lsoa21": geo.stage_lsoa11_lsoa21,
         "dz11_dz22": geo.stage_dz11_dz22,  # Scotland: needs staged nspl
         "soa01_sdz21": geo.stage_soa01_sdz21,  # Northern Ireland: raw NISRA files only
-        "geo_lsoa": geo.stage_geo_lsoa,  # needs staged nspl and population
+        "geo_lsoa": geo.stage_geo_lsoa,  # needs staged nspl, population and homes
         "places": geo.stage_places,
         "price_paid": stage_price_paid,
         **census,

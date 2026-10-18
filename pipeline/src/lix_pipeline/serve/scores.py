@@ -5,7 +5,7 @@
     data/serve/scores.parquet         compact copy for the browser: n__ percentiles as
                                       uint16 (×100; 65535 = missing) + q__ quality codes
                                       (uint8, see lix_core.quality)
-    data/serve/manifest.json          schema version, geography (country, nations, area
+    data/serve/manifest.json          schema version, geography (countries, nations, area
                                       counts), indicators, themes, presets, source
                                       versions, attribution and file checksums
 
@@ -47,8 +47,12 @@ GEO_COLUMNS = [
     "area_km2", "pwc_lon", "pwc_lat", "pwc_x", "pwc_y", "bbox_w", "bbox_s", "bbox_e", "bbox_n",
 ]  # fmt: skip
 # The areas' names in the other languages (null where a nation has none): Welsh from the
-# ONS and Commons Library files, Gaelic council names from the curated list
-NAME_COLUMNS = ["lsoa21nm_cy", "msoa_name_cy", "lad_nm_cy", "lad_nm_gd", "lad_nm_ga"]
+# ONS and Commons Library files, Gaelic council names from the curated list, Irish names
+# from Tailte Éireann's files; and the publisher's id where the codes are minted
+NAME_COLUMNS = [
+    "lsoa21nm_cy", "msoa_name_cy", "lad_nm_cy", "lad_nm_gd", "lad_nm_ga", "lsoa21nm_ga",
+    "msoa_name_ga", "source_code",
+]  # fmt: skip
 
 
 def _sha256(path: Path) -> str:
@@ -209,13 +213,15 @@ def correlation_matrix(features: pl.DataFrame) -> dict:
 
 
 def geography(area_counts: dict[str, int]) -> dict:
-    """The manifest's geography block: the country, the nations in this build, their sizes."""
+    """The manifest's geography block: the build's grid, the countries and the nations in
+    this build with their sizes."""
     cfg = load_nations()
     nations = {}
     for code in active_nations():
         spec = cfg.nations[code]
         nations[code] = {
             "name": spec.name,
+            "country": spec.country,
             "ctry_cd": spec.ctry_cd,
             "bbox": list(spec.bbox),
             "levels": {
@@ -230,8 +236,10 @@ def geography(area_counts: dict[str, int]) -> dict:
             "theme_gaps": list(spec.theme_gaps),
             "names": dict(spec.names),
         }
+    countries = sorted({cfg.nations[n].country for n in active_nations()})
     return {
-        "country": cfg.country.model_dump(),
+        "build": cfg.build.model_dump(),
+        "countries": {c: cfg.countries[c].model_dump() for c in countries},
         "nations": nations,
         "active": list(active_nations()),
         "area_counts": area_counts,

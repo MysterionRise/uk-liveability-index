@@ -1,9 +1,10 @@
 """Coordinate reference systems.
 
 Every stager computes distances in one *working* CRS, named in config/nations.yaml
-(British National Grid, EPSG:27700, for the UK). A nation whose published coordinates
-use another grid (Northern Ireland's NSPL rows are Irish Grid, EPSG:29903) declares it
-as ``input_crs`` and is reprojected on the way in, so nothing downstream needs to know.
+(British National Grid, EPSG:27700, for the UK and Ireland alike). A nation whose
+published coordinates use another grid (Northern Ireland's NSPL rows are Irish Grid,
+EPSG:29903; Ireland's files are Irish Transverse Mercator, EPSG:2157) declares it as
+``input_crs`` and is reprojected on the way in, so nothing downstream needs to know.
 """
 
 from functools import lru_cache
@@ -15,10 +16,10 @@ WGS84 = 4326
 
 
 def working_crs() -> int:
-    """The EPSG code every staged coordinate is in (``country.working_crs``)."""
+    """The EPSG code every staged coordinate is in (``build.working_crs``)."""
     from lix_core.config import load_nations
 
-    return load_nations().country.working_crs
+    return load_nations().build.working_crs
 
 
 @lru_cache(maxsize=16)

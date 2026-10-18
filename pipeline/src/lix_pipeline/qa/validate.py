@@ -79,6 +79,12 @@ def validate_geo() -> list[str]:
         pop = rows["population"].sum()
         if not low < pop < high:
             problems.append(f"{spec.name} population {pop:,} is outside {low:,}–{high:,}")
+        if spec.geo.minted_codes:
+            # Minted codes: the publisher's id rides along, once per area
+            if "source_code" not in rows.columns or rows["source_code"].null_count():
+                problems.append(f"{spec.name}: minted codes without a source_code for every area")
+            elif rows["source_code"].n_unique() != rows.height:
+                problems.append(f"{spec.name}: source_code repeats")
 
     # Centroids must sit inside their own LSOA's bbox
     outside = geo.filter(

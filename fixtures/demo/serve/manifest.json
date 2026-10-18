@@ -1,23 +1,32 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "generated_at": "2026-10-15T13:30:55+00:00",
   "data_release": null,
   "data_to": "2026-10-15",
   "geography": {
-    "country": {
-      "code": "UK",
-      "name": "United Kingdom",
+    "build": {
       "working_crs": 27700,
-      "currency": "GBP",
-      "locale": "en-GB",
-      "postcode_regex": "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$",
-      "bbox": [
-        -8.7,
-        49.8,
-        1.8,
-        60.9
-      ],
       "area_key": "lsoa21cd"
+    },
+    "countries": {
+      "UK": {
+        "name": "United Kingdom",
+        "short": "the UK",
+        "names": {
+          "cy": "y DU",
+          "gd": "an RA",
+          "ga": "an RA"
+        },
+        "currency": "GBP",
+        "locale": "en-GB",
+        "postcode_regex": "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$",
+        "bbox": [
+          -8.7,
+          49.8,
+          1.8,
+          60.9
+        ]
+      }
     },
     "nations": {
       "E": {
@@ -60,7 +69,8 @@
           "cy": "Lloegr",
           "gd": "Sasainn",
           "ga": "Sasana"
-        }
+        },
+        "country": "UK"
       },
       "W": {
         "name": "Wales",
@@ -102,7 +112,8 @@
           "cy": "Cymru",
           "gd": "A' Chuimrigh",
           "ga": "An Bhreatain Bheag"
-        }
+        },
+        "country": "UK"
       },
       "S": {
         "name": "Scotland",
@@ -144,7 +155,8 @@
           "cy": "Yr Alban",
           "gd": "Alba",
           "ga": "Albain"
-        }
+        },
+        "country": "UK"
       },
       "N": {
         "name": "Northern Ireland",
@@ -188,7 +200,8 @@
           "cy": "Gogledd Iwerddon",
           "gd": "\u00c8irinn a Tuath",
           "ga": "Tuaisceart \u00c9ireann"
-        }
+        },
+        "country": "UK"
       }
     },
     "active": [

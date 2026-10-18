@@ -13,19 +13,16 @@ single static file read with HTTP range requests; no tile server is needed.
 from pathlib import Path
 
 import geopandas as gpd
+import pandas as pd
 import pyogrio
 
-from lix_core.codes import area_code_regex
+from lix_core.codes import active_nations
+from lix_core.geo import working_crs
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
-from lix_pipeline.geo.boundaries import tier_polygons
+from lix_pipeline.geo.boundaries import tier_polygons, upper_polygons
 
 logger = setup_logging("serve.tiles")
-
-
-def _read(slug: str) -> gpd.GeoDataFrame:
-    path = data_dir("raw") / slug / f"{slug}.gpkg"
-    return gpd.read_file(path)
 
 
 def _tier(level: str, code: str) -> gpd.GeoDataFrame:
@@ -77,10 +74,10 @@ def build_tiles(
         msoa = msoa[msoa.intersects(lsoa.to_crs(msoa.crs).union_all().buffer(-1))]
     outputs.append(write_layer(msoa, out_dir / "msoa.pmtiles", "msoa", 6, 12))
 
-    lad = _read("lad_boundaries")
-    code = next(c for c in lad.columns if c.upper().startswith("LAD") and c.upper().endswith("CD"))
-    lad = lad.rename(columns={code: "lad_cd", code[:-2] + "NM": "name"})
-    lad = lad[lad["lad_cd"].str.match(area_code_regex("upper"))][["lad_cd", "name", "geometry"]]
+    # Each nation's upper tier from its own file (the UK's councils share one)
+    frames = [upper_polygons(n) for n in active_nations()]
+    lad = gpd.GeoDataFrame(pd.concat(frames), crs=working_crs()).rename(columns={"lad_nm": "name"})
+    lad = lad[["lad_cd", "name", "geometry"]]
     if lads is not None:
         lad = lad[lad["lad_cd"].isin(lads)]
     outputs.append(write_layer(lad, out_dir / "lad.pmtiles", "lad", 4, 10))

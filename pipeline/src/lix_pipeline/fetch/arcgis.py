@@ -21,7 +21,6 @@ from lix_core.log import setup_logging
 logger = setup_logging("fetch.arcgis")
 
 ARCGIS = "https://www.arcgis.com/sharing/rest"
-HUB_DOWNLOAD = "https://geoportal.statistics.gov.uk/api/download/v1/items"
 
 
 def _ms_to_iso(ms: int | None) -> str | None:
@@ -76,7 +75,8 @@ def resolve_item(access: ArcgisItemAccess, session: requests.Session) -> dict:
     if access.mode == "data":
         url = f"{ARCGIS}/content/items/{item_id}/data"
     elif access.mode == "hub_export":
-        url = f"{HUB_DOWNLOAD}/{item_id}/{access.export_format}?layers={access.layer}"
+        hub = access.hub.rstrip("/")
+        url = f"{hub}/api/download/v1/items/{item_id}/{access.export_format}?layers={access.layer}"
     else:
         url = f"{item['url'].rstrip('/')}/{access.layer}"
 

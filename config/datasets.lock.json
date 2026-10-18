@@ -413,6 +413,56 @@
       "version": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods"
     }
   },
+  "cso_ed22_boundaries": {
+    "fetched": {
+      "bytes": 118222848,
+      "etag": "\"0x8DD0EB067F3867A\"",
+      "fetched_at": "2026-10-18T12:04:39.385393+00:00",
+      "last_modified": "Wed, 27 Nov 2024 06:54:57 GMT",
+      "sha256": "2a5a969c527ec5fd91b5cf3541000f5df6d5b52b417024c28dfb8d121e98a0a6",
+      "version": "2026-02-05T10:05:44+00:00"
+    },
+    "resolved": {
+      "item_id": "deba50580cc24e4eb9cf50eb3cfebf69",
+      "modified": "2026-02-05T10:05:44+00:00",
+      "resolved_at": "2026-10-18T12:04:29+00:00",
+      "title": "CSO Electoral Divisions - National Statistical Boundaries - 2022 - Ungeneralised",
+      "url": "https://data-osi.opendata.arcgis.com/api/download/v1/items/deba50580cc24e4eb9cf50eb3cfebf69/geoPackage?layers=1",
+      "version": "2026-02-05T10:05:44+00:00"
+    }
+  },
+  "cso_sa22_boundaries": {
+    "fetched": {
+      "bytes": 203341824,
+      "etag": "\"0x8DD0B576F084FFC\"",
+      "fetched_at": "2026-10-18T12:11:21.436342+00:00",
+      "last_modified": "Sat, 23 Nov 2024 00:40:30 GMT",
+      "sha256": "35b32ceb45fd8df47241550455e7794e05ad21a7678c9bddb887f08e023b9299",
+      "version": "2026-02-05T10:05:44+00:00"
+    },
+    "resolved": {
+      "item_id": "70a33cbb8bd7406da0d571be28624721",
+      "modified": "2026-02-05T10:05:44+00:00",
+      "resolved_at": "2026-10-18T12:04:45+00:00",
+      "title": "CSO Small Areas - National Statistical Boundaries - 2022 - Ungeneralised",
+      "url": "https://data-osi.opendata.arcgis.com/api/download/v1/items/70a33cbb8bd7406da0d571be28624721/geoPackage?layers=0",
+      "version": "2026-02-05T10:05:44+00:00"
+    }
+  },
+  "cso_saps22_sa": {
+    "fetched": {
+      "bytes": 39568437,
+      "fetched_at": "2026-10-18T12:02:57.569914+00:00",
+      "last_modified": "Tue, 14 Jul 2026 13:57:44 GMT",
+      "sha256": "15f30f13a7ec638c02877b3909fba9256d218bd47b63c764312bf9ccd113e935",
+      "version": "Tue, 14 Jul 2026 13:57:44 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T12:02:55+00:00",
+      "url": "https://www.cso.ie/en/media/csoie/census/census2022/SAPS_2022_Small_Area_UR_171024.csv",
+      "version": "Tue, 14 Jul 2026 13:57:44 GMT"
+    }
+  },
   "daera_noise_r3": {
     "fetched": {
       "bytes": 94223212,
@@ -1208,6 +1258,20 @@
         "tasmin_hadukgrid_uk_1km_ann-30y_199101-202012.nc": "b2b1401fa4b21c80ca8b83085709005fb84663d94931066b8b6f22d75c167190",
         "tasmin_hadukgrid_uk_1km_seas-30y_199101-202012.nc": "d1ea02945450618ecda4a26500672d15af135e730f6255eeb97d98e5d7b5aac9"
       }
+    }
+  },
+  "ie_local_authorities": {
+    "fetched": {
+      "bytes": 2701,
+      "fetched_at": "2026-10-18T12:02:49+00:00",
+      "sha256": "84efcc8297a73dca1f54a539bad156636064c431dde5cff481b8d5a800773003",
+      "version": "84efcc8297a73dca"
+    },
+    "resolved": {
+      "path": "config/data/ie_local_authorities.csv",
+      "resolved_at": "2026-10-18T12:02:49+00:00",
+      "url": null,
+      "version": "84efcc8297a73dca"
     }
   },
   "iod_2025": {
@@ -5544,6 +5608,41 @@
       "resolved_at": "2026-10-15T10:29:36+00:00",
       "url": "https://data.dft.gov.uk/road-accidents-safety-data/dft-road-casualty-statistics-collision-last-5-years.csv",
       "version": null
+    }
+  },
+  "te_admin_areas": {
+    "fetched": {
+      "bytes": 29450240,
+      "fetched_at": "2026-10-18T12:04:20+00:00",
+      "rows": 31,
+      "sha256": "f13e414dfcd9f7b6d76799aa3e0f2e3127d6b416f73f589b1dda8a5c1bf65941",
+      "version": "2026-02-05T10:05:42+00:00"
+    },
+    "resolved": {
+      "item_id": "d81188d16e804bde81548e982e80c53e",
+      "modified": "2026-02-05T10:05:42+00:00",
+      "resolved_at": "2026-10-18T12:03:04+00:00",
+      "title": "Administrative Areas - National Statutory Boundaries - 2019",
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Administrative_Areas___OSi_National_Statutory_Boundaries/FeatureServer/0",
+      "version": "2026-02-05T10:05:42+00:00"
+    }
+  },
+  "te_buildings": {
+    "fetched": {
+      "bytes": 1006141440,
+      "etag": "\"0x8DED8566A9E32A6\"",
+      "fetched_at": "2026-10-18T12:05:32.428291+00:00",
+      "last_modified": "Thu, 02 Jul 2026 16:24:40 GMT",
+      "sha256": "838fd2c922d06f281cbeea53aad758ca0d117c5718d3a457d9a7e7d6ed0141c5",
+      "version": "2026-07-01T10:23:58+00:00"
+    },
+    "resolved": {
+      "item_id": "cd14d445bb6d4af586f4edcfa01da895",
+      "modified": "2026-07-01T10:23:58+00:00",
+      "resolved_at": "2026-10-18T12:04:53+00:00",
+      "title": "High Value Dataset - Buildings",
+      "url": "https://data-osi.opendata.arcgis.com/api/download/v1/items/cd14d445bb6d4af586f4edcfa01da895/geoPackage?layers=0",
+      "version": "2026-07-01T10:23:58+00:00"
     }
   },
   "translink_metro_txc": {

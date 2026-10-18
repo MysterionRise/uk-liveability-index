@@ -80,6 +80,10 @@ levels:
     low: {one: forchrios sonraí, other: forchriosanna sonraí}
     mid: {one: forchrios sonraí, other: forchriosanna sonraí}
     upper: {one: comhairle, other: comhairlí}
+  I:
+    low: {one: ceantar beag, other: ceantair bheaga}
+    mid: {one: toghroinn, other: toghranna}
+    upper: {one: comhairle, other: comhairlí}
 
 indicators:
   crime_violence: {label: Cionta foréigneacha agus gnéasacha, description: "Foréigean agus cionta gnéasacha a taifeadadh in aghaidh 1,000 cónaitheoir sa bhliain (meán 36 mí)."}

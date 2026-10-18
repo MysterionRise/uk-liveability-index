@@ -1,7 +1,8 @@
 """Access to points of interest (GPs, schools, pubs, ...) from where people live.
 
-Origins are residential postcodes (NSPL small users), so an LSOA's figure is the
-average experience of its addresses rather than of one centroid. Distances are
+Origins are home points (NSPL small-user postcodes in the UK, building centroids in
+Ireland; see ``stage_homes``), so an area's figure is the average experience of its
+homes rather than of one centroid. Distances are
 straight-line in British National Grid metres; walking-network routing comes later.
 
 For each origin we compute:
@@ -85,13 +86,24 @@ def poi_access(
 
 
 def residential_postcodes(*extra: str) -> pl.DataFrame:
-    """Live small-user postcodes (mostly homes) in the active nations, with BNG coordinates.
+    """Home points of the active nations with their coordinates in the working CRS: the
+    staged ``homes`` table (UK postcodes, Irish building centroids; ``stage_homes``), whose
+    ``home_id`` is returned as ``postcode``, or, before it exists, the live small-user
+    postcodes of the NSPL directly.
 
-    ``extra`` names further NSPL columns to keep (``"lat"``, ``"long"``).
+    ``extra`` names further columns to keep (``"lat"``, ``"long"``).
     """
     from lix_core.codes import active_nations, nation_of
     from lix_core.paths import data_dir
 
+    homes = data_dir("staged") / "homes.parquet"
+    if homes.exists():
+        return (
+            pl.scan_parquet(homes)
+            .filter(pl.col("nation").is_in(list(active_nations())))
+            .select(pl.col("home_id").alias("postcode"), "lsoa21cd", "east1m", "north1m", *extra)
+            .collect()
+        )
     path = data_dir("staged") / "nspl.parquet"
     # usrtypind 0 = small user (<25 items of mail a day), i.e. mostly residential
     return (

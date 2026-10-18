@@ -216,7 +216,7 @@ def build_areas(features: pl.DataFrame) -> pl.DataFrame:
             pl.col("msoa_name"),
             other("msoa_name_cy"),
             none,
-            none,
+            other("msoa_name_ga"),
             pl.col("msoa21cd") != pl.col("lsoa21cd"),
         ),
         (

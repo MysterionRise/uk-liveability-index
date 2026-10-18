@@ -119,7 +119,10 @@ def test_manifest_has_geography_and_quality_levels():
     assert m["geography"]["active"] == ["E", "W"]
     assert m["geography"]["area_counts"] == {"E": 2, "W": 2}
     assert m["geography"]["nations"]["W"]["levels"]["low"]["count"] == 1917
-    assert m["geography"]["country"]["currency"] == "GBP"
+    assert m["geography"]["build"]["working_crs"] == 27700
+    assert m["geography"]["countries"]["UK"]["currency"] == "GBP"
+    assert m["geography"]["nations"]["W"]["country"] == "UK"
+    assert "IE" not in m["geography"]["countries"]  # only the countries of the active nations
     assert m["quality_levels"] == list(QUALITY_LEVELS)
     assert {lang["code"] for lang in m["languages"]} >= {"en", "cy"}
     assert m["i18n"]["cy"]["themes"]["safety"]["label"] == "Diogelwch"

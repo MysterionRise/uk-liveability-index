@@ -80,6 +80,10 @@ levels:
     low: {one: àrd-shòn dàta, other: àrd-shònaichean dàta}
     mid: {one: àrd-shòn dàta, other: àrd-shònaichean dàta}
     upper: {one: comhairle, other: comhairlean}
+  I:
+    low: {one: sgìre bheag, other: sgìrean beaga}
+    mid: {one: roinn-taghaidh, other: roinnean-taghaidh}
+    upper: {one: comhairle, other: comhairlean}
 
 indicators:
   crime_violence: {label: Eucoirean fòirneart agus gnèitheasach, description: "Fòirneart agus eucoirean gnèitheasach a chaidh a chlàradh gach 1,000 luchd-còmhnaidh sa bhliadhna (cuibheas 36 mìosan)."}

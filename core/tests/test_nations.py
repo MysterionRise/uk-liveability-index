@@ -9,8 +9,12 @@ from lix_core.config import NationsConfig, load_nations
 
 def test_real_config_loads():
     cfg = load_nations()
-    assert cfg.country.area_key == "lsoa21cd"
-    assert list(cfg.nations) == ["E", "W", "S", "N"]
+    assert cfg.build.area_key == "lsoa21cd" and cfg.build.working_crs == 27700
+    assert list(cfg.countries) == ["UK", "IE"]
+    assert cfg.countries["IE"].postcode_regex is None and cfg.countries["IE"].currency == "EUR"
+    assert list(cfg.nations) == ["E", "W", "S", "N", "I"]
+    assert cfg.nations["I"].country == "IE" and cfg.nations["I"].geo.minted_codes
+    assert "oa" not in cfg.nations["I"].levels and cfg.nations["I"].levels["low"].count == 18_919
     assert cfg.nations["E"].levels["low"].count == 33_755
     assert cfg.nations["W"].levels["low"].count == 1_917
     assert cfg.nations["S"].levels["low"].count == 7_392
@@ -41,7 +45,7 @@ def test_config_rejects_bad_regex_and_code():
 class TestActiveNations:
     def test_default_is_every_configured_nation(self, monkeypatch):
         monkeypatch.delenv("LIX_NATIONS", raising=False)
-        assert codes.active_nations() == ("E", "W", "S", "N")
+        assert codes.active_nations() == ("E", "W", "S", "N", "I")
 
     def test_env_narrows_and_keeps_config_order(self, monkeypatch):
         monkeypatch.setenv("LIX_NATIONS", "w, e")
@@ -78,3 +82,26 @@ class TestScope:
 
     def test_deprecated_alias_still_england(self):
         assert codes.ENGLAND_LSOA21 == r"^E01\d{6}$"
+
+
+class TestMintedCodes:
+    def test_ranks_the_sorted_ids_and_keeps_split_and_merged_ones_apart(self):
+        ids = ["017010016", "017010012/01", "017010029/017010046", "017010012/01", None]
+        out = codes.minted_codes("I", "low", ids)
+        assert out == {
+            "017010012/01": "I01000001",
+            "017010016": "I01000002",
+            "017010029/017010046": "I01000003",
+        }
+        assert codes.minted_codes("I", "mid", ["027058/027085", "017010"]) == {
+            "017010": "I02000001",
+            "027058/027085": "I02000002",
+        }
+
+    def test_codes_match_the_configured_regexes(self):
+        import re
+
+        spec = load_nations().nations["I"]
+        low = codes.minted_codes("I", "low", ["b", "a"])
+        assert all(re.match(spec.levels["low"].regex, c) for c in low.values())
+        assert re.match(spec.levels["mid"].regex, codes.minted_codes("I", "mid", ["x"])["x"])

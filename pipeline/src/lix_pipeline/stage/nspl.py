@@ -31,7 +31,7 @@ def input_grids() -> dict[int, list[str]]:
     cfg = load_nations()
     out: dict[int, list[str]] = {}
     for code, nation in cfg.nations.items():
-        if nation.input_crs != cfg.country.working_crs:
+        if nation.input_crs != cfg.build.working_crs:
             out.setdefault(nation.input_crs, []).append(code)
     return out
 
