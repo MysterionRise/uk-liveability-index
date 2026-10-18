@@ -181,7 +181,7 @@ test("searching a postcode opens its profile with benchmarks", async ({
   );
   const bars = page.getByTestId("theme-bars");
   await expect(bars).toBeVisible({ timeout: 30_000 });
-  await expect(bars).toContainText(en.Profile.ukMedian);
+  await expect(bars).toContainText(en.Profile.ukMedian.replace("{in}", "").trim());
 });
 
 test("the welcome card's personas set the weights", async ({ page }) => {
@@ -259,7 +259,7 @@ test("a Scottish postcode opens a data zone profile", async ({ page }) => {
   );
   const bars = page.getByTestId("theme-bars");
   await expect(bars).toBeVisible({ timeout: 30_000 });
-  await expect(bars).toContainText(en.Profile.ukMedian);
+  await expect(bars).toContainText(en.Profile.ukMedian.replace("{in}", "").trim());
   // Area tiers are named by the nation's words from the manifest
   const input = page.getByTestId("search").locator("input");
   await input.fill("Marchmont");
