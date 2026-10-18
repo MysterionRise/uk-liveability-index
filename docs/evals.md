@@ -21,7 +21,7 @@ The assistant is tested with real models on the full build, using 55 cases in
 | Model (via OpenRouter) | Passed | Turn p50 | Turn p95 | Cost per question | Reply words (median) | Run |
 |---|---|---|---|---|---|---|
 | Claude Opus 5.5 | 32/32 | 7.33 s | 15.52 s | $0.0484 | 77.5 | 2026-10-08 |
-| Claude Haiku 5.5 (the default) | 50/50 | 3.93 s | 9.83 s | $0.0014 | 68.5 | 2026-10-15 |
+| Claude Haiku 5.5 (the default) | 54/55 | 4.09 s | 8.69 s | $0.0015 | 69 | 2026-10-18 |
 | Qwen 3.8 27B (open weights) | 32/32 | 6.44 s | 16.62 s | $0.0017 | 60.5 | 2026-10-08 |
 
 Per-case detail (tools called, replies, failed checks) is in [docs/evals/](evals/).
@@ -69,7 +69,7 @@ Costs are what OpenRouter billed. The 33rd case (ranking by one measure, #94) wa
 
 ## Choosing the model
 
-All three models pass every case. Claude Haiku 5.5 answers faster than Opus 5.5 at
+Opus and Qwen pass every case of the suite they ran; Haiku's one miss on 2026-10-18 was the Gaelic commuter's profile rationale, which the language heuristic read as English (it passed when run again). Claude Haiku 5.5 answers faster than Opus 5.5 at
 about 1/30 of the cost, with replies of similar quality; Opus frames trade-offs slightly
 more carefully. Haiku 5.5 is the default, with the open-weights Qwen 3.8 27B, served by
 a different provider, as the fallback (.env.example):
