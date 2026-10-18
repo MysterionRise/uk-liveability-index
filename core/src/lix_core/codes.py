@@ -43,8 +43,12 @@ def area_code_regex(level: LevelName = "low", nations: Nations | None = None) ->
     pandas alike.
     """
     specs = load_nations().nations
+    # A nation without the tier (Ireland has no output areas) contributes nothing; with no
+    # nation left the pattern matches nothing at all
     parts = [specs[n].levels[level].regex.removeprefix("^").removesuffix("$")
-             for n in (nations or active_nations())]  # fmt: skip
+             for n in (nations or active_nations()) if level in specs[n].levels]  # fmt: skip
+    if not parts:
+        return "^(?!)$"
     return "^(?:" + "|".join(parts) + ")$"
 
 

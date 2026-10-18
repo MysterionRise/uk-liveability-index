@@ -22,7 +22,16 @@
     "of_E": "of England",
     "of_W": "of Wales",
     "of_S": "of Scotland",
-    "of_N": "of Northern Ireland"
+    "of_N": "of Northern Ireland",
+    "I": "Ireland",
+    "IE": "Ireland",
+    "in_I": "in Ireland",
+    "in_uk_I": "in the UK and Ireland",
+    "of": "of",
+    "of_uk": "of the UK",
+    "of_I": "of Ireland",
+    "of_uk_I": "of the UK and Ireland",
+    "of_E_W": "of England and Wales"
   },
   "Header": {
     "title": "UK Liveability Index",
@@ -143,7 +152,7 @@
     "3": "Middle",
     "4": "Above average",
     "5": "Top fifth",
-    "betterThan": "better than {pct, number}% of the UK",
+    "betterThan": "better than {pct, number}% {of}",
     "betterThanNation": "better than {pct, number}% {nationOf}"
   },
   "Quality": {
@@ -167,8 +176,8 @@
     "noData": "No data"
   },
   "Map": {
-    "hover": "{name}: better than {pct, number}% of the UK",
-    "hoverNoName": "better than {pct, number}% of the UK",
+    "hover": "{name}: better than {pct, number}% {of}",
+    "hoverNoName": "better than {pct, number}% {of}",
     "hoverIn": "{name}: better than {pct, number}% of areas {coverageIn}",
     "hoverInNoName": "better than {pct, number}% of areas {coverageIn}",
     "overall": "Overall",
@@ -217,11 +226,11 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} residents",
     "overallOf100": "/ 100 overall ({preset})",
-    "rangeTitle": "The 5–95% range of the UK percentile when each theme's weight is nudged by about a quarter",
-    "range": "With slightly different weights: better than {lo, number}–{hi, number}% of the UK",
-    "betterThan": "Better than {pct, number}% of the UK",
+    "rangeTitle": "The 5–95% range of the percentile when each theme's weight is nudged by about a quarter",
+    "range": "With slightly different weights: better than {lo, number}–{hi, number}% {of}",
+    "betterThan": "Better than {pct, number}% {of}",
     "localMedian": "{area} median",
-    "ukMedian": "UK median",
+    "ukMedian": "Median {in}",
     "strengths": "Strengths",
     "weakerSpots": "Weaker spots",
     "showOnMap": "Show on map",

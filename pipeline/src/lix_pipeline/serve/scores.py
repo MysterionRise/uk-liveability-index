@@ -239,7 +239,15 @@ def geography(area_counts: dict[str, int]) -> dict:
     countries = sorted({cfg.nations[n].country for n in active_nations()})
     return {
         "build": cfg.build.model_dump(),
-        "countries": {c: cfg.countries[c].model_dump() for c in countries},
+        "countries": {
+            c: {
+                **cfg.countries[c].model_dump(),
+                # Every nation of the country the config knows, active or not, so copy can
+                # tell a whole country ("the UK") from a cut of it ("England and Wales")
+                "nations": [n for n, spec in cfg.nations.items() if spec.country == c],
+            }
+            for c in countries
+        },
         "nations": nations,
         "active": list(active_nations()),
         "area_counts": area_counts,

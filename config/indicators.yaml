@@ -50,8 +50,8 @@ indicators:
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, N]  # iod_2025 only imputes Greater Manchester
-    sources: [police_crime, iod_2025]
+    coverage: [E, W, N, I]  # iod_2025 only imputes Greater Manchester
+    sources: [police_crime, iod_2025, cso_cja11, cso_garda_subdistricts, garda_station_aliases]
     builder: safety:crime_rate
     params: {types: ["Violence and sexual offences"]}
     log1p: true
@@ -66,8 +66,8 @@ indicators:
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, N]  # iod_2025 only imputes Greater Manchester
-    sources: [police_crime, iod_2025]
+    coverage: [E, W, N, I]  # iod_2025 only imputes Greater Manchester
+    sources: [police_crime, iod_2025, cso_cja11, cso_garda_subdistricts, garda_station_aliases]
     builder: safety:crime_rate
     params: {types: ["Burglary"]}
     log1p: true
@@ -79,8 +79,8 @@ indicators:
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, N]  # iod_2025 only imputes Greater Manchester
-    sources: [police_crime, iod_2025]
+    coverage: [E, W, N, I]  # iod_2025 only imputes Greater Manchester
+    sources: [police_crime, iod_2025, cso_cja11, cso_garda_subdistricts, garda_station_aliases]
     builder: safety:crime_rate
     params: {types: ["Anti-social behaviour"]}
     log1p: true
@@ -92,8 +92,8 @@ indicators:
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, N]  # iod_2025 only imputes Greater Manchester
-    sources: [police_crime, iod_2025]
+    coverage: [E, W, N, I]  # iod_2025 only imputes Greater Manchester
+    sources: [police_crime, iod_2025, cso_cja11, cso_garda_subdistricts, garda_station_aliases]
     builder: safety:crime_rate
     params: {types: ["Robbery", "Theft from the person", "Vehicle crime", "Bicycle theft"]}
     log1p: true
@@ -194,8 +194,8 @@ indicators:
     description: Entrances to public parks, gardens and playing fields within a 1km walk, weighted by distance (in Northern Ireland, OpenStreetMap parks and pitches).
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S, N]
-    sources: [os_greenspace, osm_ireland, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [os_greenspace, osm_ireland, nspl, te_buildings]
     builder: common:access
     params: {slug: os_greenspace, column: function, values: [Public Park Or Garden, Playing Field], radius_m: 1000, cap: 10}
     normalise: scale
@@ -267,8 +267,8 @@ indicators:
     description: Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road, rail and aircraft in England; road and rail in Wales; every mapped source in Scotland and Northern Ireland).
     unit: "% of homes"
     direction: lower_better
-    coverage: [E, W, S, N]
-    sources: [defra_noise_road_lden, defra_noise_rail_lden, defra_noise_air_lden, wg_noise_road_lden, wg_noise_rail_lden, sepa_noise_all_lden, daera_noise_r3, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [defra_noise_road_lden, defra_noise_rail_lden, defra_noise_air_lden, wg_noise_road_lden, wg_noise_rail_lden, sepa_noise_all_lden, daera_noise_r3, nspl, epa_noise_road_agg, epa_noise_road_nat, epa_noise_rail_agg, epa_noise_rail_nat, epa_noise_air_nat, epa_noise_industry_agg, te_buildings]
     builder: environment:percent
     params: {slug: noise, column: share_any_60}
     normalise: threshold
@@ -283,8 +283,8 @@ indicators:
     description: Share of homes where road or rail noise averages 60 dB Lden or more over the day, evening and night, from the strategic noise maps.
     unit: "% of homes"
     direction: lower_better
-    coverage: [E, W, N]  # Scotland publishes one consolidated map (see noise_exposure)
-    sources: [defra_noise_road_lden, defra_noise_rail_lden, wg_noise_road_lden, wg_noise_rail_lden, daera_noise_r3, nspl]
+    coverage: [E, W, N, I]  # Scotland publishes one consolidated map (see noise_exposure)
+    sources: [defra_noise_road_lden, defra_noise_rail_lden, wg_noise_road_lden, wg_noise_rail_lden, daera_noise_r3, nspl, epa_noise_road_agg, epa_noise_road_nat, epa_noise_rail_agg, epa_noise_rail_nat, te_buildings]
     builder: environment:percent
     params: {slug: noise, column: share_road_rail_60}
     normalise: threshold
@@ -300,8 +300,8 @@ indicators:
     description: Share of homes where aircraft noise averages 55 dB Lden or more over the day, evening and night, around the sixteen airports England maps and Belfast City Airport.
     unit: "% of homes"
     direction: lower_better
-    coverage: [E, N]  # Scotland's consolidated map does not separate airports; Wales maps none
-    sources: [defra_noise_air_lden, daera_noise_r3, nspl]
+    coverage: [E, N, I]  # Scotland's consolidated map does not separate airports; Wales maps none
+    sources: [defra_noise_air_lden, daera_noise_r3, nspl, epa_noise_air_nat, te_buildings]
     builder: environment:percent
     params: {slug: noise, column: share_air_55}
     role: context
@@ -313,8 +313,8 @@ indicators:
     description: Share of homes where industrial noise averages 55 dB Lden or more over the day, evening and night, in Scotland's five mapped cities and Northern Ireland's two agglomerations.
     unit: "% of homes"
     direction: lower_better
-    coverage: [S, N]  # England and Wales publish no industry layer
-    sources: [sepa_noise_industry_lden, daera_noise_r3, nspl]
+    coverage: [S, N, I]  # England and Wales publish no industry layer
+    sources: [sepa_noise_industry_lden, daera_noise_r3, nspl, epa_noise_industry_agg, te_buildings]
     builder: environment:percent
     params: {slug: noise, column: share_industry_55}
     role: context
@@ -326,7 +326,8 @@ indicators:
     description: Share of the land within 500m of homes that satellite land cover classes as tree cover (ESA WorldCover, 10m).
     unit: "%"
     direction: higher_better
-    sources: [esa_worldcover, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [esa_worldcover, nspl, te_buildings]
     builder: common:column
     params: {slug: tree_cover, column: canopy_pct}
     normalise: threshold
@@ -341,7 +342,8 @@ indicators:
     description: Average night-time radiance within 1km of homes, from the VIIRS satellite annual composite (nW/cm²/sr).
     unit: nW/cm²/sr
     direction: lower_better
-    sources: [viirs_vnl, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [viirs_vnl, nspl, te_buildings]
     builder: environment:optional_column
     params: {slug: night_lights, column: radiance}
     role: context
@@ -367,7 +369,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest consultant-led emergency department.
     unit: metres
     direction: lower_better
-    sources: [ae_sites, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [ae_sites, nspl, te_buildings]
     builder: common:nearest
     params: {slug: ae_sites, column: type, values: [type1], beyond_cap: 50000}
     normalise: threshold
@@ -395,8 +398,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest GP practice.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S, N]
-    sources: [ods_gp, nspl, phs_gp_practices, bso_gp_list_sizes]
+    coverage: [E, W, S, N, I]
+    sources: [ods_gp, nspl, phs_gp_practices, bso_gp_list_sizes, osm_ireland, te_buildings]
     builder: health:nearest_gp
     normalise: threshold
     good: 1000
@@ -463,8 +466,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest NHS community pharmacy.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S, N]  # NHSBSA in England, OpenStreetMap in Wales, PHS dispenser list in Scotland
-    sources: [nhsbsa_pharmacies, osm_wales, nspl, phs_pharmacies, bso_dispensing]
+    coverage: [E, W, S, N, I]  # NHSBSA in England, OpenStreetMap in Wales, PHS dispenser list in Scotland
+    sources: [nhsbsa_pharmacies, osm_wales, nspl, phs_pharmacies, bso_dispensing, osm_ireland, te_buildings]
     builder: common:nearest
     params: {slug: pharmacies}
     normalise: threshold
@@ -480,8 +483,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest dental practice with an NHS contract.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S, N]
-    sources: [ods_dentists, nspl, phs_dentists, bso_dental]
+    coverage: [E, W, S, N, I]
+    sources: [ods_dentists, nspl, phs_dentists, bso_dental, osm_ireland, te_buildings]
     builder: common:nearest
     params: {slug: ods_dentists}
     normalise: threshold
@@ -661,8 +664,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest railway, metro or tram stop.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S, N]
-    sources: [naptan, translink_rail_txc, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [naptan, translink_rail_txc, nspl, nta_gtfs, te_buildings]
     builder: common:nearest
     params: {slug: naptan, column: mode, values: [rail, metro_tram], beyond_cap: 50000}
     normalise: threshold
@@ -707,8 +710,8 @@ indicators:
     description: Buses an hour (weekdays, 07:00–19:00) at the busiest stop within 400m of homes.
     unit: buses an hour
     direction: higher_better
-    coverage: [E, W, S, N]
-    sources: [bods_gtfs, bods_gtfs_wales, nspl, bods_gtfs_scotland, translink_metro_txc, translink_ulsterbus_txc]
+    coverage: [E, W, S, N, I]
+    sources: [bods_gtfs, bods_gtfs_wales, nspl, bods_gtfs_scotland, translink_metro_txc, translink_ulsterbus_txc, nta_gtfs, te_buildings]
     builder: common:nearby_max
     params: {slug: bods_gtfs, column: per_hour, radius_m: 400}
     normalise: threshold
@@ -719,13 +722,32 @@ indicators:
     overlap_group: connectivity
     caveats: Timetabled buses on a normal Tuesday. Shown, not scored, because DfT's connectivity score (scored) already covers bus access (ρ ≈ 0.82). Publishing to the Bus Open Data Service is voluntary in Scotland, so some Scottish operators are missing.
 
+  - id: bus_access
+    theme: transport
+    label: Bus service nearby
+    description: Buses an hour (weekdays, 07:00–19:00) at the busiest stop within 400m of homes, from the Transport for Ireland timetables; stands in for the connectivity score Ireland has no equivalent of.
+    unit: buses an hour
+    direction: higher_better
+    coverage: [I]
+    sources: [nta_gtfs, te_buildings]
+    builder: common:nearby_max
+    params: {slug: bods_gtfs, column: per_hour, radius_m: 400}
+    normalise: threshold
+    good: 12
+    bad: 0
+    log1p: true
+    overlap_group: connectivity
+    substitute_for: [connectivity_overall]
+    caveats: Timetabled buses on a normal Tuesday, every operator in the national feed. A substitute for the DfT connectivity score, which weighs walking, cycling, driving and public transport to jobs and services; buses alone read thinner.
+
   - id: gigabit_broadband
     theme: transport
     label: Gigabit broadband
     description: Share of homes that can get gigabit-capable broadband (full fibre or cable).
     unit: "% of homes"
     direction: higher_better
-    sources: [ofcom_broadband]
+    coverage: [E, W, S, N, I]
+    sources: [ofcom_broadband, comreg_gigabit, cso_sa22_boundaries]
     builder: common:column
     params: {slug: ofcom_broadband, column: gigabit_pct}
     normalise: scale
@@ -763,8 +785,8 @@ indicators:
     description: Cafés and restaurants within 800m, weighted by distance.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S, N]
-    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
+    coverage: [E, W, S, N, I]
+    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland, te_buildings]
     builder: amenities:osm_access
     params: {values: [cafe, restaurant], radius_m: 800, cap: 6}
     normalise: scale
@@ -776,8 +798,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest supermarket.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S, N]
-    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
+    coverage: [E, W, S, N, I]
+    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland, te_buildings]
     builder: amenities:osm_nearest
     params: {values: [supermarket]}
     normalise: threshold
@@ -806,8 +828,8 @@ indicators:
     description: Sports centres, gyms and swimming pools open to the public within 2km, weighted by distance (OpenStreetMap).
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S, N]
-    sources: [osm_england, osm_wales, osm_scotland, nspl, osm_ireland]
+    coverage: [E, W, S, N, I]
+    sources: [osm_england, osm_wales, osm_scotland, nspl, osm_ireland, te_buildings]
     builder: amenities:osm_access
     params: {values: [sports_centre, fitness_centre, swimming_pool], radius_m: 2000, cap: 10, exclude: {access: [private]}}
     normalise: scale
@@ -845,8 +867,8 @@ indicators:
     description: Libraries, cinemas, theatres, arts centres, museums and galleries within 2km.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S, N]
-    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
+    coverage: [E, W, S, N, I]
+    sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland, te_buildings]
     builder: amenities:osm_access
     params: {values: [library, cinema, theatre, arts_centre, museum, gallery], radius_m: 2000, cap: 3}
     normalise: scale
@@ -1026,8 +1048,8 @@ indicators:
     unit: rate
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, S, N]
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries]
+    coverage: [E, W, S, N, I]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries, pobal_hp_2022, cso_sa22_boundaries]
     builder: common:deprivation
     params: {column: employment_score}
     role: context
@@ -1058,6 +1080,21 @@ indicators:
     params: {column: income_net}
     role: context
     overlap_group: income_work
+
+  - id: pobal_deprivation
+    theme: community
+    label: Affluence and deprivation (Pobal HP index)
+    description: The Pobal HP relative deprivation index of the Electoral Division from Census 2022 (unemployment, education, social class, lone parents, tenure and overcrowding), higher meaning more affluent; a Small Area takes its division's value.
+    unit: score
+    direction: higher_better
+    benchmark: nation
+    coverage: [I]
+    sources: [pobal_hp_2022, cso_sa22_boundaries]
+    builder: common:deprivation
+    params: {column: pobal_index}
+    normalise: rank
+    substitute_for: [income_deprivation]
+    caveats: Published for Electoral Divisions (about 1,500 people); the Small Area version is licensed. Stands in for the income deprivation share, which Ireland does not publish below county level.
 
   - id: health_deprivation
     theme: community
@@ -1107,8 +1144,8 @@ indicators:
     unit: score
     direction: lower_better
     benchmark: nation
-    coverage: [E, W, S, N]
-    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries]
+    coverage: [E, W, S, N, I]
+    sources: [iod_2025, wimd_2025_scores, wimd_2025_ranks, simd_2020_ranks, simd_2020_indicators, simd_postcode_lookup, nrs_oa22_population, nimdm_2017, osni_soa01_boundaries, pobal_hp_2022, cso_sa22_boundaries]
     builder: common:deprivation
     params: {column: imd_score}
     role: context
@@ -1236,7 +1273,8 @@ indicators:
     description: Mean daily maximum temperature in June to August, averaged over 1991–2020 (°C).
     unit: °C
     direction: higher_better
-    sources: [haduk_grid, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [haduk_grid, nspl, met_eireann_temp_9120, te_buildings]
     builder: environment:optional_column
     params: {slug: climate, column: summer_tmax}
     normalise: threshold
@@ -1252,7 +1290,8 @@ indicators:
     description: Mean daily minimum temperature in December to February, averaged over 1991–2020 (°C).
     unit: °C
     direction: higher_better
-    sources: [haduk_grid, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [haduk_grid, nspl, met_eireann_temp_9120, te_buildings]
     builder: environment:optional_column
     params: {slug: climate, column: winter_tmin}
     normalise: threshold
@@ -1262,13 +1301,31 @@ indicators:
     overlap_group: winter
     caveats: Night-time lows, which drive frost and heating bills; coasts and cities read milder than the hills behind them.
 
+  - id: rainfall_total
+    theme: climate
+    label: Annual rainfall
+    description: Average rainfall a year, 1991–2020, from Met Éireann's 1 km grid; stands in for wet days, which Met Éireann publishes no grid of.
+    unit: mm a year
+    direction: lower_better
+    coverage: [I]
+    sources: [met_eireann_rr_9120, te_buildings]
+    builder: environment:optional_column
+    params: {slug: climate, column: rainfall_mm}
+    normalise: threshold
+    good: 800
+    bad: 1600
+    overlap_group: rain
+    substitute_for: [wet_days]
+    caveats: Total rainfall, not how often it rains; the thresholds follow the UK wet-day ones (120 and 200 days correspond to about 800 and 1,600 mm across the UK grid).
+
   - id: rainfall
     theme: climate
     label: Rainfall
     description: Rainfall a year in millimetres, averaged over 1991–2020.
     unit: mm a year
     direction: lower_better
-    sources: [haduk_grid, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [haduk_grid, nspl, met_eireann_rr_9120, te_buildings]
     builder: environment:optional_column
     params: {slug: climate, column: rainfall_mm}
     role: context

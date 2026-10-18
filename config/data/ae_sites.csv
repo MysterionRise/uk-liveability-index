@@ -266,3 +266,37 @@ Wrexham Maelor Hospital,W,type1,,53.04737,-3.00829,"OpenStreetMap way 218436943 
 Ysbyty Bronglais / Bronglais Hospital,W,type1,,52.41641,-4.07113,"OpenStreetMap way 55216072 (hospital, emergency=yes)",https://www.openstreetmap.org/way/55216072,2026-10-13
 Ysbyty Gwynedd,W,type1,,53.20875,-4.16005,"OpenStreetMap way 364805892 (hospital, emergency=yes)",https://www.openstreetmap.org/way/364805892,2026-10-13
 Ysbyty Ystrad Fawr,W,type1,,51.63446,-3.23472,"OpenStreetMap way 210621038 (hospital, emergency=yes)",https://www.openstreetmap.org/way/210621038,2026-10-13
+Beaumont Hospital,I,type1,,53.38949,-6.22473,"OpenStreetMap way 22634348 (hospital, emergency=yes)",https://www.openstreetmap.org/way/22634348,2026-10-18
+Connolly Hospital,I,type1,,53.38897,-6.36784,"OpenStreetMap way 12219521 (hospital, emergency=yes)",https://www.openstreetmap.org/way/12219521,2026-10-18
+Mater Misericordiae University Hospital,I,type1,,53.35905,-6.26677,"OpenStreetMap way 33005181 (hospital, emergency=yes)",https://www.openstreetmap.org/way/33005181,2026-10-18
+St James's Hospital,I,type1,,53.34012,-6.29558,"OpenStreetMap way 32015912 (hospital, emergency=yes)",https://www.openstreetmap.org/way/32015912,2026-10-18
+St Vincent's University Hospital,I,type1,,53.31684,-6.2128,"OpenStreetMap relation 12144599 (hospital, emergency=yes)",https://www.openstreetmap.org/relation/12144599,2026-10-18
+Tallaght University Hospital,I,type1,,53.2912,-6.37888,"OpenStreetMap way 51231573 (hospital, emergency=yes; adult and children's departments)",https://www.openstreetmap.org/way/51231573,2026-10-18
+Children's Health Ireland at Crumlin,I,type1,,53.32618,-6.3189,"OpenStreetMap way 32063615 (hospital, emergency=yes; children only)",https://www.openstreetmap.org/way/32063615,2026-10-18
+Children's Health Ireland at Temple Street,I,type1,,53.35711,-6.26155,"OpenStreetMap way 137349173 (hospital; HSE emergency department; children only)",https://www.openstreetmap.org/way/137349173,2026-10-18
+Cork University Hospital,I,type1,,51.88338,-8.51207,"OpenStreetMap way 118618667 (hospital, emergency=yes)",https://www.openstreetmap.org/way/118618667,2026-10-18
+Mercy University Hospital,I,type1,,51.89893,-8.48241,"OpenStreetMap way 353427032 (hospital, emergency=yes)",https://www.openstreetmap.org/way/353427032,2026-10-18
+University Hospital Limerick,I,type1,,52.63421,-8.65316,"OpenStreetMap way 45766917 (hospital; HSE emergency department)",https://www.openstreetmap.org/way/45766917,2026-10-18
+University Hospital Galway,I,type1,,53.27716,-9.06729,"OpenStreetMap way 26131060 (hospital, emergency=yes)",https://www.openstreetmap.org/way/26131060,2026-10-18
+Portiuncula University Hospital,I,type1,,53.32669,-8.23579,"OpenStreetMap way 183750993 (hospital, emergency=yes)",https://www.openstreetmap.org/way/183750993,2026-10-18
+University Hospital Waterford,I,type1,,52.24901,-7.0781,"OpenStreetMap way 32152329 (hospital, emergency=yes)",https://www.openstreetmap.org/way/32152329,2026-10-18
+University Hospital Kerry,I,type1,,52.26583,-9.68728,"OpenStreetMap way 111471269 (hospital, emergency=yes)",https://www.openstreetmap.org/way/111471269,2026-10-18
+Mayo University Hospital,I,type1,,53.85088,-9.30288,"OpenStreetMap way 444951067 (hospital, emergency=yes)",https://www.openstreetmap.org/way/444951067,2026-10-18
+Sligo University Hospital,I,type1,,54.27509,-8.46445,"OpenStreetMap way 1533711209 (hospital, emergency=yes)",https://www.openstreetmap.org/way/1533711209,2026-10-18
+Letterkenny University Hospital,I,type1,,54.96016,-7.73474,"OpenStreetMap relation 5589207 (hospital; HSE emergency department)",https://www.openstreetmap.org/relation/5589207,2026-10-18
+"Our Lady of Lourdes Hospital, Drogheda",I,type1,,53.72214,-6.35429,"OpenStreetMap way 257323730 (hospital, emergency=yes)",https://www.openstreetmap.org/way/257323730,2026-10-18
+Cavan General Hospital,I,type1,,54.00104,-7.37181,"OpenStreetMap way 152613437 (hospital, emergency=yes)",https://www.openstreetmap.org/way/152613437,2026-10-18
+Midland Regional Hospital Mullingar,I,type1,,53.53441,-7.34901,"OpenStreetMap way 49414502 (hospital, emergency=yes)",https://www.openstreetmap.org/way/49414502,2026-10-18
+Midland Regional Hospital Tullamore,I,type1,,53.28313,-7.48855,"OpenStreetMap way 56968562 (hospital; HSE emergency department)",https://www.openstreetmap.org/way/56968562,2026-10-18
+Midland Regional Hospital Portlaoise,I,type1,,53.03782,-7.27537,"OpenStreetMap way 223248196 (hospital; HSE emergency department)",https://www.openstreetmap.org/way/223248196,2026-10-18
+Naas General Hospital,I,type1,,53.21141,-6.6614,"OpenStreetMap way 353435239 (hospital; HSE emergency department)",https://www.openstreetmap.org/way/353435239,2026-10-18
+Wexford General Hospital,I,type1,,52.34317,-6.48302,"OpenStreetMap way 353438490 (hospital, emergency=yes)",https://www.openstreetmap.org/way/353438490,2026-10-18
+"St Luke's General Hospital, Kilkenny",I,type1,,52.66645,-7.26281,"OpenStreetMap way 120235458 (hospital, emergency=yes)",https://www.openstreetmap.org/way/120235458,2026-10-18
+"Tipperary University Hospital, Clonmel",I,type1,,52.35572,-7.71493,"OpenStreetMap way 353442127 (hospital; HSE emergency department)",https://www.openstreetmap.org/way/353442127,2026-10-18
+Ennis Hospital injury unit,I,other,,52.85134,-8.98384,"OpenStreetMap way 353440320 (hospital; HSE injury unit)",https://www.openstreetmap.org/way/353440320,2026-10-18
+Nenagh Hospital injury unit,I,other,,52.85822,-8.19094,"OpenStreetMap way 36393501 (hospital; HSE injury unit)",https://www.openstreetmap.org/way/36393501,2026-10-18
+Mallow General Hospital injury unit,I,other,,52.1515,-8.6637,"OpenStreetMap way 177571700 (hospital; HSE injury unit)",https://www.openstreetmap.org/way/177571700,2026-10-18
+Bantry General Hospital injury unit,I,other,,51.67627,-9.45012,"OpenStreetMap way 177777682 (hospital; HSE injury unit)",https://www.openstreetmap.org/way/177777682,2026-10-18
+"Louth County Hospital injury unit, Dundalk",I,other,,53.98777,-6.40078,"OpenStreetMap relation 5274433 (hospital; HSE injury unit)",https://www.openstreetmap.org/relation/5274433,2026-10-18
+Monaghan Hospital injury unit,I,other,,54.24994,-6.97425,"OpenStreetMap way 521524730 (hospital; HSE injury unit)",https://www.openstreetmap.org/way/521524730,2026-10-18
+Roscommon University Hospital injury unit,I,other,,53.6245,-8.17533,"OpenStreetMap way 196744297 (hospital; HSE injury unit)",https://www.openstreetmap.org/way/196744297,2026-10-18

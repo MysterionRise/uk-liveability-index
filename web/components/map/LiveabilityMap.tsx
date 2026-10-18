@@ -21,7 +21,7 @@ import { pctRank } from "@/lib/format";
 import { CHROME, FILL_OPACITY } from "@/lib/palette";
 import { useLocale, useTranslations } from "next-intl";
 
-import { useCoverageIn } from "@/lib/copy";
+import { useCoverageIn, useCoverageOf } from "@/lib/copy";
 import { activeBbox, coverageNations } from "@/lib/data";
 import { bboxOf } from "@/lib/state";
 
@@ -173,6 +173,12 @@ export function LiveabilityMap() {
   useEffect(() => {
     whereRef.current = whereIn;
   }, [whereIn]);
+  // "of the UK and Ireland": what the headline percentile compares against
+  const coverageOf = useCoverageOf();
+  const ofRef = useRef(coverageOf);
+  useEffect(() => {
+    ofRef.current = coverageOf;
+  }, [coverageOf]);
   const values = useScores(state);
   const appliedBbox = useRef<string>("");
   const styleDark = useRef<boolean | null>(null);
@@ -365,7 +371,7 @@ export function LiveabilityMap() {
             : whereRef.current
               ? "hoverIn"
               : "hover";
-      const args = { pct: pctRank(v), coverageIn: whereRef.current ?? "" };
+      const args = { pct: pctRank(v), coverageIn: whereRef.current ?? "", of: ofRef.current };
       setHover(
         f && typeof v === "number"
           ? { x: e.point.x, y: e.point.y, text: name ? t(key, { name, ...args }) : t(`${key}NoName`, args) }

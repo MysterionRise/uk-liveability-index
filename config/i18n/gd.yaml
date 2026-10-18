@@ -129,6 +129,7 @@ indicators:
   station_distance: {label: Astar chun an stèisein as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun an stad rèile, metro no trama as fhaisge."}
   rail_service: {label: Seirbheis rèile faisg air làimh, description: "Inntrigidhean agus fàgail stèisein bliadhnail (ORR) taobh a-staigh 2km de dhachaighean, air an cuideamachadh a rèir astair agus a' sàsachadh, gus am bi stèisean trang faisg air làimh a' cunntadh barrachd na stad beag."}
   bus_frequency: {label: Tricead bhusaichean, description: "Busaichean san uair (làithean-seachdain, 07:00–19:00) aig an stad as trainge taobh a-staigh 400m de dhachaighean."}
+  bus_access: {label: Seirbheis bhus faisg air làimh, description: "Busaichean san uair (làithean na seachdain, 07:00–19:00) aig an stad as trainge taobh a-staigh 400m de dhachaighean, bho chlàran-ama Transport for Ireland; a' seasamh an àite an sgòr ceangailteachd nach eil aig Èirinn."}
   gigabit_broadband: {label: Bann-leathann gigabit, description: "Cuid de dhachaighean a gheibh bann-leathann comasach air gigabit (làn-fhreumhan no càball)."}
   slow_broadband: {label: Dachaighean gun bhann-leathann ceart, description: "Cuid de dhachaighean nach fhaigh bann-leathann 10 Mbit/s bho loidhne shuidhichte no uèirleas suidhichte."}
   well_run_pubs: {label: Taighean-seinnse air an deagh ruith faisg air làimh, description: "Taighean-seinnse taobh a-staigh coiseachd 15 mionaidean le rangachadh slàinteachas bìdh de 4 no 5 bho na trì bliadhna a dh'fhalbh, air an cuideamachadh a rèir astair."}
@@ -150,6 +151,7 @@ indicators:
   period_homes: {label: Dachaighean a thogadh ro 1919, description: "Cuid de dhachaighean a thogadh ro 1919."}
   lower_band_homes: {label: Dachaighean ann am bannan cìs comhairle A–B, description: "Cuid de dhachaighean anns an dà bhann cìs comhairle as ìsle (na dachaighean as saoire ann an luachan 1991)."}
   income_deprivation: {label: Bochdainn teachd-a-steach, description: "Cuid de luchd-còmhnaidh air teachd-a-steach ìosal (raon teachd-a-steach a' chlàr-amais bochdainn)."}
+  pobal_deprivation: {label: Beartas agus bochdainn (clàr-amais Pobal HP), description: "Clàr-amais bochdainn dàimheach Pobal HP na roinne-taghaidh bho Chunntas-sluaigh 2022 (cion-cosnaidh, foghlam, clas sòisealta, pàrantan singilte, gabhaltas agus cus-sluaigh); tha nas àirde a' ciallachadh nas beairtiche."}
   employment_deprivation: {label: Bochdainn cosnaidh, description: "Cuid de luchd-còmhnaidh aois-obrach a tha gun obair gun an toil (raon cosnaidh a' chlàr-amais bochdainn)."}
   claimant_rate: {label: Ìre luchd-tagraidh, description: "Luchd-còmhnaidh a' tagradh shochairean co-cheangailte ri cion-cosnaidh, mar chuid den fheadhainn aois 16–64 (am mìos as ùire)."}
   household_income: {label: Teachd-a-steach teaghlaich, description: "Teachd-a-steach lom teaghlaich cuibheasach san sgìre nas fharsainge (MSOA), ro chosgaisean taigheadais."}
@@ -168,6 +170,7 @@ indicators:
   summer_warmth: {label: Blàths an t-samhraidh, description: "Teòthachd as àirde làitheil chuibheasach bhon Ògmhios chun Lùnastal, cuibheasachd 1991–2020 (°C)."}
   winter_mildness: {label: Ciùineas a' gheamhraidh, description: "Teòthachd as ìsle làitheil chuibheasach bhon Dùbhlachd chun Ghearran, cuibheasachd 1991–2020 (°C)."}
   rainfall: {label: Uisge, description: "Uisge sa bhliadhna ann am milleameatairean, cuibheasachd 1991–2020."}
+  rainfall_total: {label: Sileadh bliadhnail, description: "Sileadh cuibheasach sa bhliadhna, 1991–2020, bho ghriod 1 km Met Éireann; a' seasamh an àite làithean fliucha."}
   air_frost_days: {label: Làithean reothaidh, description: "Làithean sa bhliadhna nuair a thuiteas teòthachd an adhair fo 0°C, cuibheasachd 1991–2020."}
   summer_days: {label: Làithean samhraidh, description: "Làithean sa bhliadhna nuair a ruigeas an teòthachd 25°C, cuibheasachd 1991–2020."}
   wind_speed: {label: Gaoth, description: "Astar cuibheasach na gaoithe aig 10m, cuibheasachd 1991–2020."}

@@ -12,9 +12,14 @@ itself lives in [`config/indicators.yaml`](../config/indicators.yaml), the prese
 
 In England and Wales the unit is the Lower Layer Super Output Area (1,000–3,000
 residents, 1,600 on average); in Scotland the Data Zone 2022 (500–1,000, 750 on
-average). Both are stable between censuses and the smallest unit most official
+average); in Northern Ireland the Super Data Zone 2021 (about 2,200); in Ireland the
+Census 2022 Small Area (80–120 dwellings, 270 residents on average, the smallest unit
+the CSO publishes). All are stable between censuses and the smallest unit most official
 statistics use, and the code column is `lsoa21cd` throughout whatever a nation calls its
-areas. Scores describe an area as a whole, not any one street or household in it; the
+areas. Ireland's published Small Area ids carry "/" for areas split or merged since 2016,
+so its codes are minted here (`I01` and a six-digit rank: `I01000001`…, with the
+Electoral Divisions as `I02`… and the councils as `I06`…) and the publisher's id travels
+with every area as `source_code`. Scores describe an area as a whole, not any one street or household in it; the
 interface calls them small areas, data zones and neighbourhoods according to the nation
 (`levels` in `config/nations.yaml`).
 
@@ -329,6 +334,37 @@ open flood map: the Department for Infrastructure's maps are licensed commercial
 through LPS, so flood risk is not available in Northern Ireland. Irish names come from
 OpenStreetMap's `name:ga` tags, a curated Wikidata list of the councils and the largest
 towns, and, with a free key, Logainm.
+
+Ireland (v0.6.0): the fifth nation and the second country of the index. The unit is the
+Census 2022 Small Area (18,919), grouped into the CSO's 3,417 Electoral Divisions and the
+31 local authorities (Tailte Éireann's boundaries, on the Irish Transverse Mercator and
+reprojected; a census file's 34 pre-2014 county codes fold into the councils through a
+curated list). There is no open postcode file (Eircode is licensed), so homes are the
+centroids of Tailte Éireann's building footprints between 20 and 1,000 m² (3.3 million of
+3.8 million; the median Dublin dwelling footprint is about 70 m²), a Small Area's centroid
+is the mean of its home points, and the method difference with the UK's address-based
+postcodes is the main caveat on Irish access measures. Sources shared with the UK already
+reached Ireland (ESA WorldCover, VIIRS, the OpenStreetMap island extract). Irish sources:
+the Census 2022 Small Area Population Statistics (populations and the CSO's six-class
+urban/rural classification); the Pobal HP Deprivation Index 2022, published by Electoral
+Division and broadcast to its Small Areas, which stands in for the income deprivation
+share (the index has no income domain) with its unemployment rates as the employment
+context; the CSO's recorded crime by Garda station (statistics under reservation), spread
+over the Census 2011 Garda sub-district of each station in proportion to population, with
+the station names that changed since 2011 matched through a curated list and "theft and
+related offences" counted as theft in full (benchmarked within Ireland); the EPA's Round 4
+noise contours for roads, railways, airports and industry; Transport for Ireland's GTFS
+feed for bus frequency (scored as the connectivity substitute, since Ireland has no
+connectivity metric) and the rail and Luas stops; ComReg's gigabit coverage by Electoral
+Division (the Small Area layer carries premise counts only); Met Éireann's 1991–2020
+1 km grids for the summer maximum and winter minimum temperatures and the annual rainfall,
+which stands in for wet days (no rain-day or sunshine grid is published); GP surgeries,
+dentists and pharmacies, parks, play spaces and allotments from OpenStreetMap (the HSE
+publishes no current lists); and a curated list of the 27 emergency departments and 7
+injury units. Schools (no results or inspection grades) and housing (no neighbourhood
+prices or property tax) are declared gaps: limited data, outside the Irish overall.
+Irish names of divisions and areas come from Tailte Éireann's files, of councils from
+the curated list, and of places from OpenStreetMap.
 
 How much of each theme's scored weight a nation can have, counting a substitute against
 what it replaces (the coverage gate, `lix validate config`):

@@ -51,8 +51,11 @@ def stage_os_greenspace() -> pl.LazyFrame:
     )
     from lix_core.codes import active_nations
 
-    if "N" in active_nations():
-        df = pl.concat([df, _osm_greenspace(("N",))], how="diagonal_relaxed")
+    # Nations OS Open Greenspace does not reach: parks, play spaces and allotments from
+    # OpenStreetMap
+    from_osm = tuple(n for n in ("N", "I") if n in active_nations())
+    if from_osm:
+        df = pl.concat([df, _osm_greenspace(from_osm)], how="diagonal_relaxed")
     return df.lazy()
 
 

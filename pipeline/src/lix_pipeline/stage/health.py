@@ -57,8 +57,46 @@ def stage_ods_gp() -> pl.LazyFrame:
         df = pl.concat([df, _phs_gp_practices()], how="diagonal_relaxed")
     if "N" in active_nations():
         df = pl.concat([df, _bso_gp_practices()], how="diagonal_relaxed")
+    if "I" in active_nations():
+        df = pl.concat([df, _osm_gp_practices(("I",))], how="diagonal_relaxed")
     logger.info(f"{df.height:,} active GP practices")
     return df.lazy()
+
+
+def _osm_points(nations: tuple[str, ...], values: list[str], what: str) -> pl.DataFrame:
+    """OpenStreetMap amenities of ``values`` placed in ``nations``, for nations without a
+    machine-readable register (Ireland: the HSE publishes no current GP, dental or
+    pharmacy list)."""
+    from lix_core.codes import nation_of
+    from lix_pipeline.geo.joins import points_to_lsoa
+
+    osm = pl.read_parquet(data_dir("staged") / "osm_pois.parquet").filter(
+        (pl.col("key") == "amenity") & pl.col("value").is_in(values)
+    )
+    osm = points_to_lsoa(osm.select("osm_type", "osm_id", "name", "x", "y"), x="x", y="y")
+    osm = osm.filter(nation_of("lsoa21cd").is_in(list(nations)))
+    logger.info(f"{osm.height:,} OpenStreetMap {what} in {nations}")
+    return osm
+
+
+def _osm_gp_practices(nations: tuple[str, ...]) -> pl.DataFrame:
+    """GP surgeries and clinics from OpenStreetMap (``amenity=doctors|clinic``), without
+    list sizes, opening dates or a commissioner."""
+    osm = _osm_points(nations, ["doctors", "clinic"], "GP surgeries and clinics")
+    return osm.select(
+        pl.concat_str([pl.lit("osm:"), pl.col("osm_type"), pl.col("osm_id").cast(pl.Utf8)]).alias(
+            "practice_code"
+        ),
+        "name",
+        pl.lit(None, pl.Utf8).alias("postcode"),
+        pl.lit(None, pl.Utf8).alias("open_date"),
+        pl.lit(None, pl.Utf8).alias("close_date"),
+        pl.lit(None, pl.Utf8).alias("commissioner"),
+        pl.lit(None, pl.Int32).alias("list_size"),
+        "lsoa21cd",
+        "x",
+        "y",
+    )
 
 
 def _bso_gp_practices() -> pl.DataFrame:
@@ -169,6 +207,23 @@ def stage_ods_dentists() -> pl.LazyFrame:
         df = pl.concat([df, _phs_dentists()], how="diagonal_relaxed")
     if "N" in active_nations():
         df = pl.concat([df, _bso_dentists()], how="diagonal_relaxed")
+    if "I" in active_nations():
+        osm = _osm_points(("I",), ["dentist"], "dental practices")
+        df = pl.concat(
+            [
+                df,
+                osm.select(
+                    pl.concat_str(
+                        [pl.lit("osm:"), pl.col("osm_type"), pl.col("osm_id").cast(pl.Utf8)]
+                    ).alias("practice_code"),
+                    "name",
+                    "lsoa21cd",
+                    "x",
+                    "y",
+                ),
+            ],
+            how="diagonal_relaxed",
+        )
     logger.info(f"{df.height:,} active dental practices")
     return df.lazy()
 

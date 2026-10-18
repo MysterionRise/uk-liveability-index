@@ -65,7 +65,9 @@ class IndicatorValue(BaseModel):
     quality: str = "ok"
     role: str = "scored"
     benchmark: Literal["uk", "nation"] = Field(
-        "uk", description="uk: ranked against the whole country · nation: within its nation"
+        "uk",
+        description="uk: ranked against every area in the build (the UK and Ireland) · "
+        "nation: within its nation",
     )
     stands_in_for: str | None = Field(
         None,
@@ -87,7 +89,7 @@ class AreaProfile(BaseModel):
     local_authority: str = Field(description="In the locale asked for")
     local_authority_en: str | None = Field(None, description="Its English name when it differs")
     region: str
-    nation: str = Field(description="Nation code: E, W, S or N")
+    nation: str = Field(description="Nation code: E, W, S, N or I (Ireland)")
     nation_name: str
     urban_rural: str
     population: int

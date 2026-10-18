@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Fragment, useState } from "react";
 
 import { useData, useLiveability } from "@/components/AppData";
+import { useCoverageIn, useCoverageOf } from "@/lib/copy";
 import { Band, Card, Muted, ScoreBar, ValueWithUnit, formatValue, useQualityNote } from "@/components/ui";
 import type { AreaProfile, IndicatorValue } from "@/lib/contracts.gen";
 import { useLabels, usePresetLabel } from "@/lib/labels";
@@ -87,8 +88,11 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
   // The card's benchmark follows "compare against": within the nation when that is
   // chosen (the urban/rural comparison has no per-area percentile, so it reads as the UK)
   const withinNation = state.compare_within === "nation";
-  const nationName = tn(profile.nation as "E" | "W" | "S" | "N");
-  const nationOf = tn(`of_${profile.nation}` as "of_E" | "of_W" | "of_S" | "of_N");
+  const nationName = tn(profile.nation as "E" | "W" | "S" | "N" | "I");
+  const nationOf = tn(`of_${profile.nation}` as "of_E" | "of_W" | "of_S" | "of_N" | "of_I");
+  // "of the UK and Ireland", "in the UK and Ireland": what the build's percentiles span
+  const coverageOf = useCoverageOf();
+  const coverageIn = useCoverageIn();
   // Themes this nation declares it cannot score (shown as limited data)
   const gaps = new Set(manifest?.geography?.nations?.[profile.nation]?.theme_gaps ?? []);
   const labels = useLabels();
@@ -138,6 +142,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
             {t("range", {
               lo: profile.overall_percentile_range[0],
               hi: profile.overall_percentile_range[1],
+              of: coverageOf,
             })}
           </p>
         )}
@@ -155,7 +160,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
                   ? t("betterThanNation", { pct: th.percentile_nation, nationOf })
                   : undefined
                 : th.percentile != null
-                  ? t("betterThan", { pct: th.percentile })
+                  ? t("betterThan", { pct: th.percentile, of: coverageOf })
                   : undefined
             }
             marks={[
@@ -167,7 +172,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
               {
                 value: withinNation ? th.nation_median : th.country_median,
                 kind: "england",
-                label: withinNation ? t("nationMedian", { nation: nationName }) : t("ukMedian"),
+                label: withinNation ? t("nationMedian", { nation: nationName }) : t("ukMedian", { in: coverageIn }),
               },
             ]}
           />
@@ -189,7 +194,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
               className="inline-block h-2.5 w-px bg-[var(--text-muted)]"
               aria-hidden
             />{" "}
-            {withinNation ? t("nationMedian", { nation: nationName }) : t("ukMedian")}
+            {withinNation ? t("nationMedian", { nation: nationName }) : t("ukMedian", { in: coverageIn })}
           </span>
         </p>
       </div>

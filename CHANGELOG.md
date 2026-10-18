@@ -4,6 +4,23 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- **Ireland.** The 18,919 Census 2022 Small Areas join the map and the assistant as the
+  fifth nation and the second country (62,833 areas in all), grouped into 3,417 Electoral
+  Divisions and 31 councils, from Tailte Éireann's and the CSO's boundaries; the codes are
+  minted (`I01000001`…) because the published ids carry "/" for split and merged areas,
+  and the publisher's id travels with each area. Homes are Tailte Éireann building
+  footprints, since Ireland has no open postcode file; the home-points table (`homes`)
+  now serves every nation (#87). Irish sources: the census, Pobal's deprivation index,
+  recorded crime by Garda station spread over the 2011 sub-districts, the EPA's noise
+  contours, Transport for Ireland's timetables, ComReg's gigabit coverage, Met Éireann's
+  climate grids, OpenStreetMap's surgeries, dentists, pharmacies and green spaces, and a
+  curated list of emergency departments. Schools and housing are declared gaps. Copy
+  says what the percentiles span ("better than 62% of the UK and Ireland").
+
 ## [0.5.1] - 2026-10-18
 
 ### Added

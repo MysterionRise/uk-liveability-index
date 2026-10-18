@@ -627,7 +627,7 @@ nrw_fraw_surface_water:
   notes: 2.8 million small polygons; a single GetFeature stops at the server's million, so it is paged.
 
 esa_worldcover:
-  coverage: [E, W, S, N]
+  coverage: [E, W, S, N, I]
   title: ESA WorldCover 10m land cover 2021 (v200)
   theme: environment
   access:
@@ -636,7 +636,7 @@ esa_worldcover:
     # 3° tiles named by their south-west corner: Great Britain from the Scillies to
     # Shetland (Northern Ireland sits in N54W009 too)
     tiles: [N48W009, N48W006, N48W003, N48E000, N51W006, N51W003, N51E000, N54W009, N54W006,
-            N54W003, N57W009, N57W006, N57W003, N60W003]
+            N54W003, N57W009, N57W006, N57W003, N60W003, N51W012, N51W009, N54W012]
   format: tif
   landing_page: https://esa-worldcover.org/en/data-access
   description: Land cover on a 10m grid from Sentinel-1 and Sentinel-2 imagery of 2021 (tree cover, shrubland, grassland, cropland, built-up, bare, water and more).
@@ -644,10 +644,10 @@ esa_worldcover:
   attribution: "© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium"
   cadence: static
   period: "2021"
-  size_hint: 480MB in 14 tiles
+  size_hint: 580MB in 17 tiles
 
 viirs_vnl:
-  coverage: [E, W, S, N]
+  coverage: [E, W, S, N, I]
   title: VIIRS annual night-time lights (Earth Observation Group VNL v2.2)
   theme: environment
   access:
@@ -1783,7 +1783,7 @@ osm_scotland:
 # check date on every row; the lockfile records their checksum like any download.
 
 ae_sites:
-  coverage: [E, W, S, N]
+  coverage: [E, W, S, N, I]
   title: Emergency departments and urgent-care sites (curated list)
   theme: health
   access: {type: curated, path: config/data/ae_sites.csv}
@@ -2567,3 +2567,249 @@ ie_local_authorities:
   attribution: "Council names after the Placenames Database of Ireland (logainm.ie); the list itself is CC0 1.0."
   cadence: adhoc
   size_hint: 3KB
+
+# EPA Ireland's Round 4 strategic noise maps (2021 traffic), one WFS layer per source:
+# Lden contour bands (55–59 … 75+ dB) on GeoServer, which reprojects to the working grid
+
+epa_noise_road_agg:
+  coverage: [I]
+  title: Noise Round 4 Road Agglomerations Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Road_Agglomerations_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-road-agglomerations-lden
+  description: Lden noise contour bands from road traffic in the Dublin, Cork, Limerick, Galway and Waterford agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 1GB (detailed contours)
+
+epa_noise_road_nat:
+  coverage: [I]
+  title: Noise Round 4 Road National Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Road_National_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-road-national-lden
+  description: Lden noise contour bands from the national roads carrying more than three million vehicles a year, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 260MB
+
+epa_noise_rail_agg:
+  coverage: [I]
+  title: Noise Round 4 Rail Agglomerations Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Rail_Agglomerations_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-rail-agglomerations-lden
+  description: Lden noise contour bands from railways and Luas lines inside the agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 26MB
+
+epa_noise_rail_nat:
+  coverage: [I]
+  title: Noise Round 4 Rail National Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Rail_National_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-rail-national-lden
+  description: Lden noise contour bands from the railways carrying more than 30,000 trains a year, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 43MB
+
+epa_noise_air_nat:
+  coverage: [I]
+  title: Noise Round 4 Airport National Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Airport_National_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-airport-national-lden
+  description: Lden noise contour bands from Dublin, Cork and Shannon airports, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 1MB
+
+epa_noise_industry_agg:
+  coverage: [I]
+  title: Noise Round 4 Industry Agglomerations Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Industry_Agglomerations_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-industry-agglomerations-lden
+  description: Lden noise contour bands from industrial sites inside the agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 22MB
+
+# Ireland's community, transport and climate sources (v0.6.0)
+
+pobal_hp_2022:
+  coverage: [I]
+  title: Pobal HP Deprivation Index 2022 by Electoral Division (Pobal)
+  theme: community
+  access: {type: http, url: "https://www.pobal.ie/wp-content/uploads/2024/01/hp-deprivation-index-scores-2022.csv"}
+  format: csv
+  landing_page: https://data.gov.ie/dataset/pobal-hp-deprivation-index-scores-2022
+  description: The relative and absolute HP deprivation index of every CSO Electoral Division from Census 2022, with the census rates behind it (unemployment, lone parents, education, social class, tenure, overcrowding); the Small Area version is licensed, so divisions stand in.
+  licence: CC-BY-4.0
+  attribution: "Pobal HP Deprivation Index 2022 (Trutz Haase and Jonathan Pratschke for Pobal), licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Census 2022"
+  size_hint: 450KB
+
+nta_gtfs:
+  coverage: [I]
+  title: Transport for Ireland GTFS timetables, every operator (NTA)
+  theme: transport
+  access: {type: http, url: "https://www.transportforireland.ie/transitData/Data/GTFS_All.zip"}
+  format: zip
+  extract: ["*.txt"]
+  landing_page: https://data.gov.ie/dataset/nta-gtfs
+  description: Static GTFS timetables for every public transport operator in Ireland (Dublin Bus, Bus Éireann, Go-Ahead, Irish Rail, Luas, Local Link and the commercial operators), with stops, routes and stop times, for bus frequency and the rail and Luas stops.
+  licence: CC-BY-4.0
+  attribution: "National Transport Authority, Transport for Ireland GTFS data, licensed under CC BY 4.0."
+  cadence: weekly
+  size_hint: 160MB zipped, 750MB extracted
+
+comreg_gigabit:
+  coverage: [I]
+  title: Gigabit and FTTP broadband coverage by Electoral Division (ComReg)
+  theme: transport
+  access:
+    type: arcgis_item
+    query: 'title:"Ireland Gigabit Statistics Public Data View" AND owner:open_comreg'
+    title_regex: 'Ireland Gigabit Statistics Public Data View'
+    item_type: Feature Service
+    pin: d57d56df83f142989c21a670593c9065
+    mode: featureserver
+    layer: 3
+    fields: [ED_ID_STR, ED_ENGLISH, COUNTY_CODE, Premise_Count_Public_View, Gigabit_Passed_PCT_Public_View, Gigabit_NBI_Passed_PCT_Public_View, Gigabit_Active_PCT_Public_View]
+  format: parquet
+  landing_page: https://datamaps-comreg.hub.arcgis.com/
+  description: The share of premises in each CSO Electoral Division passed by a gigabit-capable network (and taking one up), from ComReg's quarterly analysis of operators' returns against Eircodes; the Small Area layer carries premise counts only.
+  licence: CC-BY-4.0
+  attribution: "FTTP and Gigabit data © An Coimisiún um Rialáil Cumarsáide | Commission for Communications Regulation (Creative Commons Licence); boundaries © Central Statistics Office."
+  cadence: quarterly
+  size_hint: 500KB
+
+met_eireann_temp_9120:
+  coverage: [I]
+  title: Long-term air temperature averages 1991–2020, 1 km grids (Met Éireann)
+  theme: climate
+  access: {type: http, url: "https://www.met.ie/cms/assets/uploads/2024/07/IE_TEMP_9120_V2.zip"}
+  format: zip
+  extract: ["*.txt"]
+  landing_page: https://www.met.ie/climate/30-year-averages
+  description: Monthly, seasonal and annual mean, maximum and minimum air temperature for 1991–2020 on a 1 km grid over Ireland (Climatological Note 23), on the Irish Grid.
+  licence: CC-BY-4.0
+  licence_verified: false
+  attribution: "Met Éireann, long-term air temperature averages 1991–2020; © Met Éireann, reused under CC BY 4.0 as Met Éireann's data on data.gov.ie is."
+  cadence: static
+  period: "1991–2020 averages"
+  size_hint: 3MB zipped
+  notes: The zip's readme says only "(c) copyright Met Éireann"; the same product line's 1981–2010 grids are published on data.gov.ie under CC BY 4.0. Met Éireann has been asked to confirm; until then the licence is recorded as unverified and the fetch warns.
+
+met_eireann_rr_9120:
+  coverage: [I]
+  title: Long-term rainfall averages 1991–2020, 1 km grids (Met Éireann)
+  theme: climate
+  access: {type: http, url: "https://www.met.ie/cms/assets/uploads/2024/07/IE_RR_9120_V2.zip"}
+  format: zip
+  extract: ["*.txt"]
+  landing_page: https://www.met.ie/climate/30-year-averages
+  description: Monthly, seasonal and annual rainfall totals for 1991–2020 on a 1 km grid over Ireland (Climatological Note 22), on the Irish Grid; no rain-day or sunshine grids are published.
+  licence: CC-BY-4.0
+  licence_verified: false
+  attribution: "Met Éireann, long-term rainfall averages 1991–2020; © Met Éireann, reused under CC BY 4.0 as Met Éireann's data on data.gov.ie is."
+  cadence: static
+  period: "1991–2020 averages"
+  size_hint: 2.5MB zipped
+  notes: See met_eireann_temp_9120 on the licence.
+
+# Ireland's recorded crime: counts by Garda station (CSO, from PULSE) spread over the
+# Census 2011 Garda sub-district polygons by population
+
+cso_cja11:
+  coverage: [I]
+  title: Recorded crime incidents by Garda station, type of offence and year (CSO, CJA11)
+  theme: safety
+  access: {type: http, url: "https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/CJA11/CSV/1.0/en"}
+  format: csv
+  landing_page: https://data.cso.ie/table/CJA11
+  description: Recorded crime incidents at each of the 564 Garda stations by offence group (ICCS) and year, 2003 to the latest full year, under the new Garda operating model; statistics under reservation, compiled from PULSE.
+  licence: CC-BY-4.0
+  attribution: "Central Statistics Office, Recorded Crime (statistics under reservation), licensed under CC BY 4.0."
+  cadence: quarterly
+  size_hint: 30MB
+
+cso_garda_subdistricts:
+  coverage: [I]
+  title: Garda sub-district boundaries, Census 2011 boundary files (CSO)
+  theme: safety
+  access: {type: http, url: "https://www.cso.ie/en/media/csoie/census/census2011boundaryfiles/Garda_Sub_Districts.zip"}
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj", "*.cpg"]
+  landing_page: https://data.gov.ie/dataset/census-2011-boundary-files
+  description: The 563 Garda sub-districts of 2011 (one per station) with their Irish names and 2011 census populations, on the Irish Grid; the areas each station's crime is spread over.
+  licence: CC-BY-4.0
+  attribution: "Central Statistics Office, Census 2011 boundary files (Garda sub-districts), licensed under CC BY 4.0."
+  cadence: static
+  period: "2011 sub-districts"
+  size_hint: 26MB
+
+garda_station_aliases:
+  coverage: [I]
+  title: Garda station names matched to the 2011 sub-districts (curated)
+  theme: safety
+  access: {type: curated, path: config/data/garda_station_aliases.csv}
+  format: csv
+  description: The 82 station names in the CSO's crime table that differ from the 2011 sub-district names (Irish forms, spellings, "Co. Clare" suffixes, stations opened since), each with its sub-district and county.
+  licence: CC0-1.0
+  attribution: "Curated for this index (CC0 1.0)."
+  cadence: adhoc
+  size_hint: 3KB
+

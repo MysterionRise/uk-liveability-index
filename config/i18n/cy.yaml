@@ -106,6 +106,7 @@ indicators:
   connectivity_cycling: {label: Cysylltedd beicio, description: Sgôr cysylltedd yr Adran Drafnidiaeth ar gyfer beicio i bob cyrchfan.}
   station_distance: {label: Pellter i'r orsaf agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r orsaf reilffordd, metro neu dram agosaf."}
   bus_frequency: {label: Amlder bysiau, description: "Bysiau yr awr (dyddiau'r wythnos, 07:00–19:00) yn yr arhosfan brysuraf o fewn 400m i gartrefi."}
+  bus_access: {label: Gwasanaeth bws gerllaw, description: "Bysiau yr awr (dyddiau'r wythnos, 07:00–19:00) yn yr arhosfan prysuraf o fewn 400m i gartrefi, o amserlenni Transport for Ireland; yn sefyll yn lle'r sgôr cysylltedd nad oes gan Iwerddon."}
   gigabit_broadband: {label: Band eang gigabit, description: Cyfran y cartrefi sy'n gallu cael band eang galluog gigabit (ffeibr llawn neu gebl).}
   slow_broadband: {label: Cartrefi heb fand eang addas, description: Cyfran y cartrefi na allant gael band eang 10 Mbit/s o linell sefydlog neu ddi-wifr sefydlog.}
   well_run_pubs: {label: Tafarndai da gerllaw, description: "Tafarndai o fewn 15 munud o gerdded sydd â sgôr hylendid bwyd o 4 neu 5 o'r tair blynedd diwethaf, wedi'u pwysoli yn ôl pellter, gyda bonws bach am gwrw go iawn, bwyd neu seddi awyr agored."}
@@ -126,6 +127,7 @@ indicators:
   period_homes: {label: Cartrefi a adeiladwyd cyn 1919, description: Cyfran y cartrefi a adeiladwyd cyn 1919.}
   lower_band_homes: {label: Cartrefi ym mandiau treth gyngor A–B, description: Cyfran y cartrefi yn y ddau fand treth gyngor isaf (y cartrefi rhataf yng ngwerthoedd 1991).}
   income_deprivation: {label: Amddifadedd incwm, description: Cyfran y trigolion ar incwm isel (parth incwm y mynegai amddifadedd).}
+  pobal_deprivation: {label: Cyfoeth ac amddifadedd (mynegai Pobal HP), description: "Mynegai amddifadedd cymharol Pobal HP yr adran etholiadol o Gyfrifiad 2022 (diweithdra, addysg, dosbarth cymdeithasol, rhieni sengl, deiliadaeth a gorlenwi); mae uwch yn golygu mwy cefnog."}
   employment_deprivation: {label: Amddifadedd cyflogaeth, description: Cyfran y trigolion o oedran gweithio sydd allan o waith yn anwirfoddol (parth cyflogaeth y mynegai amddifadedd).}
   claimant_rate: {label: Cyfradd hawlwyr, description: "Trigolion sy'n hawlio budd-daliadau sy'n gysylltiedig â diweithdra, fel cyfran o'r rhai 16–64 oed (mis diweddaraf)."}
   household_income: {label: Incwm aelwydydd, description: "Incwm aelwyd net cymedrig yn yr ardal ehangach (MSOA), cyn costau tai."}
@@ -145,6 +147,7 @@ indicators:
   summer_warmth: {label: Cynhesrwydd yr haf, description: "Tymheredd uchaf dyddiol cyfartalog Mehefin i Awst, cyfartaledd 1991–2020 (°C)."}
   winter_mildness: {label: Tynerwch y gaeaf, description: "Tymheredd isaf dyddiol cyfartalog Rhagfyr i Chwefror, cyfartaledd 1991–2020 (°C)."}
   rainfall: {label: Glawiad, description: "Glawiad y flwyddyn mewn milimetrau, cyfartaledd 1991–2020."}
+  rainfall_total: {label: Glawiad blynyddol, description: "Glawiad cyfartalog y flwyddyn, 1991–2020, o grid 1 km Met Éireann; yn sefyll yn lle dyddiau gwlyb."}
   air_frost_days: {label: Diwrnodau o rew yn yr aer, description: "Diwrnodau y flwyddyn pan fo tymheredd yr aer yn disgyn o dan 0°C, cyfartaledd 1991–2020."}
   summer_days: {label: Diwrnodau o haf, description: "Diwrnodau y flwyddyn pan fo'r tymheredd yn cyrraedd 25°C, cyfartaledd 1991–2020."}
   wind_speed: {label: Gwynt, description: "Cyflymder cyfartalog y gwynt ar 10m, cyfartaledd 1991–2020."}

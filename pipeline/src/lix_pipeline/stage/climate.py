@@ -7,6 +7,10 @@ the mean over its postcodes, so the figures are population-weighted the way the
 air-quality ones are. The files sit behind a free CEDA login, so the source is a
 manual download and the stager raises a clear error when none is present; a
 variable's file may be absent (its column is then null).
+
+Ireland has no HadUK-Grid: Met Éireann's 1991–2020 1 km grids give the summer maximum,
+winter minimum and mean temperature and the annual rainfall, on the Irish Grid; it
+publishes no sunshine or rain-day grids, so those stay null there.
 """
 
 from pathlib import Path
@@ -187,25 +191,97 @@ def climate_at_homes(homes: pl.DataFrame, files: dict[str, Path]) -> pl.DataFram
     return out.select("lsoa21cd", *VARIABLES, "n_postcodes").sort("lsoa21cd")
 
 
-def stage_climate() -> pl.LazyFrame:
-    files = {
-        column: path
-        for column, (variable, period, _season) in VARIABLES.items()
-        if (path := haduk_file(variable, period)) is not None
-    }
-    missing = [c for c in REQUIRED if c not in files]
-    if missing:
-        raise FileNotFoundError(
-            f"HadUK-Grid files for {missing} are missing from data/manual/{SLUG}/ "
-            "(see the registry's instructions)"
-        )
-    homes = residential_postcodes()
-    df = climate_at_homes(homes, files)
-    logger.info(
-        f"{df.height:,} areas; median sunshine {df['sunshine_hours'].median():.0f} h, "
-        f"wet days {df['rain_days'].median():.0f}"
+# Met Éireann's 1991–2020 grids (Ireland): output column → (registry slug, file glob,
+# column of the file). The grids are space-separated text on the Irish Grid (TM65) at
+# 1 km, each row a cell's south-west corner with the monthly, seasonal and annual values
+MET_EIREANN_GRID_CRS = 29902
+MET_EIREANN: dict[str, tuple[str, str, str]] = {
+    "summer_tmax": ("met_eireann_temp_9120", "*TMAX*.txt", "JJA"),
+    "winter_tmin": ("met_eireann_temp_9120", "*TMIN*.txt", "DJF"),
+    "temp_mean": ("met_eireann_temp_9120", "*TMEAN*.txt", "ANN"),
+    "rainfall_mm": ("met_eireann_rr_9120", "*RR*.txt", "ANN"),
+}
+
+
+def read_met_eireann_grid(path: Path, column: str) -> pl.DataFrame:
+    """One Met Éireann grid file → cells with ``x``/``y`` at the cell centre (Irish Grid
+    metres) and ``value``."""
+    df = pl.read_csv(path, separator=" ", quote_char='"', infer_schema_length=0)
+    df = df.rename({c: c.strip('"') for c in df.columns})
+    return df.select(
+        (pl.col("east").cast(pl.Float64) + 500).alias("x"),
+        (pl.col("north").cast(pl.Float64) + 500).alias("y"),
+        pl.col(column).cast(pl.Float64, strict=False).alias("value"),
+    ).filter(pl.col("value").is_not_null())
+
+
+def met_eireann_at_homes(homes: pl.DataFrame) -> pl.DataFrame:
+    """Per Irish area: the mean over its homes of each grid's cell value, sampled on the
+    grids' own Irish Grid (homes are reprojected from the working CRS)."""
+    from lix_core.geo import from_working
+
+    x, y = from_working(
+        homes["east1m"].to_numpy(), homes["north1m"].to_numpy(), MET_EIREANN_GRID_CRS
     )
-    return df.lazy()
+    pts = homes.select("lsoa21cd").with_columns(pl.Series("east1m", x), pl.Series("north1m", y))
+    out: pl.DataFrame | None = None
+    for column, (slug, pattern, field) in MET_EIREANN.items():
+        files = sorted((data_dir("raw") / slug).glob(pattern))
+        if not files:
+            raise FileNotFoundError(f"No {pattern} under data/raw/{slug}/")
+        cells = read_met_eireann_grid(files[0], field)
+        sampled = sample_grid_at_points(cells, pts, "value").rename(
+            {"value": column, "n_points": f"_n_{column}"}
+        )
+        sampled = _fill_from_nearest_cells(cells, pts, sampled, column)
+        logger.info(f"{column}: {sampled.height:,} areas from {cells.height:,} cells (Met Éireann)")
+        out = (
+            sampled if out is None else out.join(sampled, on="lsoa21cd", how="full", coalesce=True)
+        )
+    counts = [c for c in out.columns if c.startswith("_n_")]
+    out = out.with_columns(pl.max_horizontal(counts).cast(pl.Int32).alias("n_postcodes")).drop(
+        counts
+    )
+    for column in VARIABLES:
+        if column not in out.columns:
+            out = out.with_columns(pl.lit(None, pl.Float64).alias(column))
+    return out.select("lsoa21cd", *VARIABLES, "n_postcodes").sort("lsoa21cd")
+
+
+def stage_climate() -> pl.LazyFrame:
+    from lix_core.codes import active_nations, nation_of
+    from lix_core.config import load_nations
+
+    cfg = load_nations().nations
+    homes = residential_postcodes()
+    frames = []
+    uk = [n for n in active_nations() if cfg[n].country == "UK"]
+    if uk:
+        files = {
+            column: path
+            for column, (variable, period, _season) in VARIABLES.items()
+            if (path := haduk_file(variable, period)) is not None
+        }
+        missing = [c for c in REQUIRED if c not in files]
+        if missing:
+            raise FileNotFoundError(
+                f"HadUK-Grid files for {missing} are missing from data/manual/{SLUG}/ "
+                "(see the registry's instructions)"
+            )
+        df = climate_at_homes(homes.filter(nation_of("lsoa21cd").is_in(uk)), files)
+        logger.info(
+            f"{df.height:,} UK areas; median sunshine {df['sunshine_hours'].median():.0f} h, "
+            f"wet days {df['rain_days'].median():.0f}"
+        )
+        frames.append(df)
+    if "I" in active_nations():
+        df = met_eireann_at_homes(homes.filter(nation_of("lsoa21cd") == "I"))
+        logger.info(
+            f"{df.height:,} Irish areas; median summer Tmax {df['summer_tmax'].median():.1f} °C, "
+            f"rainfall {df['rainfall_mm'].median():.0f} mm"
+        )
+        frames.append(df)
+    return pl.concat(frames).sort("lsoa21cd").lazy()
 
 
 HOT_DAY_COLUMNS = {

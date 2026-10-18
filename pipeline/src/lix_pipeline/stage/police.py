@@ -33,6 +33,19 @@ def police_months(root: Path, window: int = WINDOW_MONTHS) -> list[Path]:
 
 
 def stage_police() -> pl.LazyFrame:
+    from lix_core.codes import active_nations
+
+    frames = []
+    if any(n in active_nations() for n in ("E", "W", "S", "N")):
+        frames.append(_police_uk())
+    if "I" in active_nations():
+        from lix_pipeline.stage.garda import garda_crime
+
+        frames.append(garda_crime())
+    return pl.concat(frames, how="diagonal_relaxed").lazy()
+
+
+def _police_uk() -> pl.DataFrame:
     months = police_months(data_dir("raw") / "police_crime")
     if not months:
         raise FileNotFoundError("No police.uk month folders in data/raw/police_crime")
@@ -114,4 +127,4 @@ def stage_police() -> pl.LazyFrame:
         pl.col("force_months").cast(pl.Int16),
         pl.lit(window_start).alias("window_start"),
         pl.lit(window_end).alias("window_end"),
-    ).lazy()
+    )

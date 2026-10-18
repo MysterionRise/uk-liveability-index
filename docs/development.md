@@ -173,7 +173,11 @@ uv run lix stage --all
 uv run lix resolve --check --all      # is every source still reachable?
 ```
 
-Set `LIX_DATA_DIR` to keep data somewhere other than `./data`.
+Set `LIX_DATA_DIR` to keep data somewhere other than `./data`. A one-nation build for
+development (`LIX_NATIONS=I` while Ireland was added) is easiest in its own data root
+with the raw downloads shared: `mkdir data-ie && ln -s ../data/raw data-ie/raw && ln -s
+../data/manual data-ie/manual`, then `LIX_DATA_DIR=$PWD/data-ie LIX_NATIONS=I lix stage
+--all`; the staged tables of the full build stay untouched.
 
 ## Refreshing the data
 

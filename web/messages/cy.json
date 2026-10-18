@@ -22,7 +22,16 @@
     "of_E": "o Loegr",
     "of_W": "o Gymru",
     "of_S": "o'r Alban",
-    "of_N": "o Ogledd Iwerddon"
+    "of_N": "o Ogledd Iwerddon",
+    "I": "Iwerddon",
+    "IE": "Iwerddon",
+    "in_I": "yn Iwerddon",
+    "in_uk_I": "yn y DU ac Iwerddon",
+    "of": "o",
+    "of_uk": "o'r DU",
+    "of_I": "o Iwerddon",
+    "of_uk_I": "o'r DU ac Iwerddon",
+    "of_E_W": "o Loegr a Chymru"
   },
   "Header": {
     "title": "Mynegai Byw yn y DU",
@@ -143,7 +152,7 @@
     "3": "Canol",
     "4": "Uwchlaw'r cyfartaledd",
     "5": "Pumed uchaf",
-    "betterThan": "yn well na {pct, number}% o'r DU",
+    "betterThan": "yn well na {pct, number}% {of}",
     "betterThanNation": "yn well na {pct, number}% {nationOf}"
   },
   "Quality": {
@@ -167,8 +176,8 @@
     "noData": "Dim data"
   },
   "Map": {
-    "hover": "{name}: yn well na {pct, number}% o'r DU",
-    "hoverNoName": "yn well na {pct, number}% o'r DU",
+    "hover": "{name}: yn well na {pct, number}% {of}",
+    "hoverNoName": "yn well na {pct, number}% {of}",
     "hoverIn": "{name}: yn well na {pct, number}% o'r ardaloedd {coverageIn}",
     "hoverInNoName": "yn well na {pct, number}% o'r ardaloedd {coverageIn}",
     "overall": "Cyffredinol",
@@ -217,11 +226,11 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} o drigolion",
     "overallOf100": "/ 100 cyffredinol ({preset})",
-    "rangeTitle": "Yr ystod 5–95% o ganradd y DU pan fydd pwysau pob thema'n cael ei symud tua chwarter",
-    "range": "Gyda phwysau ychydig yn wahanol: yn well na {lo, number}–{hi, number}% o'r DU",
-    "betterThan": "Yn well na {pct, number}% o'r DU",
+    "rangeTitle": "Yr ystod 5–95% o'r ganradd pan fydd pwysau pob thema'n cael ei symud tua chwarter",
+    "range": "Gyda phwysau ychydig yn wahanol: yn well na {lo, number}–{hi, number}% {of}",
+    "betterThan": "Yn well na {pct, number}% {of}",
     "localMedian": "Canolrif {area}",
-    "ukMedian": "Canolrif y DU",
+    "ukMedian": "Canolrif {in}",
     "strengths": "Cryfderau",
     "weakerSpots": "Mannau gwannach",
     "showOnMap": "Dangos ar y map",
