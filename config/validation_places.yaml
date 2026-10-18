@@ -470,7 +470,7 @@ places:
 
   - name: Letterkenny
     local_authority: Donegal
-    why: "Donegal's largest town with the county's hospital and no railway anywhere near"
+    why: "Donegal's largest town with the county's hospital; no railway in the county, the nearest station across the border in Derry"
     checks:
       - {indicator: hospital_ae_distance, op: le, value: 3000, anchor: true}
-      - {indicator: station_distance, op: ge, value: 40000, anchor: true}
+      - {indicator: station_distance, op: ge, value: 20000, anchor: true}
