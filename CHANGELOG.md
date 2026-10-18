@@ -4,7 +4,7 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.6.0] - 2026-10-18
 
 ### Added
 
@@ -38,6 +38,8 @@ All notable changes to this project. The format follows
 - **Feature layers by URL.** The registry's new `arcgis_layer` access type fetches a
   layer that is not an ArcGIS Online item (Historic Environment Scotland's INSPIRE server,
   which cannot page by offset: the fetcher reads ranges of object ids instead).
+- **Data release data-2026-10.5** (serve schema 5): the first pack with Ireland, 62,833
+  areas, about 250 MB; older packs are refused by this code and this pack by older code.
 - **Context measures on the map.** "Colour the map by" lists the context indicators
   (rainfall, snow days, listed buildings, radon…) under their own group: the browser table
   carries their percentiles beside the scored ones (`context_indicators` in the manifest).
