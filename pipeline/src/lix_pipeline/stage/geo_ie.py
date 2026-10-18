@@ -314,40 +314,51 @@ def upper_polygons() -> gpd.GeoDataFrame:
 def home_points() -> pl.DataFrame:
     """Home points from Tailte Éireann's building footprints: the centroid of every
     footprint between ``HOME_FOOTPRINT_M2`` in the working CRS, placed in its Small Area;
-    columns like the postcode homes (``home_id`` is the building's GUID)."""
+    columns like the postcode homes (``home_id`` is the building's GUID). A Small Area
+    with no footprint in that range but larger ones (apartment blocks, which can house a
+    thousand people) takes those instead, so no populated area is left without homes."""
     from lix_pipeline.geo.joins import points_to_lsoa
 
     path = raw_file("te_buildings", "gpkg")
     info = pyogrio.read_info(path)
     total, crs = int(info["features"]), int(info["crs"].split(":")[-1])
     lo, hi = HOME_FOOTPRINT_M2
-    frames = []
+    frames: dict[str, list[pl.DataFrame]] = {"home": [], "large": []}
     kept = 0
     for start in range(0, total, BUILDINGS_CHUNK):
         gdf = pyogrio.read_dataframe(
             path, columns=["GUID"], skip_features=start, max_features=BUILDINGS_CHUNK
         )
         area = gdf.geometry.area.to_numpy()
-        keep = (area >= lo) & (area <= hi)
-        centroids = gdf.geometry[keep].centroid
-        x, y = to_working(centroids.x.to_numpy(), centroids.y.to_numpy(), crs)
-        frames.append(
-            pl.DataFrame(
-                {
-                    "home_id": gdf["GUID"][keep].astype(str).to_list(),
-                    "east1m": np.round(x).astype(np.int32),
-                    "north1m": np.round(y).astype(np.int32),
-                }
+        for kind, keep in (("home", (area >= lo) & (area <= hi)), ("large", area > hi)):
+            centroids = gdf.geometry[keep].centroid
+            x, y = to_working(centroids.x.to_numpy(), centroids.y.to_numpy(), crs)
+            frames[kind].append(
+                pl.DataFrame(
+                    {
+                        "home_id": gdf["GUID"][keep].astype(str).to_list(),
+                        "east1m": np.round(x).astype(np.int32),
+                        "north1m": np.round(y).astype(np.int32),
+                    }
+                )
             )
-        )
-        kept += int(keep.sum())
+        kept += int(((area >= lo) & (area <= hi)).sum())
         logger.info(
             f"te_buildings: {min(start + BUILDINGS_CHUNK, total):,}/{total:,} read, {kept:,} kept"
         )
-    points = pl.concat(frames)
     polygons = tier_polygons("low", nations=(NATION,)).reset_index()[["lsoa21cd", "geometry"]]
-    points = points_to_lsoa(points, x="east1m", y="north1m", polygons=polygons)
+    points = points_to_lsoa(pl.concat(frames["home"]), x="east1m", y="north1m", polygons=polygons)
     placed = points.filter(pl.col("lsoa21cd").is_not_null())
+    large = points_to_lsoa(pl.concat(frames["large"]), x="east1m", y="north1m", polygons=polygons)
+    filled = large.filter(
+        pl.col("lsoa21cd").is_not_null() & ~pl.col("lsoa21cd").is_in(placed["lsoa21cd"].unique())
+    )
+    if filled.height:
+        logger.info(
+            f"Ireland: {filled['lsoa21cd'].n_unique():,} Small Areas with no footprint under "
+            f"{hi:.0f} m² take their {filled.height:,} larger buildings (apartment blocks)"
+        )
+        placed = pl.concat([placed, filled])
     lon, lat = working_to_lonlat(placed["east1m"].to_numpy(), placed["north1m"].to_numpy())
     out = placed.with_columns(
         pl.Series("lat", lat), pl.Series("long", lon),
