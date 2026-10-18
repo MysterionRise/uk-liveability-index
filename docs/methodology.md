@@ -55,7 +55,7 @@ may be scored. The build's QA report lists scored indicators that correlate abov
 - **Gridded data** (Defra's 1km air-quality model) takes the value of the grid cell
   each residential postcode falls in, averaged per LSOA — close to a population-weighted
   mean.
-- **Rates** use mid-2022 resident population as the denominator; the claimant rate uses
+- **Rates** use the latest mid-year population estimates (mid-2024) as the denominator; the claimant rate uses
   residents aged 16–64, and flood risk uses the VOA's count of dwellings.
 - **Flood risk** counts homes whose surroundings are at high or medium risk (at least a
   1% chance a year) from rivers, the sea or surface water, each home by the highest of
@@ -262,7 +262,7 @@ Government's council tax levels (band D by
 authority; other bands follow the statutory ninths), the Bus Open Data Service's Wales
 timetable and the OpenStreetMap Wales extract. Nurseries and pharmacies in Wales come
 from OpenStreetMap, since neither CIW nor NWSSP publishes a machine-readable list; they
-count as "expected standard" and carry no opening hours. Population for both nations is
+count as "expected standard" and carry no opening hours. Population in England and Wales is
 the ONS mid-year estimate (mid-2024).
 
 Scotland (v0.4.0): the unit is the 2022 Data Zone (7,392), grouped into Intermediate

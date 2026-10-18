@@ -169,6 +169,8 @@
   "Map": {
     "hover": "{name}: better than {pct, number}% of the UK",
     "hoverNoName": "better than {pct, number}% of the UK",
+    "hoverIn": "{name}: better than {pct, number}% of areas {coverageIn}",
+    "hoverInNoName": "better than {pct, number}% of areas {coverageIn}",
     "overall": "Overall",
     "withinNation": "{label} (within the nation)",
     "withinUrbanRural": "{label} (vs similar urban/rural areas)",

@@ -144,8 +144,8 @@ With a model key in `.env`, `make dev` uses the real model from `.env`.
 
 ## Planned
 
-- More open datasets: rail station usage, mobile coverage, EV charging, private rents, jobs
-  density, energy performance certificates, A&E distance and listed buildings, then the
+- More open datasets: mobile coverage, private rents, jobs density, energy performance
+  certificates and listed buildings, then the
   CDRC's Access to Healthy Assets & Hazards (behind a free login) as a cross-check
 - Walking-network travel times instead of straight-line distances
 

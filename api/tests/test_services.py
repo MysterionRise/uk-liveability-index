@@ -33,6 +33,13 @@ class TestSearch:
         caerdydd = search.search_place(store, "CAERDYDD")[0]
         assert (caerdydd.name, caerdydd.lsoa21cd) == ("Caerdydd", "W01001880")
 
+    def test_alternative_name_matches(self, store):
+        # "Londonderry" is Derry's alternative name (OpenStreetMap "Derry/Londonderry"):
+        # the form typed is shown, with the main name beside it (#132)
+        hit = search.search_place(store, "Londonderry")[0]
+        assert (hit.kind, hit.name, hit.name_en) == ("place", "Londonderry", "Derry")
+        assert search.search_place(store, "Derry")[0].name == "Derry"
+
 
 class TestProfile:
     def test_profile_fields(self, store):

@@ -4,6 +4,7 @@ Run ``lix docs`` after editing config/datasets.yaml; CI can check the files are 
 """
 
 from collections import defaultdict
+from urllib.parse import quote
 
 from lix_core.config import NATION_NAMES, DatasetSpec, load_registry
 from lix_core.paths import get_project_root
@@ -32,6 +33,11 @@ def _link(spec: DatasetSpec) -> str:
     url = (
         spec.landing_page or getattr(spec.access, "url", None) or getattr(spec.access, "page", None)
     )
+    if url is None and spec.access.type == "govuk_attachment":
+        url = f"https://www.gov.uk/{spec.access.path}"
+    if url is None and spec.access.type == "arcgis_item" and spec.access.query:
+        # The ONS geoportal's search for the item's title
+        url = "https://geoportal.statistics.gov.uk/search?q=" + quote(spec.access.query)
     if url is None and spec.access.type == "curated":
         url = f"../{spec.access.path}"  # the list lives in the repository
     return f"[{_cell(spec.title)}]({url})" if url else _cell(spec.title)

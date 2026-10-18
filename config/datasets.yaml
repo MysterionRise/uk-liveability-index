@@ -157,7 +157,7 @@ oa_lookup:
   attribution: *ons
   cadence: static
   period: "Census 2021 geography"
-  size_hint: 10MB
+  size_hint: 1.5MB
 
 lsoa11_lsoa21:
   coverage: [E, W]
@@ -177,7 +177,7 @@ lsoa11_lsoa21:
   attribution: *ons
   cadence: static
   period: "Census 2021 geography"
-  size_hint: 2MB
+  size_hint: 200KB
 
 ruc_2021:
   coverage: [E, W]
@@ -197,7 +197,7 @@ ruc_2021:
   attribution: *ons
   cadence: static
   period: "2021"
-  size_hint: 2MB
+  size_hint: 100KB
 
 
 pop_lsoa_mye:
@@ -501,7 +501,7 @@ ea_flood_postcodes:
   licence: OGL-3.0
   attribution: "Contains Environment Agency information © Environment Agency and/or database right, licensed under the Open Government Licence v3.0."
   cadence: adhoc
-  size_hint: 20MB zipped
+  size_hint: 5MB zipped
   notes: Rivers and the sea only; surface water flooding is a separate dataset.
 
 defra_noise_road_lden:
@@ -519,7 +519,7 @@ defra_noise_road_lden:
   attribution: "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4)."
   cadence: adhoc
   period: "Round 4 (2021 traffic)"
-  size_hint: 6GB in 56 tiles
+  size_hint: 1.4GB in 56 tiles
   notes: Fetched as 8192-pixel deflated GeoTIFF tiles over the WCS (the service times out above that). Cells with no mapped source hold 0 dB, so unmapped minor roads outside agglomerations read as quiet.
 
 defra_noise_rail_lden:
@@ -537,7 +537,7 @@ defra_noise_rail_lden:
   attribution: "Contains public sector information licensed under the Open Government Licence v3.0 (Defra strategic noise mapping, round 4)."
   cadence: adhoc
   period: "Round 4 (2021 traffic)"
-  size_hint: 6GB in 56 tiles
+  size_hint: 200MB in 56 tiles
   notes: As defra_noise_road_lden.
 
 defra_noise_air_lden:
@@ -572,7 +572,7 @@ wg_noise_road_lden:
   attribution: "Contains Welsh Government information licensed under the Open Government Licence v3.0 (Environmental Noise Mapping 2022)."
   cadence: adhoc
   period: "2022 round"
-  size_hint: 2GB
+  size_hint: 50MB
   notes: The cloud-optimised GeoTIFF behind the DataMapWales layer; its WCS refuses every request as too large.
 
 wg_noise_rail_lden:
@@ -589,7 +589,7 @@ wg_noise_rail_lden:
   attribution: "Contains Welsh Government information licensed under the Open Government Licence v3.0 (Environmental Noise Mapping 2022)."
   cadence: adhoc
   period: "2022 round"
-  size_hint: 2GB
+  size_hint: 5MB
 
 ea_flood_postcode_tool:
   coverage: [E]
@@ -644,7 +644,7 @@ esa_worldcover:
   attribution: "© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium"
   cadence: static
   period: "2021"
-  size_hint: 1.2GB in 14 tiles
+  size_hint: 480MB in 14 tiles
 
 viirs_vnl:
   coverage: [E, W, S, N]
@@ -684,7 +684,7 @@ os_open_uprn:
   attribution: "Contains OS data © Crown copyright and database right 2026."
   cadence: monthly
   size_hint: 620MB zipped
-  notes: Used where flood risk is published as areas rather than counts (Wales), to count the properties inside them the way the agencies do.
+  notes: Used where flood risk is published as areas rather than counts (Wales and Scotland), to count the properties inside them the way the agencies do.
 
 # ---------------------------------------------------------------------------------------
 # Health
@@ -837,7 +837,7 @@ ks2_results:
   licence: OGL-3.0
   attribution: "Department for Education, Key stage 2 attainment, licensed under the Open Government Licence v3.0."
   cadence: annual
-  size_hint: 9MB gzipped
+  size_hint: 270MB
 
 ks4_results:
   coverage: [E]
@@ -852,7 +852,7 @@ ks4_results:
   licence: OGL-3.0
   attribution: "Department for Education, Key stage 4 performance, licensed under the Open Government Licence v3.0."
   cadence: annual
-  size_hint: 20MB gzipped
+  size_hint: 85MB
   notes: Progress 8 isn't published for 2024/25 and 2025/26 (no key stage 2 baseline after COVID), so results reflect intake as well as teaching.
 
 ofsted_childcare:
@@ -979,7 +979,7 @@ overture_pubs:
   attribution: "Overture Maps Foundation, Places (CDLA-Permissive-2.0; includes Foursquare data under Apache-2.0 and AllThePlaces data under CC0)."
   cadence: monthly
   size_hint: 5MB
-  notes: The bounding box also covers Wales, southern Scotland and a corner of France; staging keeps England.
+  notes: The bounding box also covers Ireland and a corner of France; staging keeps the active nations.
 
 active_places:
   coverage: [E]
@@ -1000,7 +1000,7 @@ active_places:
   licence: CC-BY-4.0
   attribution: "Contains Data © Sport England (Active Places), licensed under CC BY 4.0."
   cadence: monthly
-  size_hint: 10MB
+  size_hint: 1.5MB
 
 fsa_fhrs:
   coverage: [E, W, S, N]
@@ -1009,7 +1009,7 @@ fsa_fhrs:
   access: {type: http, url: "https://safhrsprodstorage.blob.core.windows.net/opendatafileblobstorage/FHRS_All_en-GB.csv"}
   format: csv
   landing_page: https://ratings.food.gov.uk/open-data
-  description: Every food business inspected in England, Wales and Northern Ireland with its 0–5 hygiene rating, type and location.
+  description: Every food business inspected in the UK with its hygiene rating (0–5; pass or improvement required under Scotland's scheme), type and location.
   licence: OGL-3.0
   attribution: "Food Standards Agency food hygiene rating data, licensed under the Open Government Licence v3.0."
   cadence: daily
@@ -1049,7 +1049,7 @@ council_tax:
   attribution: "Ministry of Housing, Communities and Local Government, Council Tax levels, licensed under the Open Government Licence v3.0."
   cadence: annual
   period: "2026/27"
-  size_hint: 1MB
+  size_hint: 100KB
   notes: The page path names the financial year; update it each April.
 
 voa_ctsop:
@@ -1065,7 +1065,7 @@ voa_ctsop:
   licence: OGL-3.0
   attribution: "Valuation Office Agency, Council Tax: stock of properties, licensed under the Open Government Licence v3.0."
   cadence: annual
-  size_hint: 10MB zipped
+  size_hint: 75MB zipped
   notes: The page path names the year; update it each September.
 
 # ---------------------------------------------------------------------------------------
@@ -1158,7 +1158,7 @@ nrw_fraw_rivers:
   licence: OGL-3.0
   attribution: "Natural Resources Wales, Flood Risk Assessment Wales, licensed under the Open Government Licence v3.0; contains Natural Resources Wales information © Natural Resources Wales and database right."
   cadence: adhoc
-  size_hint: 150MB
+  size_hint: 930MB
   notes: Polygons, not postcode counts as in England; homes at risk are estimated from the share of an LSOA's residential postcodes inside the risk areas.
 
 nrw_fraw_sea:
@@ -1500,7 +1500,7 @@ nrs_dwellings_by_band:
   licence: OGL-3.0
   attribution: "National Records of Scotland, Small area statistics on households and dwellings, licensed under the Open Government Licence v3.0."
   cadence: annual
-  size_hint: 10MB
+  size_hint: 3MB
 
 sg_school_roll:
   coverage: [S]
@@ -2423,7 +2423,7 @@ ukcp_hot_days:
   attribution: "Contains Met Office data licensed under the Open Government Licence v3.0. Contains OS and ONS data © Crown copyright and database right 2026."
   cadence: adhoc
   period: "UKCP18 projections (2001–2020 baseline)"
-  size_hint: 2MB
+  size_hint: 100KB
   notes: Northern Ireland's rows are district electoral areas (N10), broadcast to the Super Data Zones inside them.
 
 logainm:
