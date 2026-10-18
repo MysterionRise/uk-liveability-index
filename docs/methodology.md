@@ -1,8 +1,8 @@
 # Methodology
 
-How the UK Liveability Index turns open data into a score for each of the 43,914
-neighbourhoods of the UK (2021 LSOAs in England and Wales; 2022 Data Zones in
-Scotland; 2021 Super Data Zones in Northern Ireland). The indicator list
+How the UK Liveability Index turns open data into a score for each of the 62,833
+neighbourhoods of the UK and Ireland (2021 LSOAs in England and Wales; 2022 Data Zones
+in Scotland; 2021 Super Data Zones in Northern Ireland; 2022 Small Areas in Ireland). The indicator list
 itself lives in [`config/indicators.yaml`](../config/indicators.yaml), the presets in
 [`config/weights.yaml`](../config/weights.yaml), the nations in
 [`config/nations.yaml`](../config/nations.yaml), and the sources in

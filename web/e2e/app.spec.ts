@@ -397,3 +397,24 @@ test("an indicator only one nation has is compared among that nation's areas", a
   await page.getByTestId("layer-select").selectOption("overall");
   await expect(page.getByTestId("legend")).toContainText("Against every area in the UK");
 });
+
+test("a context measure colours the map and says so in the legend", async ({ page }) => {
+  await mapReady(page);
+  await page.getByTestId("tab-weights").click();
+  // Context indicators ride in the browser table under their own group (#133)
+  await page.getByTestId("layer-select").selectOption("indicator:rainfall");
+  await expect(page.getByTestId("legend")).toContainText(/rain/i);
+  await page.getByTestId("layer-select").selectOption("overall");
+  await expect(page.getByTestId("legend")).toContainText("Overall");
+});
+
+test("a profile compared against its urban/rural class says so", async ({ page }) => {
+  await mapReady(page);
+  await openFromSearch(page, "LS6 3AA");
+  await expect(page.getByTestId("theme-bars")).toBeVisible({ timeout: 30_000 });
+  await page.getByTestId("tab-weights").click();
+  await page.getByTestId("compare-within").selectOption("urban_rural");
+  await page.getByTestId("tab-area").click();
+  // The card follows "compare against" for the class as it does for the nation (#131)
+  await expect(page.getByText("similar urban/rural areas").first()).toBeVisible();
+});

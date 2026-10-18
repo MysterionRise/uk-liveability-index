@@ -22,7 +22,7 @@ make down           # stop
 
 | # | Do | You'll see | Say |
 |---|---|---|---|
-| 1 | Open the page | Every neighbourhood in the UK coloured by its UK percentile; the welcome card | "43,914 neighbourhoods, about 140 open datasets: police, NHS, Ofsted, Land Registry, air quality, flood risk, noise, tree cover, broadband, bus timetables, pubs." |
+| 1 | Open the page | Every neighbourhood in the UK and Ireland coloured by its percentile across the build; the welcome card | "62,833 neighbourhoods, about 170 open datasets: police, NHS, Ofsted, Land Registry, air quality, flood risk, noise, tree cover, broadband, bus timetables, pubs." |
 | 2 | Click **Family with children** | The map recolours instantly | "Weights are a judgement, so they're yours to change. Scoring every area takes a tenth of a second in the browser." |
 | 3 | **Weights** tab: drag *Safety* to 3 | The map recolours as you drag | "No server round trip: the scores are recomputed on the page." |
 | 4 | **Assistant**: *We have two young kids and a budget of £350k. Where should we look around Leeds?* | Sliders move to the family preset, a ranked list, outlined areas on the map; "close call" tags | "The assistant uses the same tools and data as the page. It never makes numbers up: every figure comes from a tool. 'Close call' means a slightly different weighting could swap that area out." |
