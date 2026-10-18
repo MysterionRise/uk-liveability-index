@@ -62,6 +62,67 @@ SCHOOL_SOURCES = {
 }
 
 
+def _school_pois(staged) -> pl.DataFrame | None:
+    """Schools with their phase and inspection quality, or None in a build without a
+    school list (Ireland alone: education is a declared gap there)."""
+    if not (staged / "schools.parquet").exists():
+        return None
+    schools = pl.read_parquet(staged / "schools.parquet")
+    if (staged / "ofsted_schools.parquet").exists():
+        schools = schools.join(
+            pl.read_parquet(staged / "ofsted_schools.parquet").select(
+                "urn", "quality", "framework", "inspection_date"
+            ),
+            on="urn",
+            how="left",
+        )
+    else:
+        # A build without England has no Ofsted table: every school is ungraded
+        schools = schools.with_columns(
+            pl.lit(None, pl.Float64).alias("quality"),
+            pl.lit(None, pl.Utf8).alias("framework"),
+            pl.lit(None, pl.Date).alias("inspection_date"),
+        )
+    schools = _with_lonlat(schools)
+    category = (
+        pl.when(pl.col("phase").is_in(["Primary", "Middle deemed primary"]))
+        .then(pl.lit("primary_school"))
+        .when(pl.col("phase").is_in(["Secondary", "Middle deemed secondary", "All-through"]))
+        .then(pl.lit("secondary_school"))
+        .when(pl.col("phase") == "Nursery")
+        .then(pl.lit("nursery"))
+        .otherwise(pl.lit("other_school"))
+    )
+    return schools.select(
+            category.alias("category"),
+            pl.concat_str(pl.lit("urn:"), pl.col("urn").cast(pl.Utf8)).alias("poi_id"),
+            "name",
+            "x",
+            "y",
+            "lon",
+            "lat",
+            pl.col("source")
+            .replace_strict(SCHOOL_SOURCES, default="DfE Get Information About Schools + Ofsted")
+            .alias("source"),
+            pl.lit(OGL).alias("licence"),
+            _detail(
+                [
+                    "urn",
+                    "phase",
+                    "type",
+                    "type_group",
+                    "low_age",
+                    "high_age",
+                    "pupils",
+                    "capacity",
+                    "quality",
+                    "framework",
+                    "inspection_date",
+                ]
+            ).alias("detail"),
+    )  # fmt: skip
+
+
 def build_pois() -> pl.DataFrame:
     staged, ind = data_dir("staged"), data_dir("indicators")
     frames = []
@@ -118,62 +179,8 @@ def build_pois() -> pl.DataFrame:
         )  # fmt: skip
     )
 
-    schools = pl.read_parquet(staged / "schools.parquet")
-    if (staged / "ofsted_schools.parquet").exists():
-        schools = schools.join(
-            pl.read_parquet(staged / "ofsted_schools.parquet").select(
-                "urn", "quality", "framework", "inspection_date"
-            ),
-            on="urn",
-            how="left",
-        )
-    else:
-        # A build without England has no Ofsted table: every school is ungraded
-        schools = schools.with_columns(
-            pl.lit(None, pl.Float64).alias("quality"),
-            pl.lit(None, pl.Utf8).alias("framework"),
-            pl.lit(None, pl.Date).alias("inspection_date"),
-        )
-    schools = _with_lonlat(schools)
-    category = (
-        pl.when(pl.col("phase").is_in(["Primary", "Middle deemed primary"]))
-        .then(pl.lit("primary_school"))
-        .when(pl.col("phase").is_in(["Secondary", "Middle deemed secondary", "All-through"]))
-        .then(pl.lit("secondary_school"))
-        .when(pl.col("phase") == "Nursery")
-        .then(pl.lit("nursery"))
-        .otherwise(pl.lit("other_school"))
-    )
-    frames.append(
-        schools.select(
-            category.alias("category"),
-            pl.concat_str(pl.lit("urn:"), pl.col("urn").cast(pl.Utf8)).alias("poi_id"),
-            "name",
-            "x",
-            "y",
-            "lon",
-            "lat",
-            pl.col("source")
-            .replace_strict(SCHOOL_SOURCES, default="DfE Get Information About Schools + Ofsted")
-            .alias("source"),
-            pl.lit(OGL).alias("licence"),
-            _detail(
-                [
-                    "urn",
-                    "phase",
-                    "type",
-                    "type_group",
-                    "low_age",
-                    "high_age",
-                    "pupils",
-                    "capacity",
-                    "quality",
-                    "framework",
-                    "inspection_date",
-                ]
-            ).alias("detail"),
-        )  # fmt: skip
-    )
+    if (schools_frame := _school_pois(staged)) is not None:
+        frames.append(schools_frame)
 
     osm = pl.read_parquet(staged / "osm_pois.parquet").filter(
         pl.col("value").is_in(list(OSM_CATEGORIES))
