@@ -66,32 +66,38 @@ def build_pois() -> pl.DataFrame:
     staged, ind = data_dir("staged"), data_dir("indicators")
     frames = []
 
-    pubs = pl.read_parquet(ind / "pubs.parquet")
-    frames.append(
-        pubs.select(
-            pl.lit("pub").alias("category"),
-            pl.col("pub_id").alias("poi_id"),
-            "name",
-            "x",
-            "y",
-            "lon",
-            "lat",
-            pl.col("source_name").alias("source"),
-            "licence",
-            _detail(
-                [
-                    "well_run",
-                    "rating",
-                    "rating_date",
-                    "fsa_id",
-                    "real_ale",
-                    "food",
-                    "outdoor_seating",
-                    "beer_garden",
-                ]
-            ).alias("detail"),
-        )  # fmt: skip
+    # No pubs table in a build without a hygiene scheme (Ireland alone)
+    pubs = (
+        pl.read_parquet(ind / "pubs.parquet")
+        if (ind / "pubs.parquet").exists()
+        else pl.DataFrame(schema={"pub_id": pl.Utf8})
     )
+    if pubs.height:
+        frames.append(
+            pubs.select(
+                pl.lit("pub").alias("category"),
+                pl.col("pub_id").alias("poi_id"),
+                "name",
+                "x",
+                "y",
+                "lon",
+                "lat",
+                pl.col("source_name").alias("source"),
+                "licence",
+                _detail(
+                    [
+                        "well_run",
+                        "rating",
+                        "rating_date",
+                        "fsa_id",
+                        "real_ale",
+                        "food",
+                        "outdoor_seating",
+                        "beer_garden",
+                    ]
+                ).alias("detail"),
+            )  # fmt: skip
+        )
 
     gp = _with_lonlat(pl.read_parquet(staged / "ods_gp.parquet").filter(pl.col("x").is_not_null()))
     frames.append(

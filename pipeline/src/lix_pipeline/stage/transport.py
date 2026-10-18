@@ -200,14 +200,19 @@ def tidy_comreg(comreg: pl.DataFrame, divisions: pl.DataFrame) -> pl.DataFrame:
     """ComReg's gigabit coverage of each Electoral Division → every Small Area of the
     division (``divisions``: ``lsoa21cd`` and ``ED_ID_STR``), in the Ofcom table's shape
     (counts are not published below the division: the shares alone)."""
-    by_division = comreg.select(
-        pl.col("ED_ID_STR").str.strip_chars().alias("ED_ID_STR"),
-        pl.col("Gigabit_Passed_PCT_Public_View")
-        .cast(pl.Float64, strict=False)
-        .alias("gigabit_pct"),
-        pl.col("Gigabit_Active_PCT_Public_View")
-        .cast(pl.Float64, strict=False)
-        .alias("gigabit_active_pct"),
+    by_division = (
+        comreg.select(
+            pl.col("ED_ID_STR").str.strip_chars().alias("ED_ID_STR"),
+            pl.col("Gigabit_Passed_PCT_Public_View")
+            .cast(pl.Float64, strict=False)
+            .alias("gigabit_pct"),
+            pl.col("Gigabit_Active_PCT_Public_View")
+            .cast(pl.Float64, strict=False)
+            .alias("gigabit_active_pct"),
+        )
+        # Three amalgamated divisions come in two parts: one row per division
+        .group_by("ED_ID_STR")
+        .agg(pl.col("gigabit_pct").mean(), pl.col("gigabit_active_pct").mean())
     )
     out = divisions.select("lsoa21cd", "ED_ID_STR").join(by_division, on="ED_ID_STR", how="left")
     return out.select(

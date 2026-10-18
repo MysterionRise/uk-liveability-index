@@ -192,3 +192,50 @@ def test_postcode_homes_keep_live_small_users_of_the_nations(tmp_path: Path, mon
         "nation",
         "kind",
     ]
+
+
+def test_tidy_comreg_broadcasts_a_division_to_its_areas_once():
+    from lix_pipeline.stage.transport import tidy_comreg
+
+    comreg = pl.DataFrame(
+        {
+            "ED_ID_STR": ["017010", "027058/027085", "027058/027085"],
+            "Gigabit_Passed_PCT_Public_View": [91, 20, 40],
+            "Gigabit_Active_PCT_Public_View": [48, 10, 10],
+        }
+    )
+    divisions = pl.DataFrame(
+        {
+            "lsoa21cd": ["I01000001", "I01000002", "I01000003"],
+            "ED_ID_STR": ["017010", "017010", "027058/027085"],
+        }
+    )
+    out = tidy_comreg(comreg, divisions)
+    assert out["lsoa21cd"].to_list() == ["I01000001", "I01000002", "I01000003"]
+    assert out["gigabit_pct"].to_list() == [91.0, 91.0, 30.0]  # the two parts averaged
+    assert out["premises"].null_count() == 3
+
+
+def test_tidy_pobal_pads_division_ids_and_broadcasts_to_small_areas():
+    from lix_pipeline.stage.deprivation import tidy_pobal
+
+    pobal = pl.DataFrame(
+        {
+            "ED_ID_STR": ["17001", "27058/27085"],
+            "Index22_ED_std_rel_wt": ["-12.5", "8.25"],
+            "Index22_ED_std_abs_wt": ["-10", "7"],
+            "UNEMPM22": ["20", "6"],
+            "UNEMPF22": ["10", "4"],
+        }
+    )
+    divisions = pl.DataFrame(
+        {
+            "lsoa21cd": ["I01000001", "I01000002", "I01000003"],
+            "ED_ID_STR": ["017001", "017001", "027058/027085"],
+        }
+    )
+    out = tidy_pobal(pobal, divisions).sort("lsoa21cd")
+    assert out["pobal_index"].to_list() == [-12.5, -12.5, 8.25]
+    assert out["imd_score"].to_list() == [12.5, 12.5, -8.25]  # higher = more deprived
+    assert out["employment_score"].to_list() == [0.15, 0.15, 0.05]
+    assert out["imd_rank"].to_list() == [1, 2, 3] and out["income_score"].null_count() == 3

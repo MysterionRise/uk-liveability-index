@@ -241,6 +241,19 @@ def _number(column: str) -> pl.Expr:
     return pl.col(column).str.replace_all(",", "").cast(pl.Float64, strict=False)
 
 
+def division_id(column: str) -> pl.Expr:
+    """A CSO Electoral Division id with each part padded to six digits: Pobal drops the
+    leading zero ("17001" for "017001"), including inside amalgamated ids ("27058/27085")."""
+    return (
+        pl.col(column)
+        .cast(pl.Utf8)
+        .str.strip_chars()
+        .str.split("/")
+        .list.eval(pl.element().str.zfill(6))
+        .list.join("/")
+    )
+
+
 def tidy_pobal(pobal: pl.DataFrame, divisions: pl.DataFrame) -> pl.DataFrame:
     """The Pobal HP Deprivation Index 2022 of each Electoral Division → the harmonised
     deprivation columns for every Small Area of the division (``divisions``: one row per
@@ -253,12 +266,14 @@ def tidy_pobal(pobal: pl.DataFrame, divisions: pl.DataFrame) -> pl.DataFrame:
     domain comparable to the UK indices, so those stay null.
     """
     by_division = pobal.select(
-        pl.col("ED_ID_STR").str.strip_chars().alias("ED_ID_STR"),
+        division_id("ED_ID_STR").alias("ED_ID_STR"),
         _number("Index22_ED_std_rel_wt").alias("pobal_index"),
         _number("Index22_ED_std_abs_wt").alias("pobal_index_abs"),
         ((_number("UNEMPM22") + _number("UNEMPF22")) / 200).alias("employment_score"),
     )
-    out = divisions.select("lsoa21cd", "ED_ID_STR").join(by_division, on="ED_ID_STR", how="left")
+    out = divisions.select("lsoa21cd", division_id("ED_ID_STR").alias("ED_ID_STR")).join(
+        by_division, on="ED_ID_STR", how="left"
+    )
     missing = out.filter(pl.col("pobal_index").is_null()).height
     if missing:
         logger.warning(f"{missing} Small Areas in divisions the Pobal file lacks")

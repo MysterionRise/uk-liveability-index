@@ -221,8 +221,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest allotments or community growing space.
     unit: metres
     direction: lower_better
-    coverage: [E, W, S, N]  # OS Open Greenspace in Great Britain, OpenStreetMap in Northern Ireland
-    sources: [os_greenspace, osm_ireland, nspl]
+    coverage: [E, W, S, N, I]  # OS Open Greenspace in Great Britain, OpenStreetMap in Northern Ireland
+    sources: [os_greenspace, osm_ireland, nspl, te_buildings]
     builder: common:nearest
     params: {slug: os_greenspace, column: function, values: [Allotments Or Community Growing Spaces], beyond_cap: 20000}
     role: context
@@ -683,8 +683,8 @@ indicators:
     description: Public electric-vehicle charging stations within 1.5km of homes, on average (OpenStreetMap).
     unit: within 1.5km
     direction: higher_better
-    coverage: [E, W, S, N]
-    sources: [osm_england, osm_wales, osm_scotland, osm_ireland, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [osm_england, osm_wales, osm_scotland, osm_ireland, nspl, te_buildings]
     builder: common:count_within
     params: {slug: osm_pois, column: value, values: [charging_station], radius_m: 1500}
     role: context
