@@ -4,7 +4,7 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.5.1] - 2026-10-18
 
 ### Added
 
@@ -30,6 +30,18 @@ All notable changes to this project. The format follows
   REST routes take `indicator_weights`, `/compare` also `theme_weights`; the assistant's
   tools pass them), so a profile's "sunshine ×2" changes the card as it does the map.
   `set_weights` accepts everyday words for indicators ("broadband").
+- Searching an alternative place name finds the place: "Londonderry" finds Derry, whose
+  OpenStreetMap name is "Derry/Londonderry", and the curated Irish and Gaelic names
+  match on it too (#132).
+- An indicator only some nations have (domestic rates) says which areas its percentile
+  compares against: the legend reads "Against every area in Northern Ireland" and the
+  hover "better than 59% of areas in Northern Ireland" (#136).
+- England-era wording swept out of the catalogue and its Welsh translation (IoD 2025
+  domains, "Census 2021" alone, primary schools "not available in Wales"), the
+  assistant's standing fact that every area is an LSOA of 1,600 people, the Gaelic
+  suggestion chips still set in Leeds, and stale counts and notes in the README, the
+  docs and the registry; every source in docs/data-sources.md links to a page (#106
+  #107).
 
 ## [0.5.0] - 2026-10-15
 
@@ -198,6 +210,8 @@ All notable changes to this project. The format follows
 
 - Welsh LSOA names are built from the council's Welsh name, since the ONS file misspells
   Ynys Môn.
+- The search and chat placeholders fit a phone ("Postcode or place", "Ask about a
+  neighbourhood…") (#95).
 
 ## [0.3.3] - 2026-10-12
 
@@ -400,6 +414,8 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.5.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.5.1
+[0.5.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.5.0
 [0.4.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.4.1
 [0.4.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.4.0
 [0.3.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.3.3

@@ -73,7 +73,7 @@
   },
   "Onboarding": {
     "title": "Aimsigh comharsanacht a oireann duit",
-    "blurb": "Gach comharsanacht {coverageIn}, scóráilte ó shonraí oscailte. Tá ceantair theal níos fearr ná an gnáth, ceantair oráiste níos measa. Zúmáil isteach agus cliceáil ar cheantar le fáil amach cén fáth, nó fiafraigh den chúntóir.",
+    "blurb": "Gach comharsanacht {coverageIn}, scóráilte ó shonraí oscailte. Tá ceantair ghormghlasa níos fearr ná an gnáth, ceantair oráiste níos measa. Zúmáil isteach agus cliceáil ar cheantar le fáil amach cén fáth, nó fiafraigh den chúntóir.",
     "whoIsLooking": "Cé atá ag breathnú?",
     "skip": "Léim thairis",
     "personas": {
@@ -169,6 +169,8 @@
   "Map": {
     "hover": "{name}: níos fearr ná {pct, number}% den RA",
     "hoverNoName": "níos fearr ná {pct, number}% den RA",
+    "hoverIn": "{name}: níos fearr ná {pct, number}% de na ceantair {coverageIn}",
+    "hoverInNoName": "níos fearr ná {pct, number}% de na ceantair {coverageIn}",
     "overall": "Iomlán",
     "withinNation": "{label} (laistigh den náisiún)",
     "withinUrbanRural": "{label} (i gcoinne ceantair uirbeacha/tuaithe comhchosúla)",

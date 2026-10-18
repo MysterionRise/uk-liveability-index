@@ -387,3 +387,13 @@ test("the assistant builds a profile from how you describe yourself", async ({ p
   await expect(page.getByTestId("weight-environment")).toHaveValue("2.5");
   await expect(page.getByTestId("profile-card")).toContainText("Retired");
 });
+
+test("an indicator only one nation has is compared among that nation's areas", async ({ page }) => {
+  await mapReady(page);
+  await page.getByTestId("tab-weights").click();
+  // Domestic rates exist only in Northern Ireland: the legend says so (#136)
+  await page.getByTestId("layer-select").selectOption("indicator:domestic_rates");
+  await expect(page.getByTestId("legend")).toContainText("Against every area in Northern Ireland");
+  await page.getByTestId("layer-select").selectOption("overall");
+  await expect(page.getByTestId("legend")).toContainText("Against every area in the UK");
+});

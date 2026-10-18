@@ -22,6 +22,20 @@ observations:
     (5% poor, 40% good) are on this scale and the indicator says "tree cover", not
     canopy.
   - >-
+    **Northern Ireland joins the index (v0.5.0).** The 850 Super Data Zones are scored on
+    the same indicators where the data are the same (air, broadband, OpenStreetMap,
+    climate) and within Northern Ireland for crime, the NIMDM 2017 deprivation measure,
+    the ward house prices and domestic rates. Schools are a declared gap (no grades or
+    results are published) and flood risk is not available (the maps are licensed), so
+    the Northern Irish anchors test prices, deprivation, air and access rather than
+    schools or flooding.
+  - >-
+    **Scotland joins the index (v0.4.0).** The 7,392 Data Zones are scored on the shared
+    sources where they exist and within Scotland for SIMD deprivation, its crime domain
+    (standing in for the four police.uk measures), Registers of Scotland prices and
+    council tax; a secondary's quality is its leavers' tariff within Scotland and primaries
+    count as present but ungraded, so safety keeps 52% of its weight and schools 67%.
+  - >-
     **Wales joins the index (v0.3.0).** Welsh neighbourhoods are scored on the same
     indicators where the data are the same (distances, air, broadband, OpenStreetMap) and
     within Wales where they are not (crime, WIMD deprivation, prices, council tax). Theme

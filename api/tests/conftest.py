@@ -153,17 +153,19 @@ def build_serve_dir(path) -> None:
     }).write_parquet(path / "postcodes.parquet")  # fmt: skip
 
     pl.DataFrame({
-        "place_id": ["p1", "p2", "p3", "p4", "p5", "p6"],
-        "name": ["Headingley", "Leeds", "Leeds", "Brighton", "Cardiff", "Ynys Môn"],
-        "name_cy": [None, None, None, None, "Caerdydd", None],
-        "name_gd": [None, None, None, None, None, None],
-        "place_type": ["Suburban Area", "City", "Village", "Other Settlement", "City", "Village"],
-        "postcode_district": ["LS6", "LS1", "ME17", "BN1", "CF10", "LL77"],
-        "local_authority": ["Leeds", "Leeds", "Maidstone", "Brighton and Hove", "Cardiff", "Isle of Anglesey"],
-        "region": ["Yorkshire", "Yorkshire", "South East", "South East", "Wales", "Wales"],
-        "lon": [-1.5766, -1.5500, 0.6070, -0.1370, -3.1790, -4.3300],
-        "lat": [53.8196, 53.8000, 51.2467, 50.8220, 51.4850, 53.2700],
-        "lsoa21cd": ["E01000001", "E01000002", "E01000002", "E01000005", "W01001880", "W01001881"],
+        "place_id": ["p1", "p2", "p3", "p4", "p5", "p6", "p7"],
+        "name": ["Headingley", "Leeds", "Leeds", "Brighton", "Cardiff", "Ynys Môn", "Derry"],
+        # OpenStreetMap names the city "Derry/Londonderry": the second form is name_alt
+        "name_alt": [None, None, None, None, None, None, "Londonderry"],
+        "name_cy": [None, None, None, None, "Caerdydd", None, None],
+        "name_gd": [None, None, None, None, None, None, None],
+        "place_type": ["Suburban Area", "City", "Village", "Other Settlement", "City", "Village", "City"],
+        "postcode_district": ["LS6", "LS1", "ME17", "BN1", "CF10", "LL77", "BT48"],
+        "local_authority": ["Leeds", "Leeds", "Maidstone", "Brighton and Hove", "Cardiff", "Isle of Anglesey", "Derry City and Strabane"],
+        "region": ["Yorkshire", "Yorkshire", "South East", "South East", "Wales", "Wales", "Northern Ireland"],
+        "lon": [-1.5766, -1.5500, 0.6070, -0.1370, -3.1790, -4.3300, -7.3100],
+        "lat": [53.8196, 53.8000, 51.2467, 50.8220, 51.4850, 53.2700, 54.9970],
+        "lsoa21cd": ["E01000001", "E01000002", "E01000002", "E01000005", "W01001880", "W01001881", "E01000002"],
     }).write_parquet(path / "places.parquet")  # fmt: skip
 
     df = df.with_columns(

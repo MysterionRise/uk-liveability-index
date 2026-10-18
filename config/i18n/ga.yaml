@@ -88,7 +88,7 @@ indicators:
   crime_theft: {label: "Robáil, gadaíocht agus coireacht feithiclí", description: "Robáil, gadaíocht ón duine, coireacht feithiclí agus gadaíocht rothar in aghaidh 1,000 cónaitheoir sa bhliain."}
   crime_damage_disorder: {label: Damáiste coiriúil agus ord poiblí, description: "Damáiste coiriúil, coirloscadh agus cionta oird phoiblí in aghaidh 1,000 cónaitheoir sa bhliain."}
   road_danger: {label: Imbhuailtí bóthair tromchúiseacha in aice láimhe, description: "Imbhuailtí bóthair inar maraíodh nó inar gortaíodh duine go dona laistigh de 500m de thithe, sa bhliain (meán 5 bliana)."}
-  iod_crime: {label: Scór fearainn coireachta IoD 2025, description: "Riosca samhaltaithe íospairt phearsanta agus maoine (sonraí 2021–2023)."}
+  iod_crime: {label: Fearann coireachta an innéacs díothachta, description: "Riosca samhaltaithe íospairt phearsanta agus maoine (sonraí 2021–2023)."}
   recorded_crime: {label: Coireacht a taifeadadh (SIMD), description: "Coireanna a taifeadadh in aghaidh 1,000 cónaitheoir sa bhliain in Innéacs Ildíothachta na hAlban 2020, tugtha chuig criosanna sonraí 2022."}
   no2: {label: Dé-ocsaíd nítrigine (NO₂), description: "Meán-NO₂ cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}
   pm25: {label: Mínfhíneáin (PM2.5), description: "Meán-PM2.5 cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}

@@ -33,7 +33,7 @@ make down           # stop
 | 9 | *What are the best areas to live in Belfast?* | Belfast's Super Data Zones ranked and outlined; the schools theme shown as limited data | "Four nations, one method: Northern Ireland joined in v0.5.0 with its own sources, and where it publishes less the index says so instead of guessing." |
 | 10 | Search **Hebden Bridge** (top bar) | Flood risk listed as a weak spot | "Data people care about but rarely see together: 24% of homes here are at real flood risk." |
 | 11 | Tick **Analyst**, open the **Analyst** tab | Distribution chart, indicator overlap heatmap, SQL console | "The same data for analysts: read-only SQL over every LSOA, exports with attribution." |
-| 12 | Click **How scores work** → **Validation** | The method, the face-validity review of 47 places, the assistant evals | "We test it: 106 face-validity checks across 47 places, 43 assistant evals across three models." |
+| 12 | Click **How scores work** → **Validation** | The method, the face-validity review of 47 places, the assistant evals | "We test it: 106 face-validity checks across 47 places, 50 assistant eval cases, run on three models." |
 
 Optional extras (also recorded): *Tell me about Hebden Bridge*, *What are the best
 areas in York for retirees?*, *Which areas of Birmingham have the fewest immigrants?*

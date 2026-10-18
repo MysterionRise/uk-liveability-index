@@ -309,3 +309,24 @@ def test_curated_names_fill_only_the_missing_forms_of_cities_and_towns():
     assert out["name_cy"].to_list() == ["Caeredin", "Caerdydd", None]
     assert out["name_gd"].to_list() == ["Dùn Èideann", None, None]
     assert out["name_ga"].to_list() == ["Dún Éideann", None, None]
+
+
+def test_curated_names_match_the_alternative_name_too():
+    """OpenStreetMap names the city "Derry/Londonderry"; the curated row says
+    "Londonderry", so it must key on the alternative name as well (#132)."""
+    from lix_pipeline.stage.place_names import with_curated_names
+
+    places = pl.DataFrame({
+        "name": ["Derry", "Strabane"],
+        "name_alt": ["Londonderry", None],
+        "local_authority": ["Derry City and Strabane", "Derry City and Strabane"],
+        "place_type": ["City", "Town"],
+    })  # fmt: skip
+    curated = pl.DataFrame({
+        "name": ["Londonderry", "Strabane"],
+        "local_authority": ["Derry City and Strabane", "Derry City and Strabane"],
+        "name_ga": ["Doire", "An Srath Bán"],
+    })  # fmt: skip
+    out = with_curated_names(places, curated)
+    assert out["name_ga"].to_list() == ["Doire", "An Srath Bán"]
+    assert "alt_name_ga" not in out.columns and "curated_name_ga" not in out.columns

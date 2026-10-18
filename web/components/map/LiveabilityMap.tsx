@@ -22,7 +22,7 @@ import { CHROME, FILL_OPACITY } from "@/lib/palette";
 import { useLocale, useTranslations } from "next-intl";
 
 import { useCoverageIn } from "@/lib/copy";
-import { activeBbox } from "@/lib/data";
+import { activeBbox, coverageNations } from "@/lib/data";
 import { bboxOf } from "@/lib/state";
 
 const LAYERS = [
@@ -163,8 +163,16 @@ export function LiveabilityMap() {
   }, [state.compare_within]);
   const t = useTranslations("Map");
   const tLegend = useTranslations("Legend");
-  const coverageIn = useCoverageIn();
+  // An indicator only some nations have (domestic rates) is compared among the areas of
+  // those nations, and the legend and hover say so (#136)
+  const layerNations = coverageNations(manifest, state.map.layer);
+  const coverageIn = useCoverageIn(layerNations ?? undefined);
   const against = tLegend(`against.${state.compare_within}`, { coverageIn });
+  const whereIn = layerNations ? coverageIn : null;
+  const whereRef = useRef<string | null>(whereIn);
+  useEffect(() => {
+    whereRef.current = whereIn;
+  }, [whereIn]);
   const values = useScores(state);
   const appliedBbox = useRef<string>("");
   const styleDark = useRef<boolean | null>(null);
@@ -350,10 +358,17 @@ export function LiveabilityMap() {
       // The wording follows "compare against": the value shown is already within the
       // nation or the urban/rural class when that is chosen (#113)
       const key =
-        compareRef.current === "nation" ? "hoverNation" : compareRef.current === "urban_rural" ? "hoverUrbanRural" : "hover";
+        compareRef.current === "nation"
+          ? "hoverNation"
+          : compareRef.current === "urban_rural"
+            ? "hoverUrbanRural"
+            : whereRef.current
+              ? "hoverIn"
+              : "hover";
+      const args = { pct: pctRank(v), coverageIn: whereRef.current ?? "" };
       setHover(
         f && typeof v === "number"
-          ? { x: e.point.x, y: e.point.y, text: name ? t(key, { name, pct: pctRank(v) }) : t(`${key}NoName`, { pct: pctRank(v) }) }
+          ? { x: e.point.x, y: e.point.y, text: name ? t(key, { name, ...args }) : t(`${key}NoName`, args) }
           : null,
       );
     };

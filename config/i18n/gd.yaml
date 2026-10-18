@@ -88,7 +88,7 @@ indicators:
   crime_theft: {label: "Robaireachd, mèirle agus eucoir charbadan", description: "Robaireachd, mèirle bhon neach, eucoir charbadan agus mèirle bhaidhsagalan gach 1,000 luchd-còmhnaidh sa bhliadhna."}
   crime_damage_disorder: {label: Milleadh eucorach agus òrdugh poblach, description: "Milleadh eucorach, losgadh-dhìol agus eucoirean òrduigh phoblaich gach 1,000 luchd-còmhnaidh sa bhliadhna."}
   road_danger: {label: Tubaistean rathaid trom faisg air làimh, description: "Tubaistean rathaid anns an deach cuideigin a mharbhadh no a leòn gu trom taobh a-staigh 500m de dhachaighean, sa bhliadhna (cuibheas 5 bliadhna)."}
-  iod_crime: {label: Sgòr raon eucoir IoD 2025, description: "Cunnart modailte de dh'fhulangas pearsanta agus seilbhe (dàta 2021–2023)."}
+  iod_crime: {label: Raon eucoir a' chlàr-amais bochdainn, description: "Cunnart modailte de dh'fhulangas pearsanta agus seilbhe (dàta 2021–2023)."}
   recorded_crime: {label: Eucoir a chaidh a chlàradh (SIMD), description: "Eucoirean a chaidh a chlàradh gach 1,000 luchd-còmhnaidh sa bhliadhna ann an Clàr-amais Ioma-bhochdainn na h-Alba 2020, air an toirt gu sònaichean dàta 2022."}
   no2: {label: Dà-ogsaid naitridean (NO₂), description: "NO₂ cùil cuibheasach bliadhnail far a bheil luchd-còmhnaidh a' fuireach (modail 1km Defra)."}
   pm25: {label: Mìon-ghràineanan (PM2.5), description: "PM2.5 cùil cuibheasach bliadhnail far a bheil luchd-còmhnaidh a' fuireach (modail 1km Defra)."}

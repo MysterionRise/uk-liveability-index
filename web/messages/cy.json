@@ -169,6 +169,8 @@
   "Map": {
     "hover": "{name}: yn well na {pct, number}% o'r DU",
     "hoverNoName": "yn well na {pct, number}% o'r DU",
+    "hoverIn": "{name}: yn well na {pct, number}% o'r ardaloedd {coverageIn}",
+    "hoverInNoName": "yn well na {pct, number}% o'r ardaloedd {coverageIn}",
     "overall": "Cyffredinol",
     "withinNation": "{label} (o fewn y genedl)",
     "withinUrbanRural": "{label} (yn erbyn ardaloedd trefol/gwledig tebyg)",

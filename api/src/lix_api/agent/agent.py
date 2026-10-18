@@ -40,7 +40,8 @@ Deps = StateDeps[LiveabilityState]
 
 INSTRUCTIONS = """\
 You help people find and understand neighbourhoods in the UK using the UK Liveability
-Index: open data scored for every neighbourhood (LSOAs, about 1,600 residents each)
+Index: open data scored for every small area (LSOAs in England and Wales, data zones in
+Scotland, super data zones in Northern Ireland: roughly 700–4,000 residents each)
 across nine themes — safety, environment, health services, schools & childcare,
 transport, amenities & nightlife, housing & affordability, community & wellbeing, and
 climate (sunshine, rain, summer and winter temperatures).
@@ -276,7 +277,8 @@ def rank_areas(
         within: a local authority, region, neighbourhood or place; with a place, areas
             within radius_km of it (default 10 km)
         radius_km: search radius around a place
-        level: "msoa" (neighbourhoods of ~8,000 people), "lsoa" (~1,600) or "lad"
+        level: "msoa" (neighbourhoods of ~8,000 people), "lsoa" (small areas of roughly
+            700–4,000) or "lad"
             (whole councils, as population-weighted averages)
         max_median_price: only areas whose typical house price is at most this (£)
         min_theme_scores: e.g. {"safety": 60} to require a minimum theme score

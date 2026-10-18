@@ -42,7 +42,8 @@ http://localhost:3000. Stop it with `make down`.
 Without a key, everything else works and the assistant answers its suggested questions
 from recordings. See [Assistant](#assistant) for other providers and costs.
 
-**Just a look?** `make up-demo` runs on the small dataset in the repo (Leeds and Brighton),
+**Just a look?** `make up-demo` runs on the small dataset in the repo (Leeds, Brighton, Cardiff,
+Edinburgh and Belfast),
 with no download.
 
 ## What you can do
@@ -68,7 +69,8 @@ over every neighbourhood and CSV export.
 <img src="docs/media/tiktok.gif" width="320" alt="The phone layout: choosing family with children recolours the UK, the assistant ranks family areas in Leeds under £350k, a tap opens a neighbourhood's scores, and a search for Hebden Bridge shows its flood risk">
 
 Also: a shortlist with side-by-side comparison, shareable links, light and dark mode, and
-the interface in English or Cymraeg (a draft, until fluent speakers have reviewed it; see
+the interface in English, Cymraeg, Gàidhlig or Gaeilge (drafts, until fluent speakers have
+reviewed them; see
 [docs/i18n.md](docs/i18n.md)).
 A full walkthrough video comes with each
 [release](https://github.com/MysterionRise/uk-liveability-index/releases).
@@ -88,7 +90,7 @@ are shown for context, so related measures aren't counted twice.
 - **Uncertain where it should be.** Nudging every theme's weight shows how stable a result is:
   "better than 72–95% of the UK" rather than a falsely precise 84%, and "close call" tags in
   rankings.
-- **Checked.** A review of 25 contrasting places (49/49 checks, the key ones run on every
+- **Checked.** A review of 47 contrasting places (106/106 checks, 70 of them run on every
   build) is in [docs/validation.md](docs/validation.md).
 
 The full method, including how Greater Manchester's missing crime data and Ofsted's

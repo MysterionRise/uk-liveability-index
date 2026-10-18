@@ -63,7 +63,7 @@ flags:
 
 indicators:
   recorded_crime: {label: Troseddau a gofnodwyd (SIMD), description: "Troseddau a gofnodwyd fesul 1,000 o drigolion y flwyddyn ym Mynegai Amddifadedd Lluosog yr Alban 2020, wedi'u trosglwyddo i barthau data 2022."}
-  access_deprivation: {label: Mynediad at wasanaethau (SIMD), description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol)."}
+  access_deprivation: {label: Mynediad at wasanaethau (SIMD), description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol), wedi'i ddwyn i barthau data 2022."}
   noise_exposure: {label: Cartrefi mewn sŵn trafnidiaeth neu ddiwydiant, description: "Cyfran y cartrefi lle mae'r sŵn a fapiwyd yn cyfartalu 60 dB Lden neu fwy (ffyrdd a rheilffyrdd yng Nghymru a Lloegr; pob ffynhonnell a fapiwyd yn yr Alban)."}
   aircraft_noise: {label: Cartrefi mewn sŵn awyrennau, description: "Cyfran y cartrefi lle mae sŵn awyrennau'n cyfartalu 55 dB Lden neu fwy, o amgylch yr un ar bymtheg o feysydd awyr a fapiwyd yn Lloegr."}
   industrial_noise: {label: Cartrefi mewn sŵn diwydiannol, description: "Cyfran y cartrefi lle mae sŵn diwydiannol yn cyfartalu 55 dB Lden neu fwy, ym mhum dinas fapiedig yr Alban."}
@@ -77,7 +77,7 @@ indicators:
   crime_theft: {label: "Lladrad, dwyn a throseddau cerbydau", description: "Lladrad, dwyn oddi ar y person, troseddau cerbydau a dwyn beiciau fesul 1,000 o drigolion y flwyddyn."}
   crime_damage_disorder: {label: Difrod troseddol a threfn gyhoeddus, description: "Difrod troseddol, llosgi bwriadol a throseddau trefn gyhoeddus fesul 1,000 o drigolion y flwyddyn."}
   road_danger: {label: Gwrthdrawiadau ffordd difrifol gerllaw, description: "Gwrthdrawiadau ffordd lle lladdwyd neu anafwyd rhywun yn ddifrifol o fewn 500m i gartrefi, y flwyddyn (cyfartaledd 5 mlynedd)."}
-  iod_crime: {label: Sgôr parth troseddu IoD 2025, description: Risg wedi'i modelu o erledigaeth bersonol a materol (data 2021–2023).}
+  iod_crime: {label: Parth troseddu'r mynegai amddifadedd, description: Risg wedi'i modelu o erledigaeth bersonol a materol (data 2021–2023).}
   no2: {label: Nitrogen deuocsid (NO₂), description: NO₂ cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra).}
   pm25: {label: Gronynnau mân (PM2.5), description: PM2.5 cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra).}
   green_space_access: {label: Parciau a mannau gwyrdd gerllaw, description: "Mynedfeydd i barciau, gerddi a chaeau chwarae cyhoeddus o fewn 1km o gerdded, wedi'u pwysoli yn ôl pellter."}
@@ -112,33 +112,33 @@ indicators:
   food_and_drink: {label: Caffis a bwytai, description: "Caffis a bwytai o fewn 800m, wedi'u pwysoli yn ôl pellter."}
   supermarket_distance: {label: Pellter i'r archfarchnad agosaf, description: Pellter cyfartalog mewn llinell syth o gartrefi i'r archfarchnad agosaf.}
   shops: {label: Siopau gerllaw, description: "Siopau o bob math o fewn 800m, wedi'u pwysoli yn ôl pellter."}
-  leisure: {label: Cyfleusterau chwaraeon a ffitrwydd, description: "Neuaddau chwaraeon, campfeydd, pyllau, stiwdios, cyrtiau a chaeau sy'n agored i'r cyhoedd o fewn 2km, wedi'u pwysoli yn ôl pellter."}
+  leisure: {label: Cyfleusterau chwaraeon a ffitrwydd, description: "Canolfannau chwaraeon, campfeydd a phyllau nofio sy'n agored i'r cyhoedd o fewn 2km, wedi'u pwysoli yn ôl pellter (OpenStreetMap)."}
   swimming_pool_distance: {label: Pellter i'r pwll cyhoeddus agosaf, description: Pellter cyfartalog mewn llinell syth o gartrefi i'r pwll nofio agosaf sy'n agored i'r cyhoedd.}
   culture: {label: "Llyfrgelloedd, sinemâu, theatrau ac amgueddfeydd", description: "Llyfrgelloedd, sinemâu, theatrau, canolfannau celfyddydau, amgueddfeydd ac orielau o fewn 2km."}
   fast_food: {label: Siopau bwyd cyflym gerllaw, description: Siopau bwyd cyflym o fewn 800m.}
   gambling: {label: Siopau betio a chasinos gerllaw, description: "Siopau betio, lleoliadau gamblo a chasinos o fewn 800m."}
   house_price: {label: Pris tŷ arferol, description: "Pris gwerthu canolrifol dros y 12 mis diwethaf, wedi'i sefydlogi tuag at yr ardal o gwmpas lle mae'r gwerthiannau'n brin."}
-  housing_condition: {label: Cyflwr tai, description: Is-barth dan do IoD 2025 (cartrefi mewn cyflwr gwael neu heb wres canolog).}
+  housing_condition: {label: Cyflwr tai, description: "Parth tai y mynegai amddifadedd (cartrefi mewn cyflwr gwael neu heb wres canolog; yn yr Alban, gorlenwi a dim gwres canolog)."}
   price_change: {label: Newid ym mhrisiau tai, description: "Newid yn y pris gwerthu canolrifol, y 12 mis diwethaf yn erbyn y 12 mis cynt."}
   council_tax: {label: Treth gyngor (cyfradd Band D y cyngor), description: "Treth gyngor flynyddol ar gartref Band D, gan gynnwys taliadau'r sir, yr heddlu, tân a chyngor cymuned cyfartalog."}
   price_to_income: {label: Pris o'i gymharu ag incwm lleol, description: Pris tŷ arferol wedi'i rannu ag incwm aelwyd net cymedrig yr ardal.}
   new_builds: {label: Cartrefi a adeiladwyd ers 2000, description: Cyfran y cartrefi a adeiladwyd yn 2000 neu'n ddiweddarach.}
   period_homes: {label: Cartrefi a adeiladwyd cyn 1919, description: Cyfran y cartrefi a adeiladwyd cyn 1919.}
   lower_band_homes: {label: Cartrefi ym mandiau treth gyngor A–B, description: Cyfran y cartrefi yn y ddau fand treth gyngor isaf (y cartrefi rhataf yng ngwerthoedd 1991).}
-  income_deprivation: {label: Amddifadedd incwm, description: Cyfran y trigolion ar incwm isel (parth incwm IoD 2025).}
-  employment_deprivation: {label: Amddifadedd cyflogaeth, description: Cyfran y trigolion o oedran gweithio sydd allan o waith yn anwirfoddol (parth cyflogaeth IoD 2025).}
+  income_deprivation: {label: Amddifadedd incwm, description: Cyfran y trigolion ar incwm isel (parth incwm y mynegai amddifadedd).}
+  employment_deprivation: {label: Amddifadedd cyflogaeth, description: Cyfran y trigolion o oedran gweithio sydd allan o waith yn anwirfoddol (parth cyflogaeth y mynegai amddifadedd).}
   claimant_rate: {label: Cyfradd hawlwyr, description: "Trigolion sy'n hawlio budd-daliadau sy'n gysylltiedig â diweithdra, fel cyfran o'r rhai 16–64 oed (mis diweddaraf)."}
   household_income: {label: Incwm aelwydydd, description: "Incwm aelwyd net cymedrig yn yr ardal ehangach (MSOA), cyn costau tai."}
-  health_deprivation: {label: Iechyd ac anabledd, description: "Marwolaeth gynamserol, salwch ac anabledd (parth amddifadedd iechyd ac anabledd IoD 2025)."}
+  health_deprivation: {label: Iechyd ac anabledd, description: "Marwolaeth gynamserol, salwch ac anabledd (parth iechyd ac anabledd y mynegai amddifadedd)."}
   life_expectancy: {label: Disgwyliad oes, description: "Disgwyliad oes adeg geni yn yr ardal ehangach (MSOA), cymedr dynion a menywod, 2019–23."}
-  good_health: {label: Iechyd da (hunan-adroddedig), description: Trigolion sy'n disgrifio eu hiechyd fel da neu dda iawn (Cyfrifiad 2021).}
-  imd: {label: Mynegai Amddifadedd Lluosog 2025, description: Sgôr amddifadedd cyffredinol; heb ei sgorio am fod ei barthau'n gorgyffwrdd â dangosyddion eraill.}
-  population_density: {label: Dwysedd poblogaeth, description: Trigolion fesul cilometr sgwâr (Cyfrifiad 2021).}
-  households_with_children: {label: Aelwydydd â phlant dibynnol, description: Cyfran yr aelwydydd â phlant dibynnol (Cyfrifiad 2021).}
-  aged_65_plus: {label: Trigolion 65 oed a throsodd, description: Cyfran y trigolion 65 oed neu'n hŷn (Cyfrifiad 2021).}
-  owner_occupied: {label: Cartrefi perchen-feddianwyr, description: Cyfran yr aelwydydd sy'n berchen ar eu cartref yn llwyr neu â morgais (Cyfrifiad 2021).}
-  no_car: {label: Aelwydydd heb gar, description: Cyfran yr aelwydydd heb gar na fan (Cyfrifiad 2021).}
-  sustainable_commute: {label: "Cerdded, beicio neu drafnidiaeth gyhoeddus i'r gwaith", description: "Cyfran y gweithwyr sy'n cymudo ar droed, ar feic neu ar drafnidiaeth gyhoeddus (Cyfrifiad 2021, yn ystod cyfyngiadau COVID-19)."}
+  good_health: {label: Iechyd da (hunan-adroddedig), description: Trigolion sy'n disgrifio eu hiechyd fel da neu dda iawn (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
+  imd: {label: Mynegai Amddifadedd Lluosog, description: Sgôr amddifadedd cyffredinol; heb ei sgorio am fod ei barthau'n gorgyffwrdd â dangosyddion eraill.}
+  population_density: {label: Dwysedd poblogaeth, description: Trigolion fesul cilometr sgwâr (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
+  households_with_children: {label: Aelwydydd â phlant dibynnol, description: Cyfran yr aelwydydd â phlant dibynnol (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
+  aged_65_plus: {label: Trigolion 65 oed a throsodd, description: Cyfran y trigolion 65 oed neu'n hŷn (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
+  owner_occupied: {label: Cartrefi perchen-feddianwyr, description: Cyfran yr aelwydydd sy'n berchen ar eu cartref yn llwyr neu â morgais (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
+  no_car: {label: Aelwydydd heb gar, description: Cyfran yr aelwydydd heb gar na fan (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
+  sustainable_commute: {label: "Cerdded, beicio neu drafnidiaeth gyhoeddus i'r gwaith", description: "Cyfran y gweithwyr sy'n cymudo ar droed, ar feic neu ar drafnidiaeth gyhoeddus (Cyfrifiad 2021, yn ystod cyfyngiadau COVID-19; Cyfrifiad 2022 yn yr Alban)."}
 
   sunshine: {label: Heulwen, description: "Oriau o heulwen lachar y flwyddyn, cyfartaledd 1991–2020 (HadUK-Grid, 1km)."}
   wet_days: {label: Diwrnodau gwlyb, description: "Diwrnodau y flwyddyn ag o leiaf 1mm o law, cyfartaledd 1991–2020."}

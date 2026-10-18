@@ -233,17 +233,36 @@ export function coverageName(
   manifest: Manifest | null | undefined,
   name?: (code: string) => string,
   list?: (names: string[]) => string,
+  codes?: string[],
 ): string {
   const geo = manifest?.geography;
   const uk = name ? name("uk") : "the UK";
   if (!geo) return uk;
-  const names = geo.active.map((c) =>
+  const names = (codes ?? geo.active).map((c) =>
     name ? name(c) : (geo.nations[c]?.name ?? c),
   );
   if (names.length === 0 || names.length >= 4) return uk;
   if (names.length === 1) return names[0];
   if (list) return list(names);
   return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}
+
+/**
+ * The nations an indicator layer is built for when they are fewer than the build's
+ * (domestic rates exist only in Northern Ireland), so the legend and hover can say which
+ * areas the percentile compares against; null for the overall, a theme or an indicator
+ * every active nation has.
+ */
+export function coverageNations(
+  manifest: Manifest | null | undefined,
+  layer: string | undefined,
+): string[] | null {
+  if (!manifest || !layer?.startsWith("indicator:")) return null;
+  const info = manifest.indicators.find((i) => i.id === layer.slice(10));
+  const active = manifest.geography?.active ?? [];
+  if (!info?.coverage?.length || !active.length) return null;
+  const covered = active.filter((n) => info.coverage.includes(n));
+  return covered.length && covered.length < active.length ? covered : null;
 }
 
 /** West, south, east, north around every nation in this build. */

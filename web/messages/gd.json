@@ -60,10 +60,10 @@
     "send": "Cuir",
     "moreOptions": "Barrachd roghainnean",
     "suggestions": {
-      "familyTitle": "Freagarrach do theaghlaichean faisg air Leeds",
-      "familyMessage": "Tha dithis chloinne òga againn agus buidseat de £350k. Càite am bu chòir dhuinn coimhead timcheall air Leeds?",
+      "familyTitle": "Freagarrach do theaghlaichean faisg air Dùn Èideann",
+      "familyMessage": "Tha dithis chloinne òga againn agus buidseat de £350k. Càite am bu chòir dhuinn coimhead timcheall air Dùn Èideann?",
       "pubsTitle": "Taighean-seinnse math faisg air làimh",
-      "pubsMessage": "Seall dhomh taighean-seinnse math faisg air SW1A 1AA",
+      "pubsMessage": "Seall dhomh taighean-seinnse math faisg air EH8 9AA",
       "compareTitle": "Dèan coimeas eadar dà àite",
       "compareMessage": "Dèan coimeas eadar Headingley agus Chapel Allerton",
       "explainTitle": "Mìnich sgòr",
@@ -73,7 +73,7 @@
   },
   "Onboarding": {
     "title": "Lorg nàbachd a fhreagras ort",
-    "blurb": "Gach nàbachd {coverageIn}, le sgòr bho dhàta fosgailte. Tha sgìrean teal nas fheàrr na an àbhaist, sgìrean orains nas miosa. Sùm a-steach agus briog air sgìre airson faicinn carson, no faighnich dhen chuidiche.",
+    "blurb": "Gach nàbachd {coverageIn}, le sgòr bho dhàta fosgailte. Tha sgìrean gorm-uaine nas fheàrr na an àbhaist, sgìrean orains nas miosa. Sùm a-steach agus briog air sgìre airson faicinn carson, no faighnich dhen chuidiche.",
     "whoIsLooking": "Cò tha a' coimhead?",
     "skip": "Leum seachad",
     "personas": {
@@ -169,6 +169,8 @@
   "Map": {
     "hover": "{name}: nas fheàrr na {pct, number}% den RA",
     "hoverNoName": "nas fheàrr na {pct, number}% den RA",
+    "hoverIn": "{name}: nas fheàrr na {pct, number}% de na sgìrean {coverageIn}",
+    "hoverInNoName": "nas fheàrr na {pct, number}% de na sgìrean {coverageIn}",
     "overall": "Iomlan",
     "withinNation": "{label} (taobh a-staigh an nàisein)",
     "withinUrbanRural": "{label} (an aghaidh sgìrean bailteil/dùthchail coltach)",
