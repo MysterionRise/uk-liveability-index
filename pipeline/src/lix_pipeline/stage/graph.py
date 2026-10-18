@@ -20,6 +20,7 @@ import functools
 import hashlib
 import inspect
 import json
+import os
 import re
 from collections.abc import Callable, Iterable
 from datetime import datetime, timezone
@@ -178,7 +179,15 @@ def has_inputs(stager: str, registry: dict, nations: Iterable[str]) -> bool:
         spec = registry.get(slug)
         if spec is not None and spec.access.type == "manual":
             return any(p.is_file() for p in (data_dir("manual") / slug).glob("**/*"))
-        return (data_dir("raw") / slug / ".meta.json").exists()
+        if (data_dir("raw") / slug / ".meta.json").exists():
+            return True
+        # A keyed source without its key is skipped at fetch time, and its stager reads
+        # what it has (chargers without Open Charge Map): it does not hold the stage back
+        return (
+            spec is not None
+            and spec.access.type == "api_key"
+            and not os.environ.get(spec.access.env, "").strip()
+        )
 
     return all(present(s) for s in inputs_for(stager, registry, nations))
 

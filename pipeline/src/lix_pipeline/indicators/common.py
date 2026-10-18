@@ -34,6 +34,9 @@ def impute_by_proxy(
     medians are made monotone in the direction of the overall correlation, and imputed
     rows are interpolated between bin centres. Returns the completed ``value`` series.
     """
+    # A predicate on a column some nations lack (Ireland has no police force area) is
+    # null there: those rows are neither training nor imputed
+    impute = impute.fill_null(False)
     train = df.filter(~impute & pl.col(value).is_not_null() & pl.col(proxy).is_not_null())
     needs = df.select(impute & pl.col(proxy).is_not_null()).to_series().any()
     if train.height < 2 or not needs:
