@@ -82,6 +82,16 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "osm_pois": ["osm_*"],
     "ods_dentists": ["ods_dentists", "phs_dentists", "bso_dental", "nspl", *LOW_BOUNDARIES],
     "ae_sites": ["ae_sites", "nspl", *LOW_BOUNDARIES],
+    "chargers": ["esb_ev_sites", "open_charge_map_gb", "open_charge_map_ie", *LOW_BOUNDARIES],
+    "heritage": [
+        "nhle_listed",
+        "cadw_listed",
+        "hes_listed",
+        "dfc_listed",
+        "niah_buildings",
+        *LOW_BOUNDARIES,
+    ],
+    "radon": ["bgs_radon_gb", "bgs_radon_ni", "epa_radon"],
     # PSNI records carry no LSOA code and are placed by their coordinates
     "police_crime": [
         "police_crime",
@@ -188,6 +198,8 @@ STAGE_READS: dict[str, list[str]] = {
     "ods_gp": ["nspl", "osm_pois"],  # Ireland: surgeries and clinics from OpenStreetMap
     "ods_dentists": ["nspl", "osm_pois"],
     "ae_sites": ["nspl"],
+    "chargers": ["osm_pois"],
+    "radon": ["homes"],
     "nhsbsa_pharmacies": ["nspl"],
     "ofsted_childcare": ["nspl"],
     "fsa_fhrs": ["nspl"],
@@ -241,18 +253,21 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
 
     from lix_core.config import load_registry
     from lix_pipeline.stage import (
+        chargers,
         childcare,
         climate,
         community,
         environment,
         geo,
         health,
+        heritage,
         homes,
         housing,
         landcover,
         logainm,
         night_lights,
         noise,
+        radon,
         safety,
         schools,
         transport,
@@ -292,6 +307,9 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "gp_registrations": health.stage_gp_registrations,
         "gp_workforce": health.stage_gp_workforce,
         "ae_sites": health.stage_ae_sites,
+        "chargers": chargers.stage_chargers,  # needs staged osm_pois
+        "heritage": heritage.stage_heritage,
+        "radon": radon.stage_radon,  # needs staged homes
         "gias": schools.stage_gias,
         "wg_schools": schools.stage_wg_schools,
         "sg_schools": schools.stage_sg_schools,

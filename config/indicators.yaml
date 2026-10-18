@@ -205,11 +205,11 @@ indicators:
   - id: play_spaces
     theme: environment
     label: Play areas nearby
-    description: Entrances to public play spaces within 800m of homes, weighted by distance (in Northern Ireland, OpenStreetMap playgrounds).
+    description: Entrances to public play spaces within 800m of homes, weighted by distance (in Northern Ireland and Ireland, OpenStreetMap playgrounds).
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S, N]
-    sources: [os_greenspace, osm_ireland, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [os_greenspace, osm_ireland, nspl, te_buildings]
     builder: common:access
     params: {slug: os_greenspace, column: function, values: [Play Space], radius_m: 800, cap: 5}
     normalise: scale
@@ -227,6 +227,19 @@ indicators:
     params: {slug: os_greenspace, column: function, values: [Allotments Or Community Growing Spaces], beyond_cap: 20000}
     role: context
     caveats: Distance to the site, not whether a plot is free; waiting lists run to years in many towns. Northern Ireland's sites come from OpenStreetMap.
+
+  - id: radon_potential
+    theme: environment
+    label: Homes in a high radon area
+    description: Share of homes in grid squares where more than 10% of homes are expected to exceed the radon action level (the BGS and UKHSA indicative atlas; the EPA's radon map in Ireland).
+    unit: "% of homes"
+    direction: lower_better
+    coverage: [E, W, S, N, I]
+    sources: [bgs_radon_gb, bgs_radon_ni, epa_radon, nspl, te_buildings]
+    builder: common:column
+    params: {slug: radon, column: high_share}
+    role: context
+    caveats: Indicative mapping by 1km square (10km in Ireland), not a measurement; the UKHSA postcode lookup or an EPA test gives a home's own level, and high levels can be reduced.
 
   - id: flood_risk
     theme: environment
@@ -680,15 +693,15 @@ indicators:
   - id: ev_charging
     theme: transport
     label: Public charge points nearby
-    description: Public electric-vehicle charging stations within 1.5km of homes, on average (OpenStreetMap).
+    description: Public electric-vehicle charging sites within 1.5km of homes, on average (OpenStreetMap, ESB on the island of Ireland, Open Charge Map).
     unit: within 1.5km
     direction: higher_better
     coverage: [E, W, S, N, I]
-    sources: [osm_england, osm_wales, osm_scotland, osm_ireland, nspl, te_buildings]
+    sources: [osm_england, osm_wales, osm_scotland, osm_ireland, esb_ev_sites, open_charge_map_gb, open_charge_map_ie, nspl, te_buildings]
     builder: common:count_within
-    params: {slug: osm_pois, column: value, values: [charging_station], radius_m: 1500}
+    params: {slug: chargers, radius_m: 1500}
     role: context
-    caveats: Counts charging stations mapped in OpenStreetMap, not sockets or their speed; the national chargepoint registry closed in 2024, so mapping completeness varies by area.
+    caveats: Counts charging sites, not sockets or their speed, from OpenStreetMap, ESB's network on the island of Ireland and Open Charge Map's openly licensed providers (the last only when a build has a key); the UK's national chargepoint registry closed in 2024.
 
   - id: rail_service
     theme: transport
@@ -873,6 +886,19 @@ indicators:
     params: {values: [library, cinema, theatre, arts_centre, museum, gallery], radius_m: 2000, cap: 3}
     normalise: scale
     weight: 0.75
+
+  - id: listed_buildings
+    theme: amenities
+    label: Listed buildings nearby
+    description: Listed buildings within 1km of homes, per km² (Historic England, Cadw, Historic Environment Scotland and the Department for Communities; in Ireland, the National Inventory of Architectural Heritage at regional rating or above).
+    unit: per km²
+    direction: higher_better
+    coverage: [E, W, S, N, I]
+    sources: [nhle_listed, cadw_listed, hes_listed, dfc_listed, niah_buildings, nspl, te_buildings]
+    builder: common:density_within
+    params: {slug: heritage, radius_m: 1000}
+    role: context
+    caveats: A density of protected buildings, as a sign of historic character; it says nothing about the condition of the homes, and Ireland's figure counts the inventory's recommendations rather than the councils' statutory records.
 
   - id: fast_food
     theme: amenities

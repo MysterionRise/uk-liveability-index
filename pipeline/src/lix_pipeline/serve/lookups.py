@@ -35,7 +35,6 @@ OSM_CATEGORIES = {
     "museum": "museum", "gallery": "museum", "post_office": "post_office", "bakery": "bakery",
     "butcher": "butcher", "greengrocer": "greengrocer", "kindergarten": "nursery",
     "childcare": "nursery", "community_centre": "community_centre", "marketplace": "market",
-    "charging_station": "ev_charging",
 }  # fmt: skip
 
 
@@ -181,6 +180,24 @@ def build_pois() -> pl.DataFrame:
 
     if (schools_frame := _school_pois(staged)) is not None:
         frames.append(schools_frame)
+
+    # Chargers come from the merged table (OpenStreetMap, ESB, Open Charge Map), each
+    # with its own source and licence
+    chargers = pl.read_parquet(staged / "chargers.parquet")
+    frames.append(
+        chargers.select(
+            pl.lit("ev_charging").alias("category"),
+            pl.col("charger_id").alias("poi_id"),
+            "name",
+            "x",
+            "y",
+            "lon",
+            "lat",
+            "source",
+            "licence",
+            _detail(["points", "provider"]).alias("detail"),
+        )
+    )
 
     osm = pl.read_parquet(staged / "osm_pois.parquet").filter(
         pl.col("value").is_in(list(OSM_CATEGORIES))

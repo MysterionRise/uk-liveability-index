@@ -30,6 +30,38 @@
       "version": "6ee6614fb50827ad"
     }
   },
+  "bgs_radon_gb": {
+    "fetched": {
+      "bytes": 10592142,
+      "extracted": [
+        "Radon_Indicative_Atlas_v3.gpkg"
+      ],
+      "fetched_at": "2026-10-18T19:52:18.259861+00:00",
+      "sha256": "6fc2c8889d61bbfed3affe863bd2111228afb3ea8391006263222ec6c22ff5c6",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:13+00:00",
+      "url": "https://api.os.uk/downloads/v1/products/Radon_Indicative_Atlas/downloads?area=GB&format=GeoPackage&redirect",
+      "version": null
+    }
+  },
+  "bgs_radon_ni": {
+    "fetched": {
+      "bytes": 3362533,
+      "extracted": [
+        "Radon_Atlas_NI_v1.gpkg"
+      ],
+      "fetched_at": "2026-10-18T19:52:12.584629+00:00",
+      "sha256": "88c772d495c8a34058a2ea948b386f8829199d75718e33394f9d5781c44b4d76",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:10+00:00",
+      "url": "https://api.os.uk/downloads/v1/products/Radon_Indicative_Atlas/downloads?area=NI&format=GeoPackage&redirect",
+      "version": null
+    }
+  },
   "bods_gtfs": {
     "fetched": {
       "bytes": 1880838211,
@@ -145,6 +177,23 @@
       "title": "GP Practice Reference File - July 2026",
       "url": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv",
       "version": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv"
+    }
+  },
+  "cadw_listed": {
+    "fetched": {
+      "bytes": 18841600,
+      "fetched_at": "2026-10-18T19:52:35.910330+00:00",
+      "files": {
+        "page_000": "8774a7ebef4e72491af1cccf3169a9fbad8dc286b92d5fb9cc6dc021b06b4ba4"
+      },
+      "sha256": "bbf62edc7d567f25797f53cc17c13f754c7ed287a1bbe61b6b32476f99d85b9e",
+      "version": "inspire-wg:Cadw_ListedBuildings 30110 features"
+    },
+    "resolved": {
+      "count": 30110,
+      "resolved_at": "2026-10-18T19:52:32+00:00",
+      "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire-wg%3ACadw_ListedBuildings&resultType=hits",
+      "version": "inspire-wg:Cadw_ListedBuildings 30110 features"
     }
   },
   "care_inspectorate": {
@@ -1146,6 +1195,21 @@
       "version": "https://uk-air.defra.gov.uk/datastore/pcm/mappm252024g.csv"
     }
   },
+  "dfc_listed": {
+    "fetched": {
+      "bytes": 337530,
+      "fetched_at": "2026-10-18T19:52:25+00:00",
+      "rows": 10298,
+      "sha256": "ebe9631dd01aaf8697b469db7c7481f42264b0ede1e16dd5c045a105a8183b66",
+      "version": "338b0d7d7f25427eb11bdd673e0e8857"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:23+00:00",
+      "title": "Listed_Buildings_Centroid",
+      "url": "https://services2.arcgis.com/BdBkthNLO9mzGAMO/arcgis/rest/services/Listed_Buildings_Centroid/FeatureServer/0",
+      "version": "338b0d7d7f25427eb11bdd673e0e8857"
+    }
+  },
   "dft_connectivity": {
     "fetched": {
       "bytes": 68164574,
@@ -1295,6 +1359,23 @@
       "version": "EPA:Noise_R4_Road_National_Lden 155 features"
     }
   },
+  "epa_radon": {
+    "fetched": {
+      "bytes": 9363561,
+      "fetched_at": "2026-10-18T19:52:21.591744+00:00",
+      "files": {
+        "page_000": "c3137354827c27033ee362c7607398171849d3b8c56a6599e735e66221d1f899"
+      },
+      "sha256": "8f32ad08ee8c676ebac18c31cbce6e10d4ed7750ddd23f1470afdec0b2b81006",
+      "version": "EPA:RAD_RadonMap 868 features"
+    },
+    "resolved": {
+      "count": 868,
+      "resolved_at": "2026-10-18T19:52:19+00:00",
+      "url": "https://gis.epa.ie/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=EPA%3ARAD_RadonMap&resultType=hits",
+      "version": "EPA:RAD_RadonMap 868 features"
+    }
+  },
   "esa_worldcover": {
     "fetched": {
       "bytes": 546244116,
@@ -1325,6 +1406,21 @@
       "resolved_at": "2026-10-15T10:29:41+00:00",
       "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N48E000_Map.tif",
       "version": "Wed, 26 Oct 2022 12:53:26 GMT"
+    }
+  },
+  "esb_ev_sites": {
+    "fetched": {
+      "bytes": 133073,
+      "etag": "0x8DD210B25EDA7B7",
+      "fetched_at": "2026-10-18T19:52:09.661714+00:00",
+      "last_modified": "Fri, 20 Dec 2024 15:29:52 GMT",
+      "sha256": "6e9bce8690d5498514a12401065237a4fc65e4f79b758f55b45af29d01468350",
+      "version": "Fri, 20 Dec 2024 15:29:52 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:09+00:00",
+      "url": "https://cdn.esb.ie/media-staging/docs/default-source/ecars/its-data-ecars-sites/its-data-ecars-sites-roi-ni.csv",
+      "version": "Fri, 20 Dec 2024 15:29:52 GMT"
     }
   },
   "fsa_fhrs": {
@@ -1427,6 +1523,21 @@
         "tasmin_hadukgrid_uk_1km_ann-30y_199101-202012.nc": "b2b1401fa4b21c80ca8b83085709005fb84663d94931066b8b6f22d75c167190",
         "tasmin_hadukgrid_uk_1km_seas-30y_199101-202012.nc": "d1ea02945450618ecda4a26500672d15af135e730f6255eeb97d98e5d7b5aac9"
       }
+    }
+  },
+  "hes_listed": {
+    "fetched": {
+      "bytes": 1177116,
+      "fetched_at": "2026-10-18T19:52:30+00:00",
+      "rows": 67476,
+      "sha256": "062c3350c03f6bd26e4a4a8be8b2c8e2180451d19d7591573e3ea879430b608f",
+      "version": "https://inspire.hes.scot/arcgis/rest/services/HES/Listed_Buildings/MapServer/0"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:29+00:00",
+      "title": "Listed Buildings by Category",
+      "url": "https://inspire.hes.scot/arcgis/rest/services/HES/Listed_Buildings/MapServer/0",
+      "version": "https://inspire.hes.scot/arcgis/rest/services/HES/Listed_Buildings/MapServer/0"
     }
   },
   "ie_local_authorities": {
@@ -1751,6 +1862,23 @@
       "version": null
     }
   },
+  "nhle_listed": {
+    "fetched": {
+      "bytes": 6454233,
+      "fetched_at": "2026-10-18T19:52:47+00:00",
+      "rows": 379685,
+      "sha256": "997c762f86fbc97eec4709d1a7c5ab1ce5b6b34084fe799713acf46ec8777b41",
+      "version": "2026-09-10T11:08:12+00:00"
+    },
+    "resolved": {
+      "item_id": "767f279327a24845bf47dfe5eae9862b",
+      "modified": "2026-09-10T11:08:12+00:00",
+      "resolved_at": "2026-10-18T19:52:37+00:00",
+      "title": "National Heritage List for England (NHLE)",
+      "url": "https://services-eu1.arcgis.com/ZOdPfBS3aqqDYPUQ/arcgis/rest/services/National_Heritage_List_for_England_NHLE_v02_VIEW/FeatureServer/0",
+      "version": "2026-09-10T11:08:12+00:00"
+    }
+  },
   "nhsbsa_pharmacies": {
     "fetched": {
       "bytes": 2574037,
@@ -1780,6 +1908,21 @@
       "resolved_at": "2026-10-15T10:46:18+00:00",
       "url": null,
       "version": "f0c2e833f55a702b"
+    }
+  },
+  "niah_buildings": {
+    "fetched": {
+      "bytes": 987027,
+      "fetched_at": "2026-10-18T19:52:28+00:00",
+      "rows": 48327,
+      "sha256": "a78c020b26c35b8b009da9036c053be7b0cea280c86aeb0c2310c368430d1903",
+      "version": "2025-04-03T15:41:03.591000+00:00"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:26+00:00",
+      "title": "NIAHBuildings",
+      "url": "https://services-eu1.arcgis.com/HyjXgkV6KGMSF3jt/arcgis/rest/services/NIAHBuildingsOpenData/FeatureServer/0",
+      "version": "2025-04-03T15:41:03.591000+00:00"
     }
   },
   "nimdm_2017": {

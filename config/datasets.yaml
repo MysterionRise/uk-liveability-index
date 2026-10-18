@@ -2813,3 +2813,203 @@ garda_station_aliases:
   cadence: adhoc
   size_hint: 3KB
 
+
+# ---------------------------------------------------------------------------------------
+# Riding with v0.6.0 across the UK and Ireland: listed buildings (#40), radon potential
+# (#126) and public chargers beyond OpenStreetMap (#35, #124)
+# ---------------------------------------------------------------------------------------
+
+nhle_listed:
+  coverage: [E]
+  title: National Heritage List for England, listed building points (Historic England)
+  theme: amenities
+  access:
+    type: arcgis_item
+    pin: 767f279327a24845bf47dfe5eae9862b
+    mode: featureserver
+    layer: 0
+    fields: [ListEntry, Name, Grade, Easting, Northing]
+    geometry: none
+  format: parquet
+  landing_page: https://opendata-historicengland.hub.arcgis.com/
+  description: Every listed building in England as a point (grade I, II* or II), with its list entry and grid reference.
+  licence: OGL-3.0
+  attribution: "© Historic England 2026. Contains Ordnance Survey data © Crown copyright and database right 2026. The Historic England GIS Data contained in this material was obtained in October 2026."
+  cadence: monthly
+  size_hint: 380k rows in 190 pages
+  notes: The layer is multipoint, so the eastings and northings travel as fields rather than geometry; the hub item is pinned (it belongs to Historic England's hub, which the ONS geoportal search does not reach).
+
+cadw_listed:
+  coverage: [W]
+  title: Cadw listed buildings (DataMapWales)
+  theme: amenities
+  access:
+    type: wfs
+    url: https://datamap.gov.wales/geoserver/ows
+    typename: inspire-wg:Cadw_ListedBuildings
+    sort_by: RecordNumber
+  format: gpkg
+  landing_page: https://datamap.gov.wales/layers/inspire-wg:Cadw_ListedBuildings
+  description: Every listed building in Wales as a point, with its grade and its English and Welsh names.
+  licence: OGL-3.0
+  attribution: "Cadw listed buildings © Hawlfraint y Goron / Crown copyright, Welsh Government, licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  size_hint: 30k points
+
+hes_listed:
+  coverage: [S]
+  title: Listed buildings by category (Historic Environment Scotland)
+  theme: amenities
+  access:
+    type: arcgis_layer
+    url: https://inspire.hes.scot/arcgis/rest/services/HES/Listed_Buildings/MapServer/0
+    fields: [ENT_REF, ENT_TITLE, CATEGORY]
+    geometry: point
+  format: parquet
+  landing_page: https://portal.historicenvironment.scot/spatialdownloads
+  description: Every listed building in Scotland as a point, with its category (A, B or C) and designation reference.
+  licence: OGL-3.0
+  attribution: "© Historic Environment Scotland. Listed buildings data licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  size_hint: 67k points in 14 ranges
+  notes: The INSPIRE server cannot page by offset, so the fetcher reads ranges of object ids.
+
+dfc_listed:
+  coverage: [N]
+  title: Listed buildings in Northern Ireland (Department for Communities)
+  theme: amenities
+  access:
+    type: arcgis_layer
+    url: https://services2.arcgis.com/BdBkthNLO9mzGAMO/arcgis/rest/services/Listed_Buildings_Centroid/FeatureServer/0
+    fields: [HB_ref, Address, CurrentGra]
+    geometry: point
+  format: parquet
+  landing_page: https://admin.opendatani.gov.uk/dataset/listed-buildings-northern-ireland
+  description: Every listed building in Northern Ireland as a centroid, with its HB reference, address and current grade (A, B+, B1 or B2).
+  licence: OGL-3.0
+  attribution: "Department for Communities, Historic Environment Division, listed buildings, licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  size_hint: 10k points
+
+niah_buildings:
+  coverage: [I]
+  title: National Inventory of Architectural Heritage, buildings (Department of Housing, Local Government and Heritage)
+  theme: amenities
+  access:
+    type: arcgis_layer
+    url: https://services-eu1.arcgis.com/HyjXgkV6KGMSF3jt/arcgis/rest/services/NIAHBuildingsOpenData/FeatureServer/0
+    fields: [REG_NO, NAME, RATING, ORIGINAL_TYPE, COUNTY]
+    geometry: point
+  format: parquet
+  landing_page: https://data.gov.ie/dataset/national-inventory-of-architectural-heritage-niah-national-dataset
+  description: Every building surveyed for the National Inventory of Architectural Heritage, with its rating (International, National, Regional, Local or Record only). The statutory lists, the councils' Records of Protected Structures, have no national open file; a regional rating or above is the Minister's recommendation for them.
+  licence: CC-BY-4.0
+  attribution: "National Inventory of Architectural Heritage, Department of Housing, Local Government and Heritage, licensed under CC BY 4.0."
+  cadence: adhoc
+  size_hint: 48k points in 25 pages
+
+bgs_radon_gb:
+  coverage: [E, W, S]
+  title: Indicative Atlas of Radon, Great Britain v3 (BGS and UKHSA)
+  theme: environment
+  access:
+    type: http
+    url: "https://api.os.uk/downloads/v1/products/Radon_Indicative_Atlas/downloads?area=GB&format=GeoPackage&redirect"
+  format: zip
+  extract: ["*.gpkg"]
+  landing_page: https://www.ukradon.org/information/ukmaps
+  description: One-kilometre grid squares of Great Britain with the highest radon-potential class in the square, from 1 (under 1% of homes above the action level) to 6 (over 30%).
+  licence: OGL-3.0
+  attribution: "Contains British Geological Survey materials © UKRI 2026 and UK Health Security Agency data, licensed under the Open Government Licence v3.0."
+  cadence: static
+  size_hint: 10MB zipped
+
+bgs_radon_ni:
+  coverage: [N]
+  title: Indicative Atlas of Radon, Northern Ireland v1 (BGS and UKHSA)
+  theme: environment
+  access:
+    type: http
+    url: "https://api.os.uk/downloads/v1/products/Radon_Indicative_Atlas/downloads?area=NI&format=GeoPackage&redirect"
+  format: zip
+  extract: ["*.gpkg"]
+  landing_page: https://www.ukradon.org/information/ukmaps
+  description: One-kilometre grid squares of Northern Ireland with the highest radon-potential class in the square, on the Great Britain atlas's six classes.
+  licence: OGL-3.0
+  attribution: "Contains British Geological Survey materials © UKRI 2026 and UK Health Security Agency data, licensed under the Open Government Licence v3.0."
+  cadence: static
+  size_hint: 3MB zipped
+
+epa_radon:
+  coverage: [I]
+  title: Radon Map of Ireland (EPA)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:RAD_RadonMap
+    sort_by: PERCENT_
+    srs: EPSG:4326
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/radon-map
+  description: Ten-kilometre grid squares of Ireland with the share of homes estimated to be above the reference level; ten per cent and over is a High Radon Area.
+  licence: CC-BY-4.0
+  attribution: "Radon Map of Ireland, Environmental Protection Agency, licensed under CC BY 4.0."
+  cadence: adhoc
+  size_hint: 868 polygons
+
+esb_ev_sites:
+  coverage: [N, I]
+  title: ESB ecars public charging network (island of Ireland)
+  theme: transport
+  access:
+    type: http
+    url: https://cdn.esb.ie/media-staging/docs/default-source/ecars/its-data-ecars-sites/its-data-ecars-sites-roi-ni.csv
+  format: csv
+  landing_page: https://data.gov.ie/dataset/esb-ev-public-charging-network
+  description: Every ESB public charging site on the island with its chargers, connector types and power, and its coordinates.
+  licence: CC-BY-4.0
+  attribution: "ESB ecars public charging network data, ESB, licensed under CC BY 4.0."
+  cadence: adhoc
+  size_hint: 130KB
+  notes: Last changed in December 2024. OpenStreetMap leads and this augments it; a site within 50 m of a mapped station is taken to be the same site.
+
+open_charge_map_gb:
+  coverage: [E, W, S, N]
+  title: Open Charge Map, United Kingdom
+  theme: transport
+  access:
+    type: api_key
+    url: "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json"
+    env: OCM_API_KEY
+    query: key
+    signup: https://openchargemap.org/site/profile/applications
+    timeout_s: 600
+  format: json
+  landing_page: https://openchargemap.org/site/develop/api
+  description: Public charging locations across the UK with their points and connectors; each location names its data provider and whether that provider's data is openly licensed, and only those are used.
+  licence: CC-BY-4.0
+  attribution: "Open Charge Map data © Open Charge Map contributors, licensed under CC BY 4.0; imported locations carry their provider's own licence and only openly licensed ones are used."
+  cadence: daily
+  size_hint: 200MB
+  notes: Needs a free key (OCM_API_KEY) from an Open Charge Map account; without it the chargers come from OpenStreetMap (and ESB on the island of Ireland).
+
+open_charge_map_ie:
+  coverage: [I]
+  title: Open Charge Map, Ireland
+  theme: transport
+  access:
+    type: api_key
+    url: "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json"
+    env: OCM_API_KEY
+    query: key
+    signup: https://openchargemap.org/site/profile/applications
+    timeout_s: 600
+  format: json
+  landing_page: https://openchargemap.org/site/develop/api
+  description: Public charging locations across Ireland with their points and connectors; only locations from openly licensed providers are used.
+  licence: CC-BY-4.0
+  attribution: "Open Charge Map data © Open Charge Map contributors, licensed under CC BY 4.0; imported locations carry their provider's own licence and only openly licensed ones are used."
+  cadence: daily
+  size_hint: 20MB
+  notes: Needs a free key (OCM_API_KEY); see open_charge_map_gb.

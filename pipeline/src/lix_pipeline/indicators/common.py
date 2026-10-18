@@ -122,6 +122,21 @@ def count_within(
     return df.select("lsoa21cd", (pl.col("count") / per_years).alias("value"))
 
 
+def density_within(
+    ctx,
+    slug: str,
+    radius_m: float,
+    column: str | None = None,
+    values: list | None = None,
+) -> pl.DataFrame:
+    """Mean number of a staged table's points per km² within ``radius_m`` of homes."""
+    import math
+
+    km2 = math.pi * radius_m**2 / 1e6
+    df = ctx.access(_points(ctx, slug, column, values), radius_m=radius_m)
+    return df.select("lsoa21cd", (pl.col("count") / km2).alias("value"))
+
+
 def share(ctx, slug: str, numerator: list[str], denominator: str) -> pl.DataFrame:
     """sum(numerator columns) / denominator × 100 from a staged LSOA table."""
     df = ctx.staged(slug)

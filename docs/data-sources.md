@@ -2,7 +2,7 @@
 
 # Data sources
 
-164 datasets, all under open licences. Each is pinned to a concrete file in `config/datasets.lock.json` by `lix resolve`. "Data for" is the period the data describes, as far as the publisher says; "Updated" is how often it is published.
+175 datasets, all under open licences. Each is pinned to a concrete file in `config/datasets.lock.json` by `lix resolve`. "Data for" is the period the data describes, as far as the publisher says; "Updated" is how often it is published.
 
 
 ## Geography
@@ -95,6 +95,9 @@
 | `epa_noise_rail_nat` | [Noise Round 4 Rail National Lden contours (EPA Ireland)](https://data.gov.ie/dataset/noise-round-4-rail-national-lden) | Lden noise contour bands from the railways carrying more than 30,000 trains a year, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU). | Ireland | Round 4 (2021 traffic) | adhoc | CC-BY-4.0 |
 | `epa_noise_air_nat` | [Noise Round 4 Airport National Lden contours (EPA Ireland)](https://data.gov.ie/dataset/noise-round-4-airport-national-lden) | Lden noise contour bands from Dublin, Cork and Shannon airports, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU). | Ireland | Round 4 (2021 traffic) | adhoc | CC-BY-4.0 |
 | `epa_noise_industry_agg` | [Noise Round 4 Industry Agglomerations Lden contours (EPA Ireland)](https://data.gov.ie/dataset/noise-round-4-industry-agglomerations-lden) | Lden noise contour bands from industrial sites inside the agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU). | Ireland | Round 4 (2021 traffic) | adhoc | CC-BY-4.0 |
+| `bgs_radon_gb` | [Indicative Atlas of Radon, Great Britain v3 (BGS and UKHSA)](https://www.ukradon.org/information/ukmaps) | One-kilometre grid squares of Great Britain with the highest radon-potential class in the square, from 1 (under 1% of homes above the action level) to 6 (over 30%). | England, Wales, Scotland | downloaded 18 October 2026 | static | OGL-3.0 |
+| `bgs_radon_ni` | [Indicative Atlas of Radon, Northern Ireland v1 (BGS and UKHSA)](https://www.ukradon.org/information/ukmaps) | One-kilometre grid squares of Northern Ireland with the highest radon-potential class in the square, on the Great Britain atlas's six classes. | Northern Ireland | downloaded 18 October 2026 | static | OGL-3.0 |
+| `epa_radon` | [Radon Map of Ireland (EPA)](https://data.gov.ie/dataset/radon-map) | Ten-kilometre grid squares of Ireland with the share of homes estimated to be above the reference level; ten per cent and over is a High Radon Area. | Ireland | downloaded 18 October 2026 | adhoc | CC-BY-4.0 |
 
 ## Health access
 
@@ -152,6 +155,9 @@
 | `translink_rail_txc` | [Translink NI Railways and Enterprise timetables (TransXChange)](https://admin.opendatani.gov.uk/dataset/nir20160126v2) | Every NI Railways and Enterprise train as a TransXChange 2.4 file with the stations' coordinates; the source of Northern Ireland's stations and their service. | Northern Ireland | 10 September 2026 | monthly | OGL-3.0 |
 | `nta_gtfs` | [Transport for Ireland GTFS timetables, every operator (NTA)](https://data.gov.ie/dataset/nta-gtfs) | Static GTFS timetables for every public transport operator in Ireland (Dublin Bus, Bus Éireann, Go-Ahead, Irish Rail, Luas, Local Link and the commercial operators), with stops, routes and stop times, for bus frequency and the rail and Luas stops. | Ireland | published October 2026 | weekly | CC-BY-4.0 |
 | `comreg_gigabit` | [Gigabit and FTTP broadband coverage by Electoral Division (ComReg)](https://datamaps-comreg.hub.arcgis.com/) | The share of premises in each CSO Electoral Division passed by a gigabit-capable network (and taking one up), from ComReg's quarterly analysis of operators' returns against Eircodes; the Small Area layer carries premise counts only. | Ireland | published September 2026 | quarterly | CC-BY-4.0 |
+| `esb_ev_sites` | [ESB ecars public charging network (island of Ireland)](https://data.gov.ie/dataset/esb-ev-public-charging-network) | Every ESB public charging site on the island with its chargers, connector types and power, and its coordinates. | Northern Ireland, Ireland | published December 2024 | adhoc | CC-BY-4.0 |
+| `open_charge_map_gb` | [Open Charge Map, United Kingdom](https://openchargemap.org/site/develop/api) | Public charging locations across the UK with their points and connectors; each location names its data provider and whether that provider's data is openly licensed, and only those are used. | England, Wales, Scotland, Northern Ireland |  | daily | CC-BY-4.0; free key from https://openchargemap.org/site/profile/applications in `OCM_API_KEY` |
+| `open_charge_map_ie` | [Open Charge Map, Ireland](https://openchargemap.org/site/develop/api) | Public charging locations across Ireland with their points and connectors; only locations from openly licensed providers are used. | Ireland |  | daily | CC-BY-4.0; free key from https://openchargemap.org/site/profile/applications in `OCM_API_KEY` |
 
 ## Amenities & nightlife
 
@@ -164,6 +170,11 @@
 | `osm_wales` | [OpenStreetMap Wales extract (Geofabrik)](https://download.geofabrik.de/europe/united-kingdom/wales.html) | Every OpenStreetMap feature in Wales, read for pubs, shops, cafés, supermarkets, culture, nurseries, pharmacies and other points of interest. | Wales | 14 October 2026 | daily | ODbL-1.0 |
 | `osm_scotland` | [OpenStreetMap Scotland extract (Geofabrik)](https://download.geofabrik.de/europe/united-kingdom/scotland.html) | Every OpenStreetMap feature in Scotland, read for pubs, shops, cafés, supermarkets, culture, leisure, nurseries, pharmacies and other points of interest. | Scotland | 14 October 2026 | daily | ODbL-1.0 |
 | `osm_ireland` | [OpenStreetMap Ireland and Northern Ireland extract (Geofabrik)](https://download.geofabrik.de/europe/ireland-and-northern-ireland.html) | Every OpenStreetMap feature on the island of Ireland, read for Northern Ireland's and Ireland's places of interest, parks, nurseries, pharmacies, GPs, dentists and settlementsside every active area and drop out. | Northern Ireland, Ireland | 14 October 2026 | daily | ODbL-1.0 |
+| `nhle_listed` | [National Heritage List for England, listed building points (Historic England)](https://opendata-historicengland.hub.arcgis.com/) | Every listed building in England as a point (grade I, II* or II), with its list entry and grid reference. | England | published September 2026 | monthly | OGL-3.0 |
+| `cadw_listed` | [Cadw listed buildings (DataMapWales)](https://datamap.gov.wales/layers/inspire-wg:Cadw_ListedBuildings) | Every listed building in Wales as a point, with its grade and its English and Welsh names. | Wales | downloaded 18 October 2026 | adhoc | OGL-3.0 |
+| `hes_listed` | [Listed buildings by category (Historic Environment Scotland)](https://portal.historicenvironment.scot/spatialdownloads) | Every listed building in Scotland as a point, with its category (A, B or C) and designation reference. | Scotland | downloaded 18 October 2026 | adhoc | OGL-3.0 |
+| `dfc_listed` | [Listed buildings in Northern Ireland (Department for Communities)](https://admin.opendatani.gov.uk/dataset/listed-buildings-northern-ireland) | Every listed building in Northern Ireland as a centroid, with its HB reference, address and current grade (A, B+, B1 or B2). | Northern Ireland | downloaded 18 October 2026 | adhoc | OGL-3.0 |
+| `niah_buildings` | [National Inventory of Architectural Heritage, buildings (Department of Housing, Local Government and Heritage)](https://data.gov.ie/dataset/national-inventory-of-architectural-heritage-niah-national-dataset) | Every building surveyed for the National Inventory of Architectural Heritage, with its rating (International, National, Regional, Local or Record only). The statutory lists, the councils' Records of Protected Structures, have no national open file; a regional rating or above is the Minister's recommendation for them. | Ireland | downloaded 18 October 2026 | adhoc | CC-BY-4.0 |
 
 ## Housing & affordability
 

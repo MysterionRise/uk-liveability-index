@@ -46,6 +46,7 @@ units:
   years_income: "blianta d'ioncam"
   years: blianta
   people_km2: "daoine in aghaidh km²"
+  per_km2: "in aghaidh an km²"
   radiance: "nW/cm²/sr"
   hours_year: "uaireanta sa bhliain"
   days_year: "laethanta sa bhliain"
@@ -97,7 +98,7 @@ indicators:
   no2: {label: Dé-ocsaíd nítrigine (NO₂), description: "Meán-NO₂ cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}
   pm25: {label: Mínfhíneáin (PM2.5), description: "Meán-PM2.5 cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}
   green_space_access: {label: Páirceanna agus spásanna glasa in aice láimhe, description: "Bealaí isteach i bpáirceanna, i ngairdíní agus i bpáirceanna imeartha poiblí laistigh de shiúlóid 1km, ualaithe de réir faid."}
-  play_spaces: {label: Clóis súgartha in aice láimhe, description: "Bealaí isteach i spásanna súgartha poiblí laistigh de 800m de thithe, ualaithe de réir faid."}
+  play_spaces: {label: Clóis súgartha in aice láimhe, description: "Bealaí isteach i spásanna súgartha poiblí laistigh de 800m de thithe, ualaithe de réir faid (i dTuaisceart Éireann agus in Éirinn, clóis súgartha OpenStreetMap)."}
   flood_risk: {label: Tithe i mbaol tuilte, description: "Sciar de thithe i mbaol ard nó meánach tuilte ó aibhneacha, ón bhfarraige nó ó uisce dromchla (seans 1% sa bhliain ar a laghad)."}
   flood_rivers_sea: {label: Tithe i mbaol ó aibhneacha nó ón bhfarraige, description: "Sciar de thithe i mbaol ard nó meánach tuilte ó aibhneacha nó ón bhfarraige amháin (seans 1% sa bhliain ar a laghad)."}
   noise_exposure: {label: Tithe i dtorann iompair nó tionsclaíoch, description: "Sciar de thithe ina sroicheann torann mapáilte 60 dB Lden nó níos mó thar an lá, an tráthnóna agus an oíche (bóithre, iarnróid agus aerárthaí i Sasana; bóithre agus iarnróid sa Bhreatain Bheag; gach foinse mhapáilte in Albain)."}
@@ -180,4 +181,6 @@ indicators:
   future_hot_days: {label: Laethanta teo samhraidh i ndomhan 2°C níos teo, description: "Laethanta sa bhliain le huasteocht os cionn 30°C nuair a bheidh an domhan 2°C níos teo, ó réamh-mheastacháin áitiúla UKCP18 Oifig na hAimsire."}
   gp_list_size: {label: Othair in aghaidh an chleachtais dochtúra teaghlaigh in aice láimhe, description: "Othair chláraithe in aghaidh an chleachtais ag na cleachtais dochtúirí teaghlaigh in aice le tithe, ualaithe de réir faid."}
   allotment_distance: {label: Fad chuig na leithdháiltí is gaire, description: "Meánfhad díreach ó thithe chuig na leithdháiltí nó an spás fáis pobail is gaire."}
-  ev_charging: {label: Pointí luchtaithe poiblí in aice láimhe, description: "Stáisiúin luchtaithe feithiclí leictreacha poiblí laistigh de 1.5km de thithe, ar an meán (OpenStreetMap)."}
+  radon_potential: {label: Tithe i limistéar ard radóin, description: "Sciar na dtithe i gcearnóga greille ina meastar go mbeidh breis is 10% de thithe os cionn leibhéal gnímh an radóin (atlas táscach BGS agus UKHSA; léarscáil radóin an EPA in Éirinn)."}
+  ev_charging: {label: Pointí luchtaithe poiblí in aice láimhe, description: "Láithreáin luchtaithe feithiclí leictreacha poiblí laistigh de 1.5km de thithe, ar an meán (OpenStreetMap, ESB ar oileán na hÉireann, Open Charge Map)."}
+  listed_buildings: {label: Foirgnimh liostaithe in aice láimhe, description: "Foirgnimh liostaithe laistigh de 1km de thithe, in aghaidh an km² (Historic England, Cadw, Historic Environment Scotland agus an Roinn Pobal; in Éirinn, an Fardal Náisiúnta d'Oidhreacht Ailtireachta ag rátáil réigiúnach nó níos airde)."}

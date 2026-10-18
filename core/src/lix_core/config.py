@@ -103,6 +103,19 @@ class ArcgisItemAccess(_Strict):
     out_sr: int = 27700
 
 
+class ArcgisLayerAccess(_Strict):
+    """A feature layer addressed by its query URL: a server outside ArcGIS Online (Historic
+    Environment Scotland's INSPIRE services) or a hosted layer whose item need not be
+    searched. Fetched like ``arcgis_item`` in ``featureserver`` mode; the layer's last edit
+    is its version."""
+
+    type: Literal["arcgis_layer"]
+    url: str
+    fields: list[str] | None = None
+    geometry: Literal["none", "point", "polygon"] = "none"
+    out_sr: int = 27700
+
+
 class GovukAttachmentAccess(_Strict):
     """An attachment on a GOV.UK publication page, found via the content API.
 
@@ -234,6 +247,7 @@ class ManualAccess(_Strict):
 Access = Annotated[
     HttpAccess
     | ArcgisItemAccess
+    | ArcgisLayerAccess
     | GovukAttachmentAccess
     | HtmlLinkAccess
     | CkanAccess
@@ -376,6 +390,7 @@ UNIT_CODES: dict[str, str] = {
     "years of income": "years_income",
     "years": "years",
     "people per km²": "people_km2",
+    "per km²": "per_km2",
     "nW/cm²/sr": "radiance",
     "hours a year": "hours_year",
     "days a year": "days_year",

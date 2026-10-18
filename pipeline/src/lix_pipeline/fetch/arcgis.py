@@ -15,7 +15,7 @@ import geopandas as gpd
 import polars as pl
 import requests
 
-from lix_core.config import ArcgisItemAccess
+from lix_core.config import ArcgisItemAccess, ArcgisLayerAccess
 from lix_core.log import setup_logging
 
 logger = setup_logging("fetch.arcgis")
@@ -88,6 +88,15 @@ def resolve_item(access: ArcgisItemAccess, session: requests.Session) -> dict:
     }
 
 
+def resolve_layer(access: ArcgisLayerAccess, session: requests.Session) -> dict:
+    """A layer addressed by its URL: the layer's last edit (else its service item) is the
+    version, so the lock notices a republished list."""
+    layer = _json(session, access.url, {})
+    edited = (layer.get("editingInfo") or {}).get("lastEditDate")
+    version = _ms_to_iso(edited) if edited else layer.get("serviceItemId") or access.url
+    return {"url": access.url, "version": version, "title": layer.get("name")}
+
+
 def _query_page(
     session: requests.Session, layer_url: str, params: dict, offset: int, size: int, fmt: str
 ) -> list[dict]:
@@ -113,7 +122,7 @@ def _query_page(
 
 def fetch_featureserver(
     layer_url: str,
-    access: ArcgisItemAccess,
+    access: ArcgisItemAccess | ArcgisLayerAccess,
     out_path: Path,
     session: requests.Session,
     workers: int = 8,
@@ -142,14 +151,37 @@ def fetch_featureserver(
         "outSR": 4326 if polygons else access.out_sr,
     }
     fmt = "geojson" if polygons else "json"
-    offsets = range(0, expected, page_size)
-    logger.info(f"Fetching {expected:,} records in {len(offsets)} pages from {layer_url}")
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        pages = list(
-            pool.map(
-                lambda off: _query_page(session, layer_url, params, off, page_size, fmt), offsets
+    paged = (layer.get("advancedQueryCapabilities") or {}).get("supportsPagination", True)
+    if paged:
+        offsets = range(0, expected, page_size)
+        logger.info(f"Fetching {expected:,} records in {len(offsets)} pages from {layer_url}")
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            pages = list(
+                pool.map(
+                    lambda off: _query_page(session, layer_url, params, off, page_size, fmt),
+                    offsets,
+                )
             )
+    else:
+        # An older ArcGIS Server (Historic Environment Scotland's INSPIRE services) has no
+        # result offset: read ranges of object ids instead
+        ids = sorted(
+            _json(session, f"{layer_url}/query", {"where": "1=1", "returnIdsOnly": "true"})[
+                "objectIds"
+            ]
         )
+        chunks = [ids[i : i + page_size] for i in range(0, len(ids), page_size)]
+        logger.info(f"Fetching {expected:,} records in {len(chunks)} id ranges from {layer_url}")
+        by_range = {k: v for k, v in params.items() if k != "orderByFields"}
+
+        def _ids(chunk: list[int]) -> list[dict]:
+            where = f"{oid_field} >= {chunk[0]} AND {oid_field} <= {chunk[-1]}"
+            return _json(session, f"{layer_url}/query", {**by_range, "where": where}, fmt=fmt).get(
+                "features", []
+            )
+
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            pages = list(pool.map(_ids, chunks))
     features = [f for page in pages for f in page]
     if len(features) != expected:
         raise RuntimeError(f"Expected {expected:,} records from {layer_url}, got {len(features):,}")

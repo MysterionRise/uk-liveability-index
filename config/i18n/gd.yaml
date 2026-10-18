@@ -46,6 +46,7 @@ units:
   years_income: "bliadhnaichean de theachd-a-steach"
   years: bliadhnaichean
   people_km2: "daoine gach km²"
+  per_km2: "gach km²"
   radiance: "nW/cm²/sr"
   hours_year: "uairean sa bhliadhna"
   days_year: "làithean sa bhliadhna"
@@ -97,7 +98,7 @@ indicators:
   no2: {label: Dà-ogsaid naitridean (NO₂), description: "NO₂ cùil cuibheasach bliadhnail far a bheil luchd-còmhnaidh a' fuireach (modail 1km Defra)."}
   pm25: {label: Mìon-ghràineanan (PM2.5), description: "PM2.5 cùil cuibheasach bliadhnail far a bheil luchd-còmhnaidh a' fuireach (modail 1km Defra)."}
   green_space_access: {label: Pàircean agus àiteachan uaine faisg air làimh, description: "Dorsan a-steach gu pàircean, gàrraidhean agus raointean-cluiche poblach taobh a-staigh coiseachd 1km, air an cuideamachadh a rèir astair."}
-  play_spaces: {label: Raointean-cluiche faisg air làimh, description: "Dorsan a-steach gu raointean-cluiche poblach taobh a-staigh 800m de dhachaighean, air an cuideamachadh a rèir astair."}
+  play_spaces: {label: Raointean-cluiche faisg air làimh, description: "Dorsan a-steach gu raointean-cluiche poblach taobh a-staigh 800m de dhachaighean, air an cuideamachadh a rèir astair (ann an Èirinn a Tuath agus ann an Èirinn, raointean-cluiche OpenStreetMap)."}
   flood_risk: {label: Dachaighean ann an cunnart tuil, description: "Cuid de dhachaighean ann an cunnart àrd no meadhanach tuil bho aibhnichean, bhon mhuir no bho uisge-uachdair (co-dhiù 1% de sheans sa bhliadhna)."}
   flood_rivers_sea: {label: Dachaighean ann an cunnart bho aibhnichean no bhon mhuir, description: "Cuid de dhachaighean ann an cunnart àrd no meadhanach tuil bho aibhnichean no bhon mhuir a-mhàin (co-dhiù 1% de sheans sa bhliadhna)."}
   noise_exposure: {label: Dachaighean ann am fuaim còmhdhail no gnìomhachais, description: "Cuid de dhachaighean far a bheil fuaim mapaichte a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche (rathaidean agus rèile ann an Sasainn agus sa Chuimrigh; gach tùs mapaichte ann an Alba)."}
@@ -180,4 +181,6 @@ indicators:
   council_tax_typical: {label: Cìs comhairle (dachaigh àbhaisteach an seo), description: "Na phàigheas dachaigh àbhaisteach san sgìre ann an cìs comhairle, cosgais gach bann air a cuideamachadh a rèir cia mheud de dhachaighean na sgìre a tha sa bhann sin."}
   gp_list_size: {label: Euslaintich gach cleachdadh dotair faisg air làimh, description: "Euslaintich clàraichte gach cleachdadh aig na cleachdaidhean dotair faisg air dachaighean, air an cuideamachadh a rèir astair."}
   allotment_distance: {label: Astar chun nan leasan-àitich as fhaisge, description: "Astar cuibheasach dìreach bho dhachaighean chun nan leasan-àitich no an àite fàs coimhearsnachd as fhaisge."}
-  ev_charging: {label: Puingean cosgais poblach faisg air làimh, description: "Stèiseanan cosgais charbadan dealain poblach taobh a-staigh 1.5km de dhachaighean, sa chumantas (OpenStreetMap)."}
+  radon_potential: {label: Dachaighean ann an sgìre radon àrd, description: "An cuid de dhachaighean ann an ceàrnagan griod far a bheil dùil gum bi còrr is 10% de dhachaighean os cionn ìre gnìomha radon (atlas comharrachaidh BGS is UKHSA; mapa radon an EPA ann an Èirinn)."}
+  ev_charging: {label: Puingean cosgais poblach faisg air làimh, description: "Làraichean cosgais charbadan dealain poblach taobh a-staigh 1.5km de dhachaighean, sa chumantas (OpenStreetMap, ESB air eilean na h-Èireann, Open Charge Map)."}
+  listed_buildings: {label: Togalaichean clàraichte faisg air làimh, description: "Togalaichean clàraichte taobh a-staigh 1km de dhachaighean, gach km² (Historic England, Cadw, Àrainneachd Eachdraidheil Alba agus Roinn nan Coimhearsnachdan; ann an Èirinn, an Clàr Nàiseanta de Dhualchas Ailtireachd aig ìre roinneil no nas àirde)."}

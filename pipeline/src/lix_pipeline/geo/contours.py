@@ -4,6 +4,10 @@ home, for the noise engine's polygon sources."""
 import numpy as np
 import shapely
 
+# Above this many polygons, with fewer vertices each than this, a tree query wins
+TREE_ABOVE = 1000
+SMALL_POLYGON = 500
+
 
 def band_at_points(polygons, band_column: str, x: np.ndarray, y: np.ndarray) -> np.ndarray:
     """The highest ``band_column`` value of the polygons each point falls in (NaN where
@@ -19,6 +23,14 @@ def band_at_points(polygons, band_column: str, x: np.ndarray, y: np.ndarray) -> 
         return out
     bands = polygons[band_column].to_numpy().astype(float)
     geoms = polygons.geometry.values
+    if len(geoms) > TREE_ABOVE and np.mean(shapely.get_num_coordinates(geoms)) < SMALL_POLYGON:
+        # Many small polygons (a radon atlas of grid squares): index them and query the
+        # points, which is where a tree with a predicate is quick
+        tree = shapely.STRtree(geoms)
+        point_idx, poly_idx = tree.query(shapely.points(x, y), predicate="within")
+        if point_idx.size:
+            np.fmax.at(out, point_idx, bands[poly_idx])
+        return out
     bounds = shapely.bounds(geoms)
     for geom, band, (x0, y0, x1, y1) in zip(geoms, bands, bounds, strict=True):
         if np.isnan(band) or geom is None or geom.is_empty:

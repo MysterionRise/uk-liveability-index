@@ -20,6 +20,24 @@ All notable changes to this project. The format follows
   climate grids, OpenStreetMap's surgeries, dentists, pharmacies and green spaces, and a
   curated list of emergency departments. Schools and housing are declared gaps. Copy
   says what the percentiles span ("better than 62% of the UK and Ireland").
+- **Listed buildings nearby.** A context indicator in the amenities theme: listed
+  buildings within 1 km of homes, per km², from Historic England's list, Cadw's, Historic
+  Environment Scotland's and the Department for Communities' and, in Ireland, the National
+  Inventory of Architectural Heritage at regional rating or above (#40).
+- **Homes in a high radon area.** A context indicator in the environment theme: the share
+  of homes in grid squares where more than a tenth of homes are expected above the radon
+  action level, from the BGS and UKHSA indicative atlas (Great Britain and Northern
+  Ireland) and the EPA's radon map of Ireland (#126).
+- **Chargers beyond OpenStreetMap.** The charge-point count now reads one merged table:
+  OpenStreetMap everywhere, ESB's network across the island of Ireland, and Open Charge
+  Map's openly licensed locations when a build has a key (`OCM_API_KEY`, the second user
+  of the `api_key` access type); a site within 50 m of one already kept is the same site,
+  and the map's charger points name their source (#35, #124).
+- **Play spaces in Ireland** from OpenStreetMap playgrounds, as in Northern Ireland, so
+  parks, play spaces and allotments have the same stand-in across the island (#77).
+- **Feature layers by URL.** The registry's new `arcgis_layer` access type fetches a
+  layer that is not an ArcGIS Online item (Historic Environment Scotland's INSPIRE server,
+  which cannot page by offset: the fetcher reads ranges of object ids instead).
 
 ## [0.5.1] - 2026-10-18
 
