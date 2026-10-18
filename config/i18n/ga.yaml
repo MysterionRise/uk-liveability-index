@@ -95,8 +95,8 @@ indicators:
   road_danger: {label: Imbhuailtí bóthair tromchúiseacha in aice láimhe, description: "Imbhuailtí bóthair inar maraíodh nó inar gortaíodh duine go dona laistigh de 500m de thithe, sa bhliain (meán 5 bliana)."}
   iod_crime: {label: Fearann coireachta an innéacs díothachta, description: "Riosca samhaltaithe íospairt phearsanta agus maoine (sonraí 2021–2023)."}
   recorded_crime: {label: Coireacht a taifeadadh (SIMD), description: "Coireanna a taifeadadh in aghaidh 1,000 cónaitheoir sa bhliain in Innéacs Ildíothachta na hAlban 2020, tugtha chuig criosanna sonraí 2022."}
-  no2: {label: Dé-ocsaíd nítrigine (NO₂), description: "Meán-NO₂ cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}
-  pm25: {label: Mínfhíneáin (PM2.5), description: "Meán-PM2.5 cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}
+  no2: {label: Dé-ocsaíd nítrigine (NO₂), description: "Meán-NO₂ cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra; in Éirinn, léarscáil 1km an EEA)."}
+  pm25: {label: Mínfhíneáin (PM2.5), description: "Meán-PM2.5 cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra; in Éirinn, léarscáil 1km an EEA)."}
   green_space_access: {label: Páirceanna agus spásanna glasa in aice láimhe, description: "Bealaí isteach i bpáirceanna, i ngairdíní agus i bpáirceanna imeartha poiblí laistigh de shiúlóid 1km, ualaithe de réir faid."}
   play_spaces: {label: Clóis súgartha in aice láimhe, description: "Bealaí isteach i spásanna súgartha poiblí laistigh de 800m de thithe, ualaithe de réir faid (i dTuaisceart Éireann agus in Éirinn, clóis súgartha OpenStreetMap)."}
   flood_risk: {label: Tithe i mbaol tuilte, description: "Sciar de thithe i mbaol ard nó meánach tuilte ó aibhneacha, ón bhfarraige nó ó uisce dromchla (seans 1% sa bhliain ar a laghad)."}

@@ -162,10 +162,11 @@ indicators:
   - id: no2
     theme: environment
     label: Nitrogen dioxide (NO₂)
-    description: Annual mean background NO₂ where residents live (Defra 1km model).
+    description: Annual mean background NO₂ where residents live (Defra 1km model; in Ireland, the EEA's 1km map).
     unit: µg/m³
     direction: lower_better
-    sources: [defra_pcm_no2, nspl]
+    coverage: [E, W, S, N, I]  # Defra's model in the UK, the EEA's map in Ireland
+    sources: [defra_pcm_no2, eea_aq_no2, nspl, te_buildings]
     builder: environment:pcm
     params: {slug: defra_pcm_no2}
     normalise: threshold
@@ -177,10 +178,11 @@ indicators:
   - id: pm25
     theme: environment
     label: Fine particles (PM2.5)
-    description: Annual mean background PM2.5 where residents live (Defra 1km model).
+    description: Annual mean background PM2.5 where residents live (Defra 1km model; in Ireland, the EEA's 1km map).
     unit: µg/m³
     direction: lower_better
-    sources: [defra_pcm_pm25, nspl]
+    coverage: [E, W, S, N, I]  # Defra's model in the UK, the EEA's map in Ireland
+    sources: [defra_pcm_pm25, eea_aq_pm25, nspl, te_buildings]
     builder: environment:pcm
     params: {slug: defra_pcm_pm25}
     normalise: threshold

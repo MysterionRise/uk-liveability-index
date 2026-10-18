@@ -1257,6 +1257,45 @@
       "version": null
     }
   },
+  "eea_aq_no2": {
+    "fetched": {
+      "bytes": 77637192,
+      "fetched_at": "2026-10-18T20:01:05.780738+00:00",
+      "sha256": "41b505d58b7109c421d7dfa3aa6cba514940e5b1be654a5cd0d82be44899cd26",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T20:00:58+00:00",
+      "url": "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-no2_p_2023_v01_r00&files=no2_avg_23.tif",
+      "version": null
+    }
+  },
+  "eea_aq_pm10": {
+    "fetched": {
+      "bytes": 77637192,
+      "fetched_at": "2026-10-18T20:01:20.961170+00:00",
+      "sha256": "b29eb0a0dacdf13f3763bd0dc8eda5d23214a9024c01595dbad02e9d53e4a28f",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T20:01:16+00:00",
+      "url": "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-pm10_p_2023_v01_r00&files=pm10_avg_23.tif",
+      "version": null
+    }
+  },
+  "eea_aq_pm25": {
+    "fetched": {
+      "bytes": 82226952,
+      "fetched_at": "2026-10-18T20:01:14.607088+00:00",
+      "sha256": "771fae3babab0894424b44f74ea3fa4de6e5d2c28d983579a35f99d7c655a3fd",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T20:01:07+00:00",
+      "url": "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-pm25_p_2023_v01_r00&files=pm25_avg_23.tif",
+      "version": null
+    }
+  },
   "epa_noise_air_nat": {
     "fetched": {
       "bytes": 710312,

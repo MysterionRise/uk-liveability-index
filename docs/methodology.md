@@ -352,16 +352,21 @@ share (the index has no income domain) with its unemployment rates as the employ
 context; the CSO's recorded crime by Garda station (statistics under reservation), spread
 over the Census 2011 Garda sub-district of each station in proportion to population, with
 the station names that changed since 2011 matched through a curated list and "theft and
-related offences" counted as theft in full (benchmarked within Ireland); the EPA's Round 4
-noise contours for roads, railways, airports and industry; Transport for Ireland's GTFS
+related offences" counted as theft in full (benchmarked within Ireland); the EEA's 1 km
+interpolated maps of Europe for NO₂ and PM2.5 (sampled at the home points, reprojected to
+the European grid), where the UK has Defra's model; the EPA's Round 4 noise contours for
+roads, railways, airports and industry, and its radon map (10 km squares, so an area is
+wholly in or out of a High Radon Area); Transport for Ireland's GTFS
 feed for bus frequency (scored as the connectivity substitute, since Ireland has no
 connectivity metric) and the rail and Luas stops; ComReg's gigabit coverage by Electoral
 Division (the Small Area layer carries premise counts only); Met Éireann's 1991–2020
 1 km grids for the summer maximum and winter minimum temperatures and the annual rainfall,
 which stands in for wet days (no rain-day or sunshine grid is published); GP surgeries,
 dentists and pharmacies, parks, play spaces and allotments from OpenStreetMap (the HSE
-publishes no current lists); and a curated list of the 27 emergency departments and 7
-injury units. Schools (no results or inspection grades) and housing (no neighbourhood
+publishes no current lists); charging sites from OpenStreetMap and ESB's network; the
+National Inventory of Architectural Heritage at regional rating or above, standing in for
+the councils' Records of Protected Structures, which have no national open file; and a
+curated list of the 27 emergency departments and 7 injury units. Schools (no results or inspection grades) and housing (no neighbourhood
 prices or property tax) are declared gaps: limited data, outside the Irish overall.
 Irish names of divisions and areas come from Tailte Éireann's files, of councils from
 the curated list, and of places from OpenStreetMap.
@@ -372,7 +377,7 @@ what it replaces (the coverage gate, `lix validate config`):
 | Theme | England | Wales | Scotland | Northern Ireland | Ireland |
 |---|---|---|---|---|---|
 | Safety | 100% | 100% | 52% | 100% | 86% |
-| Environment | 100% | 100% | 100% | 82% | 45% |
+| Environment | 100% | 100% | 100% | 82% | 82% |
 | Health services | 100% | 63% | 63% | 63% | 63% |
 | Schools | 100% | 67% | 67% | gap | gap |
 | Transport | 100% | 100% | 100% | 75% | 58% |

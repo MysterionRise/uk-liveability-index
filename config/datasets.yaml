@@ -3013,3 +3013,45 @@ open_charge_map_ie:
   cadence: daily
   size_hint: 20MB
   notes: Needs a free key (OCM_API_KEY); see open_charge_map_gb.
+
+# ---------------------------------------------------------------------------------------
+# Ireland's air quality: the EEA's interpolated 1 km maps of Europe (the UK keeps Defra's
+# model). The share token addresses the EEA datastore's public folders.
+# ---------------------------------------------------------------------------------------
+
+x-eea-aq: &eea_aq
+  coverage: [I]
+  theme: environment
+  format: tif
+  licence: CC-BY-4.0
+  attribution: "European Environment Agency, European air quality data interpolated at 1 km (2023), licensed under CC BY 4.0."
+  cadence: annual
+  period: "2023"
+  size_hint: 80MB
+
+eea_aq_no2:
+  <<: *eea_aq
+  title: EEA interpolated annual mean NO2, 1 km grid of Europe, 2023
+  access:
+    type: http
+    url: "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-no2_p_2023_v01_r00&files=no2_avg_23.tif"
+  landing_page: https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5?path=%2Feea_r_3035_1_km_aq-interpolated-no2_p_2023_v01_r00
+  description: Annual mean nitrogen dioxide, µg/m³, on the EEA's 1 km grid of Europe (EPSG:3035), interpolated from monitoring stations and the CAMS model; Ireland's background air quality.
+
+eea_aq_pm25:
+  <<: *eea_aq
+  title: EEA interpolated annual mean PM2.5, 1 km grid of Europe, 2023
+  access:
+    type: http
+    url: "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-pm25_p_2023_v01_r00&files=pm25_avg_23.tif"
+  landing_page: https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5?path=%2Feea_r_3035_1_km_aq-interpolated-pm25_p_2023_v01_r00
+  description: Annual mean fine particles (PM2.5), µg/m³, on the EEA's 1 km grid of Europe (EPSG:3035); Ireland's background air quality.
+
+eea_aq_pm10:
+  <<: *eea_aq
+  title: EEA interpolated annual mean PM10, 1 km grid of Europe, 2023
+  access:
+    type: http
+    url: "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-pm10_p_2023_v01_r00&files=pm10_avg_23.tif"
+  landing_page: https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5?path=%2Feea_r_3035_1_km_aq-interpolated-pm10_p_2023_v01_r00
+  description: Annual mean particles (PM10), µg/m³, on the EEA's 1 km grid of Europe (EPSG:3035); Ireland's background air quality.

@@ -239,3 +239,39 @@ def test_tidy_pobal_pads_division_ids_and_broadcasts_to_small_areas():
     assert out["imd_score"].to_list() == [12.5, 12.5, -8.25]  # higher = more deprived
     assert out["employment_score"].to_list() == [0.15, 0.15, 0.05]
     assert out["imd_rank"].to_list() == [1, 2, 3] and out["income_score"].null_count() == 3
+
+
+def test_sample_raster_at_homes_reads_the_cell_under_each_home(tmp_path):
+    """A 3 × 3 raster on the European grid; homes in the working CRS land in its cells."""
+    import numpy as np
+    import rasterio
+    from rasterio.transform import from_origin
+
+    from lix_core.geo import from_working, to_working
+    from lix_pipeline.stage.pcm import sample_raster_at_homes
+
+    # Three 1 km cells across by three down, placed over Dublin on EPSG:3035
+    x0, y0 = from_working(np.array([315_000.0]), np.array([234_000.0]), 3035)
+    origin_x, origin_y = float(x0[0]) // 1000 * 1000, float(y0[0]) // 1000 * 1000 + 3000
+    band = np.array([[1.0, 2.0, 3.0], [4.0, -9999.0, 6.0], [7.0, 8.0, 9.0]], dtype="float32")
+    path = tmp_path / "grid.tif"
+    with rasterio.open(
+        path, "w", driver="GTiff", height=3, width=3, count=1, dtype="float32", crs="EPSG:3035",
+        transform=from_origin(origin_x, origin_y, 1000, 1000), nodata=-9999.0,
+    ) as dst:  # fmt: skip
+        dst.write(band, 1)
+    # Cell centres (col, row) → the working CRS
+    centres_x = np.array(
+        [origin_x + 500, origin_x + 1500, origin_x + 2500, origin_x + 1500, origin_x - 5000]
+    )
+    centres_y = np.array(
+        [origin_y - 500, origin_y - 500, origin_y - 2500, origin_y - 1500, origin_y - 500]
+    )
+    east, north = to_working(centres_x, centres_y, 3035)
+    homes = pl.DataFrame(
+        {"lsoa21cd": ["A", "A", "B", "B", "C"], "east1m": east, "north1m": north}
+    )  # fmt: skip
+    out = sample_raster_at_homes(path, homes)
+    assert out["lsoa21cd"].to_list() == ["A", "B"]  # C is outside the raster
+    assert out["value"].to_list() == [1.5, 9.0]  # B's second home sits on the no-data cell
+    assert out["n_points"].to_list() == [2, 1]

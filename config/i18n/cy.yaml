@@ -79,8 +79,8 @@ indicators:
   crime_damage_disorder: {label: Difrod troseddol a threfn gyhoeddus, description: "Difrod troseddol, llosgi bwriadol a throseddau trefn gyhoeddus fesul 1,000 o drigolion y flwyddyn."}
   road_danger: {label: Gwrthdrawiadau ffordd difrifol gerllaw, description: "Gwrthdrawiadau ffordd lle lladdwyd neu anafwyd rhywun yn ddifrifol o fewn 500m i gartrefi, y flwyddyn (cyfartaledd 5 mlynedd)."}
   iod_crime: {label: Parth troseddu'r mynegai amddifadedd, description: Risg wedi'i modelu o erledigaeth bersonol a materol (data 2021–2023).}
-  no2: {label: Nitrogen deuocsid (NO₂), description: NO₂ cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra).}
-  pm25: {label: Gronynnau mân (PM2.5), description: PM2.5 cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra).}
+  no2: {label: Nitrogen deuocsid (NO₂), description: "NO₂ cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra; yn Iwerddon, map 1km yr EEA)."}
+  pm25: {label: Gronynnau mân (PM2.5), description: "PM2.5 cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra; yn Iwerddon, map 1km yr EEA)."}
   green_space_access: {label: Parciau a mannau gwyrdd gerllaw, description: "Mynedfeydd i barciau, gerddi a chaeau chwarae cyhoeddus o fewn 1km o gerdded, wedi'u pwysoli yn ôl pellter."}
   play_spaces: {label: Mannau chwarae gerllaw, description: "Mynedfeydd i fannau chwarae cyhoeddus o fewn 800m i gartrefi, wedi'u pwysoli yn ôl pellter (yng Ngogledd Iwerddon ac Iwerddon, meysydd chwarae OpenStreetMap)."}
   flood_risk: {label: Cartrefi mewn perygl o lifogydd, description: "Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd, y môr neu ddŵr wyneb (siawns o 1% y flwyddyn o leiaf)."}

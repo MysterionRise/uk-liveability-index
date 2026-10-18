@@ -428,8 +428,8 @@ places:
       - {indicator: station_distance, op: le, value: 2000}
 
   # -------------------------------------------------------------- ireland
-  # Benchmarked within Ireland for Pobal deprivation and Garda crime; no air grids yet,
-  # no prices or rents, no school lists (education and housing are declared gaps)
+  # Benchmarked within Ireland for Pobal deprivation and Garda crime; air from the EEA's
+  # 1 km map; no prices or rents, no school lists (education and housing are declared gaps)
   - name: Ranelagh
     local_authority: Dublin City
     why: "Dublin 6's affluent Victorian suburb: a Luas stop, buses, everything on foot"

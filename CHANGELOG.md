@@ -15,8 +15,8 @@ All notable changes to this project. The format follows
   and the publisher's id travels with each area. Homes are Tailte Éireann building
   footprints, since Ireland has no open postcode file; the home-points table (`homes`)
   now serves every nation (#87). Irish sources: the census, Pobal's deprivation index,
-  recorded crime by Garda station spread over the 2011 sub-districts, the EPA's noise
-  contours, Transport for Ireland's timetables, ComReg's gigabit coverage, Met Éireann's
+  recorded crime by Garda station spread over the 2011 sub-districts, the EEA's 1 km
+  air-quality maps, the EPA's noise contours, Transport for Ireland's timetables, ComReg's gigabit coverage, Met Éireann's
   climate grids, OpenStreetMap's surgeries, dentists, pharmacies and green spaces, and a
   curated list of emergency departments. Schools and housing are declared gaps. Copy
   says what the percentiles span ("better than 62% of the UK and Ireland").

@@ -12,7 +12,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
   open datasets**: police.uk, the PSNI and the CSO's Garda statistics, NHS,
   Ofsted, DfE, the Welsh and Scottish Governments and the Northern Ireland departments,
   Land Registry, Registers of Scotland and Land & Property Services, ONS, NRS, NISRA and
-  the CSO, the SIMD, NIMDM and Pobal indices, Public Health Scotland, Defra air quality, the Met Office's
+  the CSO, the SIMD, NIMDM and Pobal indices, Public Health Scotland, Defra and EEA air quality, the Met Office's
   HadUK-Grid climate averages, Environment Agency, Natural Resources Wales and SEPA flood
   maps, strategic noise maps, Ofcom broadband, bus and rail timetables, OpenStreetMap and
   more.
