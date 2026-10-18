@@ -77,7 +77,8 @@ def build_features() -> pl.DataFrame:
     df = df.join(quality.rename(lambda c: c if c == "lsoa21cd" else f"q__{c}"), on="lsoa21cd")
 
     # Rank-normalised indicators benchmarked within the nation rank there; the theme and
-    # overall percentiles come both UK-wide and within the nation (compare-against)
+    # overall percentiles come across the build, within the nation and within the
+    # urban/rural class (the compare-against options)
     df = df.with_columns(
         normalise(
             pl.col(f"raw__{i.id}"),
@@ -94,7 +95,7 @@ def build_features() -> pl.DataFrame:
     scored = [(i.id, i.theme, i.weight) for i in catalogue.scored()]
     nation_rules = scoring_rules(catalogue)
     scores = score_lsoas(
-        df, scored, preset.themes, preset.indicators, group="nation", **nation_rules
+        df, scored, preset.themes, preset.indicators, group=["nation", "ruc_class"], **nation_rules
     )
     df = pl.concat([df, scores], how="horizontal").with_columns(
         band(pl.col("overall_pct")).alias("band")
@@ -133,10 +134,20 @@ def uncertainty_columns(df: pl.DataFrame, scored, weights, nation_rules=None) ->
     return out
 
 
+def context_ids(catalogue, features: pl.DataFrame) -> list[str]:
+    """Context indicators with a percentile in the features table (the browser maps them)."""
+    return [
+        i.id
+        for i in catalogue.indicators
+        if i.role == "context" and f"n__{i.id}" in features.columns
+    ]
+
+
 def compact_scores(features: pl.DataFrame) -> pl.DataFrame:
-    """Browser copy: uint16 percentiles and a uint8 quality code per scored indicator."""
+    """Browser copy: uint16 percentiles and a uint8 quality code per scored indicator, and
+    the same for the context indicators so the map can colour by them."""
     catalogue = load_indicators()
-    scored = [i.id for i in catalogue.scored()]
+    scored = [i.id for i in catalogue.scored()] + context_ids(catalogue, features)
     missing = QUALITY_CODE["missing"]
     return features.select(
         "lsoa21cd",
@@ -267,6 +278,7 @@ def manifest(
     lsoa_count: int | None = None,
     correlations: dict | None = None,
     area_counts: dict[str, int] | None = None,
+    context: list[str] | None = None,
 ) -> dict:
     import os
 
@@ -297,6 +309,7 @@ def manifest(
             for locale, labels in load_label_catalogues().items()
         },
         "scored_indicators": [i.id for i in catalogue.scored()],
+        "context_indicators": context or [],
         "indicators": [
             {**i.model_dump(), "coverage": indicator_coverage(i, registry)}
             for i in catalogue.indicators
@@ -325,8 +338,8 @@ def manifest(
         },
         "correlations": correlations,
         "encoding": {
-            "scores.parquet": "percentiles × 100 as uint16; 65535 = missing; q__<indicator> is "
-            "the uint8 index into quality_levels"
+            "scores.parquet": "percentiles × 100 as uint16 for the scored and the context "
+            "indicators; 65535 = missing; q__<indicator> is the uint8 index into quality_levels"
         },
     }
 
@@ -353,6 +366,7 @@ def build_serve() -> dict[str, Path]:
                 lsoa_count=features.height,
                 correlations=correlation_matrix(features),
                 area_counts=area_counts,
+                context=context_ids(load_indicators(), features),
             ),
             allow_nan=False,
             indent=2,

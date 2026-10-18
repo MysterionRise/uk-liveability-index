@@ -171,6 +171,19 @@ class TestGroupedScores:
             "overall", "overall_pct", "overall_pct_nation", "coverage",
         ]  # fmt: skip
 
+    def test_several_groups_each_get_their_percentiles(self):
+        norms = pl.DataFrame(
+            {
+                "n__a": [10.0, 20.0, 30.0, 40.0],
+                "nation": ["E", "E", "W", "W"],
+                "ruc_class": ["urban", "rural", "urban", "rural"],
+            }
+        )
+        out = score_lsoas(norms, [("a", "t", 1.0)], {"t": 1.0}, group=["nation", "ruc_class"])
+        assert out["overall_pct_nation"].to_list() == [0.0, 100.0, 0.0, 100.0]
+        assert out["overall_pct_ruc_class"].to_list() == [0.0, 0.0, 100.0, 100.0]
+        assert out["theme_pct_ruc_class__t"].to_list() == [0.0, 0.0, 100.0, 100.0]
+
     def test_without_group_columns_are_unchanged(self):
         norms = pl.DataFrame({"n__a": [10.0, 20.0]})
         out = score_lsoas(norms, [("a", "t", 1.0)], {"t": 1.0})

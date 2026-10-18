@@ -103,7 +103,7 @@
           "type": "string"
         },
         "nation": {
-          "description": "Nation code: E, W, S or N",
+          "description": "Nation code: E, W, S, N or I (Ireland)",
           "title": "Nation",
           "type": "string"
         },
@@ -189,6 +189,19 @@
           "default": null,
           "description": "5\u201395% range of the country percentile when each theme weight is nudged by about a quarter (for presets; None with custom weights)",
           "title": "Overall Percentile Range"
+        },
+        "overall_percentile_urban_rural": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Percentile among the neighbourhoods of the same urban/rural class",
+          "title": "Overall Percentile Urban Rural"
         },
         "population": {
           "title": "Population",
@@ -609,7 +622,7 @@
       "properties": {
         "benchmark": {
           "default": "uk",
-          "description": "uk: ranked against the whole country \u00b7 nation: within its nation",
+          "description": "uk: ranked against every area in the build (the UK and Ireland) \u00b7 nation: within its nation",
           "enum": [
             "uk",
             "nation"
@@ -1655,6 +1668,19 @@
           "default": null,
           "description": "Better than this % of the neighbourhoods in the same nation",
           "title": "Percentile Nation"
+        },
+        "percentile_urban_rural": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Better than this % of the neighbourhoods of the same urban/rural class",
+          "title": "Percentile Urban Rural"
         },
         "score": {
           "anyOf": [

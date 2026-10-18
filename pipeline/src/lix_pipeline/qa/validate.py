@@ -262,6 +262,11 @@ def validate_serve(serve_dir: Path | None = None) -> list[str]:
     no_quality = [i for i in expected if f"q__{i}" not in scores.columns]
     if no_quality:
         problems.append(f"scores.parquet lacks quality codes for {no_quality}")
+    context_absent = [
+        i for i in manifest.get("context_indicators") or [] if i not in scores.columns
+    ]
+    if context_absent:
+        problems.append(f"scores.parquet lacks context indicators {context_absent}")
     for iid in scored:
         if iid in scores.columns:
             bad = scores.filter((pl.col(iid) > 10_000) & (pl.col(iid) != MISSING_U16)).height

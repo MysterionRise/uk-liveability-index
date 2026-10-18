@@ -38,6 +38,18 @@ All notable changes to this project. The format follows
 - **Feature layers by URL.** The registry's new `arcgis_layer` access type fetches a
   layer that is not an ArcGIS Online item (Historic Environment Scotland's INSPIRE server,
   which cannot page by offset: the fetcher reads ranges of object ids instead).
+- **Context measures on the map.** "Colour the map by" lists the context indicators
+  (rainfall, snow days, listed buildings, radon…) under their own group: the browser table
+  carries their percentiles beside the scored ones (`context_indicators` in the manifest).
+  A layer the pack cannot map says so instead of passing itself off as the overall, and a
+  link pasted into an open tab updates the view (#133).
+- **Names at every zoom.** The neighbourhood and small-area tiles carry their names, so
+  the hover reads "Rathmines East C: better than 62% of the UK and Ireland" rather than
+  the percentile alone (#135).
+- **Compare against your kind of place.** A profile carries its percentile within its
+  urban/rural class (`overall_percentile_urban_rural`, per theme too), and the card follows
+  "compare against: areas of the same urban/rural type" as it already followed the nation
+  (#131).
 
 ## [0.5.1] - 2026-10-18
 

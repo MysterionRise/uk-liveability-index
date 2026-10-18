@@ -521,7 +521,7 @@ def run_sql(ctx: RunContext[Deps], query: str) -> dict:
 
     Tables: lsoa (every LSOA with raw__<indicator>, n__<indicator> 0–100 scores,
     q__<indicator> quality flags, theme__<theme>, overall, overall_pct, overall_pct_nation,
-    nation (E/W/S/N), ruc_class (urban/town/rural), lad_nm, rgn_nm,
+    overall_pct_ruc_class, nation (E/W/S/N/I), ruc_class (urban/town/rural), lad_nm, rgn_nm,
     msoa_name, population, ...), pois (category, name, lat, lon, source, detail),
     areas (msoa/lad/region with population and bbox), places, indicators.
     """

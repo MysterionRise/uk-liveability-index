@@ -144,7 +144,8 @@
     "profileByRules": "Built by matching words (no language model was used).",
     "clearProfile": "Clear profile",
     "profileBusy": "The profile builder is busy right now; try again in a minute.",
-    "profileError": "Couldn't build a profile: {detail}"
+    "profileError": "Couldn't build a profile: {detail}",
+    "contextIndicators": "Context measures"
   },
   "Band": {
     "1": "Bottom fifth",
@@ -153,7 +154,8 @@
     "4": "Above average",
     "5": "Top fifth",
     "betterThan": "better than {pct, number}% {of}",
-    "betterThanNation": "better than {pct, number}% {nationOf}"
+    "betterThanNation": "better than {pct, number}% {nationOf}",
+    "betterThanUrbanRural": "better than {pct, number}% of similar urban/rural areas"
   },
   "Quality": {
     "imputed": "estimated",
@@ -186,7 +188,8 @@
     "hoverNation": "{name}: better than {pct, number}% of its nation",
     "hoverNationNoName": "better than {pct, number}% of its nation",
     "hoverUrbanRural": "{name}: better than {pct, number}% of similar urban/rural areas",
-    "hoverUrbanRuralNoName": "better than {pct, number}% of similar urban/rural areas"
+    "hoverUrbanRuralNoName": "better than {pct, number}% of similar urban/rural areas",
+    "layerUnavailable": "{layer} cannot be mapped; showing the overall score"
   },
   "Docs": {
     "nav": "Documentation",
@@ -243,7 +246,8 @@
     "betterThanNation": "Better than {pct, number}% {nationOf}",
     "nationMedian": "{nation} median",
     "limitedData": "Limited data: this nation publishes too little for this theme, so it is left out of the overall",
-    "subtitleOwnTier": "{ruc} · {population, number} residents"
+    "subtitleOwnTier": "{ruc} · {population, number} residents",
+    "betterThanUrbanRural": "Better than {pct, number}% of similar urban/rural areas"
   },
   "Poi": {
     "titles": {

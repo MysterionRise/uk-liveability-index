@@ -49,6 +49,9 @@ class ThemeScore(BaseModel):
     percentile_nation: float | None = Field(
         None, description="Better than this % of the neighbourhoods in the same nation"
     )
+    percentile_urban_rural: float | None = Field(
+        None, description="Better than this % of the neighbourhoods of the same urban/rural class"
+    )
     country_median: float | None = Field(None, description="Median score across the country")
     nation_median: float | None = Field(None, description="Median score across the nation")
     local_median: float | None = Field(None, description="Median score in the local authority")
@@ -97,6 +100,9 @@ class AreaProfile(BaseModel):
     overall_percentile: float | None
     overall_percentile_nation: float | None = Field(
         None, description="Percentile among the neighbourhoods of the same nation"
+    )
+    overall_percentile_urban_rural: float | None = Field(
+        None, description="Percentile among the neighbourhoods of the same urban/rural class"
     )
     band: int | None = Field(None, description="1 (bottom fifth of the country) … 5 (top fifth)")
     overall_percentile_range: list[float] | None = Field(

@@ -85,9 +85,10 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
   const t = useTranslations("Profile");
   const tw = useTranslations("Weights");
   const tn = useTranslations("Nations");
-  // The card's benchmark follows "compare against": within the nation when that is
-  // chosen (the urban/rural comparison has no per-area percentile, so it reads as the UK)
+  // The card's benchmark follows "compare against": within the nation or within the
+  // urban/rural class when either is chosen
   const withinNation = state.compare_within === "nation";
+  const withinUrbanRural = state.compare_within === "urban_rural";
   const nationName = tn(profile.nation as "E" | "W" | "S" | "N" | "I");
   const nationOf = tn(`of_${profile.nation}` as "of_E" | "of_W" | "of_S" | "of_N" | "of_I");
   // "of the UK and Ireland", "in the UK and Ireland": what the build's percentiles span
@@ -127,11 +128,19 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
       <div className="mt-1">
         <Band
           band={profile.band}
-          percentile={withinNation ? profile.overall_percentile_nation : profile.overall_percentile}
+          percentile={
+            withinNation
+              ? profile.overall_percentile_nation
+              : withinUrbanRural
+                ? profile.overall_percentile_urban_rural
+                : profile.overall_percentile
+          }
           nationOf={withinNation ? nationOf : undefined}
+          urbanRural={withinUrbanRural}
         />
       </div>
       {!withinNation &&
+        !withinUrbanRural &&
         profile.overall_percentile_range &&
         profile.overall_percentile_range[0] !== profile.overall_percentile_range[1] && (
           <p
@@ -159,9 +168,13 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
                 ? th.percentile_nation != null
                   ? t("betterThanNation", { pct: th.percentile_nation, nationOf })
                   : undefined
-                : th.percentile != null
-                  ? t("betterThan", { pct: th.percentile, of: coverageOf })
-                  : undefined
+                : withinUrbanRural
+                  ? th.percentile_urban_rural != null
+                    ? t("betterThanUrbanRural", { pct: th.percentile_urban_rural })
+                    : undefined
+                  : th.percentile != null
+                    ? t("betterThan", { pct: th.percentile, of: coverageOf })
+                    : undefined
             }
             marks={[
               {

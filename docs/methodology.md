@@ -143,9 +143,10 @@ recording practices, inspection frameworks and school results, deprivation indic
 the nation, so a Welsh neighbourhood's crime score says where it stands among Welsh
 neighbourhoods. The profile shows which benchmark each indicator uses.
 
-Theme and overall percentiles are reported both ways: against every scored
-neighbourhood (the headline, and the band) and within the nation ("compare against"
-on the map and in profiles). Scores themselves do not change with the comparison.
+Theme and overall percentiles are reported three ways: against every scored
+neighbourhood (the headline, and the band), within the nation and within the urban/rural
+class ("compare against" on the map and in profiles). Scores themselves do not change
+with the comparison.
 
 Nations are offset from one another where they do not measure the same things. A theme
 built from fewer indicators is not a lower one, but it is a different one: Scotland's

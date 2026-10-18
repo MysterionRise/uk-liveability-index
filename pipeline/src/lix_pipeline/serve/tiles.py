@@ -14,6 +14,7 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
+import polars as pl
 import pyogrio
 
 from lix_core.codes import active_nations
@@ -30,6 +31,24 @@ def _tier(level: str, code: str) -> gpd.GeoDataFrame:
     where the nation asks for it), with the code column named ``code``."""
     gdf = tier_polygons(level, simplify=True).reset_index().rename(columns={"lsoa21cd": code})
     return gdf[[code, "geometry"]]
+
+
+def tier_names(features_path: Path | None = None) -> dict[str, dict[str, str]]:
+    """Code → name for the low and mid tiers from the scored features (the hover names an
+    area at every zoom); empty when the features are not built yet."""
+    path = features_path or data_dir("serve") / "lsoa_features.parquet"
+    if not path.exists():
+        logger.warning(f"{path} not found: tiles carry codes only")
+        return {"low": {}, "mid": {}}
+    f = pl.read_parquet(path, columns=["lsoa21cd", "lsoa21nm", "msoa21cd", "msoa_name"])
+    low = dict(zip(f["lsoa21cd"].to_list(), f["lsoa21nm"].to_list(), strict=True))
+    mid = dict(
+        f.filter(pl.col("msoa_name").is_not_null())
+        .unique("msoa21cd", keep="first")
+        .select("msoa21cd", "msoa_name")
+        .iter_rows()
+    )
+    return {"low": {k: v for k, v in low.items() if v}, "mid": mid}
 
 
 def write_layer(gdf: gpd.GeoDataFrame, out: Path, layer: str, minzoom: int, maxzoom: int) -> Path:
@@ -63,12 +82,15 @@ def build_tiles(
     out_dir.mkdir(parents=True, exist_ok=True)
     outputs = []
 
+    names = tier_names()
     lsoa = _tier("low", "lsoa21cd")
     if lsoas is not None:
         lsoa = lsoa[lsoa["lsoa21cd"].isin(lsoas)]
+    lsoa["name"] = lsoa["lsoa21cd"].map(names["low"])
     outputs.append(write_layer(lsoa, out_dir / "lsoa.pmtiles", "lsoa", 8, 14))
 
     msoa = _tier("mid", "msoa21cd")
+    msoa["name"] = msoa["msoa21cd"].map(names["mid"])
     if lsoas is not None:
         # MSOAs nest in local authorities, so keep those overlapping the chosen LSOAs
         msoa = msoa[msoa.intersects(lsoa.to_crs(msoa.crs).union_all().buffer(-1))]

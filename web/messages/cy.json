@@ -144,7 +144,8 @@
     "profileByRules": "Wedi'i adeiladu drwy baru geiriau (ni ddefnyddiwyd model iaith).",
     "clearProfile": "Clirio'r proffil",
     "profileBusy": "Mae'r adeiladwr proffiliau yn brysur ar hyn o bryd; rhowch gynnig arall arni mewn munud.",
-    "profileError": "Methwyd adeiladu proffil: {detail}"
+    "profileError": "Methwyd adeiladu proffil: {detail}",
+    "contextIndicators": "Mesurau cyd-destun"
   },
   "Band": {
     "1": "Pumed isaf",
@@ -153,7 +154,8 @@
     "4": "Uwchlaw'r cyfartaledd",
     "5": "Pumed uchaf",
     "betterThan": "yn well na {pct, number}% {of}",
-    "betterThanNation": "yn well na {pct, number}% {nationOf}"
+    "betterThanNation": "yn well na {pct, number}% {nationOf}",
+    "betterThanUrbanRural": "yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg"
   },
   "Quality": {
     "imputed": "amcangyfrif",
@@ -186,7 +188,8 @@
     "hoverNation": "{name}: yn well na {pct, number}% o'i genedl",
     "hoverNationNoName": "yn well na {pct, number}% o'i genedl",
     "hoverUrbanRural": "{name}: yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg",
-    "hoverUrbanRuralNoName": "yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg"
+    "hoverUrbanRuralNoName": "yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg",
+    "layerUnavailable": "Ni ellir mapio {layer}; dangosir y sgôr gyffredinol"
   },
   "Docs": {
     "nav": "Dogfennaeth",
@@ -243,7 +246,8 @@
     "betterThanNation": "Yn well na {pct, number}% {nationOf}",
     "nationMedian": "canolrif {nation}",
     "limitedData": "Data cyfyngedig: nid yw'r genedl hon yn cyhoeddi digon ar gyfer y thema hon, felly caiff ei gadael allan o'r cyfanswm",
-    "subtitleOwnTier": "{ruc} · {population, number} o drigolion"
+    "subtitleOwnTier": "{ruc} · {population, number} o drigolion",
+    "betterThanUrbanRural": "Yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg"
   },
   "Poi": {
     "titles": {

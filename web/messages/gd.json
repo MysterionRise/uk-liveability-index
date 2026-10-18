@@ -144,7 +144,8 @@
     "profileByRules": "Air a thogail le bhith a' maidseadh fhaclan (cha deach modail cànain a chleachdadh).",
     "clearProfile": "Falamhaich a' phròifil",
     "profileBusy": "Tha togalaiche nam pròifilean trang an-dràsta; feuch a-rithist ann am mionaid.",
-    "profileError": "Cha b' urrainn pròifil a thogail: {detail}"
+    "profileError": "Cha b' urrainn pròifil a thogail: {detail}",
+    "contextIndicators": "Tomhasan co-theacsa"
   },
   "Band": {
     "1": "Còigeamh as ìsle",
@@ -153,7 +154,8 @@
     "4": "Os cionn na h-àbhaist",
     "5": "Còigeamh as àirde",
     "betterThan": "nas fheàrr na {pct, number}% {of}",
-    "betterThanNation": "nas fheàrr na {pct, number}% {nationOf}"
+    "betterThanNation": "nas fheàrr na {pct, number}% {nationOf}",
+    "betterThanUrbanRural": "nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach"
   },
   "Quality": {
     "imputed": "tuairmse",
@@ -186,7 +188,8 @@
     "hoverNation": "{name}: nas fheàrr na {pct, number}% de a nàisean",
     "hoverNationNoName": "nas fheàrr na {pct, number}% de a nàisean",
     "hoverUrbanRural": "{name}: nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach",
-    "hoverUrbanRuralNoName": "nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach"
+    "hoverUrbanRuralNoName": "nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach",
+    "layerUnavailable": "Chan urrainnear {layer} a mhapadh; a' sealltainn an sgòr iomlan"
   },
   "Docs": {
     "nav": "Sgrìobhainnean",
@@ -243,7 +246,8 @@
     "betterThanNation": "Nas fheàrr na {pct, number}% {nationOf}",
     "nationMedian": "meadhanach {nation}",
     "limitedData": "Dàta cuingealaichte: chan eil an nàisean seo a' foillseachadh gu leòr airson a' chuspair seo, agus tha e air fhàgail a-mach às an iomlan",
-    "subtitleOwnTier": "{ruc} · {population, number} luchd-còmhnaidh"
+    "subtitleOwnTier": "{ruc} · {population, number} luchd-còmhnaidh",
+    "betterThanUrbanRural": "Nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach"
   },
   "Poi": {
     "titles": {

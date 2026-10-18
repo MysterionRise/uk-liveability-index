@@ -84,6 +84,17 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
   const latest = useRef(state);
   const pushedTo = useRef<unknown>(null);
 
+  // A link pasted into an open tab changes only the hash: follow it (our own writes use
+  // replaceState, which fires no hashchange)
+  useEffect(() => {
+    const onHash = () => {
+      const hash = readHash();
+      if (Object.keys(hash).length) setState((s) => normaliseState({ ...s, ...hash } as Partial<WireState>));
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
   // Snapshots from the agent replace the page state (adjusted during render, not in an effect)
   const [seenAgentState, setSeenAgentState] = useState<unknown>(agent.state);
   if (agent.state !== seenAgentState) {
@@ -200,7 +211,12 @@ export function useScores(state: LiveabilityState): LayerValues | null {
     } else {
       lsoa = result.overallPercentile;
       score = result.overall;
-      label = t("overall");
+      // A layer the pack cannot map (a diagnostic measure, a typo in a link) shows the
+      // overall and says so rather than passing itself off as the overall
+      label =
+        layer === "overall"
+          ? t("overall")
+          : t("layerUnavailable", { layer: layer.slice(layer.indexOf(":") + 1) });
     }
     if (state.compare_within === "nation") {
       lsoa = percentileWithin(lsoa, scores.nation);

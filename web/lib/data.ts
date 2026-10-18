@@ -105,6 +105,8 @@ export interface Manifest {
     }
   >;
   scored_indicators: string[];
+  /** Context indicators whose percentiles the browser table also carries (mappable) */
+  context_indicators?: string[];
   indicators: IndicatorMeta[];
   themes: Record<string, { label: string; description: string }>;
   default_preset: string;
@@ -209,7 +211,9 @@ async function readScores(manifest: Manifest, url: string): Promise<ScoreData> {
   const indicators: Record<string, Float64Array> = {};
   const quality: Record<string, Uint8Array> = {};
   const missing = Math.max(0, manifest.quality_levels.indexOf("missing"));
-  for (const id of manifest.scored_indicators) {
+  // Context indicators ride along when the pack carries them (older packs do not)
+  const context = (manifest.context_indicators ?? []).filter((id) => n === 0 || id in rows[0]);
+  for (const id of [...manifest.scored_indicators, ...context]) {
     const col = new Float64Array(n);
     const q = new Uint8Array(n);
     for (let i = 0; i < n; i++) {
