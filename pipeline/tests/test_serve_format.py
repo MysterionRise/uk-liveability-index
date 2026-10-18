@@ -129,7 +129,7 @@ def test_manifest_has_geography_and_quality_levels():
     assert "_meta" not in m["i18n"]["cy"]
     crime = next(i for i in m["indicators"] if i["id"] == "crime_violence")
     assert crime["unit_code"] == "per_1000_year"
-    assert crime["benchmark"] == "nation" and crime["coverage"] == ["E", "W", "N"]
+    assert crime["benchmark"] == "nation" and crime["coverage"] == ["E", "W", "N", "I"]
     no2 = next(i for i in m["indicators"] if i["id"] == "no2")
     # Declared coverage is the indicator's, not the build's: Defra's grid covers the UK
     assert no2["benchmark"] == "uk" and no2["coverage"] == ["E", "W", "S", "N"]

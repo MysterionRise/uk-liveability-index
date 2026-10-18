@@ -19,7 +19,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
 - **Your weights, computed in your browser**, from five ready-made personas, a sentence
   about yourself ("young professional, one child starting school, I need sunshine") or
   any weighting of your own, with an honest range for how much a result depends on them.
-- **An assistant that shows its working**, tested on 50 cases with three models, including
+- **An assistant that shows its working**, tested on 55 cases with three models, including
   that its replies only use numbers from the data ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.

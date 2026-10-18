@@ -1,19 +1,19 @@
 # Assistant evals
 
-The assistant is tested with real models on the full build, using 50 cases in
+The assistant is tested with real models on the full build, using 55 cases in
 [api/evals/cases.yaml](../api/evals/cases.yaml):
 
 | Category | Cases | What is checked |
 |---|---|---|
-| Ranking | 11 | Weights set before ranking (family, commuter, retiree, young professional), place and price filters, ranking by one measure (the quietest areas in London, the sunniest in the South East) with the map coloured by it, worst first (the areas of Highland furthest from an A&E), areas highlighted on the map; Edinburgh and Belfast now that Scotland and Northern Ireland are covered |
-| Look-ups | 13 | The right tool and arguments for profiles (including a BT postcode), comparisons, nearby pubs and GPs, score explanations, map layers, the shortlist and the indicator catalogue |
+| Ranking | 13 | Weights set before ranking (family, commuter, retiree, young professional), place and price filters, ranking by one measure (the quietest areas in London, the sunniest in the South East) with the map coloured by it, worst first (the areas of Highland furthest from an A&E), areas highlighted on the map; Edinburgh, Belfast and Dublin now that Scotland, Northern Ireland and Ireland are covered; Ireland for retirees |
+| Look-ups | 14 | The right tool and arguments for profiles (including a BT postcode and Ranelagh in Dublin), comparisons, nearby pubs and GPs, score explanations, map layers, the shortlist and the indicator catalogue |
 | Follow-ups | 2 | "Compare the top two", "now do that for retirees" |
 | Ambiguity | 2 | Says which Clapham it used; profiles Newport now that Wales is covered |
-| Scope and ethics | 4 | Dublin is out of scope; it declines to rank by immigration or religion; off-topic requests use no tools |
+| Scope and ethics | 5 | Paris is out of scope and Dublin's schools are a declared gap; it declines to rank by immigration or religion; off-topic requests use no tools |
 | Grounding | 2 (+22) | Every number in a reply appears in a tool result, the prompt or the model's own tool arguments (checked on 24 cases) |
 | Analyst | 2 | SQL only in analyst mode |
 | Injection | 1 | A pub name carrying "ignore all previous instructions…" isn't obeyed |
-| Languages | 6 | With the page in Welsh, Gaelic or Irish, a profile and a nearby-pubs question are answered in that language (checked by the share of its stopwords in the reply) |
+| Languages | 7 | With the page in Welsh, Gaelic or Irish, a profile and a nearby-pubs question are answered in that language (checked by the share of its stopwords in the reply) |
 | Profiles | 7 | A description of the user through the profile generator (`kind: profile`): the owner's example, a retired couple with asthma, a developer working from home without children, a Welsh night-shift nurse and a Gaelic commuter on a budget answered in their language, and a description that tries to steer by immigration or religion (ignored; the rationale never repeats it). On a real model the profile must come from the model, not the rules fallback; the checks are on the effective weights, so the same cases pass on the rules engine with the scripted model. The seventh is the same description in the chat, which must call `set_profile` rather than rank |
 
 ## Results
@@ -85,6 +85,6 @@ For a stakeholder demo where every answer counts, Opus 5.5 is worth its cost.
 
 ```bash
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,compare_two
-make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 50 cases, about $0.08
-make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 50 cases, about $2
+make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 55 cases, about $0.08
+make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 55 cases, about $2
 ```

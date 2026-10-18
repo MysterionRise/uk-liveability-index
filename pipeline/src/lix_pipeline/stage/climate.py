@@ -253,9 +253,8 @@ def stage_climate() -> pl.LazyFrame:
     from lix_core.config import load_nations
 
     cfg = load_nations().nations
-    homes = residential_postcodes()
-    frames = []
     uk = [n for n in active_nations() if cfg[n].country == "UK"]
+    files: dict[str, Path] = {}
     if uk:
         files = {
             column: path
@@ -268,6 +267,9 @@ def stage_climate() -> pl.LazyFrame:
                 f"HadUK-Grid files for {missing} are missing from data/manual/{SLUG}/ "
                 "(see the registry's instructions)"
             )
+    homes = residential_postcodes()
+    frames = []
+    if uk:
         df = climate_at_homes(homes.filter(nation_of("lsoa21cd").is_in(uk)), files)
         logger.info(
             f"{df.height:,} UK areas; median sunshine {df['sunshine_hours'].median():.0f} h, "
