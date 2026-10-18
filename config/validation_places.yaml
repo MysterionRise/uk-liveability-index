@@ -426,3 +426,51 @@ places:
     checks:
       - {indicator: no2, op: le, value: 10, anchor: true}
       - {indicator: station_distance, op: le, value: 2000}
+
+  # -------------------------------------------------------------- ireland
+  # Benchmarked within Ireland for Pobal deprivation and Garda crime; no air grids yet,
+  # no prices or rents, no school lists (education and housing are declared gaps)
+  - name: Ranelagh
+    local_authority: Dublin City
+    why: "Dublin 6's affluent Victorian suburb: a Luas stop, buses, everything on foot"
+    checks:
+      - {theme: community, op: ge, value: 80, anchor: true}
+      - {indicator: station_distance, op: le, value: 1000, anchor: true}
+      - {indicator: gp_distance, op: le, value: 500}
+
+  - name: Ballymun
+    local_authority: Dublin City
+    why: "North Dublin's regenerated tower-block estate, long among the most deprived areas"
+    checks:
+      - {theme: community, op: le, value: 20, anchor: true}
+      - {indicator: bus_access, op: ge, value: 5}
+
+  - name: Clifden
+    local_authority: Galway County
+    why: "Connemara's market town at the edge of the island: no railway, Galway's A&E 80 km away"
+    checks:
+      - {indicator: hospital_ae_distance, op: ge, value: 40000, anchor: true}
+      - {indicator: station_distance, op: ge, value: 40000, anchor: true}
+      - {indicator: rainfall_total, op: ge, value: 1200}
+
+  - name: Kilkenny
+    local_authority: Kilkenny
+    why: "Medieval city with its station and St Luke's General Hospital"
+    checks:
+      - {indicator: hospital_ae_distance, op: le, value: 4000, anchor: true}
+      - {indicator: station_distance, op: le, value: 2000, anchor: true}
+
+  - name: Dalkey
+    local_authority: Dún Laoghaire-Rathdown
+    why: "Affluent coastal village on the DART, wooded hills above Killiney Bay"
+    checks:
+      - {theme: community, op: ge, value: 75, anchor: true}
+      - {indicator: station_distance, op: le, value: 1500, anchor: true}
+      - {indicator: tree_canopy, op: ge, value: 30}
+
+  - name: Letterkenny
+    local_authority: Donegal
+    why: "Donegal's largest town with the county's hospital and no railway anywhere near"
+    checks:
+      - {indicator: hospital_ae_distance, op: le, value: 3000, anchor: true}
+      - {indicator: station_distance, op: ge, value: 40000, anchor: true}

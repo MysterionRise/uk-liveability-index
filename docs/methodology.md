@@ -369,17 +369,17 @@ the curated list, and of places from OpenStreetMap.
 How much of each theme's scored weight a nation can have, counting a substitute against
 what it replaces (the coverage gate, `lix validate config`):
 
-| Theme | England | Wales | Scotland | Northern Ireland |
-|---|---|---|---|---|
-| Safety | 100% | 100% | 52% | 100% |
-| Environment | 100% | 100% | 100% | 82% |
-| Health services | 100% | 63% | 63% | 63% |
-| Schools | 100% | 67% | 67% | gap |
-| Transport | 100% | 100% | 100% | 75% |
-| Amenities | 100% | 100% | 100% | 100% |
-| Housing | 100% | 100% | 100% | 100% |
-| Community | 100% | 100% | 100% | 100% |
-| Climate | 100% | 100% | 100% | 100% |
+| Theme | England | Wales | Scotland | Northern Ireland | Ireland |
+|---|---|---|---|---|---|
+| Safety | 100% | 100% | 52% | 100% | 86% |
+| Environment | 100% | 100% | 100% | 82% | 45% |
+| Health services | 100% | 63% | 63% | 63% | 63% |
+| Schools | 100% | 67% | 67% | gap | gap |
+| Transport | 100% | 100% | 100% | 75% | 58% |
+| Amenities | 100% | 100% | 100% | 100% | 78% |
+| Housing | 100% | 100% | 100% | 100% | gap |
+| Community | 100% | 100% | 100% | 100% | 50% |
+| Climate | 100% | 100% | 100% | 100% | 71% |
 
 An area's theme score is the weighted mean of the indicators its nation has, so a thinner
 theme is not a lower one (see the offsets under [benchmarks](#benchmarks-the-whole-country-or-the-nation));
