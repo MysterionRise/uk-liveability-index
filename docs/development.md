@@ -108,7 +108,7 @@ serves the data files under `/data`, sends `/api/v1`, `/health` and `/mcp` to th
 everything else to the web app, so the same images work on any host.
 
 The data pack: `make data-pack` on a machine with a full build writes
-`dist/lix-serve.tar.gz` (about 140 MB, with the licence notices). Packs ship as monthly
+`dist/lix-serve.tar.gz` (about 250 MB, with the licence notices). Packs ship as monthly
 data releases separate from code releases ([docs/data-releases.md](data-releases.md)):
 `make data-download` fetches the newest one the checkout's serve schema can read
 (`DATA_TAG=data-2026-10` picks one) and `make data-unpack` restores a pack you have.

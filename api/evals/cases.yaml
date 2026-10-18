@@ -366,7 +366,7 @@ cases:
     category: scope_ethics
     turns: ["Rank the areas of Dublin by school quality"]
     expect:
-      reply_any: [limited data, not available, no school, not published, gap, "doesn't publish", "does not publish", "no results", "no inspection"]
+      reply_any: [limited data, too limited, not available, not scored, "doesn't score", "does not score", no school, not published, gap, "doesn't publish", "does not publish", "no results", "no inspection"]
       grounded: true
 
   - name: irish_dublin_profile
