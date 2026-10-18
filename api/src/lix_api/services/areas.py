@@ -111,10 +111,11 @@ def area_profile(
     preset: str | None = None,
     theme_weights: ThemeWeights | None = None,
     locale: str | None = None,
+    indicator_weights: dict[str, float] | None = None,
 ) -> AreaProfile:
     code = resolve_lsoa(store, ref)
     row = store.features.row(store.lsoa_index[code], named=True)
-    name, themes, multipliers = resolve_weights(store, preset, theme_weights)
+    name, themes, multipliers = resolve_weights(store, preset, theme_weights, indicator_weights)
     every = scores_for(store, themes, multipliers)
     scores = every.row(store.lsoa_index[code], named=True)
     local = every.filter(store.features["lad_cd"] == row["lad_cd"])
@@ -167,7 +168,7 @@ def area_profile(
     flags = [FLAG_TEXT[c] for c in flag_codes if c in FLAG_TEXT]
     pct = scores.get("overall_pct")
     # Precomputed per preset at build time; custom weights have no range
-    preset_id = None if theme_weights else name
+    preset_id = None if (theme_weights or indicator_weights) else name
     lo, hi = row.get(f"pct_lo__{preset_id}"), row.get(f"pct_hi__{preset_id}")
     return AreaProfile(
         lsoa21cd=code,

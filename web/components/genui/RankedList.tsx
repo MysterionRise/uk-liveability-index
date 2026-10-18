@@ -6,7 +6,7 @@ import { useLiveability } from "@/components/AppData";
 import { Card, Muted, ValueWithUnit, formatValue } from "@/components/ui";
 import type { RankResult } from "@/lib/contracts.gen";
 import { useCoverageIn } from "@/lib/copy";
-import { presetLabel, useLabels } from "@/lib/labels";
+import { useLabels, usePresetLabel } from "@/lib/labels";
 import { nationOf, useLevelWords } from "@/lib/levels";
 
 // Below this share of plausible weightings keeping it in the list, a result is a close call
@@ -27,6 +27,7 @@ export function RankedList({ result }: { result: RankResult }) {
         : t("inCoverage", { coverageIn });
   const count = result.results.length;
   const labels = useLabels();
+  const presetName = usePresetLabel();
   const level = useLevelWords();
   // The tier's word in the results' nation ("data zones" in Edinburgh); a list that
   // spans nations just says "areas"
@@ -51,7 +52,7 @@ export function RankedList({ result }: { result: RankResult }) {
     : null;
   const subtitle = measureLabel
     ? t("rankedBy", { label: measureLabel, count: result.candidates })
-    : t("subtitle", { count: result.candidates, preset: presetLabel(labels, result.preset, tw("adjusted")) });
+    : t("subtitle", { count: result.candidates, preset: presetName(result.preset) });
 
   return (
     <Card

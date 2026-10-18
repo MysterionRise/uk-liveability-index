@@ -82,7 +82,8 @@
       "retiree": "Air cluaineas",
       "commuter": "Neach-siubhail",
       "balanced": "Cothromaichte"
-    }
+    },
+    "orDescribe": "No innis dhuinn cò thu"
   },
   "Search": {
     "placeholder": "Còd-puist no àite",
@@ -125,7 +126,16 @@
       "nation": "Ceudadan taobh a-staigh gach nàisein; tha na sgòran a' fuireach mar a tha iad.",
       "urban_rural": "Chan eil bailtean beaga air am measadh an aghaidh meadhanan bhailtean mòra."
     },
-    "adjusted": "(air atharrachadh)"
+    "adjusted": "(air atharrachadh)",
+    "describeYourself": "No thoir tuairisgeul ort fhèin",
+    "describePlaceholder": "m.e. proifeiseantach òg, aon phàiste a' tòiseachadh sa bhun-sgoil, feumaidh mi grian",
+    "buildProfile": "Tog mo phròifil",
+    "building": "A' togail…",
+    "myProfile": "Mo phròifil: {name}",
+    "profileByRules": "Air a thogail le bhith a' maidseadh fhaclan (cha deach modail cànain a chleachdadh).",
+    "clearProfile": "Falamhaich a' phròifil",
+    "profileBusy": "Tha togalaiche nam pròifilean trang an-dràsta; feuch a-rithist ann am mionaid.",
+    "profileError": "Cha b' urrainn pròifil a thogail: {detail}"
   },
   "Band": {
     "1": "Còigeamh as ìsle",
@@ -189,7 +199,8 @@
       "search_place": "A' lorg an àite…",
       "list_indicators": "A' liostadh thaisbeanairean…",
       "add_to_shortlist": "A' sàbhaladh dhan gheàrr-liosta agad…",
-      "remove_from_shortlist": "Ag ùrachadh na geàrr-liosta agad…"
+      "remove_from_shortlist": "Ag ùrachadh na geàrr-liosta agad…",
+      "set_profile": "A' togail do phròifil…"
     },
     "running": "A' ruith {name}…",
     "noResult": "{name}: gun toradh",
@@ -198,7 +209,8 @@
     "shortlistSaved": "Geàrr-liosta: {count, plural, one {# air a shàbhaladh} two {# air an sàbhaladh} few {# air an sàbhaladh} other {# air an sàbhaladh}}",
     "found": "Air lorg: {places}",
     "nothing": "càil",
-    "indicatorsCount": "{count, plural, one {# taisbeanair} two {# thaisbeanair} few {# taisbeanairean} other {# taisbeanair}}"
+    "indicatorsCount": "{count, plural, one {# taisbeanair} two {# thaisbeanair} few {# taisbeanairean} other {# taisbeanair}}",
+    "profileSet": "Pròifil air a suidheachadh:"
   },
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} luchd-còmhnaidh",

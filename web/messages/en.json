@@ -82,7 +82,8 @@
       "retiree": "Retired",
       "commuter": "Commuter",
       "balanced": "Balanced"
-    }
+    },
+    "orDescribe": "Or tell us who you are"
   },
   "Search": {
     "placeholder": "Postcode or place",
@@ -125,7 +126,16 @@
       "nation": "Percentiles within each nation; scores stay the same.",
       "urban_rural": "Villages aren't judged against city centres."
     },
-    "adjusted": "(adjusted)"
+    "adjusted": "(adjusted)",
+    "describeYourself": "Or describe yourself",
+    "describePlaceholder": "e.g. young professional, one child starting primary school, I need sunshine",
+    "buildProfile": "Build my profile",
+    "building": "Building…",
+    "myProfile": "My profile: {name}",
+    "profileByRules": "Built by matching words (no language model was used).",
+    "clearProfile": "Clear profile",
+    "profileBusy": "The profile builder is busy right now; try again in a minute.",
+    "profileError": "Couldn't build a profile: {detail}"
   },
   "Band": {
     "1": "Bottom fifth",
@@ -189,7 +199,8 @@
       "search_place": "Looking up the place…",
       "list_indicators": "Listing indicators…",
       "add_to_shortlist": "Saving to your shortlist…",
-      "remove_from_shortlist": "Updating your shortlist…"
+      "remove_from_shortlist": "Updating your shortlist…",
+      "set_profile": "Building your profile…"
     },
     "running": "Running {name}…",
     "noResult": "{name}: no result",
@@ -198,7 +209,8 @@
     "shortlistSaved": "Shortlist: {count, plural, one {# saved} other {# saved}}",
     "found": "Found: {places}",
     "nothing": "nothing",
-    "indicatorsCount": "{count, plural, one {# indicator} other {# indicators}}"
+    "indicatorsCount": "{count, plural, one {# indicator} other {# indicators}}",
+    "profileSet": "Profile set:"
   },
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} residents",

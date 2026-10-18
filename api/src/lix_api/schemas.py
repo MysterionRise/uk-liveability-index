@@ -15,7 +15,8 @@ from lix_core.paths import get_project_root
 
 EXPORTED = [
     models.Place, models.AreaProfile, models.RankResult, models.Comparison,
-    models.PoiResult, models.Explanation, models.IndicatorInfo, LiveabilityState,
+    models.PoiResult, models.Explanation, models.IndicatorInfo, models.WeightProfile,
+    LiveabilityState,
 ]  # fmt: skip
 
 

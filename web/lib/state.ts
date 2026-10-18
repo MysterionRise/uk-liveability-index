@@ -2,16 +2,17 @@
  * The state shared with the assistant (mirrors lix_api.agent.state.LiveabilityState).
  * The page and the assistant both write it; AG-UI keeps them in sync.
  */
-import type { LiveabilityState as WireState, MapView, Poi, ShortlistItem } from "./contracts.gen";
+import type { LiveabilityState as WireState, MapView, Poi, ProfileRef, ShortlistItem } from "./contracts.gen";
 import type { Manifest } from "./data";
 
-export type { Poi, ShortlistItem };
+export type { Poi, ProfileRef, ShortlistItem };
 
 /** The wire type has optional fields (they have defaults); the page always fills them in. */
 export type LiveabilityState = Omit<Required<WireState>, "map" | "theme_weights" | "indicator_weights"> & {
   map: Required<MapView> & { pois: Poi[]; highlighted: string[] };
   theme_weights: Record<string, number>;
   indicator_weights: Record<string, number>;
+  profile: ProfileRef | null;
   shortlist: ShortlistItem[];
 };
 
@@ -22,6 +23,7 @@ export const DEFAULT_STATE: LiveabilityState = {
   locale: "en",
   theme_weights: {},
   indicator_weights: {},
+  profile: null,
   compare_within: "uk",
   compare_within_urban_rural: false,
   mode: "consumer",
@@ -49,6 +51,7 @@ export function normaliseState(s: Partial<WireState> | undefined): LiveabilitySt
     map: { ...DEFAULT_STATE.map, ...(s?.map ?? {}) },
     theme_weights: s?.theme_weights ?? {},
     indicator_weights: s?.indicator_weights ?? {},
+    profile: s?.profile ?? null,
     shortlist: s?.shortlist ?? [],
   } as LiveabilityState;
 }

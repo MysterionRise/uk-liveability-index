@@ -119,6 +119,11 @@ def model_settings() -> ModelSettings:
 # --- scripted model ------------------------------------------------------------------
 
 _RULES: list[tuple[str, str, callable]] = [
+    (r"^\s*(?:i'?m|i am|we'?re|we are|my (?:partner|wife|husband|family))\b"
+     r"(?!.*\b(?:best|rank|where|near|around|compare|tell me|show me|why|somewhere|areas?|"
+     r"neighbourhoods?|live|look|move|suit|should)\b).*",
+     "set_profile",
+     lambda m: {"description": m.group(0).strip()}),
     (r"\b(compare)\b(.+?)\band\b(.+)", "compare_areas",
      lambda m: {"areas": [m.group(2).strip(" ,"), m.group(3).strip(" ?.")]}),
     (r"\bwell[- ]run pubs?\b.*\b(?:near|in|around)\b (.+)", "nearest_pois",

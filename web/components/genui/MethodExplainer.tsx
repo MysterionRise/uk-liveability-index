@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Card, Muted, ValueWithUnit, formatValue, useQualityNote } from "@/components/ui";
 import type { Explanation } from "@/lib/contracts.gen";
 import { BCP47, type Locale } from "@/lib/i18n";
-import { presetLabel, useLabels } from "@/lib/labels";
+import { useLabels, usePresetLabel } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
 import { formatPeriod } from "@/lib/period";
 
@@ -17,6 +17,7 @@ export function MethodExplainer({ explanation }: { explanation: Explanation }) {
   const format = useFormatter();
   const qualityNote = useQualityNote();
   const labels = useLabels();
+  const presetName = usePresetLabel();
   const formatDate = (iso: string) => {
     const d = new Date(iso);
     return Number.isNaN(d.getTime()) ? iso : format.dateTime(d, { day: "numeric", month: "short", year: "numeric" });
@@ -28,7 +29,7 @@ export function MethodExplainer({ explanation }: { explanation: Explanation }) {
     <Card
       testId="explainer"
       title={t("title", { name: explanation.name, score: explanation.overall?.toFixed(0) ?? "–" })}
-      subtitle={t("subtitle", { preset: presetLabel(labels, explanation.preset, tw("adjusted")) })}
+      subtitle={t("subtitle", { preset: presetName(explanation.preset) })}
     >
       <ul>
         {explanation.contributions.map((c) => (

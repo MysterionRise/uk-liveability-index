@@ -6,7 +6,7 @@ import { Fragment, useState } from "react";
 import { useData, useLiveability } from "@/components/AppData";
 import { Band, Card, Muted, ScoreBar, ValueWithUnit, formatValue, useQualityNote } from "@/components/ui";
 import type { AreaProfile, IndicatorValue } from "@/lib/contracts.gen";
-import { presetLabel, useLabels } from "@/lib/labels";
+import { useLabels, usePresetLabel } from "@/lib/labels";
 import { bboxOf } from "@/lib/state";
 
 function Facts({ items }: { items: IndicatorValue[] }) {
@@ -92,6 +92,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
   // Themes this nation declares it cannot score (shown as limited data)
   const gaps = new Set(manifest?.geography?.nations?.[profile.nation]?.theme_gaps ?? []);
   const labels = useLabels();
+  const presetName = usePresetLabel();
   const saved = state.shortlist.some((i) => i.code === profile.lsoa21cd);
   // Without a separate neighbourhood (a nation whose small areas are their own mid
   // tier) the area itself heads the card beside its council
@@ -116,7 +117,7 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
           {profile.overall?.toFixed(0) ?? "–"}
         </span>
         <span className="text-xs text-[var(--text-muted)]">
-          {t("overallOf100", { preset: presetLabel(labels, profile.preset, tw("adjusted")) })}
+          {t("overallOf100", { preset: presetName(profile.preset) })}
         </span>
       </div>
       <div className="mt-1">
