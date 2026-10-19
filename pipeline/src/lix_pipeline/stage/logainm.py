@@ -22,27 +22,32 @@ SLUG = "logainm"
 
 
 def _main_name(record: dict, language: str) -> str | None:
-    names = [n for n in record.get("Placenames") or [] if (n.get("Language") or "") == language]
-    chosen = next((n for n in names if n.get("Main")), names[0] if names else None)
-    return (chosen or {}).get("Wording") or None
+    names = [n for n in record.get("placenames") or [] if (n.get("language") or "") == language]
+    chosen = next((n for n in names if n.get("main")), names[0] if names else None)
+    return (chosen or {}).get("wording") or None
 
 
 def parse_places(records: list[dict]) -> pl.DataFrame:
-    """Logainm records → place_id, name_en, name_ga, category, lat, lon, extent."""
+    """Logainm records → place_id, name_en, name_ga, category, lat, lon, extent.
+
+    The API's fields are camel-cased (``placenames``, ``geography.coordinates``,
+    ``northernIreland.extent``); a place can carry several English spellings, and the
+    one marked main is taken.
+    """
     rows = []
     for r in records:
-        coords = (r.get("Geography") or {}).get("Coordinates") or []
+        coords = (r.get("geography") or {}).get("coordinates") or []
         point = coords[0] if coords else {}
-        categories = r.get("Categories") or []
+        categories = r.get("categories") or []
         rows.append(
             {
-                "place_id": r.get("ID"),
+                "place_id": r.get("id"),
                 "name_en": _main_name(r, "en"),
                 "name_ga": _main_name(r, "ga"),
-                "category": (categories[0] or {}).get("NameEN") if categories else None,
-                "lat": point.get("Latitude"),
-                "lon": point.get("Longitude"),
-                "extent": (r.get("NorthernIreland") or {}).get("Extent"),
+                "category": (categories[0] or {}).get("nameEN") if categories else None,
+                "lat": point.get("latitude"),
+                "lon": point.get("longitude"),
+                "extent": (r.get("northernIreland") or {}).get("extent"),
             }
         )
     schema = {

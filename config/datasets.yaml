@@ -2439,7 +2439,7 @@ logainm:
     page_param: Page
     per_page_param: PerPage
     per_page: 1000
-    items_key: Results
+    items_key: results
   format: json
   landing_page: https://www.logainm.ie/en/about/open-data
   description: Every place in Northern Ireland in the Placenames Database of Ireland, with its Irish and English names, category and coordinates, for the Irish names of settlements.

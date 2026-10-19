@@ -1667,6 +1667,13 @@
     }
   },
   "logainm": {
+    "fetched": {
+      "bytes": 1060172,
+      "fetched_at": "2026-10-19T11:21:08+00:00",
+      "rows": 402,
+      "sha256": "44dd5db7de0f01e72f718568abd99fdca56995b90f1aef7777bf0ac0dde5696e",
+      "version": "https://www.logainm.ie/api/v1.0/?NorthernIreland=true"
+    },
     "resolved": {
       "resolved_at": "2026-10-15T10:30:55+00:00",
       "url": "https://www.logainm.ie/api/v1.0/?NorthernIreland=true",
@@ -2496,6 +2503,32 @@
       "title": "Management information - state-funded schools - latest inspections as at 31 August 2026",
       "url": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv",
       "version": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv"
+    }
+  },
+  "open_charge_map_gb": {
+    "fetched": {
+      "bytes": 115750401,
+      "fetched_at": "2026-10-19T11:18:39.229576+00:00",
+      "sha256": "a8a62502ece32b60bfd07c8232bb2dbf402ef881ad628c8252da438544c5cc05",
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-19T11:18:35+00:00",
+      "url": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json",
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json"
+    }
+  },
+  "open_charge_map_ie": {
+    "fetched": {
+      "bytes": 8493892,
+      "fetched_at": "2026-10-19T11:18:40.749116+00:00",
+      "sha256": "ee51e933b6ccf49d1ba903d02f16f4de55c9f7603a2e66b35549a1f2c4e94141",
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-19T11:18:40+00:00",
+      "url": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json",
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json"
     }
   },
   "orr_station_attributes": {

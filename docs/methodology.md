@@ -364,7 +364,7 @@ Division (the Small Area layer carries premise counts only); Met Éireann's 1991
 1 km grids for the summer maximum and winter minimum temperatures and the annual rainfall,
 which stands in for wet days (no rain-day or sunshine grid is published); GP surgeries,
 dentists and pharmacies, parks, play spaces and allotments from OpenStreetMap (the HSE
-publishes no current lists); charging sites from OpenStreetMap and ESB's network; the
+publishes no current lists); charging sites from OpenStreetMap, ESB's network and Open Charge Map; the
 National Inventory of Architectural Heritage at regional rating or above, standing in for
 the councils' Records of Protected Structures, which have no national open file; and a
 curated list of the 27 emergency departments and 7 injury units. Schools (no results or inspection grades) and housing (no neighbourhood

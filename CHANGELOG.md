@@ -32,7 +32,9 @@ All notable changes to this project. The format follows
   OpenStreetMap everywhere, ESB's network across the island of Ireland, and Open Charge
   Map's openly licensed locations when a build has a key (`OCM_API_KEY`, the second user
   of the `api_key` access type); a site within 50 m of one already kept is the same site,
-  and the map's charger points name their source (#35, #124).
+  and the map's charger points name their source (#35, #124). The released pack is built
+  with the key: 34,771 charging sites across the five nations, 25,216 of them from Open
+  Charge Map (its own contributors and the UK's National Chargepoint Registry).
 - **Play spaces in Ireland** from OpenStreetMap playgrounds, as in Northern Ireland, so
   parks, play spaces and allotments have the same stand-in across the island (#77).
 - **Feature layers by URL.** The registry's new `arcgis_layer` access type fetches a
@@ -52,6 +54,14 @@ All notable changes to this project. The format follows
   urban/rural class (`overall_percentile_urban_rural`, per theme too), and the card follows
   "compare against: areas of the same urban/rural type" as it already followed the nation
   (#131).
+
+### Fixed
+
+- **Logainm never answered.** The Placenames Database's API returns camel-cased fields
+  (`results`, `placenames`, `geography.coordinates`), not the capitalised ones the v0.5.0
+  fetcher and stager expected, so a keyed build saved an empty page and no place took an
+  Irish name from it. Both read the real fields now: 395 Northern Irish places carry
+  Logainm's Irish form in the pack.
 
 ## [0.5.1] - 2026-10-18
 

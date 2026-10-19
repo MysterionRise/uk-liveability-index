@@ -1,8 +1,8 @@
 {
   "schema_version": 5,
-  "generated_at": "2026-10-18T21:21:01+00:00",
+  "generated_at": "2026-10-19T11:30:02+00:00",
   "data_release": null,
-  "data_to": "2026-10-18",
+  "data_to": "2026-10-19",
   "geography": {
     "build": {
       "working_crs": 27700,
@@ -8065,10 +8065,15 @@
         "S",
         "N"
       ],
-      "version": null,
-      "fetched_version": null,
-      "fetched_at": null,
-      "period": null,
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json",
+      "fetched_version": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json",
+      "fetched_at": "2026-10-19T11:18:39.229576+00:00",
+      "period": {
+        "label": "downloaded 19 October 2026",
+        "start": "2026-10-19",
+        "end": "2026-10-19",
+        "kind": "day"
+      },
       "cadence": "daily",
       "stale_reason": "none",
       "stale": false
@@ -8080,10 +8085,15 @@
       "coverage": [
         "I"
       ],
-      "version": null,
-      "fetched_version": null,
-      "fetched_at": null,
-      "period": null,
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json",
+      "fetched_version": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json",
+      "fetched_at": "2026-10-19T11:18:40.749116+00:00",
+      "period": {
+        "label": "downloaded 19 October 2026",
+        "start": "2026-10-19",
+        "end": "2026-10-19",
+        "kind": "day"
+      },
       "cadence": "daily",
       "stale_reason": "none",
       "stale": false
@@ -9303,28 +9313,28 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "7d5e4b3d4a9dcf79a3a8aa1c54c3514a95d754a2c1e43a3d2d54fdfb61313856",
-      "bytes": 3869730
+      "sha256": "101edc37a205b31b3bab4dc9ca7d3cfa945f054c9b5a20e5313fe4d1122779d0",
+      "bytes": 3880461
     },
     "scores.parquet": {
-      "sha256": "18311e8c390640d4763fe9ae898d8c46bccfac43832106d561c1427df149fd6c",
-      "bytes": 711829
+      "sha256": "d458608bb9e6dbea89bec9fefd87cb9fb3508c862973dd3c162f2f72b7148ca2",
+      "bytes": 715271
     },
     "postcodes.parquet": {
       "sha256": "616cc2d19f081c66f43a1adf19a172368c8edd21044a2c8f55fe107f6bff1125",
       "bytes": 1406542
     },
     "places.parquet": {
-      "sha256": "6b27f4eff8e01f5ac9730167ac1da62c82058e57d1242fe1dbec6c5ab54d9bd7",
-      "bytes": 34859
+      "sha256": "5bd0b14784568c0479f594dce196ad759a429625dbf09eafa14fbef07b79e36d",
+      "bytes": 34958
     },
     "areas.parquet": {
-      "sha256": "2b0b5ac420531022b91430b91fa36bcbb42875929dfa7ed89fad641403936193",
-      "bytes": 34160
+      "sha256": "d5a90b38571752143a2b13f30d95c116e6edf1750c398f9fa17d18e629a4dc8f",
+      "bytes": 34098
     },
     "pois.parquet": {
-      "sha256": "7b3870eacc250b316a140991f46919369308870d26f6c247c4352de94cf8f48c",
-      "bytes": 2031803
+      "sha256": "11bafa1454f91a326e7eeb3ea80b5c78cbcdeb41f16aec8d0a29ced2e20870c3",
+      "bytes": 2088030
     }
   },
   "correlations": {
