@@ -3,6 +3,7 @@ import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { bandVar } from "@/lib/colors";
+import { useCoverageOf } from "@/lib/copy";
 import { formatValue, pctRank, unitSuffix } from "@/lib/format";
 import { useLabels } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
@@ -72,8 +73,9 @@ export function ScoreBar({
   );
 }
 
-export function Band({ band, percentile, nationOf }: { band?: number | null; percentile?: number | null; nationOf?: string }) {
+export function Band({ band, percentile, nationOf, urbanRural }: { band?: number | null; percentile?: number | null; nationOf?: string; urbanRural?: boolean }) {
   const t = useTranslations("Band");
+  const coverageOf = useCoverageOf();
   if (!band) return null;
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-2 py-0.5 text-xs text-[var(--text-secondary)]">
@@ -88,7 +90,13 @@ export function Band({ band, percentile, nationOf }: { band?: number | null; per
       </span>
       {t(String(Math.min(5, Math.max(1, band))) as "1" | "2" | "3" | "4" | "5")}
       {percentile != null &&
-        ` · ${nationOf ? t("betterThanNation", { pct: pctRank(percentile), nationOf }) : t("betterThan", { pct: pctRank(percentile) })}`}
+        ` · ${
+          urbanRural
+            ? t("betterThanUrbanRural", { pct: pctRank(percentile) })
+            : nationOf
+              ? t("betterThanNation", { pct: pctRank(percentile), nationOf })
+              : t("betterThan", { pct: pctRank(percentile), of: coverageOf })
+        }`}
     </span>
   );
 }

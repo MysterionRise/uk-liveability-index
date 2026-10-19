@@ -108,7 +108,7 @@ serves the data files under `/data`, sends `/api/v1`, `/health` and `/mcp` to th
 everything else to the web app, so the same images work on any host.
 
 The data pack: `make data-pack` on a machine with a full build writes
-`dist/lix-serve.tar.gz` (about 140 MB, with the licence notices). Packs ship as monthly
+`dist/lix-serve.tar.gz` (about 250 MB, with the licence notices). Packs ship as monthly
 data releases separate from code releases ([docs/data-releases.md](data-releases.md)):
 `make data-download` fetches the newest one the checkout's serve schema can read
 (`DATA_TAG=data-2026-10` picks one) and `make data-unpack` restores a pack you have.
@@ -173,7 +173,11 @@ uv run lix stage --all
 uv run lix resolve --check --all      # is every source still reachable?
 ```
 
-Set `LIX_DATA_DIR` to keep data somewhere other than `./data`.
+Set `LIX_DATA_DIR` to keep data somewhere other than `./data`. A one-nation build for
+development (`LIX_NATIONS=I` while Ireland was added) is easiest in its own data root
+with the raw downloads shared: `mkdir data-ie && ln -s ../data/raw data-ie/raw && ln -s
+../data/manual data-ie/manual`, then `LIX_DATA_DIR=$PWD/data-ie LIX_NATIONS=I lix stage
+--all`; the staged tables of the full build stay untouched.
 
 ## Refreshing the data
 

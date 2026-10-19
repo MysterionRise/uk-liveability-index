@@ -27,7 +27,10 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nspl",
         *LOW_BOUNDARIES,
     ],
-    "population": ["pop_lsoa_mye", "nrs_sape", "nisra_sdz_mye"],
+    "population": ["pop_lsoa_mye", "nrs_sape", "nisra_sdz_mye", "cso_saps22_sa"],
+    # Home points: UK postcodes from the NSPL, Irish building centroids placed in their
+    # Small Areas
+    "homes": ["nspl", "te_buildings", *LOW_BOUNDARIES],
     "geo_lsoa": [
         "oa_lookup",
         "msoa_names",
@@ -50,6 +53,12 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nisra_dz21_lookup",
         "nisra_sdz_mye",
         "council_names_ga",
+        # Ireland (geo_ie): Small Areas, divisions, councils, the census, the curated list
+        "cso_sa22_boundaries",
+        "cso_ed22_boundaries",
+        "te_admin_areas",
+        "cso_saps22_sa",
+        "ie_local_authorities",
     ],
     "oa_lookup": ["oa_lookup", "nrs_oa22_lookup", "nisra_dz21_lookup"],
     # Super Output Area 2001 → Super Data Zone 2021 weights (NIMDM and the capital
@@ -63,25 +72,41 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "ukcp_hot_days": ["ukcp_hot_days", "nisra_dz21_lookup"],
     "dz11_dz22": ["simd_postcode_lookup", "nrs_oa22_population", "nspl"],
     "places": ["os_open_names", "osm_ireland", "place_names_i18n", *LOW_BOUNDARIES],
-    "defra_pcm_no2": ["defra_pcm_no2", "nspl"],
-    "defra_pcm_pm25": ["defra_pcm_pm25", "nspl"],
-    "defra_pcm_pm10": ["defra_pcm_pm10", "nspl"],
-    "ods_gp": ["ods_gp", "phs_gp_practices", "bso_gp_list_sizes", "nspl"],
+    "defra_pcm_no2": ["defra_pcm_no2", "eea_aq_no2", "nspl"],
+    "defra_pcm_pm25": ["defra_pcm_pm25", "eea_aq_pm25", "nspl"],
+    "defra_pcm_pm10": ["defra_pcm_pm10", "eea_aq_pm10", "nspl"],
+    "ods_gp": ["ods_gp", "phs_gp_practices", "bso_gp_list_sizes", "nspl", *LOW_BOUNDARIES],
     "gias": ["gias", *LOW_BOUNDARIES],
     "fsa_fhrs": ["fsa_fhrs", "nspl", *LOW_BOUNDARIES],
     "overture_pubs": ["overture_pubs", *LOW_BOUNDARIES],
     "osm_pois": ["osm_*"],
-    "ods_dentists": ["ods_dentists", "phs_dentists", "bso_dental", "nspl"],
+    "ods_dentists": ["ods_dentists", "phs_dentists", "bso_dental", "nspl", *LOW_BOUNDARIES],
     "ae_sites": ["ae_sites", "nspl", *LOW_BOUNDARIES],
+    "chargers": ["esb_ev_sites", "open_charge_map_gb", "open_charge_map_ie", *LOW_BOUNDARIES],
+    "heritage": [
+        "nhle_listed",
+        "cadw_listed",
+        "hes_listed",
+        "dfc_listed",
+        "niah_buildings",
+        *LOW_BOUNDARIES,
+    ],
+    "radon": ["bgs_radon_gb", "bgs_radon_ni", "epa_radon"],
     # PSNI records carry no LSOA code and are placed by their coordinates
-    "police_crime": ["police_crime", *LOW_BOUNDARIES],
+    "police_crime": [
+        "police_crime",
+        *LOW_BOUNDARIES,
+        "cso_cja11",
+        "cso_garda_subdistricts",
+        "garda_station_aliases",
+    ],  # fmt: skip
     "nhsbsa_pharmacies": ["nhsbsa_pharmacies", "nspl"],
     "ofsted_childcare": ["ofsted_childcare", "nspl"],
     "care_inspectorate": ["care_inspectorate", "nspl"],
     "sg_schools": ["sg_school_roll", *LOW_BOUNDARIES],
     "sg_attainment": ["sg_attainment"],
     "ea_flood_postcodes": ["ea_flood_postcodes", "nspl"],
-    "ofcom_broadband": ["ofcom_broadband", "oa_lookup"],
+    "ofcom_broadband": ["ofcom_broadband", "oa_lookup", "comreg_gigabit", "cso_sa22_boundaries"],
     "wg_schools": ["wg_schools", *LOW_BOUNDARIES],
     "schools": ["gias", "wg_schools", "sg_school_roll", *LOW_BOUNDARIES],
     "de_schools": [
@@ -91,7 +116,7 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nspl",
     ],
     "os_greenspace": ["os_greenspace", "osm_ireland", *LOW_BOUNDARIES],
-    "naptan": ["naptan", "translink_rail_txc"],
+    "naptan": ["naptan", "translink_rail_txc", "nta_gtfs"],
     "childcare": [
         "ofsted_childcare",
         "care_inspectorate",
@@ -122,12 +147,21 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "tree_cover": ["esa_worldcover", "nspl"],
     "os_open_uprn": ["os_open_uprn", *LOW_BOUNDARIES],
     "night_lights": ["viirs_vnl", "nspl"],
-    "climate": ["haduk_grid", "nspl"],
+    "climate": ["haduk_grid", "nspl", "met_eireann_temp_9120", "met_eireann_rr_9120"],
     "noise": ["*_noise_*_lden", "daera_noise_r3", "nspl"],
-    "deprivation": ["iod_2025", "wimd_*", "simd_*", "nimdm_2017", "nrs_oa22_population", "nspl"],
+    "deprivation": [
+        "iod_2025",
+        "wimd_*",
+        "simd_*",
+        "nimdm_2017",
+        "nrs_oa22_population",
+        "nspl",
+        "pobal_hp_2022",
+        "cso_sa22_boundaries",
+    ],  # fmt: skip
     "voa_ctsop": ["voa_ctsop", "nrs_dwellings_by_band", "lps_capital_value_bands"],
     "council_tax": ["council_tax", "wg_council_tax", "sg_council_tax", "ni_domestic_rates"],
-    "bods_gtfs": ["bods_gtfs*", "translink_*_txc"],
+    "bods_gtfs": ["bods_gtfs*", "translink_*_txc", "nta_gtfs"],
     "stats19": ["stats19", "psni_collisions_*"],
     "orr_stations": ["orr_station_usage", "orr_station_attributes"],
     "wg_ks4_la": ["wg_ks4_la"],
@@ -153,15 +187,19 @@ STAGE_INPUTS: dict[str, list[str]] = {
 
 # Staged tables each stager reads (the stager → staged-table edges of the graph)
 STAGE_READS: dict[str, list[str]] = {
-    "geo_lsoa": ["nspl", "population"],
+    "homes": ["nspl"],
+    "police_crime": ["geo_lsoa"],  # Ireland: Small Area centroids and populations
+    "geo_lsoa": ["nspl", "population", "homes"],
     "dz11_dz22": ["nspl"],
     "price_paid": ["nspl", "geo_lsoa", "dz11_dz22"],  # Scotland: crosswalk and IZ fallback
-    "defra_pcm_no2": ["nspl"],
-    "defra_pcm_pm25": ["nspl"],
-    "defra_pcm_pm10": ["nspl"],
-    "ods_gp": ["nspl"],
-    "ods_dentists": ["nspl"],
+    "defra_pcm_no2": ["homes"],
+    "defra_pcm_pm25": ["homes"],
+    "defra_pcm_pm10": ["homes"],
+    "ods_gp": ["nspl", "osm_pois"],  # Ireland: surgeries and clinics from OpenStreetMap
+    "ods_dentists": ["nspl", "osm_pois"],
     "ae_sites": ["nspl"],
+    "chargers": ["osm_pois"],
+    "radon": ["homes"],
     "nhsbsa_pharmacies": ["nspl"],
     "ofsted_childcare": ["nspl"],
     "fsa_fhrs": ["nspl"],
@@ -179,10 +217,10 @@ STAGE_READS: dict[str, list[str]] = {
     "ofcom_broadband": ["oa_lookup"],
     "council_tax": ["geo_lsoa"],
     "flood": ["ea_flood_all_postcodes", "ea_flood_postcodes", "os_open_uprn", "voa_ctsop"],
-    "noise": ["nspl"],
-    "tree_cover": ["nspl"],
-    "night_lights": ["nspl"],
-    "climate": ["nspl"],
+    "noise": ["homes"],
+    "tree_cover": ["homes"],
+    "night_lights": ["homes"],
+    "climate": ["homes"],
     "deprivation": ["iod_2025", "dz11_dz22", "soa01_sdz21"],
 }
 
@@ -215,17 +253,21 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
 
     from lix_core.config import load_registry
     from lix_pipeline.stage import (
+        chargers,
         childcare,
         climate,
         community,
         environment,
         geo,
         health,
+        heritage,
+        homes,
         housing,
         landcover,
         logainm,
         night_lights,
         noise,
+        radon,
         safety,
         schools,
         transport,
@@ -250,11 +292,12 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "nspl": stage_nspl,
         "iod_2025": stage_iod,
         "population": stage_population,
+        "homes": homes.stage_homes,  # needs staged nspl; Ireland reads raw buildings
         "oa_lookup": geo.stage_oa_lookup,
         "lsoa11_lsoa21": geo.stage_lsoa11_lsoa21,
         "dz11_dz22": geo.stage_dz11_dz22,  # Scotland: needs staged nspl
         "soa01_sdz21": geo.stage_soa01_sdz21,  # Northern Ireland: raw NISRA files only
-        "geo_lsoa": geo.stage_geo_lsoa,  # needs staged nspl and population
+        "geo_lsoa": geo.stage_geo_lsoa,  # needs staged nspl, population and homes
         "places": geo.stage_places,
         "price_paid": stage_price_paid,
         **census,
@@ -264,6 +307,9 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "gp_registrations": health.stage_gp_registrations,
         "gp_workforce": health.stage_gp_workforce,
         "ae_sites": health.stage_ae_sites,
+        "chargers": chargers.stage_chargers,  # needs staged osm_pois
+        "heritage": heritage.stage_heritage,
+        "radon": radon.stage_radon,  # needs staged homes
         "gias": schools.stage_gias,
         "wg_schools": schools.stage_wg_schools,
         "sg_schools": schools.stage_sg_schools,

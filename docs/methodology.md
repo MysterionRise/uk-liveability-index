@@ -1,8 +1,8 @@
 # Methodology
 
-How the UK Liveability Index turns open data into a score for each of the 43,914
-neighbourhoods of the UK (2021 LSOAs in England and Wales; 2022 Data Zones in
-Scotland; 2021 Super Data Zones in Northern Ireland). The indicator list
+How the UK Liveability Index turns open data into a score for each of the 62,833
+neighbourhoods of the UK and Ireland (2021 LSOAs in England and Wales; 2022 Data Zones
+in Scotland; 2021 Super Data Zones in Northern Ireland; 2022 Small Areas in Ireland). The indicator list
 itself lives in [`config/indicators.yaml`](../config/indicators.yaml), the presets in
 [`config/weights.yaml`](../config/weights.yaml), the nations in
 [`config/nations.yaml`](../config/nations.yaml), and the sources in
@@ -12,9 +12,14 @@ itself lives in [`config/indicators.yaml`](../config/indicators.yaml), the prese
 
 In England and Wales the unit is the Lower Layer Super Output Area (1,000–3,000
 residents, 1,600 on average); in Scotland the Data Zone 2022 (500–1,000, 750 on
-average). Both are stable between censuses and the smallest unit most official
+average); in Northern Ireland the Super Data Zone 2021 (about 2,200); in Ireland the
+Census 2022 Small Area (80–120 dwellings, 270 residents on average, the smallest unit
+the CSO publishes). All are stable between censuses and the smallest unit most official
 statistics use, and the code column is `lsoa21cd` throughout whatever a nation calls its
-areas. Scores describe an area as a whole, not any one street or household in it; the
+areas. Ireland's published Small Area ids carry "/" for areas split or merged since 2016,
+so its codes are minted here (`I01` and a six-digit rank: `I01000001`…, with the
+Electoral Divisions as `I02`… and the councils as `I06`…) and the publisher's id travels
+with every area as `source_code`. Scores describe an area as a whole, not any one street or household in it; the
 interface calls them small areas, data zones and neighbourhoods according to the nation
 (`levels` in `config/nations.yaml`).
 
@@ -138,9 +143,10 @@ recording practices, inspection frameworks and school results, deprivation indic
 the nation, so a Welsh neighbourhood's crime score says where it stands among Welsh
 neighbourhoods. The profile shows which benchmark each indicator uses.
 
-Theme and overall percentiles are reported both ways: against every scored
-neighbourhood (the headline, and the band) and within the nation ("compare against"
-on the map and in profiles). Scores themselves do not change with the comparison.
+Theme and overall percentiles are reported three ways: against every scored
+neighbourhood (the headline, and the band), within the nation and within the urban/rural
+class ("compare against" on the map and in profiles). Scores themselves do not change
+with the comparison.
 
 Nations are offset from one another where they do not measure the same things. A theme
 built from fewer indicators is not a lower one, but it is a different one: Scotland's
@@ -330,20 +336,56 @@ through LPS, so flood risk is not available in Northern Ireland. Irish names com
 OpenStreetMap's `name:ga` tags, a curated Wikidata list of the councils and the largest
 towns, and, with a free key, Logainm.
 
+Ireland (v0.6.0): the fifth nation and the second country of the index. The unit is the
+Census 2022 Small Area (18,919), grouped into the CSO's 3,417 Electoral Divisions and the
+31 local authorities (Tailte Éireann's boundaries, on the Irish Transverse Mercator and
+reprojected; a census file's 34 pre-2014 county codes fold into the councils through a
+curated list). There is no open postcode file (Eircode is licensed), so homes are the
+centroids of Tailte Éireann's building footprints between 20 and 1,000 m² (3.3 million of
+3.8 million; the median Dublin dwelling footprint is about 70 m²), a Small Area's centroid
+is the mean of its home points, and the method difference with the UK's address-based
+postcodes is the main caveat on Irish access measures. Sources shared with the UK already
+reached Ireland (ESA WorldCover, VIIRS, the OpenStreetMap island extract). Irish sources:
+the Census 2022 Small Area Population Statistics (populations and the CSO's six-class
+urban/rural classification); the Pobal HP Deprivation Index 2022, published by Electoral
+Division and broadcast to its Small Areas, which stands in for the income deprivation
+share (the index has no income domain) with its unemployment rates as the employment
+context; the CSO's recorded crime by Garda station (statistics under reservation), spread
+over the Census 2011 Garda sub-district of each station in proportion to population, with
+the station names that changed since 2011 matched through a curated list and "theft and
+related offences" counted as theft in full (benchmarked within Ireland); the EEA's 1 km
+interpolated maps of Europe for NO₂ and PM2.5 (sampled at the home points, reprojected to
+the European grid), where the UK has Defra's model; the EPA's Round 4 noise contours for
+roads, railways, airports and industry, and its radon map (10 km squares, so an area is
+wholly in or out of a High Radon Area); Transport for Ireland's GTFS
+feed for bus frequency (scored as the connectivity substitute, since Ireland has no
+connectivity metric) and the rail and Luas stops; ComReg's gigabit coverage by Electoral
+Division (the Small Area layer carries premise counts only); Met Éireann's 1991–2020
+1 km grids for the summer maximum and winter minimum temperatures and the annual rainfall,
+which stands in for wet days (no rain-day or sunshine grid is published); GP surgeries,
+dentists and pharmacies, parks, play spaces and allotments from OpenStreetMap (the HSE
+publishes no current lists); charging sites from OpenStreetMap, ESB's network and Open Charge Map; the
+National Inventory of Architectural Heritage at regional rating or above, standing in for
+the councils' Records of Protected Structures, which have no national open file; and a
+curated list of the 27 emergency departments and 7 injury units. Schools (no results or inspection grades) and housing (no neighbourhood
+prices or property tax) are declared gaps: limited data, outside the Irish overall.
+Irish names of divisions and areas come from Tailte Éireann's files, of councils from
+the curated list, and of places from OpenStreetMap.
+
 How much of each theme's scored weight a nation can have, counting a substitute against
 what it replaces (the coverage gate, `lix validate config`):
 
-| Theme | England | Wales | Scotland | Northern Ireland |
-|---|---|---|---|---|
-| Safety | 100% | 100% | 52% | 100% |
-| Environment | 100% | 100% | 100% | 82% |
-| Health services | 100% | 63% | 63% | 63% |
-| Schools | 100% | 67% | 67% | gap |
-| Transport | 100% | 100% | 100% | 75% |
-| Amenities | 100% | 100% | 100% | 100% |
-| Housing | 100% | 100% | 100% | 100% |
-| Community | 100% | 100% | 100% | 100% |
-| Climate | 100% | 100% | 100% | 100% |
+| Theme | England | Wales | Scotland | Northern Ireland | Ireland |
+|---|---|---|---|---|---|
+| Safety | 100% | 100% | 52% | 100% | 86% |
+| Environment | 100% | 100% | 100% | 82% | 82% |
+| Health services | 100% | 63% | 63% | 63% | 63% |
+| Schools | 100% | 67% | 67% | gap | gap |
+| Transport | 100% | 100% | 100% | 75% | 58% |
+| Amenities | 100% | 100% | 100% | 100% | 78% |
+| Housing | 100% | 100% | 100% | 100% | gap |
+| Community | 100% | 100% | 100% | 100% | 50% |
+| Climate | 100% | 100% | 100% | 100% | 71% |
 
 An area's theme score is the weighted mean of the indicators its nation has, so a thinner
 theme is not a lower one (see the offsets under [benchmarks](#benchmarks-the-whole-country-or-the-nation));

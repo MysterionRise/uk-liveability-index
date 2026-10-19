@@ -22,7 +22,16 @@
     "of_E": "de Shasainn",
     "of_W": "den Chuimrigh",
     "of_S": "de dh'Alba",
-    "of_N": "de dh'Èirinn a Tuath"
+    "of_N": "de dh'Èirinn a Tuath",
+    "I": "Èirinn",
+    "IE": "Èirinn",
+    "in_I": "ann an Èirinn",
+    "in_uk_I": "san RA agus ann an Èirinn",
+    "of": "de",
+    "of_uk": "den RA",
+    "of_I": "de dh'Èirinn",
+    "of_uk_I": "den RA agus de dh'Èirinn",
+    "of_E_W": "de Shasainn agus a' Chuimrigh"
   },
   "Header": {
     "title": "Clàr-amais Càileachd Beatha na RA",
@@ -135,7 +144,8 @@
     "profileByRules": "Air a thogail le bhith a' maidseadh fhaclan (cha deach modail cànain a chleachdadh).",
     "clearProfile": "Falamhaich a' phròifil",
     "profileBusy": "Tha togalaiche nam pròifilean trang an-dràsta; feuch a-rithist ann am mionaid.",
-    "profileError": "Cha b' urrainn pròifil a thogail: {detail}"
+    "profileError": "Cha b' urrainn pròifil a thogail: {detail}",
+    "contextIndicators": "Tomhasan co-theacsa"
   },
   "Band": {
     "1": "Còigeamh as ìsle",
@@ -143,8 +153,9 @@
     "3": "Meadhan",
     "4": "Os cionn na h-àbhaist",
     "5": "Còigeamh as àirde",
-    "betterThan": "nas fheàrr na {pct, number}% den RA",
-    "betterThanNation": "nas fheàrr na {pct, number}% {nationOf}"
+    "betterThan": "nas fheàrr na {pct, number}% {of}",
+    "betterThanNation": "nas fheàrr na {pct, number}% {nationOf}",
+    "betterThanUrbanRural": "nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach"
   },
   "Quality": {
     "imputed": "tuairmse",
@@ -167,8 +178,8 @@
     "noData": "Gun dàta"
   },
   "Map": {
-    "hover": "{name}: nas fheàrr na {pct, number}% den RA",
-    "hoverNoName": "nas fheàrr na {pct, number}% den RA",
+    "hover": "{name}: nas fheàrr na {pct, number}% {of}",
+    "hoverNoName": "nas fheàrr na {pct, number}% {of}",
     "hoverIn": "{name}: nas fheàrr na {pct, number}% de na sgìrean {coverageIn}",
     "hoverInNoName": "nas fheàrr na {pct, number}% de na sgìrean {coverageIn}",
     "overall": "Iomlan",
@@ -177,7 +188,8 @@
     "hoverNation": "{name}: nas fheàrr na {pct, number}% de a nàisean",
     "hoverNationNoName": "nas fheàrr na {pct, number}% de a nàisean",
     "hoverUrbanRural": "{name}: nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach",
-    "hoverUrbanRuralNoName": "nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach"
+    "hoverUrbanRuralNoName": "nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach",
+    "layerUnavailable": "Chan urrainnear {layer} a mhapadh; a' sealltainn an sgòr iomlan"
   },
   "Docs": {
     "nav": "Sgrìobhainnean",
@@ -217,11 +229,11 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} luchd-còmhnaidh",
     "overallOf100": "/ 100 iomlan ({preset})",
-    "rangeTitle": "Raon 5–95% de cheudad na RA nuair a thèid cuideam gach cuspair a ghluasad mu chairteal",
-    "range": "Le cuideaman beagan eadar-dhealaichte: nas fheàrr na {lo, number}–{hi, number}% den RA",
-    "betterThan": "Nas fheàrr na {pct, number}% den RA",
+    "rangeTitle": "Raon 5–95% dhen cheudad nuair a thèid cuideam gach cuspair a ghluasad mu chairteal",
+    "range": "Le cuideaman beagan eadar-dhealaichte: nas fheàrr na {lo, number}–{hi, number}% {of}",
+    "betterThan": "Nas fheàrr na {pct, number}% {of}",
     "localMedian": "meadhanach {area}",
-    "ukMedian": "meadhanach na RA",
+    "ukMedian": "meadhanach {in}",
     "strengths": "Neartan",
     "weakerSpots": "Laigsean",
     "showOnMap": "Seall air a' mhapa",
@@ -234,7 +246,8 @@
     "betterThanNation": "Nas fheàrr na {pct, number}% {nationOf}",
     "nationMedian": "meadhanach {nation}",
     "limitedData": "Dàta cuingealaichte: chan eil an nàisean seo a' foillseachadh gu leòr airson a' chuspair seo, agus tha e air fhàgail a-mach às an iomlan",
-    "subtitleOwnTier": "{ruc} · {population, number} luchd-còmhnaidh"
+    "subtitleOwnTier": "{ruc} · {population, number} luchd-còmhnaidh",
+    "betterThanUrbanRural": "Nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach"
   },
   "Poi": {
     "titles": {

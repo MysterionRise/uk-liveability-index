@@ -22,7 +22,16 @@
     "of_E": "de Shasana",
     "of_W": "den Bhreatain Bheag",
     "of_S": "d'Albain",
-    "of_N": "de Thuaisceart Éireann"
+    "of_N": "de Thuaisceart Éireann",
+    "I": "Éire",
+    "IE": "Éire",
+    "in_I": "in Éirinn",
+    "in_uk_I": "sa RA agus in Éirinn",
+    "of": "de",
+    "of_uk": "den RA",
+    "of_I": "d'Éirinn",
+    "of_uk_I": "den RA agus d'Éirinn",
+    "of_E_W": "de Shasana agus den Bhreatain Bheag"
   },
   "Header": {
     "title": "Innéacs Inchónaitheachta na RA",
@@ -135,7 +144,8 @@
     "profileByRules": "Tógtha trí fhocail a mheaitseáil (níor úsáideadh samhail teanga).",
     "clearProfile": "Glan an phróifíl",
     "profileBusy": "Tá tógálaí na bpróifílí gnóthach faoi láthair; bain triail eile as i gceann nóiméid.",
-    "profileError": "Níorbh fhéidir próifíl a thógáil: {detail}"
+    "profileError": "Níorbh fhéidir próifíl a thógáil: {detail}",
+    "contextIndicators": "Bearta comhthéacs"
   },
   "Band": {
     "1": "An cúigiú is ísle",
@@ -143,8 +153,9 @@
     "3": "Meán",
     "4": "Os cionn an ghnáith",
     "5": "An cúigiú is airde",
-    "betterThan": "níos fearr ná {pct, number}% den RA",
-    "betterThanNation": "níos fearr ná {pct, number}% {nationOf}"
+    "betterThan": "níos fearr ná {pct, number}% {of}",
+    "betterThanNation": "níos fearr ná {pct, number}% {nationOf}",
+    "betterThanUrbanRural": "níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla"
   },
   "Quality": {
     "imputed": "meastachán",
@@ -167,8 +178,8 @@
     "noData": "Gan sonraí"
   },
   "Map": {
-    "hover": "{name}: níos fearr ná {pct, number}% den RA",
-    "hoverNoName": "níos fearr ná {pct, number}% den RA",
+    "hover": "{name}: níos fearr ná {pct, number}% {of}",
+    "hoverNoName": "níos fearr ná {pct, number}% {of}",
     "hoverIn": "{name}: níos fearr ná {pct, number}% de na ceantair {coverageIn}",
     "hoverInNoName": "níos fearr ná {pct, number}% de na ceantair {coverageIn}",
     "overall": "Iomlán",
@@ -177,7 +188,8 @@
     "hoverNation": "{name}: níos fearr ná {pct, number}% dá náisiún",
     "hoverNationNoName": "níos fearr ná {pct, number}% dá náisiún",
     "hoverUrbanRural": "{name}: níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla",
-    "hoverUrbanRuralNoName": "níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla"
+    "hoverUrbanRuralNoName": "níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla",
+    "layerUnavailable": "Ní féidir {layer} a mhapáil; an scór foriomlán á thaispeáint"
   },
   "Docs": {
     "nav": "Doiciméadú",
@@ -217,11 +229,11 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} cónaitheoir",
     "overallOf100": "/ 100 iomlán ({preset})",
-    "rangeTitle": "Raon 5–95% de pheircintíl na RA nuair a bhogtar ualach gach téama thart ar an gceathrú cuid",
-    "range": "Le hualaí beagán difriúil: níos fearr ná {lo, number}–{hi, number}% den RA",
-    "betterThan": "Níos fearr ná {pct, number}% den RA",
+    "rangeTitle": "Raon 5–95% den pheircintíl nuair a bhogtar ualach gach téama thart ar an gceathrú cuid",
+    "range": "Le hualaí beagán difriúil: níos fearr ná {lo, number}–{hi, number}% {of}",
+    "betterThan": "Níos fearr ná {pct, number}% {of}",
     "localMedian": "airmheán {area}",
-    "ukMedian": "airmheán na RA",
+    "ukMedian": "airmheán {in}",
     "strengths": "Láidreachtaí",
     "weakerSpots": "Laigí",
     "showOnMap": "Taispeáin ar an léarscáil",
@@ -234,7 +246,8 @@
     "betterThanNation": "Níos fearr ná {pct, number}% {nationOf}",
     "nationMedian": "airmheán {nation}",
     "limitedData": "Sonraí teoranta: ní fhoilsíonn an náisiún seo a dhóthain don téama seo, mar sin fágtar as an iomlán é",
-    "subtitleOwnTier": "{ruc} · {population, number} cónaitheoir"
+    "subtitleOwnTier": "{ruc} · {population, number} cónaitheoir",
+    "betterThanUrbanRural": "Níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla"
   },
   "Poi": {
     "titles": {

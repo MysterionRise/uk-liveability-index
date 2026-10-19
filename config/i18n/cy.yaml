@@ -45,6 +45,7 @@ units:
   years_income: "blynyddoedd o incwm"
   years: blynyddoedd
   people_km2: "pobl fesul km²"
+  per_km2: "y km²"
   radiance: "nW/cm²/sr"
   hours_year: "oriau y flwyddyn"
   days_year: "diwrnodau y flwyddyn"
@@ -78,10 +79,10 @@ indicators:
   crime_damage_disorder: {label: Difrod troseddol a threfn gyhoeddus, description: "Difrod troseddol, llosgi bwriadol a throseddau trefn gyhoeddus fesul 1,000 o drigolion y flwyddyn."}
   road_danger: {label: Gwrthdrawiadau ffordd difrifol gerllaw, description: "Gwrthdrawiadau ffordd lle lladdwyd neu anafwyd rhywun yn ddifrifol o fewn 500m i gartrefi, y flwyddyn (cyfartaledd 5 mlynedd)."}
   iod_crime: {label: Parth troseddu'r mynegai amddifadedd, description: Risg wedi'i modelu o erledigaeth bersonol a materol (data 2021–2023).}
-  no2: {label: Nitrogen deuocsid (NO₂), description: NO₂ cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra).}
-  pm25: {label: Gronynnau mân (PM2.5), description: PM2.5 cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra).}
+  no2: {label: Nitrogen deuocsid (NO₂), description: "NO₂ cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra; yn Iwerddon, map 1km yr EEA)."}
+  pm25: {label: Gronynnau mân (PM2.5), description: "PM2.5 cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra; yn Iwerddon, map 1km yr EEA)."}
   green_space_access: {label: Parciau a mannau gwyrdd gerllaw, description: "Mynedfeydd i barciau, gerddi a chaeau chwarae cyhoeddus o fewn 1km o gerdded, wedi'u pwysoli yn ôl pellter."}
-  play_spaces: {label: Mannau chwarae gerllaw, description: "Mynedfeydd i fannau chwarae cyhoeddus o fewn 800m i gartrefi, wedi'u pwysoli yn ôl pellter."}
+  play_spaces: {label: Mannau chwarae gerllaw, description: "Mynedfeydd i fannau chwarae cyhoeddus o fewn 800m i gartrefi, wedi'u pwysoli yn ôl pellter (yng Ngogledd Iwerddon ac Iwerddon, meysydd chwarae OpenStreetMap)."}
   flood_risk: {label: Cartrefi mewn perygl o lifogydd, description: "Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd, y môr neu ddŵr wyneb (siawns o 1% y flwyddyn o leiaf)."}
   flood_rivers_sea: {label: Cartrefi mewn perygl o afonydd neu'r môr, description: Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd neu'r môr yn unig (siawns o 1% y flwyddyn o leiaf).}
   road_rail_noise: {label: Cartrefi mewn sŵn ffyrdd neu reilffyrdd, description: "Cyfran y cartrefi lle mae sŵn ffyrdd neu reilffyrdd yn cyfartalu 60 dB Lden neu fwy dros y dydd, yr hwyr a'r nos, o'r mapiau sŵn strategol."}
@@ -106,6 +107,7 @@ indicators:
   connectivity_cycling: {label: Cysylltedd beicio, description: Sgôr cysylltedd yr Adran Drafnidiaeth ar gyfer beicio i bob cyrchfan.}
   station_distance: {label: Pellter i'r orsaf agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r orsaf reilffordd, metro neu dram agosaf."}
   bus_frequency: {label: Amlder bysiau, description: "Bysiau yr awr (dyddiau'r wythnos, 07:00–19:00) yn yr arhosfan brysuraf o fewn 400m i gartrefi."}
+  bus_access: {label: Gwasanaeth bws gerllaw, description: "Bysiau yr awr (dyddiau'r wythnos, 07:00–19:00) yn yr arhosfan prysuraf o fewn 400m i gartrefi, o amserlenni Transport for Ireland; yn sefyll yn lle'r sgôr cysylltedd nad oes gan Iwerddon."}
   gigabit_broadband: {label: Band eang gigabit, description: Cyfran y cartrefi sy'n gallu cael band eang galluog gigabit (ffeibr llawn neu gebl).}
   slow_broadband: {label: Cartrefi heb fand eang addas, description: Cyfran y cartrefi na allant gael band eang 10 Mbit/s o linell sefydlog neu ddi-wifr sefydlog.}
   well_run_pubs: {label: Tafarndai da gerllaw, description: "Tafarndai o fewn 15 munud o gerdded sydd â sgôr hylendid bwyd o 4 neu 5 o'r tair blynedd diwethaf, wedi'u pwysoli yn ôl pellter, gyda bonws bach am gwrw go iawn, bwyd neu seddi awyr agored."}
@@ -126,6 +128,7 @@ indicators:
   period_homes: {label: Cartrefi a adeiladwyd cyn 1919, description: Cyfran y cartrefi a adeiladwyd cyn 1919.}
   lower_band_homes: {label: Cartrefi ym mandiau treth gyngor A–B, description: Cyfran y cartrefi yn y ddau fand treth gyngor isaf (y cartrefi rhataf yng ngwerthoedd 1991).}
   income_deprivation: {label: Amddifadedd incwm, description: Cyfran y trigolion ar incwm isel (parth incwm y mynegai amddifadedd).}
+  pobal_deprivation: {label: Cyfoeth ac amddifadedd (mynegai Pobal HP), description: "Mynegai amddifadedd cymharol Pobal HP yr adran etholiadol o Gyfrifiad 2022 (diweithdra, addysg, dosbarth cymdeithasol, rhieni sengl, deiliadaeth a gorlenwi); mae uwch yn golygu mwy cefnog."}
   employment_deprivation: {label: Amddifadedd cyflogaeth, description: Cyfran y trigolion o oedran gweithio sydd allan o waith yn anwirfoddol (parth cyflogaeth y mynegai amddifadedd).}
   claimant_rate: {label: Cyfradd hawlwyr, description: "Trigolion sy'n hawlio budd-daliadau sy'n gysylltiedig â diweithdra, fel cyfran o'r rhai 16–64 oed (mis diweddaraf)."}
   household_income: {label: Incwm aelwydydd, description: "Incwm aelwyd net cymedrig yn yr ardal ehangach (MSOA), cyn costau tai."}
@@ -145,6 +148,7 @@ indicators:
   summer_warmth: {label: Cynhesrwydd yr haf, description: "Tymheredd uchaf dyddiol cyfartalog Mehefin i Awst, cyfartaledd 1991–2020 (°C)."}
   winter_mildness: {label: Tynerwch y gaeaf, description: "Tymheredd isaf dyddiol cyfartalog Rhagfyr i Chwefror, cyfartaledd 1991–2020 (°C)."}
   rainfall: {label: Glawiad, description: "Glawiad y flwyddyn mewn milimetrau, cyfartaledd 1991–2020."}
+  rainfall_total: {label: Glawiad blynyddol, description: "Glawiad cyfartalog y flwyddyn, 1991–2020, o grid 1 km Met Éireann; yn sefyll yn lle dyddiau gwlyb."}
   air_frost_days: {label: Diwrnodau o rew yn yr aer, description: "Diwrnodau y flwyddyn pan fo tymheredd yr aer yn disgyn o dan 0°C, cyfartaledd 1991–2020."}
   summer_days: {label: Diwrnodau o haf, description: "Diwrnodau y flwyddyn pan fo'r tymheredd yn cyrraedd 25°C, cyfartaledd 1991–2020."}
   wind_speed: {label: Gwynt, description: "Cyflymder cyfartalog y gwynt ar 10m, cyfartaledd 1991–2020."}
@@ -154,7 +158,9 @@ indicators:
   council_tax_typical: {label: Treth gyngor (cartref nodweddiadol yma), description: "Yr hyn mae cartref nodweddiadol yn yr ardal yn ei dalu mewn treth gyngor, tâl pob band wedi'i bwysoli yn ôl faint o gartrefi'r ardal sydd yn y band hwnnw."}
   gp_list_size: {label: Cleifion fesul practis meddyg teulu gerllaw, description: "Cleifion cofrestredig fesul practis yn y practisau meddyg teulu ger cartrefi, wedi'u pwysoli yn ôl pellter."}
   allotment_distance: {label: Pellter i'r rhandiroedd agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r rhandiroedd neu'r man tyfu cymunedol agosaf."}
-  ev_charging: {label: Pwyntiau gwefru cyhoeddus gerllaw, description: "Gorsafoedd gwefru cerbydau trydan cyhoeddus o fewn 1.5km i gartrefi, ar gyfartaledd (OpenStreetMap)."}
+  radon_potential: {label: Cartrefi mewn ardal radon uchel, description: "Cyfran y cartrefi mewn sgwariau grid lle disgwylir i fwy na 10% o gartrefi fod uwchlaw lefel weithredu radon (atlas dangosol BGS ac UKHSA; map radon yr EPA yn Iwerddon)."}
+  ev_charging: {label: Pwyntiau gwefru cyhoeddus gerllaw, description: "Safleoedd gwefru cerbydau trydan cyhoeddus o fewn 1.5km i gartrefi, ar gyfartaledd (OpenStreetMap, ESB ar ynys Iwerddon, Open Charge Map)."}
+  listed_buildings: {label: Adeiladau rhestredig gerllaw, description: "Adeiladau rhestredig o fewn 1km i gartrefi, fesul km² (Historic England, Cadw, Historic Environment Scotland a'r Adran Gymunedau; yn Iwerddon, y Rhestr Genedlaethol o Dreftadaeth Bensaernïol ar raddfa ranbarthol neu uwch)."}
 
 # What the interface calls each nation's areas (one, several)
 levels:
@@ -173,4 +179,8 @@ levels:
   N:
     low: {one: parth data uwch, other: parthau data uwch}
     mid: {one: parth data uwch, other: parthau data uwch}
+    upper: {one: cyngor, other: cynghorau}
+  I:
+    low: {one: ardal fach, other: ardaloedd bach}
+    mid: {one: rhaniad etholiadol, other: rhaniadau etholiadol}
     upper: {one: cyngor, other: cynghorau}

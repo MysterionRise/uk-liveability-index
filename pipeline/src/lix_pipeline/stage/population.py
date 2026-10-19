@@ -3,7 +3,9 @@
 England and Wales come from one ONS workbook with a ``Mid-YYYY LSOA 2021`` sheet per year
 (broad age groups by sex) and a median-age sheet; Scotland from NRS's small area
 population estimates, one workbook per year with single years of age by sex per Data
-Zone 2022. The latest year of each is kept. These are the denominators of every per-head
+Zone 2022; Northern Ireland from NISRA's Super Data Zone estimates; Ireland from the
+Census 2022 Small Area Population Statistics (no mid-year estimates exist below county
+level). The latest year of each is kept. These are the denominators of every per-head
 indicator in every nation alike.
 """
 
@@ -182,6 +184,46 @@ def tidy_mye(flat: pl.DataFrame) -> pl.DataFrame:
     )
 
 
+SAPS_CHILDREN = [f"T1_1AGE{i}T" for i in range(16)]
+SAPS_OLDER = ["T1_1AGE65_69T", "T1_1AGE70_74T", "T1_1AGE75_79T", "T1_1AGE80_84T", "T1_1AGEGE_85T"]
+
+
+def tidy_saps(df: pl.DataFrame) -> pl.DataFrame:
+    """The CSO's Small Area Population Statistics (strings as read) → one row per Small
+    Area for Census 2022: persons, children under 16 and people 65 and over, keyed by the
+    codes minted from the area ids (``lix_core.codes.minted_codes``). The file's State
+    total row (no urban/rural class) is dropped."""
+    from lix_core.codes import minted_codes
+
+    df = df.filter(pl.col("UR_Category").is_not_null())
+    codes = minted_codes("I", "low", df["GEOGID"].to_list())
+
+    def total(cols: list[str]) -> pl.Expr:
+        return pl.sum_horizontal(pl.col(c).cast(pl.Float64, strict=False) for c in cols)
+
+    return df.select(
+        pl.col("GEOGID").replace_strict(codes).alias("lsoa21cd"),
+        pl.col("T1_1AGETT")
+        .cast(pl.Float64, strict=False)
+        .round()
+        .cast(pl.Int32)
+        .alias("population"),
+        total(SAPS_CHILDREN).round().cast(pl.Int32).alias("pop_children_0_15"),
+        total(SAPS_OLDER).round().cast(pl.Int32).alias("pop_65_plus"),
+        pl.lit(2022, dtype=pl.Int16).alias("pop_year"),
+        pl.lit(None, pl.Float32).alias("median_age"),
+    ).sort("lsoa21cd")
+
+
+def _ireland() -> pl.DataFrame:
+    df = pl.read_csv(raw_file("cso_saps22_sa", "csv"), infer_schema_length=0, encoding="utf8-lossy")
+    out = tidy_saps(df)
+    logger.info(
+        f"Population Census 2022: {out.height:,} Small Areas, {out['population'].sum():,} people"
+    )
+    return out
+
+
 def _northern_ireland() -> pl.DataFrame:
     reader = fastexcel.read_excel(raw_file("nisra_sdz_mye", "xlsx"))
     out = tidy_mye(reader.load_sheet_by_name("Flat").to_polars())
@@ -200,5 +242,7 @@ def stage_population() -> pl.LazyFrame:
         frames.append(_scotland())
     if "N" in active_nations():
         frames.append(_northern_ireland())
+    if "I" in active_nations():
+        frames.append(_ireland())
     out = pl.concat(frames, how="diagonal_relaxed").filter(in_scope("lsoa21cd")).sort("lsoa21cd")
     return out.lazy()

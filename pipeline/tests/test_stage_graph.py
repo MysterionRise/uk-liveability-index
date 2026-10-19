@@ -75,6 +75,21 @@ def test_covers_and_has_inputs(registry, tmp_path, monkeypatch):
     assert g.has_inputs("population", registry, ["E"])
 
 
+def test_a_keyed_source_without_its_key_does_not_hold_a_stager_back(
+    registry, tmp_path, monkeypatch
+):
+    monkeypatch.setenv("LIX_DATA_DIR", str(tmp_path))
+    monkeypatch.delenv("OCM_API_KEY", raising=False)
+    for slug in g.inputs_for("chargers", registry, ["I"]):
+        if slug.startswith("open_charge_map"):
+            continue
+        (tmp_path / "raw" / slug).mkdir(parents=True, exist_ok=True)
+        (tmp_path / "raw" / slug / ".meta.json").write_text("{}")
+    assert g.has_inputs("chargers", registry, ["I"])  # Open Charge Map is skipped without a key
+    monkeypatch.setenv("OCM_API_KEY", "set")
+    assert not g.has_inputs("chargers", registry, ["I"])  # with a key it must be fetched
+
+
 LOCK = {
     "a": {"fetched": {"sha256": "aa"}},
     "b": {"fetched": {"sha256": "bb"}},

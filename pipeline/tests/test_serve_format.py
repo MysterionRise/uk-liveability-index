@@ -8,7 +8,8 @@ from lix_core.quality import QUALITY_CODE
 from lix_pipeline import indicators as ind
 from lix_pipeline.qa.validate import indicator_coverage_problems
 from lix_pipeline.serve.lookups import build_areas
-from lix_pipeline.serve.scores import MISSING_U16, compact_scores
+from lix_pipeline.serve.scores import MISSING_U16, compact_scores, context_ids
+from lix_pipeline.serve.tiles import tier_names
 
 
 def _features(n: int = 4) -> pl.DataFrame:
@@ -52,6 +53,35 @@ class TestCompactScores:
         assert out["nation"].to_list() == ["E", "E", "W", "W"]
         assert out["ruc_class"].to_list() == ["urban", "town", "urban", "rural"]
         assert "quality_flags" not in out.columns and "ruc21cd" not in out.columns
+
+    def test_context_indicators_ride_along_when_their_percentile_exists(self):
+        catalogue = load_indicators()
+        context = next(i.id for i in catalogue.indicators if i.role == "context")
+        features = _features().with_columns(
+            pl.Series(f"n__{context}", [10.0, 20.0, None, 40.0]),
+            pl.Series(f"q__{context}", ["ok", "ok", "missing", "ok"]),
+        )
+        assert context_ids(catalogue, features) == [context]
+        out = compact_scores(features)
+        assert out[context].to_list() == [1000, 2000, MISSING_U16, 4000]
+        assert out.schema[f"q__{context}"] == pl.UInt8
+        assert context_ids(catalogue, _features()) == []
+
+
+def test_tier_names_come_from_the_features(tmp_path):
+    path = tmp_path / "lsoa_features.parquet"
+    pl.DataFrame(
+        {
+            "lsoa21cd": ["E01000001", "E01000002", "I01000001"],
+            "lsoa21nm": ["City 001A", "City 001B", None],
+            "msoa21cd": ["E02000001", "E02000001", "I02000001"],
+            "msoa_name": ["Head", "Head", "Rathmines East C"],
+        }
+    ).write_parquet(path)
+    names = tier_names(path)
+    assert names["low"] == {"E01000001": "City 001A", "E01000002": "City 001B"}
+    assert names["mid"] == {"E02000001": "Head", "I02000001": "Rathmines East C"}
+    assert tier_names(tmp_path / "missing.parquet") == {"low": {}, "mid": {}}
 
 
 class TestAreas:
@@ -119,17 +149,21 @@ def test_manifest_has_geography_and_quality_levels():
     assert m["geography"]["active"] == ["E", "W"]
     assert m["geography"]["area_counts"] == {"E": 2, "W": 2}
     assert m["geography"]["nations"]["W"]["levels"]["low"]["count"] == 1917
-    assert m["geography"]["country"]["currency"] == "GBP"
+    assert m["geography"]["build"]["working_crs"] == 27700
+    assert m["geography"]["countries"]["UK"]["currency"] == "GBP"
+    assert m["geography"]["nations"]["W"]["country"] == "UK"
+    assert "IE" not in m["geography"]["countries"]  # only the countries of the active nations
     assert m["quality_levels"] == list(QUALITY_LEVELS)
     assert {lang["code"] for lang in m["languages"]} >= {"en", "cy"}
     assert m["i18n"]["cy"]["themes"]["safety"]["label"] == "Diogelwch"
     assert "_meta" not in m["i18n"]["cy"]
     crime = next(i for i in m["indicators"] if i["id"] == "crime_violence")
     assert crime["unit_code"] == "per_1000_year"
-    assert crime["benchmark"] == "nation" and crime["coverage"] == ["E", "W", "N"]
+    assert crime["benchmark"] == "nation" and crime["coverage"] == ["E", "W", "N", "I"]
     no2 = next(i for i in m["indicators"] if i["id"] == "no2")
     # Declared coverage is the indicator's, not the build's: Defra's grid covers the UK
-    assert no2["benchmark"] == "uk" and no2["coverage"] == ["E", "W", "S", "N"]
+    # Defra's model in the UK, the EEA's map in Ireland
+    assert no2["benchmark"] == "uk" and no2["coverage"] == ["E", "W", "S", "N", "I"]
 
 
 @pytest.fixture(autouse=True)

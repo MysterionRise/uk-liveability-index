@@ -93,8 +93,24 @@ class ArcgisItemAccess(_Strict):
     # feature layer · featureserver: page through the layer's query API
     mode: Literal["data", "hub_export", "featureserver"] = "data"
     export_format: Literal["csv", "geoPackage", "geojson"] | None = None
+    # The ArcGIS Hub the export is served from (the ONS geoportal unless the item belongs
+    # to another portal, e.g. Tailte Éireann's data-osi.opendata.arcgis.com)
+    hub: str = "https://geoportal.statistics.gov.uk"
     layer: int = 0
     # featureserver only: fields to keep, and the CRS for geometry (27700 = British National Grid)
+    fields: list[str] | None = None
+    geometry: Literal["none", "point", "polygon"] = "none"
+    out_sr: int = 27700
+
+
+class ArcgisLayerAccess(_Strict):
+    """A feature layer addressed by its query URL: a server outside ArcGIS Online (Historic
+    Environment Scotland's INSPIRE services) or a hosted layer whose item need not be
+    searched. Fetched like ``arcgis_item`` in ``featureserver`` mode; the layer's last edit
+    is its version."""
+
+    type: Literal["arcgis_layer"]
+    url: str
     fields: list[str] | None = None
     geometry: Literal["none", "point", "polygon"] = "none"
     out_sr: int = 27700
@@ -231,6 +247,7 @@ class ManualAccess(_Strict):
 Access = Annotated[
     HttpAccess
     | ArcgisItemAccess
+    | ArcgisLayerAccess
     | GovukAttachmentAccess
     | HtmlLinkAccess
     | CkanAccess
@@ -245,13 +262,20 @@ Access = Annotated[
 ]
 
 # Layout of data/serve/ (manifest, parquet columns). Readers refuse other versions.
-SERVE_SCHEMA_VERSION = 4
+SERVE_SCHEMA_VERSION = 5
 
-# The UK's nations, by the first letter of their ONS codes. config/nations.yaml configures
-# the ones a build can include; coverage declarations may name any of them.
-Nation = Literal["E", "W", "S", "N"]
-NATION_CODES: tuple[str, ...] = ("E", "W", "S", "N")
-NATION_NAMES = {"E": "England", "W": "Wales", "S": "Scotland", "N": "Northern Ireland"}
+# The nations, by the first letter of their codes: the UK's four (ONS GSS codes) and
+# Ireland (codes minted here, see lix_core.codes.minted_codes). config/nations.yaml
+# configures the ones a build can include; coverage declarations may name any of them.
+Nation = Literal["E", "W", "S", "N", "I"]
+NATION_CODES: tuple[str, ...] = ("E", "W", "S", "N", "I")
+NATION_NAMES = {
+    "E": "England",
+    "W": "Wales",
+    "S": "Scotland",
+    "N": "Northern Ireland",
+    "I": "Ireland",
+}
 
 
 def _nation_list(nations: list[str], what: str) -> list[str]:
@@ -366,6 +390,7 @@ UNIT_CODES: dict[str, str] = {
     "years of income": "years_income",
     "years": "years",
     "people per km²": "people_km2",
+    "per km²": "per_km2",
     "nW/cm²/sr": "radiance",
     "hours a year": "hours_year",
     "days a year": "days_year",
@@ -614,10 +639,19 @@ class GeoSources(_Strict):
 
     low_boundaries: str  # polygons of the low level (LSOA, Data Zone...)
     mid_boundaries: str  # polygons of the mid level (MSOA, Intermediate Zone...)
-    centroids: str  # population-weighted centroids of the low level
-    oa_lookup: str  # output area → low → mid lookup
+    # polygons of the upper level: the UK file covers its four nations, Ireland has its own
+    upper_boundaries: str = "lad_boundaries"
+    # population-weighted centroids of the low level; none where the builder computes
+    # them (Ireland: the mean of each area's home points)
+    centroids: str | None = None
+    oa_lookup: str | None = None  # output area → low → mid lookup, where a nation has one
     population: str  # mid-year population estimates at the low level
     code_column: str | None = None  # the boundaries' code attribute, when not *CD
+    # The publisher's ids are not usable as codes (Ireland's Small Area ids carry "/"
+    # for split and merged areas): the backbone mints ``<nation><entity><6-digit rank>``
+    # codes from the sorted ids and keeps the id as ``source_code``
+    minted_codes: bool = False
+    mid_code_column: str | None = None  # the mid boundaries' code attribute, when minted
     simplify_m: float = 0.0  # simplify full-resolution polygons for the map tiles (metres)
     extra: list[str] = Field(default_factory=list)  # other files the builder reads
 
@@ -626,6 +660,7 @@ class NationSpec(_Strict):
     """One nation: its codes, expected sizes and how its backbone is built."""
 
     name: str
+    country: str  # the country it belongs to (a key of ``countries``)
     # The name in the pack's other languages (locale → name), for exact search aliases
     names: dict[str, str] = Field(default_factory=dict)
     ctry_cd: str
@@ -648,18 +683,27 @@ class NationSpec(_Strict):
 
 
 class CountrySpec(_Strict):
-    code: str
+    """A country of the build: what its nations share (currency, locale, postcodes)."""
+
     name: str
-    working_crs: int
+    short: str  # how copy refers to it ("the UK", "Ireland")
+    names: dict[str, str] = Field(default_factory=dict)  # the short name per locale
     currency: str
     locale: str
-    postcode_regex: str
+    postcode_regex: str | None = None  # none where there is no open postcode file
     bbox: tuple[float, float, float, float]
+
+
+class BuildSpec(_Strict):
+    """What every nation of a build shares: the working grid and the key column."""
+
+    working_crs: int
     area_key: str
 
 
 class NationsConfig(_Strict):
-    country: CountrySpec
+    build: BuildSpec
+    countries: dict[str, CountrySpec]
     nations: dict[str, NationSpec]
 
 
@@ -670,8 +714,15 @@ LEVEL_KEYS = {"lsoa": "low", "msoa": "mid", "lad": "upper"}
 def geo_slugs(nation: NationSpec) -> list[str]:
     """Every registry slug a nation's ``geo`` block names, in order."""
     geo = nation.geo
-    slugs = [geo.low_boundaries, geo.mid_boundaries, geo.centroids, geo.oa_lookup, geo.population]
-    return list(dict.fromkeys(slugs + geo.extra))
+    slugs = [
+        geo.low_boundaries,
+        geo.mid_boundaries,
+        geo.upper_boundaries,
+        geo.centroids,
+        geo.oa_lookup,
+        geo.population,
+    ]
+    return list(dict.fromkeys([s for s in slugs if s] + geo.extra))
 
 
 def backbone_slugs(nations: tuple[str, ...] | None = None) -> list[str]:
@@ -768,7 +819,10 @@ def load_nations() -> NationsConfig:
             problems.append(f"nation code {code!r} is not one capital letter")
         if not nation.ctry_cd.startswith(code):
             problems.append(f"{code}: ctry_cd {nation.ctry_cd} does not start with {code}")
-        missing = {"oa", "low", "mid", "upper"} - set(nation.levels)
+        if nation.country not in cfg.countries:
+            problems.append(f"{code}: country {nation.country!r} is not in countries")
+        # The output-area tier is optional (Ireland has no tier below the Small Area)
+        missing = {"low", "mid", "upper"} - set(nation.levels)
         if missing:
             problems.append(f"{code}: levels missing {sorted(missing)}")
         for level, spec in nation.levels.items():

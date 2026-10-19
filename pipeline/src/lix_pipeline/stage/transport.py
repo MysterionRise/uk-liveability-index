@@ -77,8 +77,58 @@ def stage_naptan() -> pl.LazyFrame:
 
     if "N" in active_nations():
         df = pl.concat([df, _translink_stations()], how="vertical_relaxed")
+    if "I" in active_nations():
+        df = pl.concat([df, _nta_stations()], how="vertical_relaxed")
     logger.info(f"{df.height:,} active stops: {dict(df['mode'].value_counts().rows())}")
     return df.lazy()
+
+
+# GTFS route types → the modes the station indicators read
+GTFS_MODES = {"0": "metro_tram", "1": "metro_tram", "2": "rail"}
+
+
+def _nta_stations() -> pl.DataFrame:
+    """Ireland's railway and Luas stops from the Transport for Ireland GTFS feed: every
+    stop served by a route of type rail (2) or tram (0), through trips and stop times."""
+    import duckdb
+
+    from lix_pipeline.stage.geo import lonlat_to_bng
+
+    root = data_dir("raw") / "nta_gtfs"
+    con = duckdb.connect()
+    sql = f"""
+    SELECT DISTINCT st.stop_id, r.route_type
+    FROM read_csv('{root / "stop_times.txt"}', all_varchar=true) st
+    JOIN read_csv('{root / "trips.txt"}', all_varchar=true) t USING (trip_id)
+    JOIN read_csv('{root / "routes.txt"}', all_varchar=true) r USING (route_id)
+    WHERE r.route_type IN ('0', '1', '2')
+    """
+    served = con.execute(sql).pl()
+    stops = pl.read_csv(root / "stops.txt", infer_schema=False).select(
+        "stop_id",
+        pl.col("stop_name").alias("name"),
+        pl.col("stop_lon").cast(pl.Float64).alias("lon"),
+        pl.col("stop_lat").cast(pl.Float64).alias("lat"),
+    )
+    df = (
+        served.join(stops, on="stop_id", how="inner")
+        .with_columns(pl.col("route_type").replace_strict(GTFS_MODES, default=None).alias("mode"))
+        .sort("mode")
+        .unique("stop_id", keep="first")  # a stop on both counts as rail
+    )
+    x, y = lonlat_to_bng(df["lon"], df["lat"])
+    out = df.select(
+        pl.col("stop_id").alias("atco_code"),
+        "name",
+        pl.lit(None, pl.Utf8).alias("locality"),
+        pl.when(pl.col("mode") == "rail")
+        .then(pl.lit("RPL"))
+        .otherwise(pl.lit("TMU"))
+        .alias("stop_type"),
+        "mode",
+    ).with_columns(pl.Series("x", x), pl.Series("y", y))
+    logger.info(f"{out.height:,} railway and Luas stops in Ireland (NTA GTFS)")
+    return out
 
 
 def _translink_stations() -> pl.DataFrame:
@@ -116,26 +166,82 @@ def stage_ofcom_broadband() -> pl.LazyFrame:
     Superfast is 30 Mbit/s or more; "below USO" is premises that can't get a decent
     connection (10 Mbit/s down, 1 up) from fixed lines or fixed wireless.
     """
+    from lix_core.codes import active_nations
+    from lix_core.config import load_nations
     from lix_pipeline.geo.joins import oa_to_lsoa
 
-    path = next((data_dir("raw") / "ofcom_broadband").glob("**/*fixed_oa_res_coverage*.csv"))
-    raw = pl.read_csv(path, infer_schema=False)
-    df = raw.select(
-        pl.col("output_area").alias("oa21cd"),
+    cfg = load_nations().nations
+    frames = []
+    if any(cfg[n].geo.oa_lookup for n in active_nations()):
+        path = next((data_dir("raw") / "ofcom_broadband").glob("**/*fixed_oa_res_coverage*.csv"))
+        raw = pl.read_csv(path, infer_schema=False)
+        df = raw.select(
+            pl.col("output_area").alias("oa21cd"),
+            *[
+                pl.col(src).cast(pl.Float64, strict=False).alias(dst)
+                for src, dst in OFCOM_COUNTS.items()
+            ],
+        ).filter(in_scope("oa21cd", "oa"))
+        per_lsoa = oa_to_lsoa(df, list(OFCOM_COUNTS.values())).with_columns(
+            (pl.col(c) / pl.col("premises") * 100).alias(f"{c}_pct")
+            for c in ("gigabit", "superfast", "below_uso")
+        )
+        logger.info(
+            f"{per_lsoa.height:,} LSOAs; gigabit available to "
+            f"{per_lsoa['gigabit'].sum() / per_lsoa['premises'].sum():.1%} of homes"
+        )
+        frames.append(per_lsoa)
+    if "I" in active_nations():
+        frames.append(_comreg_broadband())
+    return pl.concat(frames, how="diagonal_relaxed").sort("lsoa21cd").lazy()
+
+
+def tidy_comreg(comreg: pl.DataFrame, divisions: pl.DataFrame) -> pl.DataFrame:
+    """ComReg's gigabit coverage of each Electoral Division → every Small Area of the
+    division (``divisions``: ``lsoa21cd`` and ``ED_ID_STR``), in the Ofcom table's shape
+    (counts are not published below the division: the shares alone)."""
+    by_division = (
+        comreg.select(
+            pl.col("ED_ID_STR").str.strip_chars().alias("ED_ID_STR"),
+            pl.col("Gigabit_Passed_PCT_Public_View")
+            .cast(pl.Float64, strict=False)
+            .alias("gigabit_pct"),
+            pl.col("Gigabit_Active_PCT_Public_View")
+            .cast(pl.Float64, strict=False)
+            .alias("gigabit_active_pct"),
+        )
+        # Three amalgamated divisions come in two parts: one row per division
+        .group_by("ED_ID_STR")
+        .agg(pl.col("gigabit_pct").mean(), pl.col("gigabit_active_pct").mean())
+    )
+    out = divisions.select("lsoa21cd", "ED_ID_STR").join(by_division, on="ED_ID_STR", how="left")
+    return out.select(
+        "lsoa21cd",
         *[
-            pl.col(src).cast(pl.Float64, strict=False).alias(dst)
-            for src, dst in OFCOM_COUNTS.items()
+            pl.lit(None, pl.Float64).alias(c)
+            for c in ("premises", "gigabit", "superfast", "below_uso")
         ],
-    ).filter(in_scope("oa21cd", "oa"))
-    per_lsoa = oa_to_lsoa(df, list(OFCOM_COUNTS.values())).with_columns(
-        (pl.col(c) / pl.col("premises") * 100).alias(f"{c}_pct")
-        for c in ("gigabit", "superfast", "below_uso")
-    )
+        "gigabit_pct",
+        pl.lit(None, pl.Float64).alias("superfast_pct"),
+        pl.lit(None, pl.Float64).alias("below_uso_pct"),
+        "gigabit_active_pct",
+    ).sort("lsoa21cd")
+
+
+def _comreg_broadband() -> pl.DataFrame:
+    from lix_core.codes import minted_codes
+    from lix_pipeline.stage.geo_ie import read_small_areas
+
+    sa = read_small_areas()
+    codes = minted_codes("I", "low", sa["SA_PUB2022"].to_list())
+    divisions = sa.select(pl.col("SA_PUB2022").replace_strict(codes).alias("lsoa21cd"), "ED_ID_STR")
+    comreg = pl.read_parquet(data_dir("raw") / "comreg_gigabit" / "comreg_gigabit.parquet")
+    out = tidy_comreg(comreg, divisions)
     logger.info(
-        f"{per_lsoa.height:,} LSOAs; gigabit available to "
-        f"{per_lsoa['gigabit'].sum() / per_lsoa['premises'].sum():.1%} of homes"
+        f"{out.height:,} Small Areas from {comreg.height:,} divisions (ComReg); "
+        f"gigabit passes {out['gigabit_pct'].mean():.0f}% of premises on average"
     )
-    return per_lsoa.lazy()
+    return out
 
 
 DAYTIME = ("07:00:00", "19:00:00")  # 12 hours
@@ -150,7 +256,8 @@ def reference_tuesday(start: date, end: date) -> date:
 
 
 def gtfs_feeds() -> list[str]:
-    """Registry slugs ``bods_gtfs*`` that cover an active nation and have been fetched."""
+    """Registry slugs ``bods_gtfs*`` or ``*_gtfs`` (Ireland's NTA feed) that cover an
+    active nation and have been fetched."""
     from lix_core.codes import active_nations
     from lix_core.config import load_registry
 
@@ -158,7 +265,7 @@ def gtfs_feeds() -> list[str]:
     return [
         slug
         for slug, spec in load_registry().items()
-        if slug.startswith("bods_gtfs")
+        if (slug.startswith("bods_gtfs") or slug.endswith("_gtfs"))
         and active & set(spec.coverage)
         and (data_dir("raw") / slug / "stops.txt").exists()
     ]

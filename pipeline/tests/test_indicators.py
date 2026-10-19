@@ -411,3 +411,19 @@ def test_ofsted_quality_is_empty_without_the_table():
     ctx = WithoutOfsted(schools=pl.DataFrame({"urn": [1, 2]}, schema={"urn": pl.Int64}))
     out = ofsted_quality(ctx)
     assert out.is_empty() and out.schema["urn"] == pl.Int64 and "quality" in out.columns
+
+
+def test_impute_by_proxy_leaves_rows_where_the_predicate_is_null():
+    """A predicate on a column some nations lack is null there: those rows are neither
+    training nor imputed (Ireland has no police force area)."""
+    df = pl.DataFrame(
+        {
+            "v": [1.0, 2.0, 3.0, None, 5.0],
+            "proxy": [1.0, 2.0, 3.0, 2.5, None],
+            "pfa": ["A", "A", "A", "GMP", None],
+        }
+    )
+    filled = impute_by_proxy(df, "v", "proxy", pl.col("pfa") == "GMP", bins=3, log=False)
+    assert filled.to_list()[:3] == [1.0, 2.0, 3.0]
+    assert 2.0 <= filled[3] <= 3.0  # imputed between its neighbours
+    assert filled[4] == 5.0  # the row with a null predicate keeps its value

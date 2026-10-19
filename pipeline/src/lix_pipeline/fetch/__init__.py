@@ -101,6 +101,8 @@ def resolve(slug: str, spec: DatasetSpec, session: requests.Session) -> dict:
     elif access.type == "arcgis_item":
         resolved = arcgis.resolve_item(access, session)
         resolved["version"] = resolved["modified"]
+    elif access.type == "arcgis_layer":
+        resolved = arcgis.resolve_layer(access, session)
     elif access.type == "html_link":
         resolved = html.resolve_link(access, session)
         resolved["version"] = resolved["url"]
@@ -315,7 +317,9 @@ def fetch(
     if not resolved or any(k not in resolved for k in needed):
         resolved = resolve_and_lock(slug, spec, session)
 
-    if spec.access.type == "arcgis_item" and spec.access.mode == "featureserver":
+    if (
+        spec.access.type == "arcgis_item" and spec.access.mode == "featureserver"
+    ) or spec.access.type == "arcgis_layer":
         meta = _fetch_paged(
             slug,
             spec,

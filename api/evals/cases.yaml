@@ -325,12 +325,57 @@ cases:
       tools_any: [nearest_pois]
       reply_lang: ga
 
-  - name: dublin_out_of_scope
+  - name: paris_out_of_scope
     category: scope_ethics
-    turns: ["What are the best areas to live in Dublin?"]
+    turns: ["What are the best areas to live in Paris?"]
     expect:
       forbid_tools: [rank_areas]
-      reply_any: [not scored, not covered, "isn't covered", "not yet", "doesn't cover", ireland]
+      reply_any: [not scored, not covered, "isn't covered", "not yet", "doesn't cover", france, ireland, uk]
+
+  # ------------------------------------------------------------------------- ireland
+  - name: dublin_ranking
+    category: ranking
+    turns: ["What are the best areas to live in Dublin?"]
+    expect:
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: within, op: contains, value: dublin}
+      grounded: true
+
+  - name: ranelagh_profile
+    category: lookup
+    turns: ["Tell me about Ranelagh"]
+    expect:
+      tools_any: [get_area_profile, search_place]
+      reply_any: [ranelagh, dublin, rathmines, small area, ireland]
+      grounded: true
+
+  - name: ireland_retirees
+    category: ranking
+    turns: ["What are the best areas in Ireland for retirees?"]
+    expect:
+      tools_any: [set_weights, set_profile]
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: within, op: contains, value: ireland}
+      state:
+        - {path: preset, op: eq, value: retiree}
+      grounded: true
+
+  - name: ireland_schools_gap
+    category: scope_ethics
+    turns: ["Rank the areas of Dublin by school quality"]
+    expect:
+      reply_any: [limited data, too limited, not available, not scored, "doesn't score", "does not score", no school, not published, gap, "doesn't publish", "does not publish", "no results", "no inspection"]
+      grounded: true
+
+  - name: irish_dublin_profile
+    category: language
+    turns: ["Cén scór atá ag Raghnallach i mBaile Átha Cliath?"]
+    state: {locale: ga}
+    expect:
+      tools_any: [get_area_profile, search_place]
+      reply_lang: ga
 
   - name: sunniest_areas
     category: ranking

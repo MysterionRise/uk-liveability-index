@@ -8,18 +8,34 @@
 # registry sources the backbone, the point-in-polygon joins and the map tiles read, so a
 # nation with its own files (Scotland) needs no code in those places.
 
-country:
-  code: UK
-  name: United Kingdom
+build:
   working_crs: 27700  # British National Grid; every stager works in metres on this grid
-  currency: GBP
-  locale: en-GB
-  postcode_regex: '^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$'
-  bbox: [-8.7, 49.8, 1.8, 60.9]  # lon/lat
   area_key: lsoa21cd  # the key column of every table, whatever a nation calls its areas
+
+# The countries the nations belong to: what their nations share. Copy names the
+# countries in the build ("the UK and Ireland"); money is formatted in the country's
+# currency; postcodes exist only where a country publishes an open postcode file.
+countries:
+  UK:
+    name: United Kingdom
+    short: the UK
+    names: {cy: y DU, gd: an RA, ga: an RA}
+    currency: GBP
+    locale: en-GB
+    postcode_regex: '^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$'
+    bbox: [-8.7, 49.8, 1.8, 60.9]  # lon/lat
+  IE:
+    name: Ireland
+    short: Ireland
+    names: {cy: Iwerddon, gd: Èirinn, ga: Éire}
+    currency: EUR
+    locale: en-IE
+    postcode_regex: null  # Eircode is licensed: no open postcode file
+    bbox: [-10.7, 51.3, -5.9, 55.5]
 
 nations:
   E:
+    country: UK
     name: England
     names: {cy: Lloegr, gd: Sasainn, ga: Sasana}
     ctry_cd: E92000001
@@ -45,6 +61,7 @@ nations:
     demo_upper: [E08000035, E06000043]  # Leeds; Brighton and Hove
     theme_gaps: []
   W:
+    country: UK
     name: Wales
     names: {cy: Cymru, gd: A' Chuimrigh, ga: An Bhreatain Bheag}
     ctry_cd: W92000004
@@ -70,6 +87,7 @@ nations:
     demo_upper: [W06000015]  # Cardiff
     theme_gaps: []
   S:
+    country: UK
     name: Scotland
     names: {cy: Yr Alban, gd: Alba, ga: Albain}
     ctry_cd: S92000003
@@ -100,6 +118,7 @@ nations:
     demo_upper: [S12000036]  # City of Edinburgh
     theme_gaps: []
   N:
+    country: UK
     name: Northern Ireland
     names: {cy: Gogledd Iwerddon, gd: Èirinn a Tuath, ga: Tuaisceart Éireann}
     ctry_cd: N92000002
@@ -134,3 +153,42 @@ nations:
     # No open school inspection grades or results exist, so education is shown as
     # limited data and left out of the Northern Irish overall score
     theme_gaps: [education]
+  # Ireland (v0.6.0): the Census 2022 Small Areas (about 270 residents each) grouped into
+  # the CSO's Electoral Divisions and the 31 local authorities. There is no open postcode
+  # file (Eircode is licensed), so homes are Tailte Éireann's building footprints; the
+  # publisher's Small Area ids carry "/" for split and merged areas, so the codes are
+  # minted by rank (lix_core.codes.minted_codes) and the ids kept as source_code
+  I:
+    country: IE
+    name: Ireland
+    names: {cy: Iwerddon, gd: Èirinn, ga: Éire}
+    ctry_cd: I92000000  # minted: Ireland has no GSS code
+    input_crs: 2157  # Irish Transverse Mercator, the grid Tailte Éireann publishes on
+    bbox: [-10.7, 51.3, -5.9, 55.5]
+    population: [5000000, 5400000]
+    levels:
+      low: {regex: '^I01\d{6}$', official: Small Area 2022, count: 18919, label: small area, labels: small areas}
+      mid: {regex: '^I02\d{6}$', official: Electoral Division 2022, count: 3417, label: electoral division, labels: electoral divisions}
+      upper: {regex: '^I06\d{6}$', official: Local authority, count: 31, label: council, labels: councils}
+    geo_builder: geo_ie
+    geo:
+      low_boundaries: cso_sa22_boundaries
+      mid_boundaries: cso_ed22_boundaries
+      upper_boundaries: te_admin_areas
+      population: cso_saps22_sa
+      code_column: SA_PUB2022
+      mid_code_column: ED_ID_STR
+      minted_codes: true
+      simplify_m: 10
+      extra: [te_buildings, ie_local_authorities]
+    places_country: Ireland  # OS Open Names stops at Great Britain; places come from OpenStreetMap
+    places_builder: osm
+    # The CSO's six-class urban/rural classification of Census 2022 Small Areas: cities
+    # and satellite urban towns are urban, independent urban towns are towns, the three
+    # rural classes (high, moderate and no urban influence) are rural
+    ruc_map: {"1": urban, "2": urban, "3": town, "4": rural, "5": rural, "6": rural}
+    pseudo_region: true  # no statistical tier between the councils and the State
+    demo_upper: [I06000007]  # Dublin City
+    # No open school results or inspection grades; no neighbourhood-level house prices
+    # or property tax: both themes are shown as limited data and left out of the overall
+    theme_gaps: [education, housing]

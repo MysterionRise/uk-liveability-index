@@ -121,7 +121,8 @@ def build_serve_dir(path) -> None:
         "schema_version": SERVE_SCHEMA_VERSION,
         "generated_at": "2026-10-07T00:00:00+00:00",
         "geography": {
-            "country": nations.country.model_dump(),
+            "build": nations.build.model_dump(),
+            "countries": {k: v.model_dump() for k, v in nations.countries.items()},
             "nations": {
                 code: {"name": n.name, "ctry_cd": n.ctry_cd, "bbox": list(n.bbox),
                        "levels": {lv: {"official": s.official, "count": s.count,

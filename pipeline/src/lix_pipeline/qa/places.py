@@ -40,12 +40,16 @@ class PlaceResult:
     checks: list[CheckResult] = field(default_factory=list)
 
 
+LETTERS = set("abcdefghijklmnopqrstuvwxyz ")
+
+
 def _resolve(places: pl.DataFrame, name: str, local_authority: str | None) -> str | None:
     hits = places.filter(pl.col("name").str.to_lowercase() == name.lower())
     if local_authority:
-        # "St. Albans" in OS Open Names, "St Albans" elsewhere
+        # "St. Albans" in OS Open Names, "St Albans" elsewhere; both sides keep ASCII letters
+        # only, so "Dún Laoghaire-Rathdown" matches however the fada is written
         plain = pl.col("local_authority").str.to_lowercase().str.replace_all(r"[^a-z ]", "")
-        wanted = "".join(ch for ch in local_authority.lower() if ch.isalpha() or ch == " ")
+        wanted = "".join(ch for ch in local_authority.lower() if ch in LETTERS)
         hits = hits.filter(plain.str.contains(wanted, literal=True))
     if hits.is_empty():
         return None

@@ -22,7 +22,16 @@
     "of_E": "o Loegr",
     "of_W": "o Gymru",
     "of_S": "o'r Alban",
-    "of_N": "o Ogledd Iwerddon"
+    "of_N": "o Ogledd Iwerddon",
+    "I": "Iwerddon",
+    "IE": "Iwerddon",
+    "in_I": "yn Iwerddon",
+    "in_uk_I": "yn y DU ac Iwerddon",
+    "of": "o",
+    "of_uk": "o'r DU",
+    "of_I": "o Iwerddon",
+    "of_uk_I": "o'r DU ac Iwerddon",
+    "of_E_W": "o Loegr a Chymru"
   },
   "Header": {
     "title": "Mynegai Byw yn y DU",
@@ -135,7 +144,8 @@
     "profileByRules": "Wedi'i adeiladu drwy baru geiriau (ni ddefnyddiwyd model iaith).",
     "clearProfile": "Clirio'r proffil",
     "profileBusy": "Mae'r adeiladwr proffiliau yn brysur ar hyn o bryd; rhowch gynnig arall arni mewn munud.",
-    "profileError": "Methwyd adeiladu proffil: {detail}"
+    "profileError": "Methwyd adeiladu proffil: {detail}",
+    "contextIndicators": "Mesurau cyd-destun"
   },
   "Band": {
     "1": "Pumed isaf",
@@ -143,8 +153,9 @@
     "3": "Canol",
     "4": "Uwchlaw'r cyfartaledd",
     "5": "Pumed uchaf",
-    "betterThan": "yn well na {pct, number}% o'r DU",
-    "betterThanNation": "yn well na {pct, number}% {nationOf}"
+    "betterThan": "yn well na {pct, number}% {of}",
+    "betterThanNation": "yn well na {pct, number}% {nationOf}",
+    "betterThanUrbanRural": "yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg"
   },
   "Quality": {
     "imputed": "amcangyfrif",
@@ -167,8 +178,8 @@
     "noData": "Dim data"
   },
   "Map": {
-    "hover": "{name}: yn well na {pct, number}% o'r DU",
-    "hoverNoName": "yn well na {pct, number}% o'r DU",
+    "hover": "{name}: yn well na {pct, number}% {of}",
+    "hoverNoName": "yn well na {pct, number}% {of}",
     "hoverIn": "{name}: yn well na {pct, number}% o'r ardaloedd {coverageIn}",
     "hoverInNoName": "yn well na {pct, number}% o'r ardaloedd {coverageIn}",
     "overall": "Cyffredinol",
@@ -177,7 +188,8 @@
     "hoverNation": "{name}: yn well na {pct, number}% o'i genedl",
     "hoverNationNoName": "yn well na {pct, number}% o'i genedl",
     "hoverUrbanRural": "{name}: yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg",
-    "hoverUrbanRuralNoName": "yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg"
+    "hoverUrbanRuralNoName": "yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg",
+    "layerUnavailable": "Ni ellir mapio {layer}; dangosir y sgôr gyffredinol"
   },
   "Docs": {
     "nav": "Dogfennaeth",
@@ -217,11 +229,11 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} o drigolion",
     "overallOf100": "/ 100 cyffredinol ({preset})",
-    "rangeTitle": "Yr ystod 5–95% o ganradd y DU pan fydd pwysau pob thema'n cael ei symud tua chwarter",
-    "range": "Gyda phwysau ychydig yn wahanol: yn well na {lo, number}–{hi, number}% o'r DU",
-    "betterThan": "Yn well na {pct, number}% o'r DU",
+    "rangeTitle": "Yr ystod 5–95% o'r ganradd pan fydd pwysau pob thema'n cael ei symud tua chwarter",
+    "range": "Gyda phwysau ychydig yn wahanol: yn well na {lo, number}–{hi, number}% {of}",
+    "betterThan": "Yn well na {pct, number}% {of}",
     "localMedian": "Canolrif {area}",
-    "ukMedian": "Canolrif y DU",
+    "ukMedian": "Canolrif {in}",
     "strengths": "Cryfderau",
     "weakerSpots": "Mannau gwannach",
     "showOnMap": "Dangos ar y map",
@@ -234,7 +246,8 @@
     "betterThanNation": "Yn well na {pct, number}% {nationOf}",
     "nationMedian": "canolrif {nation}",
     "limitedData": "Data cyfyngedig: nid yw'r genedl hon yn cyhoeddi digon ar gyfer y thema hon, felly caiff ei gadael allan o'r cyfanswm",
-    "subtitleOwnTier": "{ruc} · {population, number} o drigolion"
+    "subtitleOwnTier": "{ruc} · {population, number} o drigolion",
+    "betterThanUrbanRural": "Yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg"
   },
   "Poi": {
     "titles": {

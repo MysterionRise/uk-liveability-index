@@ -46,6 +46,7 @@ units:
   years_income: "blianta d'ioncam"
   years: blianta
   people_km2: "daoine in aghaidh km²"
+  per_km2: "in aghaidh an km²"
   radiance: "nW/cm²/sr"
   hours_year: "uaireanta sa bhliain"
   days_year: "laethanta sa bhliain"
@@ -80,6 +81,10 @@ levels:
     low: {one: forchrios sonraí, other: forchriosanna sonraí}
     mid: {one: forchrios sonraí, other: forchriosanna sonraí}
     upper: {one: comhairle, other: comhairlí}
+  I:
+    low: {one: ceantar beag, other: ceantair bheaga}
+    mid: {one: toghroinn, other: toghranna}
+    upper: {one: comhairle, other: comhairlí}
 
 indicators:
   crime_violence: {label: Cionta foréigneacha agus gnéasacha, description: "Foréigean agus cionta gnéasacha a taifeadadh in aghaidh 1,000 cónaitheoir sa bhliain (meán 36 mí)."}
@@ -90,10 +95,10 @@ indicators:
   road_danger: {label: Imbhuailtí bóthair tromchúiseacha in aice láimhe, description: "Imbhuailtí bóthair inar maraíodh nó inar gortaíodh duine go dona laistigh de 500m de thithe, sa bhliain (meán 5 bliana)."}
   iod_crime: {label: Fearann coireachta an innéacs díothachta, description: "Riosca samhaltaithe íospairt phearsanta agus maoine (sonraí 2021–2023)."}
   recorded_crime: {label: Coireacht a taifeadadh (SIMD), description: "Coireanna a taifeadadh in aghaidh 1,000 cónaitheoir sa bhliain in Innéacs Ildíothachta na hAlban 2020, tugtha chuig criosanna sonraí 2022."}
-  no2: {label: Dé-ocsaíd nítrigine (NO₂), description: "Meán-NO₂ cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}
-  pm25: {label: Mínfhíneáin (PM2.5), description: "Meán-PM2.5 cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra)."}
+  no2: {label: Dé-ocsaíd nítrigine (NO₂), description: "Meán-NO₂ cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra; in Éirinn, léarscáil 1km an EEA)."}
+  pm25: {label: Mínfhíneáin (PM2.5), description: "Meán-PM2.5 cúlra bliantúil san áit a gcónaíonn daoine (samhail 1km Defra; in Éirinn, léarscáil 1km an EEA)."}
   green_space_access: {label: Páirceanna agus spásanna glasa in aice láimhe, description: "Bealaí isteach i bpáirceanna, i ngairdíní agus i bpáirceanna imeartha poiblí laistigh de shiúlóid 1km, ualaithe de réir faid."}
-  play_spaces: {label: Clóis súgartha in aice láimhe, description: "Bealaí isteach i spásanna súgartha poiblí laistigh de 800m de thithe, ualaithe de réir faid."}
+  play_spaces: {label: Clóis súgartha in aice láimhe, description: "Bealaí isteach i spásanna súgartha poiblí laistigh de 800m de thithe, ualaithe de réir faid (i dTuaisceart Éireann agus in Éirinn, clóis súgartha OpenStreetMap)."}
   flood_risk: {label: Tithe i mbaol tuilte, description: "Sciar de thithe i mbaol ard nó meánach tuilte ó aibhneacha, ón bhfarraige nó ó uisce dromchla (seans 1% sa bhliain ar a laghad)."}
   flood_rivers_sea: {label: Tithe i mbaol ó aibhneacha nó ón bhfarraige, description: "Sciar de thithe i mbaol ard nó meánach tuilte ó aibhneacha nó ón bhfarraige amháin (seans 1% sa bhliain ar a laghad)."}
   noise_exposure: {label: Tithe i dtorann iompair nó tionsclaíoch, description: "Sciar de thithe ina sroicheann torann mapáilte 60 dB Lden nó níos mó thar an lá, an tráthnóna agus an oíche (bóithre, iarnróid agus aerárthaí i Sasana; bóithre agus iarnróid sa Bhreatain Bheag; gach foinse mhapáilte in Albain)."}
@@ -125,6 +130,7 @@ indicators:
   station_distance: {label: Fad chuig an stáisiún is gaire, description: "Meánfhad díreach ó thithe chuig an stad iarnróid, meitreo nó trama is gaire."}
   rail_service: {label: Seirbhís iarnróid in aice láimhe, description: "Iontrálacha agus imeachtaí bliantúla stáisiúin (ORR) laistigh de 2km de thithe, ualaithe de réir faid agus sáithithe, sa chaoi go gcomhaireann stáisiún gnóthach in aice láimhe níos mó ná stad beag."}
   bus_frequency: {label: Minicíocht busanna, description: "Busanna san uair (laethanta na seachtaine, 07:00–19:00) ag an stad is gnóthaí laistigh de 400m de thithe."}
+  bus_access: {label: Seirbhís bus in aice láimhe, description: "Busanna san uair (laethanta na seachtaine, 07:00–19:00) ag an stad is gnóthaí laistigh de 400m de thithe, ó amchláir Transport for Ireland; seasann sé in ionad an scóir nascachta nach bhfuil ag Éirinn."}
   gigabit_broadband: {label: Leathanbhanda gigibheart, description: "Sciar de thithe ar féidir leo leathanbhanda ar chumas gigibhirt a fháil (snáithín iomlán nó cábla)."}
   slow_broadband: {label: Tithe gan leathanbhanda cuibheasach, description: "Sciar de thithe nach féidir leo leathanbhanda 10 Mbit/s a fháil ó líne sheasta ná ó gan sreang seasta."}
   well_run_pubs: {label: Tithe tábhairne dea-reáchtáilte in aice láimhe, description: "Tithe tábhairne laistigh de shiúlóid 15 nóiméad a bhfuil rátáil sláinteachais bia 4 nó 5 acu ó na trí bliana seo caite, ualaithe de réir faid."}
@@ -148,6 +154,7 @@ indicators:
   period_homes: {label: Tithe a tógadh roimh 1919, description: "Sciar de thithe a tógadh roimh 1919."}
   lower_band_homes: {label: Tithe i mbandaí cánach comhairle A–B, description: "Sciar de thithe sa dá bhanda cánach comhairle is ísle (na tithe is saoire ag luachanna 1991)."}
   income_deprivation: {label: Díothacht ioncaim, description: "Sciar de chónaitheoirí ar ioncam íseal (fearann ioncaim an innéacs díothachta)."}
+  pobal_deprivation: {label: Rachmas agus díothacht (innéacs Pobal HP), description: "Innéacs díothachta coibhneasta Pobal HP na toghroinne ó Dhaonáireamh 2022 (dífhostaíocht, oideachas, aicme shóisialta, tuismitheoirí aonair, tionacht agus plódú); ciallaíonn níos airde níos saibhre."}
   employment_deprivation: {label: Díothacht fostaíochta, description: "Sciar de chónaitheoirí in aois oibre atá dífhostaithe dá n-ainneoin féin (fearann fostaíochta an innéacs díothachta)."}
   claimant_rate: {label: Ráta éilitheoirí, description: "Cónaitheoirí ag éileamh sochar a bhaineann le dífhostaíocht, mar sciar de na daoine 16–64 (an mhí is déanaí)."}
   household_income: {label: Ioncam teaghlaigh, description: "Meánioncam glan teaghlaigh sa cheantar níos leithne (MSOA), roimh chostais tithíochta."}
@@ -166,6 +173,7 @@ indicators:
   summer_warmth: {label: Teas an tsamhraidh, description: "Meánteocht uasta laethúil ó Mheitheamh go Lúnasa, meán 1991–2020 (°C)."}
   winter_mildness: {label: Séimhe an gheimhridh, description: "Meánteocht íosta laethúil ó Nollaig go Feabhra, meán 1991–2020 (°C)."}
   rainfall: {label: Báisteach, description: "Báisteach sa bhliain i milliméadair, meán 1991–2020."}
+  rainfall_total: {label: Báisteach bhliantúil, description: "Meánbháisteach sa bhliain, 1991–2020, ó ghreille 1 km Met Éireann; seasann sé in ionad laethanta fliucha."}
   air_frost_days: {label: Laethanta sioc aeir, description: "Laethanta sa bhliain nuair a thiteann teocht an aeir faoi 0°C, meán 1991–2020."}
   summer_days: {label: Laethanta samhraidh, description: "Laethanta sa bhliain nuair a shroicheann an teocht 25°C, meán 1991–2020."}
   wind_speed: {label: Gaoth, description: "Meánluas na gaoithe ag 10m, meán 1991–2020."}
@@ -173,4 +181,6 @@ indicators:
   future_hot_days: {label: Laethanta teo samhraidh i ndomhan 2°C níos teo, description: "Laethanta sa bhliain le huasteocht os cionn 30°C nuair a bheidh an domhan 2°C níos teo, ó réamh-mheastacháin áitiúla UKCP18 Oifig na hAimsire."}
   gp_list_size: {label: Othair in aghaidh an chleachtais dochtúra teaghlaigh in aice láimhe, description: "Othair chláraithe in aghaidh an chleachtais ag na cleachtais dochtúirí teaghlaigh in aice le tithe, ualaithe de réir faid."}
   allotment_distance: {label: Fad chuig na leithdháiltí is gaire, description: "Meánfhad díreach ó thithe chuig na leithdháiltí nó an spás fáis pobail is gaire."}
-  ev_charging: {label: Pointí luchtaithe poiblí in aice láimhe, description: "Stáisiúin luchtaithe feithiclí leictreacha poiblí laistigh de 1.5km de thithe, ar an meán (OpenStreetMap)."}
+  radon_potential: {label: Tithe i limistéar ard radóin, description: "Sciar na dtithe i gcearnóga greille ina meastar go mbeidh breis is 10% de thithe os cionn leibhéal gnímh an radóin (atlas táscach BGS agus UKHSA; léarscáil radóin an EPA in Éirinn)."}
+  ev_charging: {label: Pointí luchtaithe poiblí in aice láimhe, description: "Láithreáin luchtaithe feithiclí leictreacha poiblí laistigh de 1.5km de thithe, ar an meán (OpenStreetMap, ESB ar oileán na hÉireann, Open Charge Map)."}
+  listed_buildings: {label: Foirgnimh liostaithe in aice láimhe, description: "Foirgnimh liostaithe laistigh de 1km de thithe, in aghaidh an km² (Historic England, Cadw, Historic Environment Scotland agus an Roinn Pobal; in Éirinn, an Fardal Náisiúnta d'Oidhreacht Ailtireachta ag rátáil réigiúnach nó níos airde)."}

@@ -1,6 +1,7 @@
 """One deprivation table for every nation: IoD 2025 in England, WIMD 2025 in Wales, SIMD
 2020 in Scotland (on the 2022 Data Zones through the crosswalk), NIMDM 2017 in Northern
-Ireland (on the 2021 Super Data Zones through the Super Output Area crosswalk).
+Ireland (on the 2021 Super Data Zones through the Super Output Area crosswalk), the Pobal
+HP Deprivation Index 2022 in Ireland (by Electoral Division, broadcast to its Small Areas).
 
 The indices are built the same way (income and employment domains are rates of people
 affected; the others are weighted combinations) but by different governments on
@@ -235,6 +236,76 @@ def _northern_ireland() -> pl.DataFrame:
     return out.select(*COLUMNS, "access_score", "crime_rate_1000")
 
 
+def _number(column: str) -> pl.Expr:
+    """Pobal writes some counts as "1,455.00"."""
+    return pl.col(column).str.replace_all(",", "").cast(pl.Float64, strict=False)
+
+
+def division_id(column: str) -> pl.Expr:
+    """A CSO Electoral Division id with each part padded to six digits: Pobal drops the
+    leading zero ("17001" for "017001"), including inside amalgamated ids ("27058/27085")."""
+    return (
+        pl.col(column)
+        .cast(pl.Utf8)
+        .str.strip_chars()
+        .str.split("/")
+        .list.eval(pl.element().str.zfill(6))
+        .list.join("/")
+    )
+
+
+def tidy_pobal(pobal: pl.DataFrame, divisions: pl.DataFrame) -> pl.DataFrame:
+    """The Pobal HP Deprivation Index 2022 of each Electoral Division → the harmonised
+    deprivation columns for every Small Area of the division (``divisions``: one row per
+    Small Area with ``lsoa21cd`` and ``ED_ID_STR``).
+
+    The index is relative (about −40 to +40, higher = more affluent), so ``imd_score`` is
+    its negative, ranked and in deciles within Ireland; ``pobal_index`` keeps the
+    published sign for the indicator. Pobal publishes unemployment rates by sex, whose
+    mean stands as ``employment_score``; the index has no income, health or education
+    domain comparable to the UK indices, so those stay null.
+    """
+    by_division = pobal.select(
+        division_id("ED_ID_STR").alias("ED_ID_STR"),
+        _number("Index22_ED_std_rel_wt").alias("pobal_index"),
+        _number("Index22_ED_std_abs_wt").alias("pobal_index_abs"),
+        ((_number("UNEMPM22") + _number("UNEMPF22")) / 200).alias("employment_score"),
+    )
+    out = divisions.select("lsoa21cd", division_id("ED_ID_STR").alias("ED_ID_STR")).join(
+        by_division, on="ED_ID_STR", how="left"
+    )
+    missing = out.filter(pl.col("pobal_index").is_null()).height
+    if missing:
+        logger.warning(f"{missing} Small Areas in divisions the Pobal file lacks")
+    out = out.with_columns((-pl.col("pobal_index")).alias("imd_score"))
+    out = out.with_columns(
+        pl.col("imd_score").rank("ordinal", descending=True).cast(pl.Int32).alias("imd_rank")
+    ).with_columns(
+        ((pl.col("imd_rank") - 1) * 10 // pl.col("imd_rank").count() + 1)
+        .cast(pl.Int32)
+        .alias("imd_decile")
+    )
+    out = out.with_columns(
+        pl.lit(None, pl.Float64).alias(c) for c in COLUMNS if c not in out.columns
+    )
+    return out.select(*COLUMNS, "pobal_index", "pobal_index_abs").sort("lsoa21cd")
+
+
+def _ireland() -> pl.DataFrame:
+    from lix_core.codes import minted_codes
+    from lix_pipeline.stage.geo_ie import read_small_areas
+
+    sa = read_small_areas()
+    codes = minted_codes("I", "low", sa["SA_PUB2022"].to_list())
+    divisions = sa.select(pl.col("SA_PUB2022").replace_strict(codes).alias("lsoa21cd"), "ED_ID_STR")
+    pobal = pl.read_csv(
+        raw_file("pobal_hp_2022", "csv"), infer_schema_length=0, encoding="utf8-lossy"
+    )
+    out = tidy_pobal(pobal, divisions)
+    logger.info(f"Pobal HP 2022 on {out.height:,} Small Areas")
+    return out
+
+
 def stage_deprivation() -> pl.LazyFrame:
     frames = []
     if "E" in active_nations():
@@ -245,6 +316,8 @@ def stage_deprivation() -> pl.LazyFrame:
         frames.append(_scotland())
     if "N" in active_nations():
         frames.append(_northern_ireland())
+    if "I" in active_nations():
+        frames.append(_ireland())
     df = pl.concat(frames, how="diagonal_relaxed").sort("lsoa21cd")
     logger.info(f"Deprivation: {df.height:,} LSOAs across {active_nations()}")
     return df.lazy()

@@ -39,9 +39,10 @@ from lix_core.config import NATION_NAMES
 Deps = StateDeps[LiveabilityState]
 
 INSTRUCTIONS = """\
-You help people find and understand neighbourhoods in the UK using the UK Liveability
-Index: open data scored for every small area (LSOAs in England and Wales, data zones in
-Scotland, super data zones in Northern Ireland: roughly 700–4,000 residents each)
+You help people find and understand neighbourhoods with the UK Liveability Index, which
+covers the countries named under Coverage below: open data scored for every small area
+(LSOAs in England and Wales, data zones in Scotland, super data zones in Northern Ireland,
+Small Areas in Ireland: roughly 250–4,000 residents each)
 across nine themes — safety, environment, health services, schools & childcare,
 transport, amenities & nightlife, housing & affordability, community & wellbeing, and
 climate (sunshine, rain, summer and winter temperatures).
@@ -146,6 +147,7 @@ NATION_EXAMPLES = {
     "W": "Cardiff, Swansea, Newport",
     "S": "Edinburgh, Glasgow, Aberdeen",
     "N": "Belfast, Derry",
+    "I": "Dublin, Cork, Galway",
 }
 
 
@@ -519,7 +521,7 @@ def run_sql(ctx: RunContext[Deps], query: str) -> dict:
 
     Tables: lsoa (every LSOA with raw__<indicator>, n__<indicator> 0–100 scores,
     q__<indicator> quality flags, theme__<theme>, overall, overall_pct, overall_pct_nation,
-    nation (E/W/S/N), ruc_class (urban/town/rural), lad_nm, rgn_nm,
+    overall_pct_ruc_class, nation (E/W/S/N/I), ruc_class (urban/town/rural), lad_nm, rgn_nm,
     msoa_name, population, ...), pois (category, name, lat, lon, source, detail),
     areas (msoa/lad/region with population and bbox), places, indicators.
     """

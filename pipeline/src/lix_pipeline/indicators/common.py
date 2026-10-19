@@ -34,6 +34,9 @@ def impute_by_proxy(
     medians are made monotone in the direction of the overall correlation, and imputed
     rows are interpolated between bin centres. Returns the completed ``value`` series.
     """
+    # A predicate on a column some nations lack (Ireland has no police force area) is
+    # null there: those rows are neither training nor imputed
+    impute = impute.fill_null(False)
     train = df.filter(~impute & pl.col(value).is_not_null() & pl.col(proxy).is_not_null())
     needs = df.select(impute & pl.col(proxy).is_not_null()).to_series().any()
     if train.height < 2 or not needs:
@@ -120,6 +123,21 @@ def count_within(
     """
     df = ctx.access(_points(ctx, slug, column, values), radius_m=radius_m)
     return df.select("lsoa21cd", (pl.col("count") / per_years).alias("value"))
+
+
+def density_within(
+    ctx,
+    slug: str,
+    radius_m: float,
+    column: str | None = None,
+    values: list | None = None,
+) -> pl.DataFrame:
+    """Mean number of a staged table's points per km² within ``radius_m`` of homes."""
+    import math
+
+    km2 = math.pi * radius_m**2 / 1e6
+    df = ctx.access(_points(ctx, slug, column, values), radius_m=radius_m)
+    return df.select("lsoa21cd", (pl.col("count") / km2).alias("value"))
 
 
 def share(ctx, slug: str, numerator: list[str], denominator: str) -> pl.DataFrame:

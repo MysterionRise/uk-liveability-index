@@ -18,16 +18,48 @@
   },
   "ae_sites": {
     "fetched": {
-      "bytes": 44520,
-      "fetched_at": "2026-10-15T10:45:57+00:00",
-      "sha256": "88f6e2ba9641dc1254457a4273bd3d4d15466e32f2111a26be537d722f768a26",
-      "version": "88f6e2ba9641dc12"
+      "bytes": 50417,
+      "fetched_at": "2026-10-18T12:40:36+00:00",
+      "sha256": "6ee6614fb50827ad7b4457081d5fff6b4ffe99a692729e9208ed34fb2292e2dc",
+      "version": "6ee6614fb50827ad"
     },
     "resolved": {
       "path": "config/data/ae_sites.csv",
-      "resolved_at": "2026-10-15T10:45:57+00:00",
+      "resolved_at": "2026-10-18T12:40:36+00:00",
       "url": null,
-      "version": "88f6e2ba9641dc12"
+      "version": "6ee6614fb50827ad"
+    }
+  },
+  "bgs_radon_gb": {
+    "fetched": {
+      "bytes": 10592142,
+      "extracted": [
+        "Radon_Indicative_Atlas_v3.gpkg"
+      ],
+      "fetched_at": "2026-10-18T19:52:18.259861+00:00",
+      "sha256": "6fc2c8889d61bbfed3affe863bd2111228afb3ea8391006263222ec6c22ff5c6",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:13+00:00",
+      "url": "https://api.os.uk/downloads/v1/products/Radon_Indicative_Atlas/downloads?area=GB&format=GeoPackage&redirect",
+      "version": null
+    }
+  },
+  "bgs_radon_ni": {
+    "fetched": {
+      "bytes": 3362533,
+      "extracted": [
+        "Radon_Atlas_NI_v1.gpkg"
+      ],
+      "fetched_at": "2026-10-18T19:52:12.584629+00:00",
+      "sha256": "88c772d495c8a34058a2ea948b386f8829199d75718e33394f9d5781c44b4d76",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:10+00:00",
+      "url": "https://api.os.uk/downloads/v1/products/Radon_Indicative_Atlas/downloads?area=NI&format=GeoPackage&redirect",
+      "version": null
     }
   },
   "bods_gtfs": {
@@ -145,6 +177,23 @@
       "title": "GP Practice Reference File - July 2026",
       "url": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv",
       "version": "https://admin.opendatani.gov.uk/dataset/3d1a6615-5fc9-4f0e-ab2a-d2b0d71fb9ed/resource/c3a10512-205d-4175-8046-7b86413bee57/download/gp-practice-reference-file-july-26.csv"
+    }
+  },
+  "cadw_listed": {
+    "fetched": {
+      "bytes": 18841600,
+      "fetched_at": "2026-10-18T19:52:35.910330+00:00",
+      "files": {
+        "page_000": "8774a7ebef4e72491af1cccf3169a9fbad8dc286b92d5fb9cc6dc021b06b4ba4"
+      },
+      "sha256": "bbf62edc7d567f25797f53cc17c13f754c7ed287a1bbe61b6b32476f99d85b9e",
+      "version": "inspire-wg:Cadw_ListedBuildings 30110 features"
+    },
+    "resolved": {
+      "count": 30110,
+      "resolved_at": "2026-10-18T19:52:32+00:00",
+      "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire-wg%3ACadw_ListedBuildings&resultType=hits",
+      "version": "inspire-wg:Cadw_ListedBuildings 30110 features"
     }
   },
   "care_inspectorate": {
@@ -353,6 +402,23 @@
       "version": "August 2026"
     }
   },
+  "comreg_gigabit": {
+    "fetched": {
+      "bytes": 50296,
+      "fetched_at": "2026-10-18T12:38:41+00:00",
+      "rows": 3420,
+      "sha256": "7208f7f1df6142f3afaa670daf194e0dc41044e054bb0291cad55187cd9e9495",
+      "version": "2026-09-03T07:49:17+00:00"
+    },
+    "resolved": {
+      "item_id": "d57d56df83f142989c21a670593c9065",
+      "modified": "2026-09-03T07:49:17+00:00",
+      "resolved_at": "2026-10-18T12:38:39+00:00",
+      "title": "[QKDR] Ireland Gigabit Statistics Public Data View",
+      "url": "https://services-eu1.arcgis.com/pvZmdFc5up2jdiPm/arcgis/rest/services/Ireland_Gigabit_Statistics_Public_View/FeatureServer/3",
+      "version": "2026-09-03T07:49:17+00:00"
+    }
+  },
   "council_names_ga": {
     "fetched": {
       "bytes": 1311,
@@ -411,6 +477,89 @@
       "resolved_at": "2026-10-15T10:29:42+00:00",
       "url": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods",
       "version": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods"
+    }
+  },
+  "cso_cja11": {
+    "fetched": {
+      "bytes": 31059290,
+      "fetched_at": "2026-10-18T12:49:25.105258+00:00",
+      "sha256": "2c111065d16c9e2f2915ec34c9abe283834c12fdbb35a6cbbc18392430d75010",
+      "version": "18/10/2026"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T12:49:23+00:00",
+      "url": "https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/CJA11/CSV/1.0/en",
+      "version": "18/10/2026"
+    }
+  },
+  "cso_ed22_boundaries": {
+    "fetched": {
+      "bytes": 118222848,
+      "etag": "\"0x8DD0EB067F3867A\"",
+      "fetched_at": "2026-10-18T12:04:39.385393+00:00",
+      "last_modified": "Wed, 27 Nov 2024 06:54:57 GMT",
+      "sha256": "2a5a969c527ec5fd91b5cf3541000f5df6d5b52b417024c28dfb8d121e98a0a6",
+      "version": "2026-02-05T10:05:44+00:00"
+    },
+    "resolved": {
+      "item_id": "deba50580cc24e4eb9cf50eb3cfebf69",
+      "modified": "2026-02-05T10:05:44+00:00",
+      "resolved_at": "2026-10-18T12:04:29+00:00",
+      "title": "CSO Electoral Divisions - National Statistical Boundaries - 2022 - Ungeneralised",
+      "url": "https://data-osi.opendata.arcgis.com/api/download/v1/items/deba50580cc24e4eb9cf50eb3cfebf69/geoPackage?layers=1",
+      "version": "2026-02-05T10:05:44+00:00"
+    }
+  },
+  "cso_garda_subdistricts": {
+    "fetched": {
+      "bytes": 25857648,
+      "extracted": [
+        "Garda Sub Districts/Census2011_Garda_Subdistricts_Nov2013.dbf",
+        "Garda Sub Districts/Census2011_Garda_Subdistricts_Nov2013.prj",
+        "Garda Sub Districts/Census2011_Garda_Subdistricts_Nov2013.shp",
+        "Garda Sub Districts/Census2011_Garda_Subdistricts_Nov2013.shx"
+      ],
+      "fetched_at": "2026-10-18T12:49:41.628331+00:00",
+      "last_modified": "Wed, 15 Jul 2026 15:22:42 GMT",
+      "sha256": "fa9f5e93b02f4831a12228b53e9577f37d737ea4779c5e79bcccefb797bab417",
+      "version": "Wed, 15 Jul 2026 15:22:42 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T12:49:40+00:00",
+      "url": "https://www.cso.ie/en/media/csoie/census/census2011boundaryfiles/Garda_Sub_Districts.zip",
+      "version": "Wed, 15 Jul 2026 15:22:42 GMT"
+    }
+  },
+  "cso_sa22_boundaries": {
+    "fetched": {
+      "bytes": 203341824,
+      "etag": "\"0x8DD0B576F084FFC\"",
+      "fetched_at": "2026-10-18T12:11:21.436342+00:00",
+      "last_modified": "Sat, 23 Nov 2024 00:40:30 GMT",
+      "sha256": "35b32ceb45fd8df47241550455e7794e05ad21a7678c9bddb887f08e023b9299",
+      "version": "2026-02-05T10:05:44+00:00"
+    },
+    "resolved": {
+      "item_id": "70a33cbb8bd7406da0d571be28624721",
+      "modified": "2026-02-05T10:05:44+00:00",
+      "resolved_at": "2026-10-18T12:04:45+00:00",
+      "title": "CSO Small Areas - National Statistical Boundaries - 2022 - Ungeneralised",
+      "url": "https://data-osi.opendata.arcgis.com/api/download/v1/items/70a33cbb8bd7406da0d571be28624721/geoPackage?layers=0",
+      "version": "2026-02-05T10:05:44+00:00"
+    }
+  },
+  "cso_saps22_sa": {
+    "fetched": {
+      "bytes": 39568437,
+      "fetched_at": "2026-10-18T12:02:57.569914+00:00",
+      "last_modified": "Tue, 14 Jul 2026 13:57:44 GMT",
+      "sha256": "15f30f13a7ec638c02877b3909fba9256d218bd47b63c764312bf9ccd113e935",
+      "version": "Tue, 14 Jul 2026 13:57:44 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T12:02:55+00:00",
+      "url": "https://www.cso.ie/en/media/csoie/census/census2022/SAPS_2022_Small_Area_UR_171024.csv",
+      "version": "Tue, 14 Jul 2026 13:57:44 GMT"
     }
   },
   "daera_noise_r3": {
@@ -1046,6 +1195,21 @@
       "version": "https://uk-air.defra.gov.uk/datastore/pcm/mappm252024g.csv"
     }
   },
+  "dfc_listed": {
+    "fetched": {
+      "bytes": 337530,
+      "fetched_at": "2026-10-18T19:52:25+00:00",
+      "rows": 10298,
+      "sha256": "ebe9631dd01aaf8697b469db7c7481f42264b0ede1e16dd5c045a105a8183b66",
+      "version": "338b0d7d7f25427eb11bdd673e0e8857"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:23+00:00",
+      "title": "Listed_Buildings_Centroid",
+      "url": "https://services2.arcgis.com/BdBkthNLO9mzGAMO/arcgis/rest/services/Listed_Buildings_Centroid/FeatureServer/0",
+      "version": "338b0d7d7f25427eb11bdd673e0e8857"
+    }
+  },
   "dft_connectivity": {
     "fetched": {
       "bytes": 68164574,
@@ -1093,10 +1257,168 @@
       "version": null
     }
   },
+  "eea_aq_no2": {
+    "fetched": {
+      "bytes": 77637192,
+      "fetched_at": "2026-10-18T20:01:05.780738+00:00",
+      "sha256": "41b505d58b7109c421d7dfa3aa6cba514940e5b1be654a5cd0d82be44899cd26",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T20:00:58+00:00",
+      "url": "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-no2_p_2023_v01_r00&files=no2_avg_23.tif",
+      "version": null
+    }
+  },
+  "eea_aq_pm10": {
+    "fetched": {
+      "bytes": 77637192,
+      "fetched_at": "2026-10-18T20:01:20.961170+00:00",
+      "sha256": "b29eb0a0dacdf13f3763bd0dc8eda5d23214a9024c01595dbad02e9d53e4a28f",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T20:01:16+00:00",
+      "url": "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-pm10_p_2023_v01_r00&files=pm10_avg_23.tif",
+      "version": null
+    }
+  },
+  "eea_aq_pm25": {
+    "fetched": {
+      "bytes": 82226952,
+      "fetched_at": "2026-10-18T20:01:14.607088+00:00",
+      "sha256": "771fae3babab0894424b44f74ea3fa4de6e5d2c28d983579a35f99d7c655a3fd",
+      "version": null
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T20:01:07+00:00",
+      "url": "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-pm25_p_2023_v01_r00&files=pm25_avg_23.tif",
+      "version": null
+    }
+  },
+  "epa_noise_air_nat": {
+    "fetched": {
+      "bytes": 710312,
+      "fetched_at": "2026-10-18T18:47:17.073705+00:00",
+      "files": {
+        "page_000": "5d8e7b97b007b5022fa54156181f9d44e10f2bc9dccffb4f9277f1fad6a68fc0"
+      },
+      "sha256": "ba29c240fff970049c8fd8b9309bd60e6e5097db6074a94555fb8b55c7da1262",
+      "version": "EPA:Noise_R4_Airport_National_Lden 16 features"
+    },
+    "resolved": {
+      "count": 16,
+      "resolved_at": "2026-10-18T18:47:16+00:00",
+      "url": "https://gis.epa.ie/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=EPA%3ANoise_R4_Airport_National_Lden&resultType=hits",
+      "version": "EPA:Noise_R4_Airport_National_Lden 16 features"
+    }
+  },
+  "epa_noise_industry_agg": {
+    "fetched": {
+      "bytes": 22273677,
+      "fetched_at": "2026-10-18T18:47:21.768422+00:00",
+      "files": {
+        "page_000": "e948ed939074bc7bed7dfbfdfc816e0fb597cadb8cc8f052a4c788fcd6aceb03"
+      },
+      "sha256": "d97ed173c50752fb666b60af71bd87cbacdc11d4841f569a48d8c977aaf65de7",
+      "version": "EPA:Noise_R4_Industry_Agglomerations_Lden 41 features"
+    },
+    "resolved": {
+      "count": 41,
+      "resolved_at": "2026-10-18T18:47:18+00:00",
+      "url": "https://gis.epa.ie/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=EPA%3ANoise_R4_Industry_Agglomerations_Lden&resultType=hits",
+      "version": "EPA:Noise_R4_Industry_Agglomerations_Lden 41 features"
+    }
+  },
+  "epa_noise_rail_agg": {
+    "fetched": {
+      "bytes": 26204663,
+      "fetched_at": "2026-10-18T18:46:54.728118+00:00",
+      "files": {
+        "page_000": "af7bd68abb77b4328862225cb79b19db084113c6fc2cc9ac354d33f08bcd8ca3"
+      },
+      "sha256": "f23012a0ffb1029ec882beeec244fdb29f04396f32f5cfbaad44b05c143cdc5f",
+      "version": "EPA:Noise_R4_Rail_Agglomerations_Lden 47 features"
+    },
+    "resolved": {
+      "count": 47,
+      "resolved_at": "2026-10-18T18:46:50+00:00",
+      "url": "https://gis.epa.ie/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=EPA%3ANoise_R4_Rail_Agglomerations_Lden&resultType=hits",
+      "version": "EPA:Noise_R4_Rail_Agglomerations_Lden 47 features"
+    }
+  },
+  "epa_noise_rail_nat": {
+    "fetched": {
+      "bytes": 43378394,
+      "fetched_at": "2026-10-18T18:47:15.378222+00:00",
+      "files": {
+        "page_000": "ac8f9b4cc9716643ca5066e973592b974a682dee137a21fd8b2d099982b698dc"
+      },
+      "sha256": "b81e4519509f38466cf08e00feb12966e70b10c2182df994dfca10bb2bae3096",
+      "version": "EPA:Noise_R4_Rail_National_Lden 35 features"
+    },
+    "resolved": {
+      "count": 35,
+      "resolved_at": "2026-10-18T18:47:08+00:00",
+      "url": "https://gis.epa.ie/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=EPA%3ANoise_R4_Rail_National_Lden&resultType=hits",
+      "version": "EPA:Noise_R4_Rail_National_Lden 35 features"
+    }
+  },
+  "epa_noise_road_agg": {
+    "fetched": {
+      "bytes": 985121512,
+      "fetched_at": "2026-10-18T18:45:59.495926+00:00",
+      "files": {
+        "page_000": "28a183596c1d1bdc57abfac73b69c7814528170cfdf469635c91e3e32b4d3b17"
+      },
+      "sha256": "1e333eeb27de6de8cca1a822b98aeed5c36320c14f13c65478c2e470dd5a6115",
+      "version": "EPA:Noise_R4_Road_Agglomerations_Lden 55 features"
+    },
+    "resolved": {
+      "count": 55,
+      "resolved_at": "2026-10-18T12:35:10+00:00",
+      "url": "https://gis.epa.ie/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=EPA%3ANoise_R4_Road_Agglomerations_Lden&resultType=hits",
+      "version": "EPA:Noise_R4_Road_Agglomerations_Lden 55 features"
+    }
+  },
+  "epa_noise_road_nat": {
+    "fetched": {
+      "bytes": 263818252,
+      "fetched_at": "2026-10-18T18:46:49.154471+00:00",
+      "files": {
+        "page_000": "a89c1cb25f06d5a9e6458a54d00f70abe8c8be88a379534831128bedb1ce8357"
+      },
+      "sha256": "9a03fba3d4e05cbafea01589c89bedf553dc3abeaaf0a23eba88e2f4945c8d99",
+      "version": "EPA:Noise_R4_Road_National_Lden 155 features"
+    },
+    "resolved": {
+      "count": 155,
+      "resolved_at": "2026-10-18T12:36:15+00:00",
+      "url": "https://gis.epa.ie/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=EPA%3ANoise_R4_Road_National_Lden&resultType=hits",
+      "version": "EPA:Noise_R4_Road_National_Lden 155 features"
+    }
+  },
+  "epa_radon": {
+    "fetched": {
+      "bytes": 9363561,
+      "fetched_at": "2026-10-18T19:52:21.591744+00:00",
+      "files": {
+        "page_000": "c3137354827c27033ee362c7607398171849d3b8c56a6599e735e66221d1f899"
+      },
+      "sha256": "8f32ad08ee8c676ebac18c31cbce6e10d4ed7750ddd23f1470afdec0b2b81006",
+      "version": "EPA:RAD_RadonMap 868 features"
+    },
+    "resolved": {
+      "count": 868,
+      "resolved_at": "2026-10-18T19:52:19+00:00",
+      "url": "https://gis.epa.ie/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=EPA%3ARAD_RadonMap&resultType=hits",
+      "version": "EPA:RAD_RadonMap 868 features"
+    }
+  },
   "esa_worldcover": {
     "fetched": {
-      "bytes": 477050577,
-      "fetched_at": "2026-10-13T11:24:21.381929+00:00",
+      "bytes": 546244116,
+      "fetched_at": "2026-10-18T19:28:23.377851+00:00",
       "files": {
         "N48E000": "9f5b06e56a3efe48166663fde287c3e73b0ca9533901f75d908e1a3f8fc144c3",
         "N48W003": "a860d69a3d2860ba5262b8a47a5604abbfee0544e5f3525f2b83acd3db8fbbcb",
@@ -1105,21 +1427,39 @@
         "N51E000": "2ef6f3339d74493f2c14e15a54cb99bc02e3385d41f05ee306ae35f9536a2529",
         "N51W003": "fb3e4cde8caee3c6ad61e9b8fb818efbc463320f28ede017745052305e253fdd",
         "N51W006": "7d4c7c9e143b289a48e1c91a058566b787407521014ab4e2b7a43099cadf780e",
+        "N51W009": "55d4f74f4e4fb7b3c40e6658a1cda655821ab806479910a7d58ecc9f1ce909e3",
+        "N51W012": "87315e255bdaa98a60a94f2de8b8acda8b4dbbf390cfbc264d559c91f6a22c07",
         "N54W003": "5780e30c6311af55cab6c7a4a9a1ad9fd648f2c04d61bc79fa69fad291604442",
         "N54W006": "c5be63c29f08db25ce8d44e313c6ed1292dc642fd27badc7bd813b7c88fe973f",
         "N54W009": "f60a65bfac7b3d8c13c4e1e5aeaef5a03c3afd318c4ac52c48f9b88e746659fc",
+        "N54W012": "0dac00fbedcc0ad3ffa0e8e673390ceee6498b3a4cda4db58ffca8f23ab3df99",
         "N57W003": "bd42fa8e68c22350b952e9e216a5391f40f048adc5855ea60c35627e58c455e9",
         "N57W006": "0b9a5194ae2273241c33ebfb1ace2baf83066faa5d6f69d551cfb18e8a40c6c4",
         "N57W009": "35c2cec22d894a66714dc81c261d9b62c43b4d1f6560ccb584392e5f92dd1095",
         "N60W003": "3a3451ce39214be956d3b7df66f228044b8b46bcc6648108f4234b9d74851c68"
       },
-      "sha256": "472371f6f7371336532436899804cbef96f19673d9afcdf1c22ae44b4e61255e",
+      "sha256": "a042933a1c06f7c7c766927a5f43800ff0a30c7942b6c5fcca26c9f327076a78",
       "version": "Wed, 26 Oct 2022 12:53:26 GMT"
     },
     "resolved": {
       "resolved_at": "2026-10-15T10:29:41+00:00",
       "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N48E000_Map.tif",
       "version": "Wed, 26 Oct 2022 12:53:26 GMT"
+    }
+  },
+  "esb_ev_sites": {
+    "fetched": {
+      "bytes": 133073,
+      "etag": "0x8DD210B25EDA7B7",
+      "fetched_at": "2026-10-18T19:52:09.661714+00:00",
+      "last_modified": "Fri, 20 Dec 2024 15:29:52 GMT",
+      "sha256": "6e9bce8690d5498514a12401065237a4fc65e4f79b758f55b45af29d01468350",
+      "version": "Fri, 20 Dec 2024 15:29:52 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:09+00:00",
+      "url": "https://cdn.esb.ie/media-staging/docs/default-source/ecars/its-data-ecars-sites/its-data-ecars-sites-roi-ni.csv",
+      "version": "Fri, 20 Dec 2024 15:29:52 GMT"
     }
   },
   "fsa_fhrs": {
@@ -1135,6 +1475,20 @@
       "resolved_at": "2026-10-15T10:29:51+00:00",
       "url": "https://safhrsprodstorage.blob.core.windows.net/opendatafileblobstorage/FHRS_All_en-GB.csv",
       "version": "Thu, 15 Oct 2026 01:07:44 GMT"
+    }
+  },
+  "garda_station_aliases": {
+    "fetched": {
+      "bytes": 2546,
+      "fetched_at": "2026-10-18T18:42:45+00:00",
+      "sha256": "1dfe8f46dbb807763f03f773d790e5f5c4da7eead5b9ba211c6eae12595c1351",
+      "version": "1dfe8f46dbb80776"
+    },
+    "resolved": {
+      "path": "config/data/garda_station_aliases.csv",
+      "resolved_at": "2026-10-18T18:42:45+00:00",
+      "url": null,
+      "version": "1dfe8f46dbb80776"
     }
   },
   "gias": {
@@ -1208,6 +1562,35 @@
         "tasmin_hadukgrid_uk_1km_ann-30y_199101-202012.nc": "b2b1401fa4b21c80ca8b83085709005fb84663d94931066b8b6f22d75c167190",
         "tasmin_hadukgrid_uk_1km_seas-30y_199101-202012.nc": "d1ea02945450618ecda4a26500672d15af135e730f6255eeb97d98e5d7b5aac9"
       }
+    }
+  },
+  "hes_listed": {
+    "fetched": {
+      "bytes": 1177116,
+      "fetched_at": "2026-10-18T19:52:30+00:00",
+      "rows": 67476,
+      "sha256": "062c3350c03f6bd26e4a4a8be8b2c8e2180451d19d7591573e3ea879430b608f",
+      "version": "https://inspire.hes.scot/arcgis/rest/services/HES/Listed_Buildings/MapServer/0"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:29+00:00",
+      "title": "Listed Buildings by Category",
+      "url": "https://inspire.hes.scot/arcgis/rest/services/HES/Listed_Buildings/MapServer/0",
+      "version": "https://inspire.hes.scot/arcgis/rest/services/HES/Listed_Buildings/MapServer/0"
+    }
+  },
+  "ie_local_authorities": {
+    "fetched": {
+      "bytes": 2701,
+      "fetched_at": "2026-10-18T12:02:49+00:00",
+      "sha256": "84efcc8297a73dca1f54a539bad156636064c431dde5cff481b8d5a800773003",
+      "version": "84efcc8297a73dca"
+    },
+    "resolved": {
+      "path": "config/data/ie_local_authorities.csv",
+      "resolved_at": "2026-10-18T12:02:49+00:00",
+      "url": null,
+      "version": "84efcc8297a73dca"
     }
   },
   "iod_2025": {
@@ -1284,6 +1667,13 @@
     }
   },
   "logainm": {
+    "fetched": {
+      "bytes": 1060172,
+      "fetched_at": "2026-10-19T11:21:08+00:00",
+      "rows": 402,
+      "sha256": "44dd5db7de0f01e72f718568abd99fdca56995b90f1aef7777bf0ac0dde5696e",
+      "version": "https://www.logainm.ie/api/v1.0/?NorthernIreland=true"
+    },
     "resolved": {
       "resolved_at": "2026-10-15T10:30:55+00:00",
       "url": "https://www.logainm.ie/api/v1.0/?NorthernIreland=true",
@@ -1418,6 +1808,46 @@
       "version": "2026-03-02T12:04:53+00:00"
     }
   },
+  "met_eireann_rr_9120": {
+    "fetched": {
+      "bytes": 2371939,
+      "etag": "\"6694e4d8-243163\"",
+      "extracted": [
+        "IE_RR_9120_V2.txt",
+        "Readme_9120.txt"
+      ],
+      "fetched_at": "2026-10-18T12:39:06.288298+00:00",
+      "last_modified": "Mon, 15 Jul 2024 08:59:04 GMT",
+      "sha256": "a40688781f416d4cecbcce9c87d5a5079870fcbe2dcd1249398ed1f816834017",
+      "version": "Mon, 15 Jul 2024 08:59:04 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T12:39:05+00:00",
+      "url": "https://www.met.ie/cms/assets/uploads/2024/07/IE_RR_9120_V2.zip",
+      "version": "Mon, 15 Jul 2024 08:59:04 GMT"
+    }
+  },
+  "met_eireann_temp_9120": {
+    "fetched": {
+      "bytes": 2842042,
+      "etag": "\"6694e4e9-2b5dba\"",
+      "extracted": [
+        "IE_TMAX_9120_V2.txt",
+        "IE_TMEAN_9120_V2.txt",
+        "IE_TMIN_9120_V2.txt",
+        "ReadmeTemp_9120.txt"
+      ],
+      "fetched_at": "2026-10-18T12:38:53.228034+00:00",
+      "last_modified": "Mon, 15 Jul 2024 08:59:21 GMT",
+      "sha256": "f8ec55433fef2d6f0c9876e0c6b8c7c6bc50290c67ed31151c705dbd478da463",
+      "version": "Mon, 15 Jul 2024 08:59:21 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T12:38:52+00:00",
+      "url": "https://www.met.ie/cms/assets/uploads/2024/07/IE_TEMP_9120_V2.zip",
+      "version": "Mon, 15 Jul 2024 08:59:21 GMT"
+    }
+  },
   "msoa_boundaries": {
     "fetched": {
       "bytes": 21319680,
@@ -1478,6 +1908,23 @@
       "version": null
     }
   },
+  "nhle_listed": {
+    "fetched": {
+      "bytes": 6454233,
+      "fetched_at": "2026-10-18T19:52:47+00:00",
+      "rows": 379685,
+      "sha256": "997c762f86fbc97eec4709d1a7c5ab1ce5b6b34084fe799713acf46ec8777b41",
+      "version": "2026-09-10T11:08:12+00:00"
+    },
+    "resolved": {
+      "item_id": "767f279327a24845bf47dfe5eae9862b",
+      "modified": "2026-09-10T11:08:12+00:00",
+      "resolved_at": "2026-10-18T19:52:37+00:00",
+      "title": "National Heritage List for England (NHLE)",
+      "url": "https://services-eu1.arcgis.com/ZOdPfBS3aqqDYPUQ/arcgis/rest/services/National_Heritage_List_for_England_NHLE_v02_VIEW/FeatureServer/0",
+      "version": "2026-09-10T11:08:12+00:00"
+    }
+  },
   "nhsbsa_pharmacies": {
     "fetched": {
       "bytes": 2574037,
@@ -1507,6 +1954,21 @@
       "resolved_at": "2026-10-15T10:46:18+00:00",
       "url": null,
       "version": "f0c2e833f55a702b"
+    }
+  },
+  "niah_buildings": {
+    "fetched": {
+      "bytes": 987027,
+      "fetched_at": "2026-10-18T19:52:28+00:00",
+      "rows": 48327,
+      "sha256": "a78c020b26c35b8b009da9036c053be7b0cea280c86aeb0c2310c368430d1903",
+      "version": "2025-04-03T15:41:03.591000+00:00"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T19:52:26+00:00",
+      "title": "NIAHBuildings",
+      "url": "https://services-eu1.arcgis.com/HyjXgkV6KGMSF3jt/arcgis/rest/services/NIAHBuildingsOpenData/FeatureServer/0",
+      "version": "2025-04-03T15:41:03.591000+00:00"
     }
   },
   "nimdm_2017": {
@@ -1917,6 +2379,33 @@
       "version": "2026-09-01T11:08:22+00:00"
     }
   },
+  "nta_gtfs": {
+    "fetched": {
+      "bytes": 159944497,
+      "etag": "\"9888f31-65e10ad1b5040\"",
+      "extracted": [
+        "feed_info.txt",
+        "agency.txt",
+        "stops.txt",
+        "calendar.txt",
+        "calendar_dates.txt",
+        "routes.txt",
+        "trips.txt",
+        "shapes.txt",
+        "stop_times.txt",
+        "translations.txt"
+      ],
+      "fetched_at": "2026-10-18T12:39:27.929315+00:00",
+      "last_modified": "Sat, 17 Oct 2026 22:19:37 GMT",
+      "sha256": "fcbfc92f3ed0ed37d21d227c878fc5c0bc1e12a1526c1ec5f2bcfd83f79c9d60",
+      "version": "Sat, 17 Oct 2026 22:19:37 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T12:39:17+00:00",
+      "url": "https://www.transportforireland.ie/transitData/Data/GTFS_All.zip",
+      "version": "Sat, 17 Oct 2026 22:19:37 GMT"
+    }
+  },
   "oa_lookup": {
     "fetched": {
       "bytes": 1541333,
@@ -2014,6 +2503,32 @@
       "title": "Management information - state-funded schools - latest inspections as at 31 August 2026",
       "url": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv",
       "version": "https://assets.publishing.service.gov.uk/media/6aa0175392e72b8ac437ef37/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_August_2026.csv"
+    }
+  },
+  "open_charge_map_gb": {
+    "fetched": {
+      "bytes": 115750401,
+      "fetched_at": "2026-10-19T11:18:39.229576+00:00",
+      "sha256": "a8a62502ece32b60bfd07c8232bb2dbf402ef881ad628c8252da438544c5cc05",
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-19T11:18:35+00:00",
+      "url": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json",
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json"
+    }
+  },
+  "open_charge_map_ie": {
+    "fetched": {
+      "bytes": 8493892,
+      "fetched_at": "2026-10-19T11:18:40.749116+00:00",
+      "sha256": "ee51e933b6ccf49d1ba903d02f16f4de55c9f7603a2e66b35549a1f2c4e94141",
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-19T11:18:40+00:00",
+      "url": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json",
+      "version": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json"
     }
   },
   "orr_station_attributes": {
@@ -3119,6 +3634,21 @@
       "resolved_at": "2026-10-15T10:47:26+00:00",
       "url": null,
       "version": "718977eba9aaeecc"
+    }
+  },
+  "pobal_hp_2022": {
+    "fetched": {
+      "bytes": 432836,
+      "etag": "\"69ac4-62ef9d33a5be6\"",
+      "fetched_at": "2026-10-18T12:38:18.690033+00:00",
+      "last_modified": "Tue, 25 Feb 2025 16:19:45 GMT",
+      "sha256": "48288b0651c63c5ed3445c36457b116c1bc1ab7a0932b4092617c5a549e2f040",
+      "version": "Tue, 25 Feb 2025 16:19:45 GMT"
+    },
+    "resolved": {
+      "resolved_at": "2026-10-18T12:38:18+00:00",
+      "url": "https://www.pobal.ie/wp-content/uploads/2024/01/hp-deprivation-index-scores-2022.csv",
+      "version": "Tue, 25 Feb 2025 16:19:45 GMT"
     }
   },
   "police_crime": {
@@ -5544,6 +6074,41 @@
       "resolved_at": "2026-10-15T10:29:36+00:00",
       "url": "https://data.dft.gov.uk/road-accidents-safety-data/dft-road-casualty-statistics-collision-last-5-years.csv",
       "version": null
+    }
+  },
+  "te_admin_areas": {
+    "fetched": {
+      "bytes": 29450240,
+      "fetched_at": "2026-10-18T12:04:20+00:00",
+      "rows": 31,
+      "sha256": "f13e414dfcd9f7b6d76799aa3e0f2e3127d6b416f73f589b1dda8a5c1bf65941",
+      "version": "2026-02-05T10:05:42+00:00"
+    },
+    "resolved": {
+      "item_id": "d81188d16e804bde81548e982e80c53e",
+      "modified": "2026-02-05T10:05:42+00:00",
+      "resolved_at": "2026-10-18T12:03:04+00:00",
+      "title": "Administrative Areas - National Statutory Boundaries - 2019",
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Administrative_Areas___OSi_National_Statutory_Boundaries/FeatureServer/0",
+      "version": "2026-02-05T10:05:42+00:00"
+    }
+  },
+  "te_buildings": {
+    "fetched": {
+      "bytes": 1006141440,
+      "etag": "\"0x8DED8566A9E32A6\"",
+      "fetched_at": "2026-10-18T12:05:32.428291+00:00",
+      "last_modified": "Thu, 02 Jul 2026 16:24:40 GMT",
+      "sha256": "838fd2c922d06f281cbeea53aad758ca0d117c5718d3a457d9a7e7d6ed0141c5",
+      "version": "2026-07-01T10:23:58+00:00"
+    },
+    "resolved": {
+      "item_id": "cd14d445bb6d4af586f4edcfa01da895",
+      "modified": "2026-07-01T10:23:58+00:00",
+      "resolved_at": "2026-10-18T12:04:53+00:00",
+      "title": "High Value Dataset - Buildings",
+      "url": "https://data-osi.opendata.arcgis.com/api/download/v1/items/cd14d445bb6d4af586f4edcfa01da895/geoPackage?layers=0",
+      "version": "2026-07-01T10:23:58+00:00"
     }
   },
   "translink_metro_txc": {

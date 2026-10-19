@@ -6,7 +6,7 @@ population-weighted, with the default (balanced) weights. Expectations are in
 [config/validation_places.yaml](../config/validation_places.yaml); regenerate this
 page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
-**106 of 106 checks pass** (70 of 70 anchors) across 47 places.
+**121 of 121 checks pass** (81 of 81 anchors) across 53 places.
 
 ## Scores
 
@@ -59,6 +59,12 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 | Enniskillen | Enniskillen E, Fermanagh and Omagh | 56 | 81 | 33 | 13 | – | 74 | 100 | 60 | 9 | 67 |
 | Creggan | The Moor D, Derry City and Strabane | 55 | 45 | 23 | 3 | – | 84 | 100 | 47 | 40 | 86 |
 | Portrush | Causeway B, Causeway Coast and Glens | 52 | 67 | 37 | 33 | – | 78 | 93 | 28 | 11 | 62 |
+| Ranelagh | Rathmines East D, Dublin City | 79 | 81 | 90 | 99 | – | 66 | 100 | – | 22 | 99 |
+| Ballymun | Ballymun D, Dublin City | 59 | 63 | 87 | 1 | – | 65 | 100 | – | 17 | 97 |
+| Clifden | Clifden, Galway County | 49 | 55 | 45 | 26 | – | 77 | 35 | – | 56 | 46 |
+| Kilkenny | Kilkenny No. 2 Urban, Kilkenny | 66 | 79 | 82 | 40 | – | 67 | 100 | – | 29 | 73 |
+| Dalkey | Dalkey-Bullock, Dún Laoghaire-Rathdown | 75 | 73 | 88 | 89 | – | 78 | 90 | – | 45 | 67 |
+| Letterkenny | Letterkenny Urban, Donegal | 58 | 77 | 53 | 19 | – | 73 | 100 | – | 29 | 48 |
 
 ## Observations
 
@@ -83,7 +89,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≤ 35: 6.5 ⚓
 - ✅ house_price ≤ 240,000: 214,004.3 ⚓
 - ✅ housing_condition ≥ 75: 86.0
-- ✅ flag not_available: aircraft_noise, care_homes, claimant_rate, connectivity_cycling, connectivity_overall, connectivity_public_transport, connectivity_walking, council_tax_typical, crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence, domestic_rates, gp_quality, household_income, iod_outdoors, leisure_facilities, life_expectancy, lower_band_homes, new_builds, patients_per_gp, period_homes, price_to_income, primary_results, primary_school_quality, road_rail_noise, secondary_results, swimming_pool_distance ⚓
+- ✅ flag not_available: aircraft_noise, bus_access, care_homes, claimant_rate, connectivity_cycling, connectivity_overall, connectivity_public_transport, connectivity_walking, council_tax_typical, crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence, domestic_rates, gp_quality, household_income, iod_outdoors, leisure_facilities, life_expectancy, lower_band_homes, new_builds, patients_per_gp, period_homes, pobal_deprivation, price_to_income, primary_results, primary_school_quality, rainfall_total, road_rail_noise, secondary_results, swimming_pool_distance ⚓
 
 **Bearsden** (Kilmardinny West). Prosperous suburb north of Glasgow, low crime, strong schools. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
@@ -124,7 +130,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≤ 25: 11.1 ⚓
 - ✅ housing score ≥ 50: 61.8 ⚓
 - ✅ flag broadcast_lad: council_tax, secondary_school_quality ⚓
-- ✅ flag not_available: access_deprivation, aircraft_noise, care_homes, domestic_rates, gp_list_size, gp_quality, industrial_noise, leisure_facilities, life_expectancy, patients_per_gp, primary_results, primary_school_quality, recorded_crime, secondary_results, swimming_pool_distance ⚓
+- ✅ flag not_available: access_deprivation, aircraft_noise, bus_access, care_homes, domestic_rates, gp_list_size, gp_quality, industrial_noise, leisure_facilities, life_expectancy, patients_per_gp, pobal_deprivation, primary_results, primary_school_quality, rainfall_total, recorded_crime, secondary_results, swimming_pool_distance ⚓
 
 **Merthyr Tydfil** (Gelli-deg & Town). Valleys town, high deprivation, cheap homes. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
@@ -318,3 +324,36 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 - ✅ no2 ≤ 10: 2.9 ⚓
 - ✅ station_distance ≤ 2,000: 441.8
+
+**Ranelagh** (Rathmines East D). Dublin 6's affluent Victorian suburb: a Luas stop, buses, everything on foot. Flags: not_available.
+
+- ✅ community score ≥ 80: 99.1 ⚓
+- ✅ station_distance ≤ 1,000: 239.1 ⚓
+- ✅ gp_distance ≤ 500: 162.9
+
+**Ballymun** (Ballymun D). North Dublin's regenerated tower-block estate, long among the most deprived areas. Flags: not_available.
+
+- ✅ community score ≤ 20: 0.8 ⚓
+- ✅ bus_access ≥ 5: 15.0
+
+**Clifden** (Clifden). Connemara's market town at the edge of the island: no railway, Galway's A&E 80 km away. Flags: not_available.
+
+- ✅ hospital_ae_distance ≥ 40,000: 50,000.0 ⚓
+- ✅ station_distance ≥ 40,000: 48,331.2 ⚓
+- ✅ rainfall_total ≥ 1,200: 1,463.9
+
+**Kilkenny** (Kilkenny No. 2 Urban). Medieval city with its station and St Luke's General Hospital. Flags: not_available.
+
+- ✅ hospital_ae_distance ≤ 4,000: 1,722.0 ⚓
+- ✅ station_distance ≤ 2,000: 624.3 ⚓
+
+**Dalkey** (Dalkey-Bullock). Affluent coastal village on the DART, wooded hills above Killiney Bay. Flags: not_available.
+
+- ✅ community score ≥ 75: 89.3 ⚓
+- ✅ station_distance ≤ 1,500: 684.3 ⚓
+- ✅ tree_canopy ≥ 30: 45.8
+
+**Letterkenny** (Letterkenny Urban). Donegal's largest town with the county's hospital; no railway in the county, the nearest station across the border in Derry. Flags: not_available.
+
+- ✅ hospital_ae_distance ≤ 3,000: 1,084.5 ⚓
+- ✅ station_distance ≥ 20,000: 27,623.4 ⚓

@@ -4,6 +4,65 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-10-18
+
+### Added
+
+- **Ireland.** The 18,919 Census 2022 Small Areas join the map and the assistant as the
+  fifth nation and the second country (62,833 areas in all), grouped into 3,417 Electoral
+  Divisions and 31 councils, from Tailte Éireann's and the CSO's boundaries; the codes are
+  minted (`I01000001`…) because the published ids carry "/" for split and merged areas,
+  and the publisher's id travels with each area. Homes are Tailte Éireann building
+  footprints, since Ireland has no open postcode file; the home-points table (`homes`)
+  now serves every nation (#87). Irish sources: the census, Pobal's deprivation index,
+  recorded crime by Garda station spread over the 2011 sub-districts, the EEA's 1 km
+  air-quality maps, the EPA's noise contours, Transport for Ireland's timetables, ComReg's gigabit coverage, Met Éireann's
+  climate grids, OpenStreetMap's surgeries, dentists, pharmacies and green spaces, and a
+  curated list of emergency departments. Schools and housing are declared gaps. Copy
+  says what the percentiles span ("better than 62% of the UK and Ireland").
+- **Listed buildings nearby.** A context indicator in the amenities theme: listed
+  buildings within 1 km of homes, per km², from Historic England's list, Cadw's, Historic
+  Environment Scotland's and the Department for Communities' and, in Ireland, the National
+  Inventory of Architectural Heritage at regional rating or above (#40).
+- **Homes in a high radon area.** A context indicator in the environment theme: the share
+  of homes in grid squares where more than a tenth of homes are expected above the radon
+  action level, from the BGS and UKHSA indicative atlas (Great Britain and Northern
+  Ireland) and the EPA's radon map of Ireland (#126).
+- **Chargers beyond OpenStreetMap.** The charge-point count now reads one merged table:
+  OpenStreetMap everywhere, ESB's network across the island of Ireland, and Open Charge
+  Map's openly licensed locations when a build has a key (`OCM_API_KEY`, the second user
+  of the `api_key` access type); a site within 50 m of one already kept is the same site,
+  and the map's charger points name their source (#35, #124). The released pack is built
+  with the key: 34,771 charging sites across the five nations, 25,216 of them from Open
+  Charge Map (its own contributors and the UK's National Chargepoint Registry).
+- **Play spaces in Ireland** from OpenStreetMap playgrounds, as in Northern Ireland, so
+  parks, play spaces and allotments have the same stand-in across the island (#77).
+- **Feature layers by URL.** The registry's new `arcgis_layer` access type fetches a
+  layer that is not an ArcGIS Online item (Historic Environment Scotland's INSPIRE server,
+  which cannot page by offset: the fetcher reads ranges of object ids instead).
+- **Data release data-2026-10.5** (serve schema 5): the first pack with Ireland, 62,833
+  areas, about 250 MB; older packs are refused by this code and this pack by older code.
+- **Context measures on the map.** "Colour the map by" lists the context indicators
+  (rainfall, snow days, listed buildings, radon…) under their own group: the browser table
+  carries their percentiles beside the scored ones (`context_indicators` in the manifest).
+  A layer the pack cannot map says so instead of passing itself off as the overall, and a
+  link pasted into an open tab updates the view (#133).
+- **Names at every zoom.** The neighbourhood and small-area tiles carry their names, so
+  the hover reads "Rathmines East C: better than 62% of the UK and Ireland" rather than
+  the percentile alone (#135).
+- **Compare against your kind of place.** A profile carries its percentile within its
+  urban/rural class (`overall_percentile_urban_rural`, per theme too), and the card follows
+  "compare against: areas of the same urban/rural type" as it already followed the nation
+  (#131).
+
+### Fixed
+
+- **Logainm never answered.** The Placenames Database's API returns camel-cased fields
+  (`results`, `placenames`, `geography.coordinates`), not the capitalised ones the v0.5.0
+  fetcher and stager expected, so a keyed build saved an empty page and no place took an
+  Irish name from it. Both read the real fields now: 395 Northern Irish places carry
+  Logainm's Irish form in the pack.
+
 ## [0.5.1] - 2026-10-18
 
 ### Added

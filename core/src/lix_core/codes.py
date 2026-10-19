@@ -7,6 +7,7 @@ differ only in config (``config/nations.yaml``).
 """
 
 import os
+from collections.abc import Iterable
 from typing import Literal
 
 import polars as pl
@@ -42,8 +43,12 @@ def area_code_regex(level: LevelName = "low", nations: Nations | None = None) ->
     pandas alike.
     """
     specs = load_nations().nations
+    # A nation without the tier (Ireland has no output areas) contributes nothing; with no
+    # nation left the pattern matches nothing at all
     parts = [specs[n].levels[level].regex.removeprefix("^").removesuffix("$")
-             for n in (nations or active_nations())]  # fmt: skip
+             for n in (nations or active_nations()) if level in specs[n].levels]  # fmt: skip
+    if not parts:
+        return "^(?!)$"
     return "^(?:" + "|".join(parts) + ")$"
 
 
@@ -53,6 +58,22 @@ def in_scope(
     """Polars predicate: ``column`` holds a code of ``level`` in an active nation."""
     col = pl.col(column) if isinstance(column, str) else column
     return col.str.contains(area_code_regex(level, nations))
+
+
+# The entity digits of each tier in a minted code, after ONS's convention (E01 = LSOA)
+LEVEL_ENTITY = {"oa": "00", "low": "01", "mid": "02", "upper": "06"}
+
+
+def minted_codes(nation: str, level: LevelName, source_codes: Iterable[str]) -> dict[str, str]:
+    """Codes for a nation whose publisher's ids cannot be codes (Ireland's Small Area ids
+    carry "/" for split and merged areas): ``<nation><entity><rank>``, the rank being the
+    id's 1-based position in the sorted set of ids, zero-padded to six digits
+    (``I01000001``). Deterministic for a given set of ids, so a rebuild from the same
+    geography vintage mints the same codes; a new vintage is a new set of codes, as a new
+    census geography is in the UK."""
+    unique = sorted({str(c) for c in source_codes if c is not None})
+    entity = LEVEL_ENTITY[level]
+    return {code: f"{nation}{entity}{i + 1:06d}" for i, code in enumerate(unique)}
 
 
 def nation_of(column: str | pl.Expr) -> pl.Expr:

@@ -237,22 +237,22 @@ def test_logainm_records_parse_and_match_places():
 
     records = [
         {
-            "ID": 1,
-            "Placenames": [
-                {"Language": "ga", "Wording": "Béal Feirste", "Main": True},
-                {"Language": "en", "Wording": "Belfast", "Main": True},
+            "id": 1,
+            "placenames": [
+                {"language": "ga", "wording": "Béal Feirste", "main": True},
+                {"language": "en", "wording": "Belfast", "main": True},
             ],
-            "Categories": [{"NameEN": "City"}],
-            "Geography": {
-                "Accurate": True,
-                "Coordinates": [{"Latitude": 54.597, "Longitude": -5.93}],
+            "categories": [{"id": "C", "nameEN": "City"}],
+            "geography": {
+                "accurate": True,
+                "coordinates": [{"latitude": 54.597, "longitude": -5.93}],
             },
-            "NorthernIreland": {"Extent": "all"},
+            "northernIreland": {"extent": "all"},
         },
         {
-            "ID": 2,
-            "Placenames": [{"Language": "en", "Wording": "Nowhere", "Main": True}],
-            "Geography": {},
+            "id": 2,
+            "placenames": [{"language": "en", "wording": "Nowhere", "main": True}],
+            "geography": {},
         },
     ]
     parsed = parse_places(records)

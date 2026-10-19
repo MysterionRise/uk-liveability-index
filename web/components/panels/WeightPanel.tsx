@@ -131,6 +131,13 @@ export function WeightPanel() {
               .filter((i) => manifest.scored_indicators.includes(i.id))
               .map((i) => <option key={i.id} value={`indicator:${i.id}`}>{labels.indicator(i.id)}</option>)}
           </optgroup>
+          {(manifest.context_indicators?.length ?? 0) > 0 && (
+            <optgroup label={t("contextIndicators")}>
+              {manifest.indicators
+                .filter((i) => manifest.context_indicators?.includes(i.id))
+                .map((i) => <option key={i.id} value={`indicator:${i.id}`}>{labels.indicator(i.id)}</option>)}
+            </optgroup>
+          )}
         </select>
       </label>
 

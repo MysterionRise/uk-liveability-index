@@ -23,7 +23,7 @@ mean of theme scores. Both are 0–100 scores; percentiles ("better than N% of
 England's neighbourhoods") are reported alongside, not instead.
 """
 
-from collections.abc import Collection, Mapping
+from collections.abc import Collection, Mapping, Sequence
 
 import polars as pl
 
@@ -144,7 +144,7 @@ def score_lsoas(
     theme_weights: Mapping[str, float],
     indicator_multipliers: Mapping[str, float] | None = None,
     min_coverage: float = MIN_THEME_COVERAGE,
-    group: str | None = None,
+    group: str | Sequence[str] | None = None,
     applicable: Mapping[str, Collection[str]] | None = None,
     theme_gaps: Mapping[str, Collection[str]] | None = None,
     nation: str = "nation",
@@ -155,8 +155,9 @@ def score_lsoas(
     indicator. ``indicators``: (id, theme, base weight) for the scored ones.
     Returns per theme ``theme__{t}`` (score), ``theme_pct__{t}`` (percentile) and
     ``theme_coverage__{t}``; then ``overall``, ``overall_pct`` and ``coverage``.
-    With ``group`` (a column of ``norms``, e.g. ``nation``), each percentile is also
-    taken within the group: ``theme_pct_{group}__{t}`` and ``overall_pct_{group}``.
+    With ``group`` (a column of ``norms``, e.g. ``nation``, or several such columns), each
+    percentile is also taken within the group: ``theme_pct_{group}__{t}`` and
+    ``overall_pct_{group}``.
 
     ``applicable`` (indicator id → the nations it is built for) makes each row's theme
     total the weight its nation can have, read from the ``nation`` column, so a Scottish
@@ -165,7 +166,8 @@ def score_lsoas(
     a theme listed in ``theme_gaps`` (nation → themes the nation declares it cannot cover).
     """
     mult = indicator_multipliers or {}
-    within = norms[group] if group else None
+    groups = [group] if isinstance(group, str) else list(group or [])
+    within = {g: norms[g] for g in groups}
     nations = norms[nation] if (applicable or theme_gaps) else None
     if (applicable or theme_gaps) and nations is None:
         raise ValueError(f"applicable/theme_gaps need the {nation!r} column")
@@ -200,8 +202,8 @@ def score_lsoas(
         theme_masks[f"theme__{theme}"] = has_weight if gap is None else (has_weight & ~gap)
         columns[f"theme__{theme}"] = score
         columns[f"theme_pct__{theme}"] = percentile_of(score)
-        if group:
-            columns[f"theme_pct_{group}__{theme}"] = percentile_of(score, within)
+        for g, members in within.items():
+            columns[f"theme_pct_{g}__{theme}"] = percentile_of(score, members)
         columns[f"theme_coverage__{theme}"] = coverage
     themes_df = pl.DataFrame(columns)
     overall, coverage = weighted_score(
@@ -211,6 +213,6 @@ def score_lsoas(
         theme_masks if (applicable or theme_gaps) else None,
     )
     out = themes_df.with_columns(overall=overall, overall_pct=percentile_of(overall))
-    if group:
-        out = out.with_columns(pl.Series(f"overall_pct_{group}", percentile_of(overall, within)))
+    for g, members in within.items():
+        out = out.with_columns(pl.Series(f"overall_pct_{g}", percentile_of(overall, members)))
     return out.with_columns(coverage=coverage)

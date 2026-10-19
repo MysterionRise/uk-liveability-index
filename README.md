@@ -6,19 +6,20 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
 
 ![Choosing "family with children", raising the weight on safety, then asking the assistant where to look around Leeds on a £350k budget: it sets the weights, ranks neighbourhoods and outlines them on the map](docs/media/hero.gif)
 
-- **43,914 neighbourhoods** (2021 LSOAs in England and Wales, 2022 Data Zones in
-  Scotland, 2021 Super Data Zones in Northern Ireland; 500–3,000 residents each), scored
-  0–100 on nine themes from **about 140 open datasets**: police.uk and the PSNI, NHS,
+- **62,833 neighbourhoods** across the UK and Ireland (2021 LSOAs in England and Wales,
+  2022 Data Zones in Scotland, 2021 Super Data Zones in Northern Ireland, 2022 Small Areas
+  in Ireland; 250–3,000 residents each), scored 0–100 on nine themes from **about 160
+  open datasets**: police.uk, the PSNI and the CSO's Garda statistics, NHS,
   Ofsted, DfE, the Welsh and Scottish Governments and the Northern Ireland departments,
-  Land Registry, Registers of Scotland and Land & Property Services, ONS, NRS and
-  NISRA, the SIMD and NIMDM, Public Health Scotland, Defra air quality, the Met Office's
+  Land Registry, Registers of Scotland and Land & Property Services, ONS, NRS, NISRA and
+  the CSO, the SIMD, NIMDM and Pobal indices, Public Health Scotland, Defra and EEA air quality, the Met Office's
   HadUK-Grid climate averages, Environment Agency, Natural Resources Wales and SEPA flood
   maps, strategic noise maps, Ofcom broadband, bus and rail timetables, OpenStreetMap and
   more.
 - **Your weights, computed in your browser**, from five ready-made personas, a sentence
   about yourself ("young professional, one child starting school, I need sunshine") or
   any weighting of your own, with an honest range for how much a result depends on them.
-- **An assistant that shows its working**, tested on 50 cases with three models, including
+- **An assistant that shows its working**, tested on 55 cases with three models, including
   that its replies only use numbers from the data ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.
@@ -123,13 +124,16 @@ The same tools are available to Claude Desktop and other clients over
 
 ## Limitations
 
-- **The four nations publish different data.** A few indicators are England-only (life
+- **The five nations publish different data.** A few indicators are England-only (life
   expectancy, GP capacity and ratings, primary school quality) and say so in the other
   nations' profiles. Where a nation has no source for an indicator but a comparable one of
   its own, that stands in and the interface says so: Scotland's recorded crime and access
-  to services come from the SIMD, Northern Ireland's domestic rates replace council tax.
-  Northern Ireland has no open flood map and no school grades or results, so its schools
-  theme is shown as limited data and left out of its overall score. Ireland is next.
+  to services come from the SIMD, Northern Ireland's domestic rates replace council tax,
+  Ireland's bus frequency stands in for the connectivity score and Pobal's index for income
+  deprivation. Northern Ireland has no open flood map and no school grades or results, so
+  its schools theme is shown as limited data and left out of its overall score; Ireland's
+  schools and housing themes are gaps too, and its homes are building footprints rather
+  than postcodes, since Eircode is licensed.
 - **Neighbourhoods, not streets.** Scores describe areas of 1,000–3,000 residents, and
   distances are straight-line.
 - **Data has dates.** Each source's data period is shown on the explainer card and in

@@ -5,7 +5,7 @@
     data/serve/scores.parquet         compact copy for the browser: n__ percentiles as
                                       uint16 (×100; 65535 = missing) + q__ quality codes
                                       (uint8, see lix_core.quality)
-    data/serve/manifest.json          schema version, geography (country, nations, area
+    data/serve/manifest.json          schema version, geography (countries, nations, area
                                       counts), indicators, themes, presets, source
                                       versions, attribution and file checksums
 
@@ -47,8 +47,12 @@ GEO_COLUMNS = [
     "area_km2", "pwc_lon", "pwc_lat", "pwc_x", "pwc_y", "bbox_w", "bbox_s", "bbox_e", "bbox_n",
 ]  # fmt: skip
 # The areas' names in the other languages (null where a nation has none): Welsh from the
-# ONS and Commons Library files, Gaelic council names from the curated list
-NAME_COLUMNS = ["lsoa21nm_cy", "msoa_name_cy", "lad_nm_cy", "lad_nm_gd", "lad_nm_ga"]
+# ONS and Commons Library files, Gaelic council names from the curated list, Irish names
+# from Tailte Éireann's files; and the publisher's id where the codes are minted
+NAME_COLUMNS = [
+    "lsoa21nm_cy", "msoa_name_cy", "lad_nm_cy", "lad_nm_gd", "lad_nm_ga", "lsoa21nm_ga",
+    "msoa_name_ga", "source_code",
+]  # fmt: skip
 
 
 def _sha256(path: Path) -> str:
@@ -73,7 +77,8 @@ def build_features() -> pl.DataFrame:
     df = df.join(quality.rename(lambda c: c if c == "lsoa21cd" else f"q__{c}"), on="lsoa21cd")
 
     # Rank-normalised indicators benchmarked within the nation rank there; the theme and
-    # overall percentiles come both UK-wide and within the nation (compare-against)
+    # overall percentiles come across the build, within the nation and within the
+    # urban/rural class (the compare-against options)
     df = df.with_columns(
         normalise(
             pl.col(f"raw__{i.id}"),
@@ -90,7 +95,7 @@ def build_features() -> pl.DataFrame:
     scored = [(i.id, i.theme, i.weight) for i in catalogue.scored()]
     nation_rules = scoring_rules(catalogue)
     scores = score_lsoas(
-        df, scored, preset.themes, preset.indicators, group="nation", **nation_rules
+        df, scored, preset.themes, preset.indicators, group=["nation", "ruc_class"], **nation_rules
     )
     df = pl.concat([df, scores], how="horizontal").with_columns(
         band(pl.col("overall_pct")).alias("band")
@@ -129,10 +134,20 @@ def uncertainty_columns(df: pl.DataFrame, scored, weights, nation_rules=None) ->
     return out
 
 
+def context_ids(catalogue, features: pl.DataFrame) -> list[str]:
+    """Context indicators with a percentile in the features table (the browser maps them)."""
+    return [
+        i.id
+        for i in catalogue.indicators
+        if i.role == "context" and f"n__{i.id}" in features.columns
+    ]
+
+
 def compact_scores(features: pl.DataFrame) -> pl.DataFrame:
-    """Browser copy: uint16 percentiles and a uint8 quality code per scored indicator."""
+    """Browser copy: uint16 percentiles and a uint8 quality code per scored indicator, and
+    the same for the context indicators so the map can colour by them."""
     catalogue = load_indicators()
-    scored = [i.id for i in catalogue.scored()]
+    scored = [i.id for i in catalogue.scored()] + context_ids(catalogue, features)
     missing = QUALITY_CODE["missing"]
     return features.select(
         "lsoa21cd",
@@ -209,13 +224,15 @@ def correlation_matrix(features: pl.DataFrame) -> dict:
 
 
 def geography(area_counts: dict[str, int]) -> dict:
-    """The manifest's geography block: the country, the nations in this build, their sizes."""
+    """The manifest's geography block: the build's grid, the countries and the nations in
+    this build with their sizes."""
     cfg = load_nations()
     nations = {}
     for code in active_nations():
         spec = cfg.nations[code]
         nations[code] = {
             "name": spec.name,
+            "country": spec.country,
             "ctry_cd": spec.ctry_cd,
             "bbox": list(spec.bbox),
             "levels": {
@@ -230,8 +247,18 @@ def geography(area_counts: dict[str, int]) -> dict:
             "theme_gaps": list(spec.theme_gaps),
             "names": dict(spec.names),
         }
+    countries = sorted({cfg.nations[n].country for n in active_nations()})
     return {
-        "country": cfg.country.model_dump(),
+        "build": cfg.build.model_dump(),
+        "countries": {
+            c: {
+                **cfg.countries[c].model_dump(),
+                # Every nation of the country the config knows, active or not, so copy can
+                # tell a whole country ("the UK") from a cut of it ("England and Wales")
+                "nations": [n for n, spec in cfg.nations.items() if spec.country == c],
+            }
+            for c in countries
+        },
         "nations": nations,
         "active": list(active_nations()),
         "area_counts": area_counts,
@@ -251,6 +278,7 @@ def manifest(
     lsoa_count: int | None = None,
     correlations: dict | None = None,
     area_counts: dict[str, int] | None = None,
+    context: list[str] | None = None,
 ) -> dict:
     import os
 
@@ -281,6 +309,7 @@ def manifest(
             for locale, labels in load_label_catalogues().items()
         },
         "scored_indicators": [i.id for i in catalogue.scored()],
+        "context_indicators": context or [],
         "indicators": [
             {**i.model_dump(), "coverage": indicator_coverage(i, registry)}
             for i in catalogue.indicators
@@ -309,8 +338,8 @@ def manifest(
         },
         "correlations": correlations,
         "encoding": {
-            "scores.parquet": "percentiles × 100 as uint16; 65535 = missing; q__<indicator> is "
-            "the uint8 index into quality_levels"
+            "scores.parquet": "percentiles × 100 as uint16 for the scored and the context "
+            "indicators; 65535 = missing; q__<indicator> is the uint8 index into quality_levels"
         },
     }
 
@@ -337,6 +366,7 @@ def build_serve() -> dict[str, Path]:
                 lsoa_count=features.height,
                 correlations=correlation_matrix(features),
                 area_counts=area_counts,
+                context=context_ids(load_indicators(), features),
             ),
             allow_nan=False,
             indent=2,

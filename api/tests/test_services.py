@@ -220,6 +220,8 @@ def test_welsh_area_is_profiled_within_its_nation(store):
     english = area_profile(store, "E01000001")
     assert "broadcast_lad" not in english.flag_codes and "not_available" not in english.flag_codes
     assert p.overall_percentile_nation in (0, 99)  # two Welsh areas; the top one reads 99, not 100
+    assert p.overall_percentile_urban_rural is not None  # the class comparison has a figure too
+    assert all(t.percentile_urban_rural is not None for t in p.themes if t.score is not None)
     crime = next(v for v in p.key_facts if v.id == "crime_violence")
     assert crime.benchmark == "nation"
     assert lsoas_in(store, "nation", "W92000004").to_list() == ["W01001880", "W01001881"]

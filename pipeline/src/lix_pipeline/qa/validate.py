@@ -10,7 +10,14 @@ from pathlib import Path
 import polars as pl
 
 from lix_core.codes import active_nations, area_code_regex, in_scope
-from lix_core.config import NATION_NAMES, SERVE_SCHEMA_VERSION, load_indicators, load_nations
+from lix_core.config import (
+    NATION_NAMES,
+    SERVE_SCHEMA_VERSION,
+    indicator_coverage,
+    load_indicators,
+    load_nations,
+    load_registry,
+)
 from lix_core.paths import data_dir
 from lix_core.quality import QUALITY_LEVELS
 
@@ -79,6 +86,12 @@ def validate_geo() -> list[str]:
         pop = rows["population"].sum()
         if not low < pop < high:
             problems.append(f"{spec.name} population {pop:,} is outside {low:,}–{high:,}")
+        if spec.geo.minted_codes:
+            # Minted codes: the publisher's id rides along, once per area
+            if "source_code" not in rows.columns or rows["source_code"].null_count():
+                problems.append(f"{spec.name}: minted codes without a source_code for every area")
+            elif rows["source_code"].n_unique() != rows.height:
+                problems.append(f"{spec.name}: source_code repeats")
 
     # Centroids must sit inside their own LSOA's bbox
     outside = geo.filter(
@@ -179,6 +192,10 @@ def validate_serve(serve_dir: Path | None = None) -> list[str]:
     problems = []
     catalogue = load_indicators()
     scored = [i.id for i in catalogue.scored()]
+    # The nations each scored indicator is built for, from the catalogue (a pack cut
+    # before an indicator existed does not list it)
+    registry = load_registry()
+    built_for = {i.id: indicator_coverage(i, registry) for i in catalogue.scored()}
     cfg = load_nations().nations
     geo = manifest.get("geography", {})
     nations = [n for n in geo.get("active", []) if n in cfg]
@@ -214,6 +231,10 @@ def validate_serve(serve_dir: Path | None = None) -> list[str]:
         coverage = {i["id"]: i.get("coverage") or [] for i in manifest.get("indicators", [])}
         problems += indicator_coverage_problems(features, scored, coverage, nations)
     for iid in scored:
+        # An indicator built for none of the pack's nations (Ireland's substitutes in a
+        # UK-only cut) is not expected in its features
+        if nations and built_for.get(iid) and not set(built_for[iid]) & set(nations):
+            continue
         if f"n__{iid}" not in features.columns:
             problems.append(f"scored indicator {iid} is missing from lsoa_features")
     overall = features["overall"]
@@ -223,18 +244,29 @@ def validate_serve(serve_dir: Path | None = None) -> list[str]:
     scores = pl.read_parquet(serve / "scores.parquet")
     if set(scores["lsoa21cd"]) != set(codes):
         problems.append("scores.parquet and lsoa_features have different LSOAs")
-    if manifest.get("scored_indicators") != scored:
+    # A cut of an older build may predate an indicator built for none of its nations
+    # (Ireland's substitutes in a UK-only cut): those are not expected in its files
+    expected = [
+        i for i in scored if not nations or not built_for.get(i) or set(built_for[i]) & set(nations)
+    ]
+    listed = manifest.get("scored_indicators") or []
+    if listed != scored and listed != expected:
         problems.append("manifest scored_indicators differ from config/indicators.yaml")
     if set(manifest.get("themes", {})) != set(catalogue.themes):
         problems.append("manifest themes differ from config/indicators.yaml")
     if manifest.get("quality_levels") != list(QUALITY_LEVELS):
         problems.append("manifest quality_levels differ from lix_core.quality")
-    absent = [i for i in scored if i not in scores.columns]
+    absent = [i for i in expected if i not in scores.columns]
     if absent:
         problems.append(f"scores.parquet lacks scored indicators {absent}")
-    no_quality = [i for i in scored if f"q__{i}" not in scores.columns]
+    no_quality = [i for i in expected if f"q__{i}" not in scores.columns]
     if no_quality:
         problems.append(f"scores.parquet lacks quality codes for {no_quality}")
+    context_absent = [
+        i for i in manifest.get("context_indicators") or [] if i not in scores.columns
+    ]
+    if context_absent:
+        problems.append(f"scores.parquet lacks context indicators {context_absent}")
     for iid in scored:
         if iid in scores.columns:
             bad = scores.filter((pl.col(iid) > 10_000) & (pl.col(iid) != MISSING_U16)).height

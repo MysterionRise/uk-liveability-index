@@ -10,9 +10,10 @@ from lix_api.services.text import fold
 from lix_api.store import Store, to_bng
 
 POSTCODE = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$")
-# Any ONS GSS code (nation letter + entity type + 6 digits); whether it names an LSOA
-# or an area in this build is decided by looking it up
-GSS = re.compile(r"^[EWSN]\d{8}$")
+# Any ONS GSS code (nation letter + entity type + 6 digits), or one minted for Ireland in
+# the same shape; whether it names an LSOA or an area in this build is decided by looking
+# it up
+GSS = re.compile(r"^[EWSNI]\d{8}$")
 
 # Higher wins when names score equally: "Leeds" the city beats Leeds village in Kent
 # WRatio similarity a name must reach: typos ("Headingly", "Mancheser") score ~95,

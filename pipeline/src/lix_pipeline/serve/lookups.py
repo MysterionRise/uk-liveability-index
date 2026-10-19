@@ -35,7 +35,6 @@ OSM_CATEGORIES = {
     "museum": "museum", "gallery": "museum", "post_office": "post_office", "bakery": "bakery",
     "butcher": "butcher", "greengrocer": "greengrocer", "kindergarten": "nursery",
     "childcare": "nursery", "community_centre": "community_centre", "marketplace": "market",
-    "charging_station": "ev_charging",
 }  # fmt: skip
 
 
@@ -62,56 +61,11 @@ SCHOOL_SOURCES = {
 }
 
 
-def build_pois() -> pl.DataFrame:
-    staged, ind = data_dir("staged"), data_dir("indicators")
-    frames = []
-
-    pubs = pl.read_parquet(ind / "pubs.parquet")
-    frames.append(
-        pubs.select(
-            pl.lit("pub").alias("category"),
-            pl.col("pub_id").alias("poi_id"),
-            "name",
-            "x",
-            "y",
-            "lon",
-            "lat",
-            pl.col("source_name").alias("source"),
-            "licence",
-            _detail(
-                [
-                    "well_run",
-                    "rating",
-                    "rating_date",
-                    "fsa_id",
-                    "real_ale",
-                    "food",
-                    "outdoor_seating",
-                    "beer_garden",
-                ]
-            ).alias("detail"),
-        )  # fmt: skip
-    )
-
-    gp = _with_lonlat(pl.read_parquet(staged / "ods_gp.parquet").filter(pl.col("x").is_not_null()))
-    frames.append(
-        gp.select(
-            pl.lit("gp").alias("category"),
-            pl.concat_str(pl.lit("ods:"), "practice_code").alias("poi_id"),
-            "name",
-            pl.col("x").cast(pl.Float64),
-            pl.col("y").cast(pl.Float64),
-            "lon",
-            "lat",
-            pl.when(pl.col("lsoa21cd").str.starts_with("S"))
-            .then(pl.lit(GP_SOURCES["S"]))
-            .otherwise(pl.lit(GP_SOURCES["E"]))
-            .alias("source"),
-            pl.lit(OGL).alias("licence"),
-            _detail(["practice_code", "postcode"]).alias("detail"),
-        )  # fmt: skip
-    )
-
+def _school_pois(staged) -> pl.DataFrame | None:
+    """Schools with their phase and inspection quality, or None in a build without a
+    school list (Ireland alone: education is a declared gap there)."""
+    if not (staged / "schools.parquet").exists():
+        return None
     schools = pl.read_parquet(staged / "schools.parquet")
     if (staged / "ofsted_schools.parquet").exists():
         schools = schools.join(
@@ -138,8 +92,7 @@ def build_pois() -> pl.DataFrame:
         .then(pl.lit("nursery"))
         .otherwise(pl.lit("other_school"))
     )
-    frames.append(
-        schools.select(
+    return schools.select(
             category.alias("category"),
             pl.concat_str(pl.lit("urn:"), pl.col("urn").cast(pl.Utf8)).alias("poi_id"),
             "name",
@@ -166,7 +119,84 @@ def build_pois() -> pl.DataFrame:
                     "inspection_date",
                 ]
             ).alias("detail"),
+    )  # fmt: skip
+
+
+def build_pois() -> pl.DataFrame:
+    staged, ind = data_dir("staged"), data_dir("indicators")
+    frames = []
+
+    # No pubs table in a build without a hygiene scheme (Ireland alone)
+    pubs = (
+        pl.read_parquet(ind / "pubs.parquet")
+        if (ind / "pubs.parquet").exists()
+        else pl.DataFrame(schema={"pub_id": pl.Utf8})
+    )
+    if pubs.height:
+        frames.append(
+            pubs.select(
+                pl.lit("pub").alias("category"),
+                pl.col("pub_id").alias("poi_id"),
+                "name",
+                "x",
+                "y",
+                "lon",
+                "lat",
+                pl.col("source_name").alias("source"),
+                "licence",
+                _detail(
+                    [
+                        "well_run",
+                        "rating",
+                        "rating_date",
+                        "fsa_id",
+                        "real_ale",
+                        "food",
+                        "outdoor_seating",
+                        "beer_garden",
+                    ]
+                ).alias("detail"),
+            )  # fmt: skip
+        )
+
+    gp = _with_lonlat(pl.read_parquet(staged / "ods_gp.parquet").filter(pl.col("x").is_not_null()))
+    frames.append(
+        gp.select(
+            pl.lit("gp").alias("category"),
+            pl.concat_str(pl.lit("ods:"), "practice_code").alias("poi_id"),
+            "name",
+            pl.col("x").cast(pl.Float64),
+            pl.col("y").cast(pl.Float64),
+            "lon",
+            "lat",
+            pl.when(pl.col("lsoa21cd").str.starts_with("S"))
+            .then(pl.lit(GP_SOURCES["S"]))
+            .otherwise(pl.lit(GP_SOURCES["E"]))
+            .alias("source"),
+            pl.lit(OGL).alias("licence"),
+            _detail(["practice_code", "postcode"]).alias("detail"),
         )  # fmt: skip
+    )
+
+    if (schools_frame := _school_pois(staged)) is not None:
+        frames.append(schools_frame)
+
+    # Chargers come from the merged table (OpenStreetMap, ESB, Open Charge Map), each
+    # with its own source and licence
+    chargers = pl.read_parquet(staged / "chargers.parquet")
+    frames.append(
+        chargers.select(
+            pl.lit("ev_charging").alias("category"),
+            pl.col("charger_id").alias("poi_id"),
+            "name",
+            "x",
+            "y",
+            "lon",
+            "lat",
+            "source",
+            "licence",
+            _detail(["points", "provider"]).alias("detail"),
+        )
     )
 
     osm = pl.read_parquet(staged / "osm_pois.parquet").filter(
@@ -216,7 +246,7 @@ def build_areas(features: pl.DataFrame) -> pl.DataFrame:
             pl.col("msoa_name"),
             other("msoa_name_cy"),
             none,
-            none,
+            other("msoa_name_ga"),
             pl.col("msoa21cd") != pl.col("lsoa21cd"),
         ),
         (

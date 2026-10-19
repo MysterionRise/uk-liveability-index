@@ -627,7 +627,7 @@ nrw_fraw_surface_water:
   notes: 2.8 million small polygons; a single GetFeature stops at the server's million, so it is paged.
 
 esa_worldcover:
-  coverage: [E, W, S, N]
+  coverage: [E, W, S, N, I]
   title: ESA WorldCover 10m land cover 2021 (v200)
   theme: environment
   access:
@@ -636,7 +636,7 @@ esa_worldcover:
     # 3° tiles named by their south-west corner: Great Britain from the Scillies to
     # Shetland (Northern Ireland sits in N54W009 too)
     tiles: [N48W009, N48W006, N48W003, N48E000, N51W006, N51W003, N51E000, N54W009, N54W006,
-            N54W003, N57W009, N57W006, N57W003, N60W003]
+            N54W003, N57W009, N57W006, N57W003, N60W003, N51W012, N51W009, N54W012]
   format: tif
   landing_page: https://esa-worldcover.org/en/data-access
   description: Land cover on a 10m grid from Sentinel-1 and Sentinel-2 imagery of 2021 (tree cover, shrubland, grassland, cropland, built-up, bare, water and more).
@@ -644,10 +644,10 @@ esa_worldcover:
   attribution: "© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium"
   cadence: static
   period: "2021"
-  size_hint: 480MB in 14 tiles
+  size_hint: 580MB in 17 tiles
 
 viirs_vnl:
-  coverage: [E, W, S, N]
+  coverage: [E, W, S, N, I]
   title: VIIRS annual night-time lights (Earth Observation Group VNL v2.2)
   theme: environment
   access:
@@ -1783,7 +1783,7 @@ osm_scotland:
 # check date on every row; the lockfile records their checksum like any download.
 
 ae_sites:
-  coverage: [E, W, S, N]
+  coverage: [E, W, S, N, I]
   title: Emergency departments and urgent-care sites (curated list)
   theme: health
   access: {type: curated, path: config/data/ae_sites.csv}
@@ -2370,13 +2370,13 @@ daera_noise_r3:
   notes: Round 4 (2021) is published only as a 1 GB geodatabase of rasters and map services, not downloadable layer by layer; the round 3 contours are the open vector set until that is readable.
 
 osm_ireland:
-  coverage: [N]
+  coverage: [N, I]
   title: OpenStreetMap Ireland and Northern Ireland extract (Geofabrik)
   theme: amenities
   access: {type: http, url: "https://download.geofabrik.de/europe/ireland-and-northern-ireland-latest.osm.pbf"}
   format: pbf
   landing_page: https://download.geofabrik.de/europe/ireland-and-northern-ireland.html
-  description: Every OpenStreetMap feature on the island of Ireland, read for Northern Ireland's places of interest, parks, nurseries, pharmacies and settlements; features south of the border fall outside every active area and drop out.
+  description: Every OpenStreetMap feature on the island of Ireland, read for Northern Ireland's and Ireland's places of interest, parks, nurseries, pharmacies, GPs, dentists and settlementsside every active area and drop out.
   licence: ODbL-1.0
   attribution: "© OpenStreetMap contributors, Open Database Licence (ODbL) 1.0."
   cadence: daily
@@ -2439,7 +2439,7 @@ logainm:
     page_param: Page
     per_page_param: PerPage
     per_page: 1000
-    items_key: Results
+    items_key: results
   format: json
   landing_page: https://www.logainm.ie/en/about/open-data
   description: Every place in Northern Ireland in the Placenames Database of Ireland, with its Irish and English names, category and coordinates, for the Irish names of settlements.
@@ -2448,3 +2448,610 @@ logainm:
   cadence: monthly
   size_hint: 20MB
   notes: Needs a free key from the Gaois Developer Hub (LOGAINM_API_KEY); without it the places keep the Irish forms OpenStreetMap carries. Logainm asks for monthly pulls at most.
+
+# ---------------------------------------------------------------------------------------
+# Ireland (v0.6.0): the Census 2022 geography and census, Tailte Éireann's boundaries and
+# buildings. Everything here is CC BY 4.0 from data.gov.ie and the Tailte Éireann portal.
+# ---------------------------------------------------------------------------------------
+
+cso_sa22_boundaries:
+  coverage: [I]
+  title: CSO Small Areas 2022 boundaries, ungeneralised (Tailte Éireann)
+  theme: geography
+  access:
+    type: arcgis_item
+    query: 'title:"CSO Small Areas - National Statistical Boundaries - 2022 - Ungeneralised" AND owner:TailteEireannMapGenie'
+    title_regex: '^CSO Small Areas - National Statistical Boundaries - 2022 - Ungeneralised'
+    item_type: Feature Service
+    pin: 70a33cbb8bd7406da0d571be28624721
+    mode: hub_export
+    export_format: geoPackage
+    hub: https://data-osi.opendata.arcgis.com
+  format: gpkg
+  landing_page: https://data-osi.opendata.arcgis.com/datasets/osi::cso-small-areas-national-statistical-boundaries-2022-ungeneralised
+  description: The 18,919 Small Areas of Census 2022 (80–120 dwellings each) with their Electoral Division, county, local electoral area and urban area, named in English and Irish, on the Irish Transverse Mercator.
+  licence: CC-BY-4.0
+  attribution: "Contains Tailte Éireann and Central Statistics Office data © Government of Ireland, licensed under CC BY 4.0."
+  cadence: static
+  period: "Census 2022 geography"
+  size_hint: 200MB
+
+cso_ed22_boundaries:
+  coverage: [I]
+  title: CSO Electoral Divisions 2022 boundaries, ungeneralised (Tailte Éireann)
+  theme: geography
+  access:
+    type: arcgis_item
+    query: 'title:"CSO Electoral Divisions - National Statistical Boundaries - 2022 - Ungeneralised" AND owner:TailteEireannMapGenie'
+    title_regex: '^CSO Electoral Divisions - National Statistical Boundaries - 2022 - Ungeneralised'
+    item_type: Feature Service
+    pin: deba50580cc24e4eb9cf50eb3cfebf69
+    mode: hub_export
+    export_format: geoPackage
+    layer: 1
+    hub: https://data-osi.opendata.arcgis.com
+  format: gpkg
+  landing_page: https://data-osi.opendata.arcgis.com/datasets/osi::cso-electoral-divisions-national-statistical-boundaries-2022-ungeneralised
+  description: The 3,417 CSO Electoral Divisions of Census 2022 (whole Small Areas; three amalgamated divisions come in two parts) with their county and local electoral area, named in English and Irish.
+  licence: CC-BY-4.0
+  attribution: "Contains Tailte Éireann and Central Statistics Office data © Government of Ireland, licensed under CC BY 4.0."
+  cadence: static
+  period: "Census 2022 geography"
+  size_hint: 80MB
+
+te_admin_areas:
+  coverage: [I]
+  title: Administrative Areas, National Statutory Boundaries 2019 (Tailte Éireann)
+  theme: geography
+  access:
+    type: arcgis_item
+    query: 'title:"Administrative Areas - National Statutory Boundaries - 2019" AND owner:TailteEireannMapGenie'
+    title_regex: '^Administrative Areas - National Statutory Boundaries - 2019$'
+    item_type: Feature Service
+    pin: d81188d16e804bde81548e982e80c53e
+    mode: featureserver
+    geometry: polygon
+  format: gpkg
+  landing_page: https://data-osi.opendata.arcgis.com/datasets/osi::administrative-areas-national-statutory-boundaries-2019
+  description: The 31 local authorities of Ireland (county, city, and city and county councils) with their county's Irish name and province; the map's outer zoom level there.
+  licence: CC-BY-4.0
+  attribution: "Contains Tailte Éireann data © Government of Ireland, licensed under CC BY 4.0."
+  cadence: static
+  period: "2019 statutory boundaries"
+  size_hint: 30MB
+
+cso_saps22_sa:
+  coverage: [I]
+  title: Census 2022 Small Area Population Statistics (CSO)
+  theme: geography
+  access: {type: http, url: "https://www.cso.ie/en/media/csoie/census/census2022/SAPS_2022_Small_Area_UR_171024.csv"}
+  format: csv
+  landing_page: https://www.cso.ie/en/census/census2022/census2022smallareapopulationstatistics/
+  description: Every Small Area's Census 2022 counts (age, sex, households, tenure, cars, commuting, health, education) with the CSO's six-class urban/rural classification; the population denominators and the urban/rural class of the Irish backbone.
+  licence: CC-BY-4.0
+  attribution: "Central Statistics Office, Census of Population 2022, Small Area Population Statistics, licensed under CC BY 4.0."
+  cadence: static
+  period: "Census 2022 (3 April 2022)"
+  size_hint: 40MB
+
+te_buildings:
+  coverage: [I]
+  title: Buildings, high value dataset (Tailte Éireann)
+  theme: geography
+  access:
+    type: arcgis_item
+    query: 'title:"High Value Dataset - Buildings" AND owner:TailteEireannMapGenie'
+    title_regex: '^High Value Dataset - Buildings$'
+    item_type: Feature Service
+    pin: cd14d445bb6d4af586f4edcfa01da895
+    mode: hub_export
+    export_format: geoPackage
+    hub: https://data-osi.opendata.arcgis.com
+  format: gpkg
+  landing_page: https://data.gov.ie/dataset/high-value-dataset-buildings
+  description: Every permanent roofed building in Ireland (3.8 million footprints, no use attribute); their centroids stand in for homes where there is no open postcode file, after dropping footprints too small or too large to be dwellings.
+  licence: CC-BY-4.0
+  attribution: "Contains Tailte Éireann data © Government of Ireland, licensed under CC BY 4.0."
+  cadence: adhoc
+  size_hint: 1GB
+  notes: The hub export is a 1 GB GeoPackage behind a redirect to blob storage. Footprints between 20 and 1,000 m² are kept as home points (Dublin's median dwelling footprint is about 70 m²); the share dropped is documented in the methodology.
+
+ie_local_authorities:
+  coverage: [I]
+  title: Ireland's local authorities by Census 2022 county code (curated)
+  theme: geography
+  access: {type: curated, path: config/data/ie_local_authorities.csv}
+  format: csv
+  description: The 34 county codes of the Census 2022 Small Area file mapped to the 31 local authorities (the three city-and-county mergers of 2014), with each council's code, English and Irish names and the name Tailte Éireann's boundary file uses.
+  licence: CC0-1.0
+  attribution: "Council names after the Placenames Database of Ireland (logainm.ie); the list itself is CC0 1.0."
+  cadence: adhoc
+  size_hint: 3KB
+
+# EPA Ireland's Round 4 strategic noise maps (2021 traffic), one WFS layer per source:
+# Lden contour bands (55–59 … 75+ dB) on GeoServer, which reprojects to the working grid
+
+epa_noise_road_agg:
+  coverage: [I]
+  title: Noise Round 4 Road Agglomerations Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Road_Agglomerations_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-road-agglomerations-lden
+  description: Lden noise contour bands from road traffic in the Dublin, Cork, Limerick, Galway and Waterford agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 1GB (detailed contours)
+
+epa_noise_road_nat:
+  coverage: [I]
+  title: Noise Round 4 Road National Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Road_National_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-road-national-lden
+  description: Lden noise contour bands from the national roads carrying more than three million vehicles a year, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 260MB
+
+epa_noise_rail_agg:
+  coverage: [I]
+  title: Noise Round 4 Rail Agglomerations Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Rail_Agglomerations_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-rail-agglomerations-lden
+  description: Lden noise contour bands from railways and Luas lines inside the agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 26MB
+
+epa_noise_rail_nat:
+  coverage: [I]
+  title: Noise Round 4 Rail National Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Rail_National_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-rail-national-lden
+  description: Lden noise contour bands from the railways carrying more than 30,000 trains a year, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 43MB
+
+epa_noise_air_nat:
+  coverage: [I]
+  title: Noise Round 4 Airport National Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Airport_National_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-airport-national-lden
+  description: Lden noise contour bands from Dublin, Cork and Shannon airports, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 1MB
+
+epa_noise_industry_agg:
+  coverage: [I]
+  title: Noise Round 4 Industry Agglomerations Lden contours (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:Noise_R4_Industry_Agglomerations_Lden
+    sort_by: Name
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/noise-round-4-industry-agglomerations-lden
+  description: Lden noise contour bands from industrial sites inside the agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Round 4 (2021 traffic)"
+  size_hint: 22MB
+
+# Ireland's community, transport and climate sources (v0.6.0)
+
+pobal_hp_2022:
+  coverage: [I]
+  title: Pobal HP Deprivation Index 2022 by Electoral Division (Pobal)
+  theme: community
+  access: {type: http, url: "https://www.pobal.ie/wp-content/uploads/2024/01/hp-deprivation-index-scores-2022.csv"}
+  format: csv
+  landing_page: https://data.gov.ie/dataset/pobal-hp-deprivation-index-scores-2022
+  description: The relative and absolute HP deprivation index of every CSO Electoral Division from Census 2022, with the census rates behind it (unemployment, lone parents, education, social class, tenure, overcrowding); the Small Area version is licensed, so divisions stand in.
+  licence: CC-BY-4.0
+  attribution: "Pobal HP Deprivation Index 2022 (Trutz Haase and Jonathan Pratschke for Pobal), licensed under CC BY 4.0."
+  cadence: adhoc
+  period: "Census 2022"
+  size_hint: 450KB
+
+nta_gtfs:
+  coverage: [I]
+  title: Transport for Ireland GTFS timetables, every operator (NTA)
+  theme: transport
+  access: {type: http, url: "https://www.transportforireland.ie/transitData/Data/GTFS_All.zip"}
+  format: zip
+  extract: ["*.txt"]
+  landing_page: https://data.gov.ie/dataset/nta-gtfs
+  description: Static GTFS timetables for every public transport operator in Ireland (Dublin Bus, Bus Éireann, Go-Ahead, Irish Rail, Luas, Local Link and the commercial operators), with stops, routes and stop times, for bus frequency and the rail and Luas stops.
+  licence: CC-BY-4.0
+  attribution: "National Transport Authority, Transport for Ireland GTFS data, licensed under CC BY 4.0."
+  cadence: weekly
+  size_hint: 160MB zipped, 750MB extracted
+
+comreg_gigabit:
+  coverage: [I]
+  title: Gigabit and FTTP broadband coverage by Electoral Division (ComReg)
+  theme: transport
+  access:
+    type: arcgis_item
+    query: 'title:"Ireland Gigabit Statistics Public Data View" AND owner:open_comreg'
+    title_regex: 'Ireland Gigabit Statistics Public Data View'
+    item_type: Feature Service
+    pin: d57d56df83f142989c21a670593c9065
+    mode: featureserver
+    layer: 3
+    fields: [ED_ID_STR, ED_ENGLISH, COUNTY_CODE, Premise_Count_Public_View, Gigabit_Passed_PCT_Public_View, Gigabit_NBI_Passed_PCT_Public_View, Gigabit_Active_PCT_Public_View]
+  format: parquet
+  landing_page: https://datamaps-comreg.hub.arcgis.com/
+  description: The share of premises in each CSO Electoral Division passed by a gigabit-capable network (and taking one up), from ComReg's quarterly analysis of operators' returns against Eircodes; the Small Area layer carries premise counts only.
+  licence: CC-BY-4.0
+  attribution: "FTTP and Gigabit data © An Coimisiún um Rialáil Cumarsáide | Commission for Communications Regulation (Creative Commons Licence); boundaries © Central Statistics Office."
+  cadence: quarterly
+  size_hint: 500KB
+
+met_eireann_temp_9120:
+  coverage: [I]
+  title: Long-term air temperature averages 1991–2020, 1 km grids (Met Éireann)
+  theme: climate
+  access: {type: http, url: "https://www.met.ie/cms/assets/uploads/2024/07/IE_TEMP_9120_V2.zip"}
+  format: zip
+  extract: ["*.txt"]
+  landing_page: https://www.met.ie/climate/30-year-averages
+  description: Monthly, seasonal and annual mean, maximum and minimum air temperature for 1991–2020 on a 1 km grid over Ireland (Climatological Note 23), on the Irish Grid.
+  licence: CC-BY-4.0
+  licence_verified: false
+  attribution: "Met Éireann, long-term air temperature averages 1991–2020; © Met Éireann, reused under CC BY 4.0 as Met Éireann's data on data.gov.ie is."
+  cadence: static
+  period: "1991–2020 averages"
+  size_hint: 3MB zipped
+  notes: The zip's readme says only "(c) copyright Met Éireann"; the same product line's 1981–2010 grids are published on data.gov.ie under CC BY 4.0. Met Éireann has been asked to confirm; until then the licence is recorded as unverified and the fetch warns.
+
+met_eireann_rr_9120:
+  coverage: [I]
+  title: Long-term rainfall averages 1991–2020, 1 km grids (Met Éireann)
+  theme: climate
+  access: {type: http, url: "https://www.met.ie/cms/assets/uploads/2024/07/IE_RR_9120_V2.zip"}
+  format: zip
+  extract: ["*.txt"]
+  landing_page: https://www.met.ie/climate/30-year-averages
+  description: Monthly, seasonal and annual rainfall totals for 1991–2020 on a 1 km grid over Ireland (Climatological Note 22), on the Irish Grid; no rain-day or sunshine grids are published.
+  licence: CC-BY-4.0
+  licence_verified: false
+  attribution: "Met Éireann, long-term rainfall averages 1991–2020; © Met Éireann, reused under CC BY 4.0 as Met Éireann's data on data.gov.ie is."
+  cadence: static
+  period: "1991–2020 averages"
+  size_hint: 2.5MB zipped
+  notes: See met_eireann_temp_9120 on the licence.
+
+# Ireland's recorded crime: counts by Garda station (CSO, from PULSE) spread over the
+# Census 2011 Garda sub-district polygons by population
+
+cso_cja11:
+  coverage: [I]
+  title: Recorded crime incidents by Garda station, type of offence and year (CSO, CJA11)
+  theme: safety
+  access: {type: http, url: "https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/CJA11/CSV/1.0/en"}
+  format: csv
+  landing_page: https://data.cso.ie/table/CJA11
+  description: Recorded crime incidents at each of the 564 Garda stations by offence group (ICCS) and year, 2003 to the latest full year, under the new Garda operating model; statistics under reservation, compiled from PULSE.
+  licence: CC-BY-4.0
+  attribution: "Central Statistics Office, Recorded Crime (statistics under reservation), licensed under CC BY 4.0."
+  cadence: quarterly
+  size_hint: 30MB
+
+cso_garda_subdistricts:
+  coverage: [I]
+  title: Garda sub-district boundaries, Census 2011 boundary files (CSO)
+  theme: safety
+  access: {type: http, url: "https://www.cso.ie/en/media/csoie/census/census2011boundaryfiles/Garda_Sub_Districts.zip"}
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj", "*.cpg"]
+  landing_page: https://data.gov.ie/dataset/census-2011-boundary-files
+  description: The 563 Garda sub-districts of 2011 (one per station) with their Irish names and 2011 census populations, on the Irish Grid; the areas each station's crime is spread over.
+  licence: CC-BY-4.0
+  attribution: "Central Statistics Office, Census 2011 boundary files (Garda sub-districts), licensed under CC BY 4.0."
+  cadence: static
+  period: "2011 sub-districts"
+  size_hint: 26MB
+
+garda_station_aliases:
+  coverage: [I]
+  title: Garda station names matched to the 2011 sub-districts (curated)
+  theme: safety
+  access: {type: curated, path: config/data/garda_station_aliases.csv}
+  format: csv
+  description: The 82 station names in the CSO's crime table that differ from the 2011 sub-district names (Irish forms, spellings, "Co. Clare" suffixes, stations opened since), each with its sub-district and county.
+  licence: CC0-1.0
+  attribution: "Curated for this index (CC0 1.0)."
+  cadence: adhoc
+  size_hint: 3KB
+
+
+# ---------------------------------------------------------------------------------------
+# Riding with v0.6.0 across the UK and Ireland: listed buildings (#40), radon potential
+# (#126) and public chargers beyond OpenStreetMap (#35, #124)
+# ---------------------------------------------------------------------------------------
+
+nhle_listed:
+  coverage: [E]
+  title: National Heritage List for England, listed building points (Historic England)
+  theme: amenities
+  access:
+    type: arcgis_item
+    pin: 767f279327a24845bf47dfe5eae9862b
+    mode: featureserver
+    layer: 0
+    fields: [ListEntry, Name, Grade, Easting, Northing]
+    geometry: none
+  format: parquet
+  landing_page: https://opendata-historicengland.hub.arcgis.com/
+  description: Every listed building in England as a point (grade I, II* or II), with its list entry and grid reference.
+  licence: OGL-3.0
+  attribution: "© Historic England 2026. Contains Ordnance Survey data © Crown copyright and database right 2026. The Historic England GIS Data contained in this material was obtained in October 2026."
+  cadence: monthly
+  size_hint: 380k rows in 190 pages
+  notes: The layer is multipoint, so the eastings and northings travel as fields rather than geometry; the hub item is pinned (it belongs to Historic England's hub, which the ONS geoportal search does not reach).
+
+cadw_listed:
+  coverage: [W]
+  title: Cadw listed buildings (DataMapWales)
+  theme: amenities
+  access:
+    type: wfs
+    url: https://datamap.gov.wales/geoserver/ows
+    typename: inspire-wg:Cadw_ListedBuildings
+    sort_by: RecordNumber
+  format: gpkg
+  landing_page: https://datamap.gov.wales/layers/inspire-wg:Cadw_ListedBuildings
+  description: Every listed building in Wales as a point, with its grade and its English and Welsh names.
+  licence: OGL-3.0
+  attribution: "Cadw listed buildings © Hawlfraint y Goron / Crown copyright, Welsh Government, licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  size_hint: 30k points
+
+hes_listed:
+  coverage: [S]
+  title: Listed buildings by category (Historic Environment Scotland)
+  theme: amenities
+  access:
+    type: arcgis_layer
+    url: https://inspire.hes.scot/arcgis/rest/services/HES/Listed_Buildings/MapServer/0
+    fields: [ENT_REF, ENT_TITLE, CATEGORY]
+    geometry: point
+  format: parquet
+  landing_page: https://portal.historicenvironment.scot/spatialdownloads
+  description: Every listed building in Scotland as a point, with its category (A, B or C) and designation reference.
+  licence: OGL-3.0
+  attribution: "© Historic Environment Scotland. Listed buildings data licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  size_hint: 67k points in 14 ranges
+  notes: The INSPIRE server cannot page by offset, so the fetcher reads ranges of object ids.
+
+dfc_listed:
+  coverage: [N]
+  title: Listed buildings in Northern Ireland (Department for Communities)
+  theme: amenities
+  access:
+    type: arcgis_layer
+    url: https://services2.arcgis.com/BdBkthNLO9mzGAMO/arcgis/rest/services/Listed_Buildings_Centroid/FeatureServer/0
+    fields: [HB_ref, Address, CurrentGra]
+    geometry: point
+  format: parquet
+  landing_page: https://admin.opendatani.gov.uk/dataset/listed-buildings-northern-ireland
+  description: Every listed building in Northern Ireland as a centroid, with its HB reference, address and current grade (A, B+, B1 or B2).
+  licence: OGL-3.0
+  attribution: "Department for Communities, Historic Environment Division, listed buildings, licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  size_hint: 10k points
+
+niah_buildings:
+  coverage: [I]
+  title: National Inventory of Architectural Heritage, buildings (Department of Housing, Local Government and Heritage)
+  theme: amenities
+  access:
+    type: arcgis_layer
+    url: https://services-eu1.arcgis.com/HyjXgkV6KGMSF3jt/arcgis/rest/services/NIAHBuildingsOpenData/FeatureServer/0
+    fields: [REG_NO, NAME, RATING, ORIGINAL_TYPE, COUNTY]
+    geometry: point
+  format: parquet
+  landing_page: https://data.gov.ie/dataset/national-inventory-of-architectural-heritage-niah-national-dataset
+  description: Every building surveyed for the National Inventory of Architectural Heritage, with its rating (International, National, Regional, Local or Record only). The statutory lists, the councils' Records of Protected Structures, have no national open file; a regional rating or above is the Minister's recommendation for them.
+  licence: CC-BY-4.0
+  attribution: "National Inventory of Architectural Heritage, Department of Housing, Local Government and Heritage, licensed under CC BY 4.0."
+  cadence: adhoc
+  size_hint: 48k points in 25 pages
+
+bgs_radon_gb:
+  coverage: [E, W, S]
+  title: Indicative Atlas of Radon, Great Britain v3 (BGS and UKHSA)
+  theme: environment
+  access:
+    type: http
+    url: "https://api.os.uk/downloads/v1/products/Radon_Indicative_Atlas/downloads?area=GB&format=GeoPackage&redirect"
+  format: zip
+  extract: ["*.gpkg"]
+  landing_page: https://www.ukradon.org/information/ukmaps
+  description: One-kilometre grid squares of Great Britain with the highest radon-potential class in the square, from 1 (under 1% of homes above the action level) to 6 (over 30%).
+  licence: OGL-3.0
+  attribution: "Contains British Geological Survey materials © UKRI 2026 and UK Health Security Agency data, licensed under the Open Government Licence v3.0."
+  cadence: static
+  size_hint: 10MB zipped
+
+bgs_radon_ni:
+  coverage: [N]
+  title: Indicative Atlas of Radon, Northern Ireland v1 (BGS and UKHSA)
+  theme: environment
+  access:
+    type: http
+    url: "https://api.os.uk/downloads/v1/products/Radon_Indicative_Atlas/downloads?area=NI&format=GeoPackage&redirect"
+  format: zip
+  extract: ["*.gpkg"]
+  landing_page: https://www.ukradon.org/information/ukmaps
+  description: One-kilometre grid squares of Northern Ireland with the highest radon-potential class in the square, on the Great Britain atlas's six classes.
+  licence: OGL-3.0
+  attribution: "Contains British Geological Survey materials © UKRI 2026 and UK Health Security Agency data, licensed under the Open Government Licence v3.0."
+  cadence: static
+  size_hint: 3MB zipped
+
+epa_radon:
+  coverage: [I]
+  title: Radon Map of Ireland (EPA)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:RAD_RadonMap
+    sort_by: PERCENT_
+    srs: EPSG:4326
+  format: geojson
+  landing_page: https://data.gov.ie/dataset/radon-map
+  description: Ten-kilometre grid squares of Ireland with the share of homes estimated to be above the reference level; ten per cent and over is a High Radon Area.
+  licence: CC-BY-4.0
+  attribution: "Radon Map of Ireland, Environmental Protection Agency, licensed under CC BY 4.0."
+  cadence: adhoc
+  size_hint: 868 polygons
+
+esb_ev_sites:
+  coverage: [N, I]
+  title: ESB ecars public charging network (island of Ireland)
+  theme: transport
+  access:
+    type: http
+    url: https://cdn.esb.ie/media-staging/docs/default-source/ecars/its-data-ecars-sites/its-data-ecars-sites-roi-ni.csv
+  format: csv
+  landing_page: https://data.gov.ie/dataset/esb-ev-public-charging-network
+  description: Every ESB public charging site on the island with its chargers, connector types and power, and its coordinates.
+  licence: CC-BY-4.0
+  attribution: "ESB ecars public charging network data, ESB, licensed under CC BY 4.0."
+  cadence: adhoc
+  size_hint: 130KB
+  notes: Last changed in December 2024. OpenStreetMap leads and this augments it; a site within 50 m of a mapped station is taken to be the same site.
+
+open_charge_map_gb:
+  coverage: [E, W, S, N]
+  title: Open Charge Map, United Kingdom
+  theme: transport
+  access:
+    type: api_key
+    url: "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json"
+    env: OCM_API_KEY
+    query: key
+    signup: https://openchargemap.org/site/profile/applications
+    timeout_s: 600
+  format: json
+  landing_page: https://openchargemap.org/site/develop/api
+  description: Public charging locations across the UK with their points and connectors; each location names its data provider and whether that provider's data is openly licensed, and only those are used.
+  licence: CC-BY-4.0
+  attribution: "Open Charge Map data © Open Charge Map contributors, licensed under CC BY 4.0; imported locations carry their provider's own licence and only openly licensed ones are used."
+  cadence: daily
+  size_hint: 200MB
+  notes: Needs a free key (OCM_API_KEY) from an Open Charge Map account; without it the chargers come from OpenStreetMap (and ESB on the island of Ireland).
+
+open_charge_map_ie:
+  coverage: [I]
+  title: Open Charge Map, Ireland
+  theme: transport
+  access:
+    type: api_key
+    url: "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json"
+    env: OCM_API_KEY
+    query: key
+    signup: https://openchargemap.org/site/profile/applications
+    timeout_s: 600
+  format: json
+  landing_page: https://openchargemap.org/site/develop/api
+  description: Public charging locations across Ireland with their points and connectors; only locations from openly licensed providers are used.
+  licence: CC-BY-4.0
+  attribution: "Open Charge Map data © Open Charge Map contributors, licensed under CC BY 4.0; imported locations carry their provider's own licence and only openly licensed ones are used."
+  cadence: daily
+  size_hint: 20MB
+  notes: Needs a free key (OCM_API_KEY); see open_charge_map_gb.
+
+# ---------------------------------------------------------------------------------------
+# Ireland's air quality: the EEA's interpolated 1 km maps of Europe (the UK keeps Defra's
+# model). The share token addresses the EEA datastore's public folders.
+# ---------------------------------------------------------------------------------------
+
+x-eea-aq: &eea_aq
+  coverage: [I]
+  theme: environment
+  format: tif
+  licence: CC-BY-4.0
+  attribution: "European Environment Agency, European air quality data interpolated at 1 km (2023), licensed under CC BY 4.0."
+  cadence: annual
+  period: "2023"
+  size_hint: 80MB
+
+eea_aq_no2:
+  <<: *eea_aq
+  title: EEA interpolated annual mean NO2, 1 km grid of Europe, 2023
+  access:
+    type: http
+    url: "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-no2_p_2023_v01_r00&files=no2_avg_23.tif"
+  landing_page: https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5?path=%2Feea_r_3035_1_km_aq-interpolated-no2_p_2023_v01_r00
+  description: Annual mean nitrogen dioxide, µg/m³, on the EEA's 1 km grid of Europe (EPSG:3035), interpolated from monitoring stations and the CAMS model; Ireland's background air quality.
+
+eea_aq_pm25:
+  <<: *eea_aq
+  title: EEA interpolated annual mean PM2.5, 1 km grid of Europe, 2023
+  access:
+    type: http
+    url: "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-pm25_p_2023_v01_r00&files=pm25_avg_23.tif"
+  landing_page: https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5?path=%2Feea_r_3035_1_km_aq-interpolated-pm25_p_2023_v01_r00
+  description: Annual mean fine particles (PM2.5), µg/m³, on the EEA's 1 km grid of Europe (EPSG:3035); Ireland's background air quality.
+
+eea_aq_pm10:
+  <<: *eea_aq
+  title: EEA interpolated annual mean PM10, 1 km grid of Europe, 2023
+  access:
+    type: http
+    url: "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-pm10_p_2023_v01_r00&files=pm10_avg_23.tif"
+  landing_page: https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5?path=%2Feea_r_3035_1_km_aq-interpolated-pm10_p_2023_v01_r00
+  description: Annual mean particles (PM10), µg/m³, on the EEA's 1 km grid of Europe (EPSG:3035); Ireland's background air quality.

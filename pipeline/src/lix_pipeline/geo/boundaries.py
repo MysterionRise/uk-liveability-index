@@ -6,8 +6,8 @@ import geopandas as gpd
 import pandas as pd
 import polars as pl
 
-from lix_core.codes import active_nations, area_code_regex
-from lix_core.config import load_nations
+from lix_core.codes import active_nations, area_code_regex, minted_codes
+from lix_core.config import LevelName, load_nations
 from lix_core.geo import working_crs
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
@@ -32,7 +32,10 @@ def _code_column(columns: list[str], code_column: str | None) -> str:
 
 
 def load_boundaries(
-    slug: str, code_column: str | None = None, simplify_tolerance: float = 0.0
+    slug: str,
+    code_column: str | None = None,
+    simplify_tolerance: float = 0.0,
+    recode: tuple[str, LevelName] | None = None,
 ) -> gpd.GeoDataFrame:
     """The polygons downloaded under ``data/raw/{slug}`` (a GeoPackage or a shapefile),
     indexed by their code as ``lsoa21cd`` whatever the publisher calls it, in the
@@ -40,7 +43,9 @@ def load_boundaries(
     reprojected; a file without a CRS is taken to be in the working one).
 
     ``code_column`` names the code attribute when the file has no ``*CD``-style column;
-    ``simplify_tolerance`` (metres) simplifies full-resolution polygons.
+    ``simplify_tolerance`` (metres) simplifies full-resolution polygons. ``recode``
+    (nation, level) mints the codes from the publisher's ids (``lix_core.codes.
+    minted_codes``); polygons sharing a code (a division in two parts) are dissolved.
     """
     folder = data_dir("raw") / slug
     files = sorted(folder.glob("*.gpkg")) or sorted(folder.glob("**/*.shp"))
@@ -58,6 +63,14 @@ def load_boundaries(
     code = _code_column(list(gdf.columns), code_column)
     if code != "lsoa21cd":
         gdf = gdf.rename(columns={code: "lsoa21cd"})
+    gdf["lsoa21cd"] = gdf["lsoa21cd"].astype(str).str.strip()
+    if recode is not None:
+        nation, level = recode
+        gdf["lsoa21cd"] = gdf["lsoa21cd"].map(minted_codes(nation, level, gdf["lsoa21cd"]))
+    if gdf["lsoa21cd"].duplicated().any():
+        parts = len(gdf)
+        gdf = gdf.dissolve(by="lsoa21cd", as_index=False, aggfunc="first")
+        logger.info(f"{slug}: {parts - len(gdf)} polygons dissolved into their areas")
     if simplify_tolerance > 0:
         gdf["geometry"] = gdf["geometry"].simplify(tolerance=simplify_tolerance)
     gdf = gdf.set_index("lsoa21cd")
@@ -89,10 +102,12 @@ def tier_polygons(
         # ``code_column`` names the low tier's code; it applies to the mid pass too when
         # a nation's low areas are their own mid tier (Northern Ireland's Super Data Zones)
         same_file = spec.mid_boundaries == spec.low_boundaries
+        column = spec.code_column if level == "low" or same_file else spec.mid_code_column
         gdf = load_boundaries(
             slug,
-            code_column=spec.code_column if level == "low" or same_file else None,
+            code_column=column,
             simplify_tolerance=spec.simplify_m if simplify else 0.0,
+            recode=(users[0], level) if spec.minted_codes else None,
         )
         frames.append(gdf[gdf.index.str.match(area_code_regex(level, nations=users))])
     out = pd.concat(frames) if len(frames) > 1 else frames[0]
@@ -113,3 +128,23 @@ def bounds_table(gdf: gpd.GeoDataFrame) -> pl.DataFrame:
             "bbox_n": bbox["maxy"].to_numpy(),
         }
     )
+
+
+def upper_polygons(nation: str) -> gpd.GeoDataFrame:
+    """A nation's upper-tier polygons (``lad_cd``, ``lad_nm``, geometry) in the working
+    CRS: the UK local-authority file filtered to the nation's codes, or the nation's own
+    file through its builder (Ireland's councils, named through the curated list)."""
+    spec = load_nations().nations[nation]
+    if spec.geo_builder == "geo_ie":
+        from lix_pipeline.stage.geo_ie import upper_polygons as ireland
+
+        return ireland()
+    gdf = gpd.read_file(
+        data_dir("raw") / spec.geo.upper_boundaries / f"{spec.geo.upper_boundaries}.gpkg"
+    )
+    code = next(c for c in gdf.columns if c.upper().startswith("LAD") and c.upper().endswith("CD"))
+    gdf = gdf.rename(columns={code: "lad_cd", code[:-2] + "NM": "lad_nm"})
+    gdf = gdf[gdf["lad_cd"].str.match(area_code_regex("upper", nations=(nation,)))]
+    if gdf.crs is None or gdf.crs.to_epsg() != working_crs():
+        gdf = gdf.set_crs(working_crs()) if gdf.crs is None else gdf.to_crs(working_crs())
+    return gpd.GeoDataFrame(gdf[["lad_cd", "lad_nm", "geometry"]], crs=working_crs())

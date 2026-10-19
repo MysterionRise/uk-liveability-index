@@ -116,7 +116,8 @@ class Store:
         """Features without the default preset's scores, for re-scoring with any weights."""
         return self.features.select(
             pl.exclude(r"^theme__.*$", r"^theme_pct__.*$", r"^theme_pct_nation__.*$",
-                       r"^theme_coverage__.*$", "overall", "overall_pct", "overall_pct_nation",
+                       r"^theme_pct_ruc_class__.*$", r"^theme_coverage__.*$", "overall",
+                       "overall_pct", "overall_pct_nation", "overall_pct_ruc_class",
                        "coverage", "band")
         )  # fmt: skip
 

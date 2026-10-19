@@ -160,8 +160,8 @@ def resolve_weights(
 
 
 def scores_for(store: Store, themes: ThemeWeights, multipliers: dict[str, float]) -> pl.DataFrame:
-    """Per-LSOA theme scores, overall and percentiles (country-wide and within the
-    nation) for these weights.
+    """Per-LSOA theme scores, overall and percentiles (across the build, within the
+    nation and within the urban/rural class) for these weights.
 
     Computing every LSOA takes a few milliseconds; results are cached on the store per
     weighting, since a conversation reuses the same few.
@@ -177,7 +177,7 @@ def scores_for(store: Store, themes: ThemeWeights, multipliers: dict[str, float]
             scored,
             themes,
             multipliers,
-            group="nation",
+            group=["nation", "ruc_class"],
             applicable=store.applicable,
             theme_gaps=store.theme_gaps,
         )

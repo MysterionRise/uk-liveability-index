@@ -41,22 +41,35 @@ export interface LevelMeta {
 
 export interface NationMeta {
   name: string;
+  /** The country the nation belongs to (a key of Geography.countries) */
+  country: string;
   ctry_cd: string;
   bbox: [number, number, number, number];
   levels: Record<string, LevelMeta>;
   /** Themes the nation's open data cannot cover: shown as limited data, left out of its overall */
   theme_gaps?: string[];
+  /** The nation's name in the other interface languages */
+  names?: Record<string, string>;
+}
+
+export interface CountryMeta {
+  name: string;
+  /** How copy refers to it ("the UK", "Ireland") */
+  short: string;
+  names?: Record<string, string>;
+  currency: string;
+  locale: string;
+  /** Null where there is no open postcode file (Ireland) */
+  postcode_regex: string | null;
+  bbox: [number, number, number, number];
+  /** Every nation of the country, active in this build or not */
+  nations: string[];
 }
 
 export interface Geography {
-  country: {
-    code: string;
-    name: string;
-    currency: string;
-    locale: string;
-    bbox: [number, number, number, number];
-    area_key: string;
-  };
+  build: { working_crs: number; area_key: string };
+  /** The countries of the nations in this build */
+  countries: Record<string, CountryMeta>;
   nations: Record<string, NationMeta>;
   /** Nation codes in this build, in config order */
   active: string[];
@@ -92,6 +105,8 @@ export interface Manifest {
     }
   >;
   scored_indicators: string[];
+  /** Context indicators whose percentiles the browser table also carries (mappable) */
+  context_indicators?: string[];
   indicators: IndicatorMeta[];
   themes: Record<string, { label: string; description: string }>;
   default_preset: string;
@@ -196,7 +211,9 @@ async function readScores(manifest: Manifest, url: string): Promise<ScoreData> {
   const indicators: Record<string, Float64Array> = {};
   const quality: Record<string, Uint8Array> = {};
   const missing = Math.max(0, manifest.quality_levels.indexOf("missing"));
-  for (const id of manifest.scored_indicators) {
+  // Context indicators ride along when the pack carries them (older packs do not)
+  const context = (manifest.context_indicators ?? []).filter((id) => n === 0 || id in rows[0]);
+  for (const id of [...manifest.scored_indicators, ...context]) {
     const col = new Float64Array(n);
     const q = new Uint8Array(n);
     for (let i = 0; i < n; i++) {
@@ -225,9 +242,12 @@ async function readScores(manifest: Manifest, url: string): Promise<ScoreData> {
 }
 
 /**
- * The nations in this build for copy: "England, Wales and Scotland"; all four read as "the UK".
- * `name` translates a nation code (the "Nations" catalogue) and `list` joins names in
- * the interface language; without them the manifest's English names are used.
+ * The nations in this build for copy, grouped by country: a country whose every nation is
+ * in reads by its name ("the UK", "Ireland", "the UK and Ireland"), a cut of one by its
+ * nations ("England and Wales"). `name` translates a nation or country code (the
+ * "Nations" catalogue: nation letters, "uk", "IE") and `list` joins names in the interface
+ * language; without them the manifest's English names are used. `codes` names the
+ * nations to describe instead of the build's.
  */
 export function coverageName(
   manifest: Manifest | null | undefined,
@@ -238,13 +258,43 @@ export function coverageName(
   const geo = manifest?.geography;
   const uk = name ? name("uk") : "the UK";
   if (!geo) return uk;
-  const names = (codes ?? geo.active).map((c) =>
-    name ? name(c) : (geo.nations[c]?.name ?? c),
-  );
-  if (names.length === 0 || names.length >= 4) return uk;
-  if (names.length === 1) return names[0];
-  if (list) return list(names);
-  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+  const active = codes ?? geo.active;
+  const countryOf = (c: string) => geo.nations[c]?.country ?? "UK";
+  const parts: string[] = [];
+  for (const country of [...new Set(active.map(countryOf))]) {
+    const nations = active.filter((c) => countryOf(c) === country);
+    const whole = geo.countries?.[country]?.nations ?? (country === "UK" ? ["E", "W", "S", "N"] : nations);
+    if (whole.every((n) => nations.includes(n))) {
+      const key = country === "UK" ? "uk" : country;
+      parts.push(name ? name(key) : (geo.countries?.[country]?.short ?? country));
+    } else {
+      parts.push(...nations.map((c) => (name ? name(c) : (geo.nations[c]?.name ?? c))));
+    }
+  }
+  if (parts.length === 0) return uk;
+  if (parts.length === 1) return parts[0];
+  if (list) return list(parts);
+  return `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
+}
+
+/** The nations of the build (or `codes`) as a shape for the coverage phrases: a whole
+ * UK, a whole Ireland, both, a single nation, England and Wales, or something else. */
+export function coverageShape(
+  manifest: Manifest | null | undefined,
+  codes?: string[],
+): "uk" | "I" | "uk_I" | "E_W" | string | null {
+  const geo = manifest?.geography;
+  if (!geo) return "uk";
+  const active = codes ?? geo.active;
+  if (active.length === 0) return "uk";
+  const ukNations = geo.countries?.UK?.nations ?? ["E", "W", "S", "N"];
+  const wholeUk = ukNations.every((n) => active.includes(n));
+  const ireland = active.includes("I");
+  if (wholeUk && ireland && active.length === ukNations.length + 1) return "uk_I";
+  if (wholeUk && active.length === ukNations.length) return "uk";
+  if (active.length === 1) return active[0];
+  if (active.length === 2 && active.join("_") === "E_W") return "E_W";
+  return null;
 }
 
 /**
@@ -273,7 +323,15 @@ export function activeBbox(
   const boxes = geo.active
     .map((c) => geo.nations[c]?.bbox)
     .filter((b): b is NationMeta["bbox"] => !!b);
-  if (boxes.length === 0) return geo.country.bbox;
+  if (boxes.length === 0) {
+    const all = Object.values(geo.countries).map((c) => c.bbox);
+    return [
+      Math.min(...all.map((b) => b[0])),
+      Math.min(...all.map((b) => b[1])),
+      Math.max(...all.map((b) => b[2])),
+      Math.max(...all.map((b) => b[3])),
+    ];
+  }
   return [
     Math.min(...boxes.map((b) => b[0])),
     Math.min(...boxes.map((b) => b[1])),

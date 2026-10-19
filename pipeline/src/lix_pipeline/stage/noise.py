@@ -10,6 +10,7 @@ indicator means the same everywhere: the share of homes in mapped noise. Cells w
 mapped source hold 0 dB (or nodata), so a home on an unmapped minor road reads as quiet.
 """
 
+import re
 from pathlib import Path
 
 import numpy as np
@@ -23,8 +24,8 @@ from lix_pipeline.geo.rasters import sample_tiles_at_points
 
 logger = setup_logging("stage.noise")
 
-# nation → kind (road, rail, air, industry, all) → metric → registry slug
-NOISE_SOURCES: dict[str, dict[str, dict[str, str]]] = {
+# nation → kind (road, rail, air, industry, all) → metric → registry slug(s)
+NOISE_SOURCES: dict[str, dict[str, dict[str, str | list[str]]]] = {
     "E": {
         "road": {"lden": "defra_noise_road_lden"},
         "rail": {"lden": "defra_noise_rail_lden"},
@@ -46,8 +47,17 @@ NOISE_SOURCES: dict[str, dict[str, dict[str, str]]] = {
         "air": {"lden": "daera_noise_r3"},
         "industry": {"lden": "daera_noise_r3"},
     },
+    # Ireland: round 4 contour polygons (EPA), one WFS layer per source, the agglomerations
+    # and the national roads, railways and airports in separate layers
+    "I": {
+        "road": {"lden": ["epa_noise_road_agg", "epa_noise_road_nat"]},
+        "rail": {"lden": ["epa_noise_rail_agg", "epa_noise_rail_nat"]},
+        "air": {"lden": ["epa_noise_air_nat"]},
+        "industry": {"lden": ["epa_noise_industry_agg"]},
+    },
 }
-# Contour shapefiles per kind inside a polygon source (globs under its raw folder)
+# Contour files per kind inside a polygon source (globs under its raw folder): DAERA's
+# shapefiles by name, the EPA's WFS pages one layer per source
 CONTOUR_FILES: dict[str, dict[str, list[str]]] = {
     "daera_noise_r3": {
         "all": ["**/R3_con_lden.shp"],
@@ -55,11 +65,27 @@ CONTOUR_FILES: dict[str, dict[str, list[str]]] = {
         "rail": ["**/R3_agg_rail_lden.shp", "**/R3_mrail_lden.shp"],
         "air": ["**/R3_bca_lden.shp", "**/R3_bia_lden.shp"],
         "industry": ["**/R3_agg_ind_lden.shp"],
-    }
+    },
+    "epa_noise_road_agg": {"road": ["page_*.geojson"]},
+    "epa_noise_road_nat": {"road": ["page_*.geojson"]},
+    "epa_noise_rail_agg": {"rail": ["page_*.geojson"]},
+    "epa_noise_rail_nat": {"rail": ["page_*.geojson"]},
+    "epa_noise_air_nat": {"air": ["page_*.geojson"]},
+    "epa_noise_industry_agg": {"industry": ["page_*.geojson"]},
 }
 # DAERA's gridcode is the top of a 5 dB band (54 = 50–54.9 dB … 74 = 70–74.9; 1000 = 75+):
 # a home takes the band's floor, as the rasters' cells hold the modelled level
 CONTOUR_BANDS = {54: 50.0, 59: 55.0, 64: 60.0, 69: 65.0, 74: 70.0, 1000: 75.0}
+# The EPA writes the band as text ("55-59dB", ">=75dB"): the floor is its first number
+BAND_TEXT = re.compile(r"(\d+)")
+
+
+def band_floor(label: str | None) -> float:
+    """ "55-59dB" → 55, ">=75dB" → 75, "75+" → 75; NaN for an unreadable label."""
+    m = BAND_TEXT.search(str(label or ""))
+    return float(m.group(1)) if m else float("nan")
+
+
 KINDS = ("road", "rail", "air", "industry", "all")
 # 55 dB Lden is the level at which the Environmental Noise Directive counts people as
 # exposed, but at that level the answer depends on whether minor roads were mapped, which
@@ -83,23 +109,50 @@ def _contours(slug: str, kind: str) -> list[Path]:
     )
 
 
+def _slugs(value: str | list[str]) -> list[str]:
+    return [value] if isinstance(value, str) else list(value)
+
+
+def _tiles_of(value: str | list[str]) -> list[Path]:
+    return [p for slug in _slugs(value) for p in _tiles(slug)]
+
+
+def _contours_of(value: str | list[str], kind: str) -> list[Path]:
+    return [p for slug in _slugs(value) for p in _contours(slug, kind)]
+
+
 def contour_db_at_points(paths: list[Path], x: np.ndarray, y: np.ndarray) -> np.ndarray:
     """The noise level under each point from contour polygons: the floor of the loudest
     band any of the files puts it in, NaN where none does."""
     import geopandas as gpd
+    import pyogrio
 
     from lix_core.geo import working_crs
     from lix_pipeline.geo.contours import band_at_points
 
+    # The EPA's contour files hold a few enormous multipolygons (a gigabyte of GeoJSON for
+    # the road agglomerations): GDAL refuses objects over 200 MB unless told otherwise
+    pyogrio.set_gdal_config_options({"OGR_GEOJSON_MAX_OBJ_SIZE": "0"})
     out = np.full(len(x), np.nan)
     for path in paths:
-        polys = gpd.read_file(path, columns=["gridcode"])
+        polys = gpd.read_file(path, use_arrow=True)
         if polys.crs is not None and polys.crs.to_epsg() != working_crs():
             polys = polys.to_crs(working_crs())
-        polys = polys.assign(db=polys["gridcode"].map(CONTOUR_BANDS))
+        # A band is one multipolygon of thousands of parts (every noisy road of a city):
+        # split into parts so the spatial index narrows each point to a few small polygons
+        polys = polys.explode(index_parts=False, ignore_index=True)
+        if "gridcode" in polys.columns:
+            polys = polys.assign(db=polys["gridcode"].map(CONTOUR_BANDS))
+        else:
+            band = next((c for c in polys.columns if c.lower() in ("db_value", "db", "band")), None)
+            if band is None:
+                raise ValueError(
+                    f"{path.name}: no gridcode or dB_Value column in {list(polys.columns)}"
+                )
+            polys = polys.assign(db=polys[band].map(band_floor))
         unknown = polys["db"].isna().sum()
         if unknown:
-            raise ValueError(f"{path.name}: {unknown} polygons with an unknown gridcode")
+            raise ValueError(f"{path.name}: {unknown} polygons with an unknown band")
         level = band_at_points(polys, "db", x, y)
         out = np.where(np.isnan(out), level, np.fmax(out, level))
     return out
@@ -171,8 +224,8 @@ def stage_noise() -> pl.LazyFrame:
     for nation, kinds in NOISE_SOURCES.items():
         if nation not in active_nations():
             continue
-        layers = {kind: _tiles(slugs["lden"]) for kind, slugs in kinds.items()}
-        contours = {kind: _contours(slugs["lden"], kind) for kind, slugs in kinds.items()}
+        layers = {kind: _tiles_of(slugs["lden"]) for kind, slugs in kinds.items()}
+        contours = {kind: _contours_of(slugs["lden"], kind) for kind, slugs in kinds.items()}
         pts = homes.filter(nation_of("lsoa21cd") == nation)
         df = noise_at_homes(pts, layers, contours)
         noisy = df.select((pl.col("share_any_60") * pl.col("n_postcodes")).sum()).item()

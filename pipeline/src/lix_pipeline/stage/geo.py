@@ -23,9 +23,14 @@ Builder = Callable[[tuple[str, ...]], pl.DataFrame]
 
 
 def _builders() -> dict[str, Builder]:
-    from lix_pipeline.stage import geo_ew, geo_ni, geo_scotland
+    from lix_pipeline.stage import geo_ew, geo_ie, geo_ni, geo_scotland
 
-    return {"geo_ew": geo_ew.build, "geo_scotland": geo_scotland.build, "geo_ni": geo_ni.build}
+    return {
+        "geo_ew": geo_ew.build,
+        "geo_scotland": geo_scotland.build,
+        "geo_ni": geo_ni.build,
+        "geo_ie": geo_ie.build,
+    }
 
 
 def stage_geo_lsoa() -> pl.LazyFrame:
@@ -50,7 +55,10 @@ def stage_oa_lookup() -> pl.LazyFrame:
     such as Ofcom): the ONS lookup for England and Wales, NRS's for Scotland."""
     cfg = load_nations().nations
     frames = []
-    for slug in dict.fromkeys(cfg[n].geo.oa_lookup for n in active_nations()):
+    # A nation without an output-area tier (Ireland) has no lookup
+    for slug in dict.fromkeys(
+        cfg[n].geo.oa_lookup for n in active_nations() if cfg[n].geo.oa_lookup
+    ):
         if slug == "oa_lookup":
             frames.append(
                 pl.scan_parquet(raw_file("oa_lookup", "parquet")).select(

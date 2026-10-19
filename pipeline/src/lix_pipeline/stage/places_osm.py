@@ -14,7 +14,7 @@ import polars as pl
 
 from lix_core.config import load_nations, load_registry
 from lix_core.log import setup_logging
-from lix_core.paths import data_dir, raw_file
+from lix_core.paths import data_dir
 from lix_pipeline.geo.crs import lonlat_to_bng
 
 logger = setup_logging("stage.places_osm")
@@ -85,17 +85,17 @@ def extracts_for(nation: str) -> list:
 
 
 def council_of(df: pl.DataFrame, nation: str) -> pl.Series:
-    """The council name under each place's point, from the UK local-authority file."""
-    lad = gpd.read_file(raw_file("lad_boundaries", "gpkg"))
-    code = next(c for c in lad.columns if c.upper().startswith("LAD") and c.upper().endswith("CD"))
-    lad = lad[lad[code].str.startswith(nation)][[code[:-2] + "NM", "geometry"]]
+    """The council name under each place's point, from the nation's upper-tier polygons."""
+    from lix_pipeline.geo.boundaries import upper_polygons
+
+    lad = upper_polygons(nation)[["lad_nm", "geometry"]]
     pts = gpd.GeoDataFrame(
         {"_row": range(df.height)},
         geometry=gpd.points_from_xy(df["x"].to_numpy(), df["y"].to_numpy()),
         crs=lad.crs,
     )
     hit = gpd.sjoin(pts, lad, how="left", predicate="within").drop_duplicates("_row")
-    names = hit.set_index("_row")[code[:-2] + "NM"].reindex(range(df.height))
+    names = hit.set_index("_row")["lad_nm"].reindex(range(df.height))
     return pl.Series("local_authority", names.where(names.notna(), None).to_list(), dtype=pl.Utf8)
 
 

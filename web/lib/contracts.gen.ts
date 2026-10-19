@@ -26,7 +26,7 @@ export type FlagCodes = string[];
  */
 export type Flags = string[];
 /**
- * uk: ranked against the whole country · nation: within its nation
+ * uk: ranked against every area in the build (the UK and Ireland) · nation: within its nation
  */
 export type Benchmark = "uk" | "nation";
 export type Id = string;
@@ -64,7 +64,7 @@ export type Lsoa21Cd = string;
 export type LsoaName = string;
 export type Msoa21Cd = string;
 /**
- * Nation code: E, W, S or N
+ * Nation code: E, W, S, N or I (Ireland)
  */
 export type Nation = string;
 export type NationName = string;
@@ -86,6 +86,10 @@ export type OverallPercentileNation = number | null;
  * 5–95% range of the country percentile when each theme weight is nudged by about a quarter (for presets; None with custom weights)
  */
 export type OverallPercentileRange = [number, number] | null;
+/**
+ * Percentile among the neighbourhoods of the same urban/rural class
+ */
+export type OverallPercentileUrbanRural = number | null;
 export type Population = number;
 export type Preset = string;
 export type Region = string;
@@ -111,6 +115,10 @@ export type Percentile = number | null;
  * Better than this % of the neighbourhoods in the same nation
  */
 export type PercentileNation = number | null;
+/**
+ * Better than this % of the neighbourhoods of the same urban/rural class
+ */
+export type PercentileUrbanRural = number | null;
 /**
  * 0–100, higher is better
  */
@@ -375,6 +383,7 @@ export interface AreaProfile {
   overall_percentile: OverallPercentile;
   overall_percentile_nation?: OverallPercentileNation;
   overall_percentile_range?: OverallPercentileRange;
+  overall_percentile_urban_rural?: OverallPercentileUrbanRural;
   population: Population;
   preset: Preset;
   region: Region;
@@ -419,6 +428,7 @@ export interface ThemeScore {
   nation_median?: NationMedian;
   percentile?: Percentile;
   percentile_nation?: PercentileNation;
+  percentile_urban_rural?: PercentileUrbanRural;
   score?: Score1;
   theme: Theme1;
 }

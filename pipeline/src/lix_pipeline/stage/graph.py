@@ -20,6 +20,7 @@ import functools
 import hashlib
 import inspect
 import json
+import os
 import re
 from collections.abc import Callable, Iterable
 from datetime import datetime, timezone
@@ -32,7 +33,7 @@ STAGED_READ = re.compile(r'data_dir\("staged"\)\s*/\s*f?"([a-z0-9_]+)\.parquet"'
 RAW_READ = re.compile(r'data_dir\("(?:raw|manual)"\)\s*/\s*"([a-z0-9_]+)"')
 # Helpers that read a staged table on the caller's behalf
 HELPER_STAGED = {
-    "residential_postcodes": "nspl",
+    "residential_postcodes": "homes",
     "geocode_postcodes": "nspl",
     "load_nspl": "nspl",
     "default_nspl_path": "nspl",
@@ -178,7 +179,15 @@ def has_inputs(stager: str, registry: dict, nations: Iterable[str]) -> bool:
         spec = registry.get(slug)
         if spec is not None and spec.access.type == "manual":
             return any(p.is_file() for p in (data_dir("manual") / slug).glob("**/*"))
-        return (data_dir("raw") / slug / ".meta.json").exists()
+        if (data_dir("raw") / slug / ".meta.json").exists():
+            return True
+        # A keyed source without its key is skipped at fetch time, and its stager reads
+        # what it has (chargers without Open Charge Map): it does not hold the stage back
+        return (
+            spec is not None
+            and spec.access.type == "api_key"
+            and not os.environ.get(spec.access.env, "").strip()
+        )
 
     return all(present(s) for s in inputs_for(stager, registry, nations))
 
