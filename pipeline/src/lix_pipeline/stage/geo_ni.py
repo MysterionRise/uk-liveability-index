@@ -177,6 +177,10 @@ def build(nations: Nations) -> pl.DataFrame:
             ruc_class_expr(nations),
             (pl.col("population") / pl.col("area_km2")).alias("density_per_km2"),
             pl.col("n_postcodes").fill_null(0).cast(pl.Int32),
+        )
+        # One meaning of "urban" in every nation: the urban class of the three-way split
+        .with_columns((pl.col("ruc_class") == "urban").alias("urban"))
+        .with_columns(
             pl.lit("sdz21").alias("area_type"),
         )
         .sort("lsoa21cd")

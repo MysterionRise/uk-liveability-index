@@ -401,7 +401,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest emergency department or minor injury unit.
     unit: metres
     direction: lower_better
-    sources: [ae_sites, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [ae_sites, nspl, te_buildings]
     builder: common:nearest
     params: {slug: ae_sites, column: type, values: [type1, other], beyond_cap: 50000}
     role: context
@@ -828,7 +829,7 @@ indicators:
     description: Shops of every kind within 800m, weighted by distance.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S, N]
+    coverage: [E, W, S, N, I]
     sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {key: shop, radius_m: 800, cap: 30}
@@ -908,7 +909,7 @@ indicators:
     description: Fast-food outlets within 800m.
     unit: index 0–1
     direction: lower_better
-    coverage: [E, W, S, N]
+    coverage: [E, W, S, N, I]
     sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {values: [fast_food], radius_m: 800, cap: 15}
@@ -921,7 +922,7 @@ indicators:
     description: Betting shops, gambling venues and casinos within 800m.
     unit: index 0–1
     direction: lower_better
-    coverage: [E, W, S, N]
+    coverage: [E, W, S, N, I]
     sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {values: [gambling, casino, bookmaker, lottery], radius_m: 800, cap: 5}
@@ -1168,7 +1169,7 @@ indicators:
   - id: imd
     theme: community
     label: Index of multiple deprivation
-    description: Overall deprivation score; not scored because its domains overlap other indicators.
+    description: Overall deprivation score; not scored because its domains overlap other indicators. In Ireland it is Pobal's HP index with its sign flipped, so higher means more deprived there too.
     unit: score
     direction: lower_better
     benchmark: nation

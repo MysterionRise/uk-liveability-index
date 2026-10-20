@@ -195,20 +195,32 @@ def _indicators(args: argparse.Namespace) -> int:
 
 def _score(args: argparse.Namespace) -> int:
     from lix_pipeline.qa.report import write_report
+    from lix_pipeline.refresh import plan as planning
     from lix_pipeline.serve.scores import build_serve
+    from lix_pipeline.stage import graph
 
     build_serve()
     problems = write_report()
     for p in problems:
         logger.warning(f"QA: {p}")
     logger.info(f"QA report: {data_dir('serve') / 'qa.md'} ({len(problems)} warning(s))")
+    # The sidecar says what the scores were built from, as `lix refresh` records it, so
+    # the next plan knows they are current
+    digest, parts = planning.serve_fingerprint()
+    graph.write_sidecar(planning.serve_sidecar(), "serve", digest, parts)
     return 0
 
 
 def _tiles(args: argparse.Namespace) -> int:
+    from lix_core.codes import active_nations
+    from lix_pipeline.fetch.lock import read_lock
+    from lix_pipeline.refresh import plan as planning
     from lix_pipeline.serve.tiles import build_tiles
+    from lix_pipeline.stage import graph
 
     build_tiles()
+    digest, parts = planning.tiles_fingerprint(read_lock(), list(active_nations()))
+    graph.write_sidecar(planning.tiles_sidecar(), "tiles", digest, parts)
     return 0
 
 

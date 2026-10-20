@@ -14,7 +14,7 @@ from lix_core.config import ArcgisLayerAccess
 from lix_pipeline.fetch import arcgis
 from lix_pipeline.fetch.session import make_session
 from lix_pipeline.geo.contours import band_at_points
-from lix_pipeline.stage.chargers import dedup, tidy_esb, tidy_ocm
+from lix_pipeline.stage.chargers import dedup, dedup_within, open_licence, tidy_esb, tidy_ocm
 from lix_pipeline.stage.heritage import tidy_niah
 from lix_pipeline.stage.radon import high_share
 
@@ -61,6 +61,51 @@ def test_tidy_ocm_keeps_open_providers_only_and_names_them():
     assert out["licence"].to_list() == ["CC-BY-4.0", "OGL v3"]
     assert out["provider"].to_list() == ["Open Charge Map Contributors", "Open Importer"]
     assert out["points"].to_list() == [4.0, None]
+
+
+def test_tidy_ocm_reads_the_licence_text_and_floors_the_points():
+    """A provider the map marks "open data licensed" under CC BY-NC-SA is not open (#145);
+    a point count of 0 or -4 is unknown."""
+
+    def poi(id_, provider, licence, points=2, open_=True, lon=-0.1):
+        return {
+            "ID": id_, "DataProviderID": 20,
+            "DataProvider": {"ID": 20, "Title": provider, "IsOpenDataLicensed": open_,
+                             "License": licence},
+            "AddressInfo": {"Title": f"site {id_}", "Latitude": 51.5, "Longitude": lon},
+            "NumberOfPoints": points,
+        }  # fmt: skip
+
+    pois = [
+        poi(1, "Oplaadpalen.nl", "Attribution-NonCommercial-ShareAlike 3.0"),
+        poi(2, "NCR", "Open Government Licence v2.0", points=0, lon=-0.2),
+        poi(3, "Gozero", "Creative Commons Attribution 4.0", points=-4, lon=-0.3),
+        poi(4, "Quiet", "", lon=-0.4),  # no text: the map's flag decides
+        poi(5, "Closed", "", open_=False, lon=-0.5),
+    ]
+    out = tidy_ocm(pois)
+    assert out["charger_id"].to_list() == ["ocm:2", "ocm:3", "ocm:4"]
+    assert out["points"].to_list() == [None, None, 2.0]
+    assert open_licence({"License": "CC BY 4.0"}) and open_licence({"License": "ODbL"})
+    assert not open_licence({"License": "CC BY-NC 4.0", "IsOpenDataLicensed": True})
+    assert not open_licence({"License": "Creative Commons Attribution Non-Commercial"})
+
+
+def test_dedup_within_collapses_a_provider_s_bays_to_one_site():
+    """Rows of one source within 50 m of each other are one site; the one with the most
+    points stands for it (#145)."""
+    df = pl.DataFrame(
+        {
+            "name": ["3 the Stables", "30 the Stables", "31 the Stables", "far away"],
+            "points": [1.0, 4.0, None, 2.0],
+            "x": [1000.0, 1010.0, 1050.0, 9000.0],
+            "y": [1000.0, 1000.0, 1000.0, 9000.0],
+        }
+    )
+    out = dedup_within(df)
+    assert out["name"].to_list() == ["30 the Stables", "far away"]
+    assert out["points"].to_list() == [4.0, 2.0]
+    assert dedup_within(df.head(1)).height == 1
 
 
 def test_dedup_drops_sites_within_fifty_metres_of_a_kept_one():

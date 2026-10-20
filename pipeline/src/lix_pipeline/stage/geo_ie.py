@@ -349,23 +349,44 @@ def home_points() -> pl.DataFrame:
     polygons = tier_polygons("low", nations=(NATION,)).reset_index()[["lsoa21cd", "geometry"]]
     points = points_to_lsoa(pl.concat(frames["home"]), x="east1m", y="north1m", polygons=polygons)
     placed = points.filter(pl.col("lsoa21cd").is_not_null())
+    outside = points.height - placed.height
+    placed = placed.with_columns(pl.lit("building").alias("kind"))
     large = points_to_lsoa(pl.concat(frames["large"]), x="east1m", y="north1m", polygons=polygons)
     filled = large.filter(
         pl.col("lsoa21cd").is_not_null() & ~pl.col("lsoa21cd").is_in(placed["lsoa21cd"].unique())
-    )
+    ).with_columns(pl.lit("building").alias("kind"))
     if filled.height:
         logger.info(
             f"Ireland: {filled['lsoa21cd'].n_unique():,} Small Areas with no footprint under "
             f"{hi:.0f} m² take their {filled.height:,} larger buildings (apartment blocks)"
         )
         placed = pl.concat([placed, filled])
+    # A Small Area with no building centroid inside it at all (a sliver whose buildings'
+    # centroids fall over its edge) takes one home at a point inside its polygon, so no
+    # populated area is left without homes (#142)
+    empty = polygons[~polygons["lsoa21cd"].isin(placed["lsoa21cd"].unique().to_list())]
+    if len(empty):
+        rep = empty.geometry.representative_point()
+        fallback = pl.DataFrame(
+            {
+                "home_id": [f"area:{c}" for c in empty["lsoa21cd"]],
+                "east1m": np.round(rep.x.to_numpy()).astype(np.int32),
+                "north1m": np.round(rep.y.to_numpy()).astype(np.int32),
+                "lsoa21cd": empty["lsoa21cd"].to_list(),
+                "kind": ["area"] * len(empty),
+            }
+        )
+        logger.warning(
+            f"Ireland: {len(empty)} Small Areas have no building centroid inside them and take "
+            f"one home at a point inside the polygon: {empty['lsoa21cd'].tolist()[:10]}"
+        )
+        placed = pl.concat([placed, fallback.select(placed.columns)], how="vertical_relaxed")
     lon, lat = working_to_lonlat(placed["east1m"].to_numpy(), placed["north1m"].to_numpy())
     out = placed.with_columns(
-        pl.Series("lat", lat), pl.Series("long", lon),
-        pl.lit(NATION).alias("nation"), pl.lit("building").alias("kind"),
-    )  # fmt: skip
+        pl.Series("lat", lat), pl.Series("long", lon), pl.lit(NATION).alias("nation")
+    )
     logger.info(
         f"Ireland: {out.height:,} home points from {total:,} buildings "
-        f"({kept - placed.height:,} outside every Small Area; footprints {lo:.0f}–{hi:.0f} m²)"
+        f"({outside:,} footprints outside every Small Area; footprints {lo:.0f}–{hi:.0f} m²)"
     )
     return out

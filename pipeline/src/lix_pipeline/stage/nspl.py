@@ -102,8 +102,59 @@ def reproject_inputs(
 
 def stage_nspl(raw_path: Path | None = None) -> pl.LazyFrame:
     """Stage the full NSPL (all nations, live and terminated) with stable column names
-    and every coordinate in the working CRS."""
+    and every coordinate in the working CRS, each live postcode in the area whose polygon
+    holds its point."""
     if raw_path is None:
         raw_path = find_nspl_csv(data_dir("raw") / "nspl")
     logger.info(f"Staging NSPL from {raw_path}")
-    return reproject_inputs(read_nspl_raw(raw_path))
+    return place_by_polygon(reproject_inputs(read_nspl_raw(raw_path)))
+
+
+def place_by_polygon(lf: pl.LazyFrame) -> pl.LazyFrame:
+    """A live postcode whose point lies in another area's polygon than the one NSPL names
+    takes the polygon's area (188 Northern Irish postcodes sit up to 17 km from their
+    listed zone, #153): a search for it then lands where it is, and its home samples the
+    right area's measures."""
+    from lix_core.codes import in_scope
+    from lix_pipeline.geo.boundaries import tier_polygons
+    from lix_pipeline.geo.joins import points_to_lsoa
+
+    df = lf.collect()
+    live = (
+        pl.col("live")
+        & in_scope("lsoa21cd")
+        & pl.col("east1m").is_not_null()
+        & pl.col("lat").is_between(-90, 90)
+    )
+    rows = df.filter(live).select("postcode", "lsoa21cd", "east1m", "north1m")
+    if not rows.height:
+        return df.lazy()
+    try:
+        polygons = tier_polygons("low").reset_index()[["lsoa21cd", "geometry"]]
+    except FileNotFoundError:
+        logger.warning("No boundary polygons fetched: postcodes keep NSPL's areas")
+        return df.lazy()
+    placed = points_to_lsoa(
+        rows.rename({"lsoa21cd": "listed"}), x="east1m", y="north1m", polygons=polygons
+    )
+    moved = placed.filter(
+        pl.col("lsoa21cd").is_not_null() & (pl.col("lsoa21cd") != pl.col("listed"))
+    )
+    if moved.height:
+        by_nation = dict(
+            moved.group_by(pl.col("lsoa21cd").str.slice(0, 1)).len().sort("lsoa21cd").iter_rows()
+        )
+        logger.info(
+            f"{moved.height:,} live postcodes moved to the area whose polygon holds them "
+            f"({by_nation}), e.g. {moved.select('postcode', 'listed', 'lsoa21cd').head(3).rows()}"
+        )
+        df = (
+            df.join(
+                moved.select("postcode", pl.col("lsoa21cd").alias("_held")),
+                on="postcode",
+                how="left",
+            )
+            .with_columns(pl.coalesce("_held", "lsoa21cd").alias("lsoa21cd"))
+            .drop("_held")
+        )
+    return df.lazy()

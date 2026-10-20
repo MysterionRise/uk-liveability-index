@@ -26,6 +26,25 @@ EPRACCUR_COLUMNS = {
 }
 GP_PRACTICE_ROLE = "RO76"
 
+OGL = "OGL-3.0"
+ODBL = "ODbL-1.0"
+# A clinic in OpenStreetMap is a GP practice when it says so; a doctors' surgery is one
+# unless its name or speciality says otherwise (Ireland has no open GP register)
+GP_NAME = (
+    r"(?i)\b(gp|g\.p\.|general practi|medical (centre|center|practice|hall)|"
+    r"family (practice|doctor|medicine)|surgery|health centre|doctors?|primary care)\b"
+)
+NOT_GP_NAME = (
+    r"(?i)(chiropod|podiatr|physio|dermat|cosmetic|aesthetic|laser|dental|dentist|optic|optom|"
+    r"psych|counsel|osteopath|chiropract|acupunct|veterinar|\bvet\b|skin|hair|beauty|botox|"
+    r"fertility|ivf|maternity hospital|hospital\b|ultrasound|x-?ray|scan|audiolog|hearing)"
+)
+NOT_GP_SPECIALITY = (
+    "podiatry", "chiropody", "dermatology", "physiotherapy", "psychiatry", "psychology",
+    "optometry", "dentistry", "osteopathy", "chiropractic", "acupuncture", "cosmetic",
+    "fertility", "radiology", "audiology", "occupational", "sexual_health", "travel",
+)  # fmt: skip
+
 
 def geocode_postcodes(df: pl.DataFrame, postcode_col: str = "postcode") -> pl.DataFrame:
     """Add BNG ``x``/``y`` and ``lsoa21cd`` from NSPL (terminated postcodes included)."""
@@ -52,7 +71,13 @@ def stage_ods_gp() -> pl.LazyFrame:
     df = raw.select(
         pl.col(f"column_{i}").alias(name) for i, name in EPRACCUR_COLUMNS.items()
     ).filter((pl.col("status") == "ACTIVE") & (pl.col("role") == GP_PRACTICE_ROLE))
-    df = geocode_postcodes(df).filter(in_scope("lsoa21cd")).drop("role", "status")
+    df = (
+        geocode_postcodes(df)
+        .filter(in_scope("lsoa21cd"))
+        .drop("role", "status")
+        # Every row says where it comes from, so the map's points and the API credit it
+        .with_columns(pl.lit("NHS England ODS").alias("source"), pl.lit(OGL).alias("licence"))
+    )
     if "S" in active_nations():
         df = pl.concat([df, _phs_gp_practices()], how="diagonal_relaxed")
     if "N" in active_nations():
@@ -73,17 +98,43 @@ def _osm_points(nations: tuple[str, ...], values: list[str], what: str) -> pl.Da
     osm = pl.read_parquet(data_dir("staged") / "osm_pois.parquet").filter(
         (pl.col("key") == "amenity") & pl.col("value").is_in(values)
     )
-    osm = points_to_lsoa(osm.select("osm_type", "osm_id", "name", "x", "y"), x="x", y="y")
+    extra = [c for c in ("healthcare", "healthcare:speciality") if c in osm.columns]
+    osm = points_to_lsoa(
+        osm.select("osm_type", "osm_id", "name", "value", "x", "y", *extra), x="x", y="y"
+    )
     osm = osm.filter(nation_of("lsoa21cd").is_in(list(nations)))
     logger.info(f"{osm.height:,} OpenStreetMap {what} in {nations}")
     return osm
 
 
+def is_gp_practice(df: pl.DataFrame) -> pl.Expr:
+    """Which OpenStreetMap doctors and clinics are GP practices: a doctors' surgery unless
+    its name or ``healthcare:speciality`` says it is something else (a chiropodist, a
+    skin clinic), a clinic only when its name says GP, surgery, medical or health centre.
+    """
+    name = pl.col("name").fill_null("")
+    speciality = (
+        pl.col("healthcare:speciality").fill_null("")
+        if "healthcare:speciality" in df.columns
+        else pl.lit("")
+    )
+    other = name.str.contains(NOT_GP_NAME) | pl.any_horizontal(
+        speciality.str.contains(s) for s in NOT_GP_SPECIALITY
+    )
+    says_gp = name.str.contains(GP_NAME) | (speciality == "general")
+    # A doctors' surgery is a GP practice unless it says otherwise; a clinic only when it
+    # says it is one
+    return pl.when(pl.col("value") == "doctors").then(~other).otherwise(says_gp & ~other)
+
+
 def _osm_gp_practices(nations: tuple[str, ...]) -> pl.DataFrame:
-    """GP surgeries and clinics from OpenStreetMap (``amenity=doctors|clinic``), without
-    list sizes, opening dates or a commissioner."""
+    """GP practices from OpenStreetMap (``amenity=doctors|clinic`` that read as GP
+    practices, see ``is_gp_practice``), without list sizes, opening dates or a
+    commissioner."""
     osm = _osm_points(nations, ["doctors", "clinic"], "GP surgeries and clinics")
-    return osm.select(
+    kept = osm.filter(is_gp_practice(osm))
+    logger.info(f"{kept.height:,} of them read as GP practices")
+    return kept.select(
         pl.concat_str([pl.lit("osm:"), pl.col("osm_type"), pl.col("osm_id").cast(pl.Utf8)]).alias(
             "practice_code"
         ),
@@ -96,6 +147,8 @@ def _osm_gp_practices(nations: tuple[str, ...]) -> pl.DataFrame:
         "lsoa21cd",
         "x",
         "y",
+        pl.lit("OpenStreetMap").alias("source"),
+        pl.lit(ODBL).alias("licence"),
     )
 
 
@@ -119,7 +172,9 @@ def _bso_gp_practices() -> pl.DataFrame:
     ).filter(pl.col("practice_code").is_not_null() & pl.col("postcode").is_not_null())
     df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("N",)))
     logger.info(f"{df.height:,} GP practices in Northern Ireland (BSO)")
-    return df
+    return df.with_columns(
+        pl.lit("Business Services Organisation").alias("source"), pl.lit(OGL).alias("licence")
+    )
 
 
 def _phs_gp_practices() -> pl.DataFrame:
@@ -140,7 +195,9 @@ def _phs_gp_practices() -> pl.DataFrame:
     )
     df = geocode_postcodes(df).filter(in_scope("lsoa21cd", nations=("S",)))
     logger.info(f"{df.height:,} GP practices in Scotland (PHS)")
-    return df
+    return df.with_columns(
+        pl.lit("Public Health Scotland").alias("source"), pl.lit(OGL).alias("licence")
+    )
 
 
 def stage_gp_registrations() -> pl.LazyFrame:

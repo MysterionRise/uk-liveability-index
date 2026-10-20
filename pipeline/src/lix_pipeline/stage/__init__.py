@@ -92,6 +92,8 @@ STAGE_INPUTS: dict[str, list[str]] = {
         *LOW_BOUNDARIES,
     ],
     "radon": ["bgs_radon_gb", "bgs_radon_ni", "epa_radon"],
+    # Live postcodes are placed in the area whose polygon holds their point (#153)
+    "nspl": ["nspl", *LOW_BOUNDARIES],
     # PSNI records carry no LSOA code and are placed by their coordinates
     "police_crime": [
         "police_crime",

@@ -4,6 +4,7 @@ key. A site within ``DEDUP_M`` of one already kept is the same site (OpenStreetM
 then ESB, then Open Charge Map)."""
 
 import json
+import re
 
 import numpy as np
 import polars as pl
@@ -21,6 +22,13 @@ ESB_TERRITORIES = {"RoI": "I", "NI": "N"}
 OCM_FILES = {"open_charge_map_gb": ("E", "W", "S", "N"), "open_charge_map_ie": ("I",)}
 # Open Charge Map's own contributors (data provider 1) publish under CC BY 4.0
 OCM_CONTRIBUTORS = 1
+# Licences an imported provider may carry: the map marks some non-commercial imports as
+# "open data licensed", so the licence text decides (#145)
+OPEN_LICENCE = re.compile(
+    r"(?i)(cc0|public domain|creative commons attribution(?! ?-? ?non)|cc[- ]?by(?!-?nc)"
+    r"|open government licen|ogl|odbl|open database|open data commons|cdla)"
+)
+NOT_OPEN_LICENCE = re.compile(r"(?i)(non[- ]?commercial|\bnc\b|no ?derivatives|\bnd\b)")
 
 SCHEMA = {
     "charger_id": pl.Utf8,
@@ -82,29 +90,42 @@ def tidy_esb(raw: pl.DataFrame, nations: tuple[str, ...]) -> pl.DataFrame:
     )
 
 
+def open_licence(provider: dict) -> bool:
+    """Whether an imported provider's licence text names an open licence and no
+    non-commercial or no-derivatives clause."""
+    text = str(provider.get("License") or "")
+    if not text.strip():
+        return bool(provider.get("IsOpenDataLicensed"))
+    return bool(OPEN_LICENCE.search(text)) and not NOT_OPEN_LICENCE.search(text)
+
+
 def tidy_ocm(pois: list[dict]) -> pl.DataFrame:
     """Open Charge Map locations in the chargers shape: only those whose data provider
     publishes under an open licence (the map's own contributors, CC BY 4.0, or an import
-    the provider marks open), each with the provider named."""
+    whose licence text is open), each with the provider named; a point count that is not
+    positive is unknown."""
     rows = []
+    dropped: dict[str, int] = {}
     for poi in pois:
         provider = poi.get("DataProvider") or {}
         own = (
             poi.get("DataProviderID") == OCM_CONTRIBUTORS or provider.get("ID") == OCM_CONTRIBUTORS
         )
-        if not (own or provider.get("IsOpenDataLicensed")):
+        if not (own or open_licence(provider)):
+            dropped[provider.get("Title") or "unknown"] = (
+                dropped.get(provider.get("Title") or "unknown", 0) + 1
+            )
             continue
         address = poi.get("AddressInfo") or {}
         lat, lon = address.get("Latitude"), address.get("Longitude")
         if lat is None or lon is None:
             continue
+        points = poi.get("NumberOfPoints")
         rows.append(
             {
                 "charger_id": f"ocm:{poi.get('ID')}",
                 "name": address.get("Title"),
-                "points": float(poi["NumberOfPoints"])
-                if poi.get("NumberOfPoints") is not None
-                else None,
+                "points": float(points) if points is not None and float(points) > 0 else None,
                 "provider": provider.get("Title"),
                 "source": "Open Charge Map",
                 "licence": "CC-BY-4.0" if own else (provider.get("License") or "open"),
@@ -112,10 +133,45 @@ def tidy_ocm(pois: list[dict]) -> pl.DataFrame:
                 "lon": float(lon),
             }
         )
+    if dropped:
+        logger.info(f"Open Charge Map providers without an open licence left out: {dropped}")
     df = pl.DataFrame(rows, schema={**{k: v for k, v in SCHEMA.items() if k not in ("x", "y")},
                                     "lat": pl.Float64, "lon": pl.Float64})  # fmt: skip
     x, y = lonlat_to_working(df["lon"].to_numpy(), df["lat"].to_numpy())
     return df.drop("lat", "lon").with_columns(pl.Series("x", x), pl.Series("y", y))
+
+
+def dedup_within(df: pl.DataFrame, within_m: float = DEDUP_M) -> pl.DataFrame:
+    """One row per site: rows of one source within ``within_m`` of each other (a provider
+    listing every bay of a car park) collapse to the row with the most points, which
+    keeps that count (the bays of one site are one site)."""
+    if df.height < 2:
+        return df
+    xy = np.column_stack([df["x"].to_numpy(), df["y"].to_numpy()])
+    pairs = cKDTree(xy).query_pairs(within_m, output_type="ndarray")
+    if len(pairs) == 0:
+        return df
+    # Union-find over the pairs: a chain of bays 40 m apart is one cluster
+    parent = np.arange(df.height)
+
+    def find(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    for a, b in pairs:
+        ra, rb = find(int(a)), find(int(b))
+        if ra != rb:
+            parent[rb] = ra
+    cluster = np.array([find(i) for i in range(df.height)])
+    out = (
+        df.with_columns(pl.Series("_cluster", cluster), pl.int_range(pl.len()).alias("_row"))
+        .sort(["_cluster", pl.col("points").fill_null(0), "_row"], descending=[False, True, False])
+        .unique("_cluster", keep="first", maintain_order=True)
+        .drop("_cluster", "_row")
+    )
+    return out
 
 
 def dedup(kept: pl.DataFrame, new: pl.DataFrame, within_m: float = DEDUP_M) -> pl.DataFrame:
@@ -136,13 +192,19 @@ def stage_chargers() -> pl.LazyFrame:
     from lix_pipeline.geo.joins import points_to_lsoa
 
     nations = active_nations()
-    frames = [_osm()]
-    logger.info(f"{frames[0].height:,} charging stations in OpenStreetMap")
+    osm = _osm()
+    frames = [dedup_within(osm)]
+    logger.info(
+        f"{osm.height:,} charging stations in OpenStreetMap, {frames[0].height:,} sites "
+        f"(rows within {DEDUP_M:.0f} m of each other are one site)"
+    )
 
     island = tuple(n for n in nations if n in ESB_TERRITORIES.values())
     esb_path = data_dir("raw") / "esb_ev_sites" / "esb_ev_sites.csv"
     if island and esb_path.exists():
-        esb = tidy_esb(pl.read_csv(esb_path, infer_schema_length=0, encoding="utf8-lossy"), island)
+        esb = dedup_within(
+            tidy_esb(pl.read_csv(esb_path, infer_schema_length=0, encoding="utf8-lossy"), island)
+        )
         kept = dedup(frames[0], esb)
         logger.info(f"ESB: {esb.height:,} sites, {kept.height:,} not already in OpenStreetMap")
         frames.append(kept)
@@ -158,7 +220,7 @@ def stage_chargers() -> pl.LazyFrame:
                 + " only"
             )
             continue
-        ocm = tidy_ocm(json.loads(path.read_text()))
+        ocm = dedup_within(tidy_ocm(json.loads(path.read_text())))
         kept = dedup(pl.concat(frames), ocm)
         logger.info(f"{slug}: {ocm.height:,} open locations, {kept.height:,} new")
         frames.append(kept)

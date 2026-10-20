@@ -51,13 +51,21 @@ def _with_lonlat(df: pl.DataFrame) -> pl.DataFrame:
     return df.with_columns(lon=lon, lat=lat)
 
 
-# GP practices come from NHS England's ODS (England and Wales) or Public Health Scotland
-GP_SOURCES = {"E": "NHS England ODS", "W": "NHS England ODS", "S": "Public Health Scotland"}
+# GP practices by nation, for a staged table made before every row named its source
+GP_SOURCES = {
+    "E": "NHS England ODS", "W": "NHS England ODS", "S": "Public Health Scotland",
+    "N": "Business Services Organisation", "I": "OpenStreetMap",
+}  # fmt: skip
+GP_ID_PREFIX = {
+    "NHS England ODS": "ods", "Public Health Scotland": "phs",
+    "Business Services Organisation": "bso", "OpenStreetMap": "osm",
+}  # fmt: skip
 
 SCHOOL_SOURCES = {
     "gias": "DfE Get Information About Schools + Ofsted",
     "wg": "Welsh Government schools list",
     "sg": "Scottish Government school roll and locations",
+    "de": "Department of Education (Northern Ireland) + ETI",
 }
 
 
@@ -94,7 +102,11 @@ def _school_pois(staged) -> pl.DataFrame | None:
     )
     return schools.select(
             category.alias("category"),
-            pl.concat_str(pl.lit("urn:"), pl.col("urn").cast(pl.Utf8)).alias("poi_id"),
+            # Ids are unique per list only: the source prefixes them (a Scottish and a
+            # Northern Irish school once shared "urn:5210127")
+            pl.concat_str(
+                pl.col("source").fill_null("urn"), pl.lit(":"), pl.col("urn").cast(pl.Utf8)
+            ).alias("poi_id"),
             "name",
             "x",
             "y",
@@ -160,20 +172,30 @@ def build_pois() -> pl.DataFrame:
         )
 
     gp = _with_lonlat(pl.read_parquet(staged / "ods_gp.parquet").filter(pl.col("x").is_not_null()))
+    if "source" not in gp.columns:
+        gp = gp.with_columns(
+            pl.col("lsoa21cd").str.slice(0, 1).replace_strict(GP_SOURCES, default="NHS England ODS")
+            .alias("source")
+        )  # fmt: skip
+    if "licence" not in gp.columns:
+        gp = gp.with_columns(
+            pl.when(pl.col("source") == "OpenStreetMap").then(pl.lit(ODBL)).otherwise(pl.lit(OGL))
+            .alias("licence")
+        )  # fmt: skip
+    # Ids are prefixed by source, so an OpenStreetMap surgery never reads as an ODS code
+    prefix = pl.col("source").replace_strict(GP_ID_PREFIX, default="gp")
+    code = pl.col("practice_code").str.replace(r"^osm:", "")
     frames.append(
         gp.select(
             pl.lit("gp").alias("category"),
-            pl.concat_str(pl.lit("ods:"), "practice_code").alias("poi_id"),
+            pl.concat_str(prefix, pl.lit(":"), code).alias("poi_id"),
             "name",
             pl.col("x").cast(pl.Float64),
             pl.col("y").cast(pl.Float64),
             "lon",
             "lat",
-            pl.when(pl.col("lsoa21cd").str.starts_with("S"))
-            .then(pl.lit(GP_SOURCES["S"]))
-            .otherwise(pl.lit(GP_SOURCES["E"]))
-            .alias("source"),
-            pl.lit(OGL).alias("licence"),
+            "source",
+            "licence",
             _detail(["practice_code", "postcode"]).alias("detail"),
         )  # fmt: skip
     )
@@ -202,6 +224,19 @@ def build_pois() -> pl.DataFrame:
     osm = pl.read_parquet(staged / "osm_pois.parquet").filter(
         pl.col("value").is_in(list(OSM_CATEGORIES))
     )
+    # A "park" that is a marine protected area sits far offshore: a park or reserve is
+    # kept only where its point lies in an area of the build
+    from lix_pipeline.geo.joins import points_to_lsoa
+
+    on_land = points_to_lsoa(osm.select("osm_type", "osm_id", "x", "y"), x="x", y="y").filter(
+        pl.col("lsoa21cd").is_not_null()
+    )
+    green = osm.filter(pl.col("value").is_in(["park", "nature_reserve"]))
+    keys = ["osm_type", "osm_id"]
+    offshore = green.join(on_land.select(keys), on=keys, how="anti")
+    if offshore.height:
+        logger.info(f"{offshore.height:,} parks and reserves outside every area left out")
+        osm = osm.join(offshore.select("osm_type", "osm_id"), on=["osm_type", "osm_id"], how="anti")
     frames.append(
         osm.select(
             pl.col("value").replace_strict(OSM_CATEGORIES).alias("category"),

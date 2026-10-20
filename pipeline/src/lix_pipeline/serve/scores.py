@@ -34,7 +34,7 @@ from lix_core.config import (
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
 from lix_core.quality import QUALITY_CODE, QUALITY_LEVELS
-from lix_core.scoring import band, normalise, score_lsoas
+from lix_core.scoring import band, headline_within, normalise, score_lsoas
 from lix_core.uncertainty import percentile_interval
 from lix_pipeline.fetch.lock import read_lock
 
@@ -97,11 +97,20 @@ def build_features() -> pl.DataFrame:
     scores = score_lsoas(
         df, scored, preset.themes, preset.indicators, group=["nation", "ruc_class"], **nation_rules
     )
+    # A nation whose data is thinner compares its areas among themselves (#147): the
+    # headline percentile and band follow each nation's rule, the build-wide values stay
+    scores = headline_within(scores, df["nation"], headline_rules())
     df = pl.concat([df, scores], how="horizontal").with_columns(
         band(pl.col("overall_pct")).alias("band")
     )
     df = df.with_columns(uncertainty_columns(df, scored, weights, nation_rules))
     return df.sort("lsoa21cd")
+
+
+def headline_rules() -> dict[str, str]:
+    """Nation → the base of its headline percentile ("all" or "nation")."""
+    cfg = load_nations()
+    return {n: cfg.nations[n].headline_within for n in active_nations()}
 
 
 def scoring_rules(catalogue) -> dict:

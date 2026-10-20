@@ -115,6 +115,28 @@ def validate_geo() -> list[str]:
         problems.append(
             f"{len(missing)} NSPL LSOAs missing from geo_lsoa, e.g. {sorted(missing)[:3]}"
         )
+    problems += homes_problems(geo)
+    return problems
+
+
+def homes_problems(geo: pl.DataFrame) -> list[str]:
+    """Every populated area of a nation with home points has at least one (the sampling
+    stagers read nothing for an area without homes, #142), and home points sit in the
+    area they are assigned to."""
+    path = data_dir("staged") / "homes.parquet"
+    if not path.exists():
+        return []
+    homes = pl.read_parquet(path, columns=["lsoa21cd", "nation"])
+    problems = []
+    with_homes = set(homes["nation"].unique())
+    counts = homes.group_by("lsoa21cd").len()
+    populated = geo.filter(pl.col("population") > 0).join(counts, on="lsoa21cd", how="left")
+    none = populated.filter(pl.col("len").is_null() & pl.col("nation").is_in(sorted(with_homes)))
+    if none.height:
+        problems.append(
+            f"{none.height} populated areas have no home point, e.g. "
+            f"{none['lsoa21cd'].head(5).to_list()}"
+        )
     return problems
 
 
@@ -224,6 +246,21 @@ def validate_serve(serve_dir: Path | None = None) -> list[str]:
         problems.append("lsoa_features has duplicate lsoa21cd")
     if nations and not codes.str.contains(area_code_regex(nations=tuple(nations))).all():
         problems.append(f"lsoa_features has codes outside the nations {nations}")
+    if "headline_within" in features.columns:
+        bad = set(features["headline_within"].unique()) - {"all", "nation"}
+        if bad:
+            problems.append(f"headline_within carries values other than all/nation: {bad}")
+        own = features.filter(pl.col("headline_within") == "nation")
+        if own.height and "overall_pct_nation" in own.columns:
+            apart = own.filter(
+                pl.col("overall_pct").is_not_null()
+                & ((pl.col("overall_pct") - pl.col("overall_pct_nation")).abs() > 1e-6)
+            )
+            if apart.height:
+                problems.append(
+                    f"{apart.height:,} areas whose headline is within the nation carry a "
+                    "different percentile from overall_pct_nation"
+                )
     for col in ("nation", "ctry_cd", "ruc_class"):
         if col not in features.columns:
             problems.append(f"lsoa_features is missing column {col}")
@@ -293,6 +330,25 @@ def validate_places() -> list[str]:
     return anchor_problems()
 
 
+def orphan_source_problems(catalogue, registry: dict) -> list[str]:
+    """An indicator's listed source must feed at least one nation the indicator covers
+    (shops listed osm_ireland while excluding Ireland, #152): otherwise the registry
+    promises data the pack never carries."""
+    problems = []
+    for ind in catalogue.indicators:
+        covered = set(indicator_coverage(ind, registry))
+        for slug in ind.sources:
+            spec = registry.get(slug)
+            if spec is None or not spec.coverage:
+                continue
+            if not covered & set(spec.coverage):
+                problems.append(
+                    f"{ind.id} lists source {slug} (covers {sorted(spec.coverage)}) but is "
+                    f"built for {sorted(covered)}"
+                )
+    return problems
+
+
 def validate_config() -> list[str]:
     """Every theme keeps enough scored weight in each active nation (coverage_problems), and
     every reviewed label catalogue is complete (a draft may have gaps: English fills them)."""
@@ -308,7 +364,9 @@ def validate_config() -> list[str]:
     catalogue, weights = load_indicators(), load_weights()
     nations = {n: load_nations().nations[n] for n in active_nations()}
     gaps_declared = {n: list(spec.theme_gaps) for n, spec in nations.items()}
-    problems = coverage_problems(catalogue, load_registry(), active_nations(), gaps_declared)
+    registry = load_registry()
+    problems = coverage_problems(catalogue, registry, active_nations(), gaps_declared)
+    problems += orphan_source_problems(catalogue, registry)
     for locale, labels in load_label_catalogues().items():
         gaps = catalogue_gaps(catalogue, weights, labels, nations)
         status = (labels.get("_meta") or {}).get("status")

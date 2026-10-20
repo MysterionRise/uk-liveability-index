@@ -313,6 +313,18 @@ def test_optional_column_is_empty_without_the_staged_table(tmp_path, monkeypatch
     assert optional_column(ctx, "night_lights", "radiance")["value"].to_list() == [3.5]
 
 
+def test_a_share_never_exceeds_100():
+    """Parts and totals from different tables can disagree by rounding (#151)."""
+    from lix_pipeline.indicators.common import share
+
+    table = pl.DataFrame(
+        {"lsoa21cd": ["a", "b"], "built_2000_on": [104.0, 20.0], "dwellings": [100.0, 100.0]}
+    )
+    ctx = FakeContext(voa_ctsop=table)
+    out = share(ctx, "voa_ctsop", ["built_2000_on"], "dwellings")
+    assert out["value"].to_list() == [100.0, 20.0]
+
+
 def test_nearest_beyond_the_cap_can_count_as_the_cap():
     from lix_pipeline.indicators.common import nearest
 
