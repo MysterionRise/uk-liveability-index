@@ -31,6 +31,7 @@ make down           # stop
 | 7 | *Show me well-run pubs near LS6 3AA* | Pubs on the map and in a list | "Pubs that are open (in two independent sources) and rated 4–5 for food hygiene in the last three years (five in Scotland, where inspections are rarer). Honest about what it measures: how well run, not the beer." |
 | 8 | *Why does Manchester city centre score low on safety?* | The score broken down by theme and indicator, with caveats and source dates | "It explains itself, including the caveats: Greater Manchester Police publishes no crime data, so it's estimated, and city centres have few residents but many visitors." |
 | 9 | *What are the best areas to live in Belfast?* | Belfast's Super Data Zones ranked and outlined; the schools theme shown as limited data | "Four nations, one method: Northern Ireland joined in v0.5.0 with its own sources, and where it publishes less the index says so instead of guessing." |
+| 10 | *What are the best areas to live in Dublin?* | Dublin's Small Areas ranked and outlined; the card says "better than N% of Ireland" and shows schools and housing as limited data | "Ireland joined in v0.6.0 as the second country: its areas compare within Ireland, because it scores on fewer themes than the UK nations" |
 | 10 | Search **Hebden Bridge** (top bar) | Flood risk listed as a weak spot | "Data people care about but rarely see together: 24% of homes here are at real flood risk." |
 | 11 | Tick **Analyst**, open the **Analyst** tab | Distribution chart, indicator overlap heatmap, SQL console | "The same data for analysts: read-only SQL over every LSOA, exports with attribution." |
 | 12 | Click **How scores work** → **Validation** | The method, the face-validity review of 47 places, the assistant evals | "We test it: 106 face-validity checks across 47 places, 55 assistant eval cases, run on three models." |
@@ -47,8 +48,9 @@ local authorities with the highest average gigabit broadband availability.*
 - [ ] The welcome card appears in a fresh profile; "Skip" dismisses it for good
 - [ ] Dark mode (system setting, and the header toggle): map, legend, cards, heatmap and the
       chat panel are all dark and readable; switching back to light restores everything
-- [ ] A wrong postcode in search says "No matches in the UK"
+- [ ] A wrong postcode in search says "No matches in the UK and Ireland"
 - [ ] *What are the best areas to live in Belfast?* ranks Super Data Zones and outlines them on the map
+- [ ] *What are the best areas to live in Dublin?* ranks Small Areas whose card says "of Ireland"
 - [ ] An ambiguous place (*Tell me about Clapham*) says which Clapham it used
 - [ ] Model outage: unset the key or block the network with `make demo` running; the
       assistant explains in the chat and the map keeps working

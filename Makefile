@@ -113,15 +113,15 @@ up:
 	docker compose up -d $(if $(BUILD),--build,) --remove-orphans --wait
 	@echo "Running at $(APP_URL); stop with make down"
 
-# The same on the small committed demo dataset (Leeds + Brighton)
+# The same on the small committed demo dataset (Leeds, Brighton, Cardiff, Edinburgh, Belfast, Dublin)
 up-demo:
 	LIX_SERVE_DIR=./fixtures/demo/serve $(MAKE) up
 
 down:
 	docker compose down
 
-# The data pack: a built data/serve (about 140 MB) with its licence notices, so another
-# machine can skip the 17 GB raw download. Packs ship as monthly data releases
+# The data pack: a built data/serve (about 250 MB) with its licence notices, so another
+# machine can skip the 25 GB raw download. Packs ship as monthly data releases
 # (data-YYYY-MM, GitHub pre-releases) separate from code releases; a code release reads
 # the newest pack with the serve schema it understands (SERVE_SCHEMA_VERSION):
 #   make data-pack                       write dist/lix-serve.tar.gz (+ .sha256)

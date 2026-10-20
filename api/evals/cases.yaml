@@ -369,6 +369,32 @@ cases:
       reply_any: [limited data, too limited, not available, not scored, "doesn't score", "does not score", no school, not published, gap, "doesn't publish", "does not publish", "no results", "no inspection"]
       grounded: true
 
+  - name: ranelagh_dublin_profile
+    category: lookup
+    turns: ["Tell me about Ranelagh, Dublin"]
+    expect:
+      tools_any: [get_area_profile, search_place]
+      reply_any: [ranelagh, rathmines, dublin]
+      grounded: true
+
+  - name: republic_of_ireland_ranking
+    category: ranking
+    turns: ["What are the best areas in the Republic of Ireland for a family?"]
+    expect:
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: within, op: contains, value: ireland}
+      reply_none: [orkney, shetland, bedfordshire]
+      grounded: true
+
+  - name: dublin_price_filter
+    category: scope_ethics
+    turns: ["Where can I buy a house under €400k near Dublin?"]
+    expect:
+      tools: [rank_areas]
+      reply_any: [not available, no house price, "doesn't have", "does not have", no open, price data, prices aren't, prices are not, without a price, no price]
+      grounded: true
+
   - name: irish_dublin_profile
     category: language
     turns: ["Cén scór atá ag Raghnallach i mBaile Átha Cliath?"]

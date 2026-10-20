@@ -10,6 +10,7 @@ prompts:
   - text: Tell me about Hebden Bridge
   - text: What are the best areas in York for retirees?
   - text: What are the best areas to live in Belfast?
+  - text: What are the best areas to live in Dublin?
   - text: Which areas of Birmingham have the fewest immigrants?
   - text: Using SQL, list the 10 local authorities with the highest average gigabit broadband availability.
     state: {mode: analyst}

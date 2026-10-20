@@ -265,6 +265,11 @@ test("walkthrough", async ({ browser }) => {
   await page.waitForTimeout(4000);
   await click(page, page.getByTestId("ranked-list").last().locator("li button").first());
   await page.waitForTimeout(3000);
+  // The fifth nation: Dublin's Small Areas, whose card compares within Ireland
+  await ask(page, "What are the best areas to live in Dublin?");
+  await page.waitForTimeout(4000);
+  await click(page, page.getByTestId("ranked-list").last().locator("li button").first());
+  await page.waitForTimeout(3000);
   await type(page, page.getByTestId("search").locator("input"), "Hebden Bridge");
   await expect(page.getByRole("option").first()).toContainText("Hebden Bridge", { timeout: 15_000 });
   await click(page, page.getByRole("option").first());

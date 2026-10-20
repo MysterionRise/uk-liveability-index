@@ -437,6 +437,14 @@ places:
       - {theme: community, op: ge, value: 80, anchor: true}
       - {indicator: station_distance, op: le, value: 1000, anchor: true}
       - {indicator: gp_distance, op: le, value: 500}
+      - {indicator: leisure, op: ge, value: 0.2, anchor: true}
+
+  - name: Bettystown
+    local_authority: Meath
+    why: "A commuter coast north of Dublin whose Garda station stopped reporting in 2025: its crime must come from a neighbouring station, not read as zero (#143)"
+    checks:
+      - {indicator: crime_violence, op: ge, value: 0.5, anchor: true}
+      - {theme: safety, op: le, value: 97, anchor: true}
 
   - name: Ballymun
     local_authority: Dublin City

@@ -69,14 +69,14 @@
     "send": "Seol",
     "moreOptions": "Tuilleadh roghanna",
     "suggestions": {
-      "familyTitle": "Oiriúnach do theaghlaigh in aice le Leeds",
-      "familyMessage": "Tá beirt pháistí óga againn agus buiséad £350k. Cá háit ar chóir dúinn breathnú timpeall Leeds?",
-      "pubsTitle": "Tithe tábhairne maithe in aice láimhe",
-      "pubsMessage": "Taispeáin dom tithe tábhairne maithe in aice le SW1A 1AA",
+      "familyTitle": "Oiriúnach do theaghlaigh i mBaile Átha Cliath",
+      "familyMessage": "Tá beirt pháistí óga againn. Cá háit ar chóir dúinn breathnú timpeall Bhaile Átha Cliath?",
+      "pubsTitle": "Tithe tábhairne in aice láimhe",
+      "pubsMessage": "Taispeáin dom tithe tábhairne in aice le Bóthar na Trá, Gaillimh",
       "compareTitle": "Cuir dhá áit i gcomparáid",
-      "compareMessage": "Cuir Headingley agus Chapel Allerton i gcomparáid",
+      "compareMessage": "Cuir Raghnallach agus Ráth Maonais i gcomparáid",
       "explainTitle": "Mínigh scór",
-      "explainMessage": "Cén fáth a bhfaigheann lár chathair Manchester scór íseal ar shábháilteacht?"
+      "explainMessage": "Cén fáth a bhfaigheann lár chathair Bhaile Átha Cliath scór íseal ar shábháilteacht?"
     },
     "copyMessage": "Cóipeáil"
   },

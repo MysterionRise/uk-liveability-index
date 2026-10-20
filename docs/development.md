@@ -19,7 +19,7 @@ The pipeline downloads, stages and joins the open datasets below:
   population, area and map bounding box; `lix validate geo` checks it
 - helpers bring other geographies onto LSOAs: points, output areas, MSOA/local-authority values,
   1km grids (sampled at postcodes, so population-weighted) and distance-based access to places
-- `lix indicators` builds 75 indicators (36 scored across 8 themes) from
+- `lix indicators` builds 97 indicators (44 scored across 9 themes) from
   [`config/indicators.yaml`](../config/indicators.yaml); `lix score` turns them into theme and
   overall scores per LSOA for five persona presets ([`config/weights.yaml`](../config/weights.yaml)),
   plus a QA report. The method, including how Greater Manchester's missing crime data and
@@ -32,7 +32,9 @@ Datasets ingested so far (full list with licences: [docs/data-sources.md](data-s
 
 | Theme | Sources |
 |-------|---------|
-| Geography | NSPL postcode lookup, LSOA/MSOA/local authority boundaries, population-weighted centroids, OA and 2011→2021 lookups, rural–urban class, House of Commons Library MSOA names, OS Open Names; Scotland: Data Zone and Intermediate Zone 2022 boundaries and centroids, the Data Zone lookup, NRS output-area and small-area population estimates, the SIMD postcode lookup (the 2011→2022 crosswalk), Gaelic council names (Wikidata) |
+| Geography | NSPL postcode lookup, LSOA/MSOA/local authority boundaries, population-weighted centroids, OA and 2011→2021 lookups, rural–urban class, House of Commons Library MSOA names, OS Open Names; Scotland: Data Zone and Intermediate Zone 2022 boundaries and centroids, the Data Zone lookup, NRS output-area and small-area population estimates, the SIMD postcode lookup (the 2011→2022 crosswalk), Gaelic council names (Wikidata); Northern Ireland: NISRA's Super Data Zones, Data Zones and population estimates, OSNI boundaries, Logainm place names (keyed); Ireland: CSO Small Areas and Electoral Divisions, Tailte Éireann councils and building footprints (home points), the Census 2022 SAPS, OpenStreetMap places |
+| Climate | Met Office HadUK-Grid 1991–2020 averages (sunshine, rain days, summer and winter temperatures, frost, wind, snow) and UKCP18 hot days; Met Éireann's 1991–2020 grids in Ireland |
+| Northern Ireland and Ireland | NIMDM 2017, PSNI crime, LPS prices and rates, BSO lists, DE schools, Translink timetables, DAERA noise; Pobal HP 2022, CSO Garda crime, EEA air quality, EPA noise and radon, Transport for Ireland GTFS, ComReg gigabit coverage, ESB and Open Charge Map chargers (keyed), NIAH listed buildings |
 | Community | English Indices of Deprivation 2025, WIMD 2025, SIMD 2020v2; Census 2021 and Scotland's Census 2022 (population, density, age, households, health, accommodation, cars, tenure, commuting, qualifications); Nomis claimant count (monthly); OHID life expectancy by MSOA |
 | Housing | HM Land Registry Price Paid (LSOA medians) and Registers of Scotland small-area prices; ONS small-area income; council tax by billing authority (MHCLG, the Welsh and Scottish Governments); VOA housing stock by council tax band and build period, NRS dwellings by band |
 | Safety | police.uk street crime, 36 months (Greater Manchester Police publishes none; flagged); the SIMD crime domain in Scotland; DfT road collisions (STATS19, 5 years) |
@@ -64,18 +66,19 @@ spend per day (`api/src/lix_api/agent/limits.py`); a refusal, a failure or a mis
 explained in the chat while the map keeps working, and every turn is logged to
 `data/logs/agent.jsonl` (tools called, latency, tokens, what the provider billed).
 
-The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 37 cases
+The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 59 cases
 covering ranking with constraints, look-ups, follow-ups, ambiguous places, out-of-scope and
-discriminatory requests, numbers grounded in tool results, analyst SQL, prompt injection and
-replies in Welsh and Gaelic):
+discriminatory requests, numbers grounded in tool results, analyst SQL, prompt injection,
+profiles from a description, and replies in Welsh, Gaelic and Irish):
 
 ```bash
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,compare_two
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5    # all cases, about $0.05
 ```
 
-Claude Opus 5.5, Claude Haiku 5.5 and Qwen 3.8 27B (open weights) all pass the suite;
-results, costs and what the evals caught are in [docs/evals.md](evals.md).
+Claude Haiku 5.5 passes the suite (one language-check flake); Claude Opus 5.5 and Qwen 3.8
+27B (open weights) passed its October 2026 form; results, costs and what the evals caught
+are in [docs/evals.md](evals.md).
 
 ## Stakeholder demo
 
@@ -99,7 +102,7 @@ README's GIFs and the release's walkthrough video the same way (needs ffmpeg), a
 ```bash
 make up          # everything at http://localhost:3000 (LIX_PORT), data from ./data/serve
 make up BUILD=1  # build the images from this checkout instead of pulling the release's
-make up-demo     # the same on the committed demo dataset (fixtures/demo: Leeds + Brighton)
+make up-demo     # the same on the committed demo dataset (fixtures/demo: six city cuts)
 make down
 ```
 
@@ -108,10 +111,13 @@ serves the data files under `/data`, sends `/api/v1`, `/health` and `/mcp` to th
 everything else to the web app, so the same images work on any host.
 
 The data pack: `make data-pack` on a machine with a full build writes
-`dist/lix-serve.tar.gz` (about 250 MB, with the licence notices). Packs ship as monthly
+`dist/lix-serve.tar.gz` (about 250 MB, with the licence notices). The api container is
+capped at 3 GiB (`LIX_API_MEMORY`): the pack, a score cache of sixteen weightings and the
+SQL views fit in about 2 GiB. Packs ship as monthly
 data releases separate from code releases ([docs/data-releases.md](data-releases.md)):
 `make data-download` fetches the newest one the checkout's serve schema can read
-(`DATA_TAG=data-2026-10` picks one) and `make data-unpack` restores a pack you have.
+(`DATA_TAG=data-2026-10.6` picks one; a pack's schema must match the checkout's) and
+`make data-unpack` restores a pack you have.
 `make demo-data` re-cuts the demo dataset from a full build, and `lix validate serve`
 checks any serve directory (CI runs the browser tests on the demo data).
 
@@ -119,14 +125,14 @@ checks any serve directory (CI runs the browser tests on the demo data).
 
 `web/` is a Next.js app (Node 24, see `.nvmrc`):
 
-- a MapLibre map of every neighbourhood in the UK from static PMTiles,
-  coloured by UK percentile; weights are recomputed in the browser, so moving a slider
-  recolours all 43,914 areas in about 100 ms
+- a MapLibre map of every neighbourhood in the UK and Ireland from static PMTiles,
+  coloured by percentile; weights are recomputed in the browser, so moving a slider
+  recolours all 62,833 areas in about 100 ms
 - an assistant chat ([CopilotKit](https://copilotkit.ai) over AG-UI) whose tool calls render as
   components: ranked lists, area profiles, side-by-side comparisons, nearby places, score
   explanations and SQL results. The assistant and the page share state, so it can move the map,
   outline areas, set the weight sliders and save a shortlist, and it sees what you change
-- presets (family, young professional, retired, commuter), a "compare like with like" switch for
+- presets (balanced, family, young professional, retired, commuter), a "compare like with like" switch for
   urban/rural fairness, a shortlist, shareable URLs, light and dark mode, and an analyst mode with
   a distribution chart, read-only SQL and CSV export
 
@@ -145,7 +151,7 @@ With a model key in `.env`, `make dev` uses the real model from `.env`.
 ## Planned
 
 - More open datasets: mobile coverage, private rents, jobs density, energy performance
-  certificates and listed buildings, then the
+  certificates, night-time noise and everyday services within 15 minutes, then the
   CDRC's Access to Healthy Assets & Hazards (behind a free login) as a cross-check
 - Walking-network travel times instead of straight-line distances
 
