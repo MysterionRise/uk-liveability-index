@@ -110,11 +110,19 @@ def stage_nspl(raw_path: Path | None = None) -> pl.LazyFrame:
     return place_by_polygon(reproject_inputs(read_nspl_raw(raw_path)))
 
 
+# How far outside its listed area a postcode's point must lie before the polygon that
+# holds it wins: nearer than this is the boundary files' generalisation, not an error
+MISPLACED_M = 200.0
+
+
 def place_by_polygon(lf: pl.LazyFrame) -> pl.LazyFrame:
-    """A live postcode whose point lies in another area's polygon than the one NSPL names
-    takes the polygon's area (188 Northern Irish postcodes sit up to 17 km from their
-    listed zone, #153): a search for it then lands where it is, and its home samples the
-    right area's measures."""
+    """A live postcode whose point lies well outside the area NSPL names (more than
+    ``MISPLACED_M`` from its polygon) takes the area whose polygon holds it (188 Northern
+    Irish postcodes sat up to 17 km from their listed zone, #153): a search for it then
+    lands where it is, and its home samples the right area's measures. A point just over
+    a generalised boundary keeps NSPL's area, which the ONS assigned on the full one."""
+    import shapely
+
     from lix_core.codes import in_scope
     from lix_pipeline.geo.boundaries import tier_polygons
     from lix_pipeline.geo.joins import points_to_lsoa
@@ -137,16 +145,32 @@ def place_by_polygon(lf: pl.LazyFrame) -> pl.LazyFrame:
     placed = points_to_lsoa(
         rows.rename({"lsoa21cd": "listed"}), x="east1m", y="north1m", polygons=polygons
     )
-    moved = placed.filter(
+    elsewhere = placed.filter(
         pl.col("lsoa21cd").is_not_null() & (pl.col("lsoa21cd") != pl.col("listed"))
     )
+    moved = elsewhere
+    if elsewhere.height:
+        # Distance from each point to the polygon of the area NSPL names
+        geoms = polygons.set_index("lsoa21cd").geometry
+        listed = elsewhere["listed"].to_list()
+        known = np.array([c in geoms.index for c in listed])
+        pts = shapely.points(elsewhere["east1m"].to_numpy(), elsewhere["north1m"].to_numpy())
+        distance = np.full(elsewhere.height, np.inf)
+        if known.any():
+            idx = np.flatnonzero(known)
+            distance[idx] = shapely.distance(
+                pts[idx], geoms.loc[[listed[i] for i in idx]].to_numpy()
+            )
+        moved = elsewhere.filter(pl.Series(distance > MISPLACED_M))
     if moved.height:
         by_nation = dict(
             moved.group_by(pl.col("lsoa21cd").str.slice(0, 1)).len().sort("lsoa21cd").iter_rows()
         )
         logger.info(
-            f"{moved.height:,} live postcodes moved to the area whose polygon holds them "
-            f"({by_nation}), e.g. {moved.select('postcode', 'listed', 'lsoa21cd').head(3).rows()}"
+            f"{moved.height:,} live postcodes more than {MISPLACED_M:.0f} m outside their listed "
+            f"area moved to the one whose polygon holds them ({by_nation}; "
+            f"{elsewhere.height - moved.height:,} nearer ones kept NSPL's area), e.g. "
+            f"{moved.select('postcode', 'listed', 'lsoa21cd').head(3).rows()}"
         )
         df = (
             df.join(
