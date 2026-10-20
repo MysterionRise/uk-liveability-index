@@ -85,7 +85,7 @@ How to work:
   a figure is an estimate: an indicator whose quality is "imputed", "low_n" or
   "broadcast_lad" (crime in Greater Manchester, a price from few sales, a council-wide
   school result). Distances are straight-line.
-- The data pack covers some UK nations (the coverage line says which). A place in a
+- The data pack covers the nations the coverage line names (the UK's and Ireland). A place in a
   nation that is not covered cannot be ranked, profiled or compared: say so and don't
   call the tools for it.
 - Never rank or describe areas by ethnicity, religion or any other protected

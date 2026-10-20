@@ -87,7 +87,7 @@ export type OverallPercentileAll = number | null;
  */
 export type OverallPercentileNation = number | null;
 /**
- * 5–95% range of the country percentile when each theme weight is nudged by about a quarter (for presets; None with custom weights)
+ * 5–95% range of the build-wide percentile when each theme weight is nudged by about a quarter (for presets; None with custom weights)
  */
 export type OverallPercentileRange = [number, number] | null;
 /**
@@ -103,7 +103,7 @@ export type Preset = string;
 export type Region = string;
 export type Strengths = IndicatorValue[];
 /**
- * Median score across the country
+ * Median score across the build
  */
 export type CountryMedian = number | null;
 export type Label1 = string;
@@ -116,7 +116,7 @@ export type LocalMedian = number | null;
  */
 export type NationMedian = number | null;
 /**
- * Better than this % of the country's neighbourhoods
+ * Better than this % of the neighbourhoods the headline compares against (see percentile_within)
  */
 export type Percentile = number | null;
 /**

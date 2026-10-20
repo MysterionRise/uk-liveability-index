@@ -47,7 +47,9 @@ class ThemeScore(BaseModel):
     label: str
     score: float | None = Field(None, description="0–100, higher is better")
     percentile: float | None = Field(
-        None, description="Better than this % of the country's neighbourhoods"
+        None,
+        description="Better than this % of the neighbourhoods the headline compares against "
+        "(see percentile_within)",
     )
     percentile_nation: float | None = Field(
         None, description="Better than this % of the neighbourhoods in the same nation"
@@ -60,7 +62,7 @@ class ThemeScore(BaseModel):
         description="Better than this % of every neighbourhood in the build, whatever the "
         "nation's headline rule (equals `percentile` unless the nation compares within itself)",
     )
-    country_median: float | None = Field(None, description="Median score across the country")
+    country_median: float | None = Field(None, description="Median score across the build")
     nation_median: float | None = Field(None, description="Median score across the nation")
     local_median: float | None = Field(None, description="Median score in the local authority")
 
@@ -128,7 +130,7 @@ class AreaProfile(BaseModel):
         None,
         min_length=2,
         max_length=2,
-        description="5–95% range of the country percentile when each theme weight is "
+        description="5–95% range of the build-wide percentile when each theme weight is "
         "nudged by about a quarter (for presets; None with custom weights)",
     )
     coverage: float | None

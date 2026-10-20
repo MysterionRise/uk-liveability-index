@@ -200,7 +200,7 @@
             }
           ],
           "default": null,
-          "description": "5\u201395% range of the country percentile when each theme weight is nudged by about a quarter (for presets; None with custom weights)",
+          "description": "5\u201395% range of the build-wide percentile when each theme weight is nudged by about a quarter (for presets; None with custom weights)",
           "title": "Overall Percentile Range"
         },
         "overall_percentile_urban_rural": {
@@ -1684,7 +1684,7 @@
             }
           ],
           "default": null,
-          "description": "Median score across the country",
+          "description": "Median score across the build",
           "title": "Country Median"
         },
         "label": {
@@ -1727,7 +1727,7 @@
             }
           ],
           "default": null,
-          "description": "Better than this % of the country's neighbourhoods",
+          "description": "Better than this % of the neighbourhoods the headline compares against (see percentile_within)",
           "title": "Percentile"
         },
         "percentile_all": {
