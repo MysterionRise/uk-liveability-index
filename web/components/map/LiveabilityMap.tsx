@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useData, useLiveability, useScores } from "@/components/AppData";
 import { MapLegend } from "@/components/map/MapLegend";
+import { usePanel } from "@/components/PanelContext";
 import { LABEL_PREFIX, placeLabels, setLabelLanguage } from "@/components/map/placeLabels";
 import { useTheme } from "@/components/ThemeProvider";
 import { fillColorExpression } from "@/lib/colors";
@@ -22,7 +23,7 @@ import { CHROME, FILL_OPACITY } from "@/lib/palette";
 import { useLocale, useTranslations } from "next-intl";
 
 import { useCoverageIn, useCoverageOf } from "@/lib/copy";
-import { activeBbox, coverageNations } from "@/lib/data";
+import { activeBbox, coverageNations, headlineWithin } from "@/lib/data";
 import { bboxOf } from "@/lib/state";
 
 const LAYERS = [
@@ -161,6 +162,17 @@ export function LiveabilityMap() {
   useEffect(() => {
     compareRef.current = state.compare_within;
   }, [state.compare_within]);
+  // Nations whose headline compares within themselves (#147): the hover says "of Ireland"
+  const rulesRef = useRef<Record<string, "all" | "nation">>({});
+  useEffect(() => {
+    rulesRef.current = headlineWithin(manifest);
+  }, [manifest]);
+  const tn = useTranslations("Nations");
+  const { setTab } = usePanel();
+  const setTabRef = useRef(setTab);
+  useEffect(() => {
+    setTabRef.current = setTab;
+  }, [setTab]);
   const t = useTranslations("Map");
   const tLegend = useTranslations("Legend");
   // An indicator only some nations have (domestic rates) is compared among the areas of
@@ -352,6 +364,8 @@ export function LiveabilityMap() {
       if (f.layer.id === "lsoa-fill") {
         const code = String(f.properties.lsoa21cd);
         update((s) => ({ ...s, map: { ...s.map, selected: code } }));
+        // The profile lives under the Area tab: a click shows it, whatever tab was open
+        setTabRef.current("area");
       } else {
         map.easeTo({ center: e.lngLat, zoom: f.layer.id === "lad-fill" ? 8 : 10.5 });
       }
@@ -363,15 +377,22 @@ export function LiveabilityMap() {
       const name = f?.properties?.name;
       // The wording follows "compare against": the value shown is already within the
       // nation or the urban/rural class when that is chosen (#113)
+      // The feature id is the area's code, whose first letter is its nation
+      const nation = String(f?.id ?? "")[0];
+      const ownNation = compareRef.current === "uk" && rulesRef.current[nation] === "nation";
       const key =
         compareRef.current === "nation"
           ? "hoverNation"
           : compareRef.current === "urban_rural"
             ? "hoverUrbanRural"
-            : whereRef.current
+            : whereRef.current && !ownNation
               ? "hoverIn"
               : "hover";
-      const args = { pct: pctRank(v), coverageIn: whereRef.current ?? "", of: ofRef.current };
+      const args = {
+        pct: pctRank(v),
+        coverageIn: whereRef.current ?? "",
+        of: ownNation ? tn(`of_${nation}` as "of_E" | "of_W" | "of_S" | "of_N" | "of_I") : ofRef.current,
+      };
       setHover(
         f && typeof v === "number"
           ? { x: e.point.x, y: e.point.y, text: name ? t(key, { name, ...args }) : t(`${key}NoName`, args) }
@@ -385,7 +406,7 @@ export function LiveabilityMap() {
       map.off("click", onClick);
       map.off("mousemove", onMove);
     };
-  }, [ready, update, t]);
+  }, [ready, update, t, tn]);
 
   return (
     <div className="relative h-full w-full" data-testid="map">
@@ -398,7 +419,7 @@ export function LiveabilityMap() {
           {hover.text}
         </div>
       )}
-      {values && <MapLegend label={values.label} against={against} dark={dark} />}
+      {values && <MapLegend label={values.notice ?? values.label} against={against} dark={dark} />}
     </div>
   );
 }

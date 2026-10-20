@@ -189,7 +189,8 @@
     "hoverNationNoName": "nas fheàrr na {pct, number}% de a nàisean",
     "hoverUrbanRural": "{name}: nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach",
     "hoverUrbanRuralNoName": "nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach",
-    "layerUnavailable": "Chan urrainnear {layer} a mhapadh; a' sealltainn an sgòr iomlan"
+    "layerUnavailable": "Chan urrainnear {layer} a mhapadh; a' sealltainn an sgòr iomlan",
+    "noWeights": "Chan eil cuideam air tèama sam bith: tog co-dhiù aon"
   },
   "Docs": {
     "nav": "Sgrìobhainnean",

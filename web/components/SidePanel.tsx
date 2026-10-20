@@ -36,11 +36,13 @@ export function SidePanel() {
   // Selecting an area (on the map or from a list) opens its profile, unless chatting.
   // The tab lives in a parent context, so this runs after render, not during it.
   const selected = state.map.selected;
-  const seenSelected = useRef(selected);
+  // A shared link that names an area opens its profile on arrival
+  const seenSelected = useRef<string | null | undefined>(undefined);
   useEffect(() => {
     if (selected === seenSelected.current) return;
+    const first = seenSelected.current === undefined;
     seenSelected.current = selected;
-    if (selected && tab !== "assistant") setTab("area");
+    if (selected && (first || tab !== "assistant")) setTab("area");
   }, [selected, tab, setTab]);
 
   const tabs: [Tab, string][] = [

@@ -105,9 +105,13 @@ export function WeightPanel() {
               value={weights[theme] ?? 0}
               aria-label={t("weightOf", { theme: labels.theme(theme) })}
               data-testid={`weight-${theme}`}
-              onChange={(e) =>
-                update((s) => ({ ...s, theme_weights: { ...s.theme_weights, [theme]: Number(e.target.value) } }))
-              }
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                // With every other theme at 0 there would be nothing to score: the last
+                // theme with weight stays at a quarter
+                const others = Object.keys(manifest.themes).some((o) => o !== theme && (weights[o] ?? 0) > 0);
+                update((s) => ({ ...s, theme_weights: { ...s.theme_weights, [theme]: v > 0 || others ? v : 0.25 } }));
+              }}
             />
             <span className="text-right text-xs tabular-nums">{(weights[theme] ?? 0).toFixed(2).replace(/\.?0+$/, "")}</span>
           </label>

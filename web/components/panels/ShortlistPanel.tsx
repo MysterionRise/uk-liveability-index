@@ -1,20 +1,20 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { useLiveability } from "@/components/AppData";
+import { useData, useLiveability } from "@/components/AppData";
 import { ComparisonTable } from "@/components/genui/ComparisonTable";
 import { compareAreas } from "@/lib/api";
 import type { Comparison } from "@/lib/contracts.gen";
 
 const MAX_COMPARE = 5;
 
-const KEY = "lix.shortlist";
-
-/** Saved areas; kept in this browser (localStorage) and shared with the assistant. */
+/** Saved areas; kept in this browser (localStorage, through the state provider) and
+ * shared with the assistant. */
 export function ShortlistPanel() {
   const { state, update } = useLiveability();
+  const { scores } = useData();
   const t = useTranslations("Shortlist");
   const locale = useLocale();
   const [comparison, setComparison] = useState<{
@@ -24,24 +24,6 @@ export function ShortlistPanel() {
   } | null>(null);
   const codes = state.shortlist.slice(0, MAX_COMPARE).map((i) => i.code);
   const key = `${codes.join(",")}|${state.preset}|${JSON.stringify(state.theme_weights)}|${JSON.stringify(state.indicator_weights)}`;
-
-  // Restore once, then persist on change
-  useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(KEY) ?? "[]");
-      if (Array.isArray(saved) && saved.length)
-        update((s) => (s.shortlist.length ? s : { ...s, shortlist: saved }));
-    } catch {
-      /* storage may be unavailable */
-    }
-  }, [update]);
-  useEffect(() => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(state.shortlist));
-    } catch {
-      /* ignore */
-    }
-  }, [state.shortlist]);
 
   if (state.shortlist.length === 0) {
     return (
@@ -67,7 +49,8 @@ export function ShortlistPanel() {
                   ...s,
                   map: {
                     ...s.map,
-                    selected: /^[EWSN]01\d{6}$/.test(item.code) ? item.code : s.map.selected,
+                    // A small area of the pack (any nation) is selected; a wider place is only shown
+                    selected: scores?.index.has(item.code) ? item.code : s.map.selected,
                     bbox: item.centre
                       ? [
                           item.centre.lon - 0.02,

@@ -189,7 +189,8 @@
     "hoverNationNoName": "yn well na {pct, number}% o'i genedl",
     "hoverUrbanRural": "{name}: yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg",
     "hoverUrbanRuralNoName": "yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg",
-    "layerUnavailable": "Ni ellir mapio {layer}; dangosir y sgôr gyffredinol"
+    "layerUnavailable": "Ni ellir mapio {layer}; dangosir y sgôr gyffredinol",
+    "noWeights": "Nid oes pwysau ar unrhyw thema: codwch o leiaf un"
   },
   "Docs": {
     "nav": "Dogfennaeth",

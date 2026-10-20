@@ -155,6 +155,21 @@ describe("helpers", () => {
     expect(headlinePercentile(values, groups, { E: "all" })).toBe(values);
   });
 
+  it("every theme weight at 0 gives an unknown overall rather than an error", () => {
+    const norms = { a: toArray([10, 20]), b: toArray([30, 40]) };
+    const r = scoreLsoas(
+      norms,
+      [
+        { id: "a", theme: "t1", weight: 1 },
+        { id: "b", theme: "t2", weight: 1 },
+      ],
+      { t1: 0, t2: 0 },
+    );
+    expect([...r.overall]).toEqual([NaN, NaN]);
+    expect([...r.coverage]).toEqual([0, 0]);
+    expect([...r.themes.t1.score]).toEqual([10, 20]);
+  });
+
   it("percentileWithin ranks inside each group", () => {
     const out = percentileWithin(toArray([1, 5, 10, 20]), ["u", "r", "u", "r"]);
     expect([...out]).toEqual([0, 0, 100, 100]);

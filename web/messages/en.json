@@ -189,7 +189,8 @@
     "hoverNationNoName": "better than {pct, number}% of its nation",
     "hoverUrbanRural": "{name}: better than {pct, number}% of similar urban/rural areas",
     "hoverUrbanRuralNoName": "better than {pct, number}% of similar urban/rural areas",
-    "layerUnavailable": "{layer} cannot be mapped; showing the overall score"
+    "layerUnavailable": "{layer} cannot be mapped; showing the overall score",
+    "noWeights": "No theme has any weight: raise at least one"
   },
   "Docs": {
     "nav": "Documentation",

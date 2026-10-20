@@ -20,13 +20,17 @@ import {
   detectLocale,
   type Locale,
 } from "@/lib/i18n";
+import { hashLocale } from "@/lib/urlState";
 
 const listeners = new Set<() => void>();
 const notify = () => listeners.forEach((l) => l());
 
 function readLocale(): Locale {
   try {
-    return detectLocale(localStorage.getItem(LOCALE_KEY), navigator.languages ?? [navigator.language]);
+    // A shared link opens in the language it was made in (for this page only: the
+    // browser's own choice is not overwritten)
+    const fromLink = hashLocale(window.location.hash);
+    return detectLocale(fromLink ?? localStorage.getItem(LOCALE_KEY), navigator.languages ?? [navigator.language]);
   } catch {
     return DEFAULT_LOCALE;
   }

@@ -204,12 +204,16 @@ export function scoreLsoas(
       themes[theme].percentileWithin = percentileWithin(score, groups);
   }
   const scoredThemes = Object.keys(themes);
-  const { score: overall, coverage } = weightedScore(
-    scoredThemes.map((t) => themes[t].score),
-    scoredThemes.map((t) => themeWeights[t] ?? 0),
-    minCoverage,
-    scoredThemes.map((t) => themeMasks[t]),
-  );
+  // Every theme at weight 0 (sliders, or a shared link) is no weighting at all: the
+  // overall is unknown everywhere rather than an error that takes the page down
+  const { score: overall, coverage } = scoredThemes.some((t) => (themeWeights[t] ?? 0) > 0)
+    ? weightedScore(
+        scoredThemes.map((t) => themes[t].score),
+        scoredThemes.map((t) => themeWeights[t] ?? 0),
+        minCoverage,
+        scoredThemes.map((t) => themeMasks[t]),
+      )
+    : { score: new Float64Array(n).fill(NaN), coverage: new Float64Array(n) };
   const result: ScoreResult = {
     themes,
     overall,

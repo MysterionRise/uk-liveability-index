@@ -189,7 +189,8 @@
     "hoverNationNoName": "níos fearr ná {pct, number}% dá náisiún",
     "hoverUrbanRural": "{name}: níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla",
     "hoverUrbanRuralNoName": "níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla",
-    "layerUnavailable": "Ní féidir {layer} a mhapáil; an scór foriomlán á thaispeáint"
+    "layerUnavailable": "Ní féidir {layer} a mhapáil; an scór foriomlán á thaispeáint",
+    "noWeights": "Níl aon mheáchan ar théama ar bith: ardaigh ceann amháin ar a laghad"
   },
   "Docs": {
     "nav": "Doiciméadú",

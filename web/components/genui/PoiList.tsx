@@ -52,7 +52,7 @@ export function PoiList({ result }: { result: PoiResult }) {
           </li>
         ))}
       </ul>
-      <Muted>{t("note", { sources: sources.join("; ") })}</Muted>
+      {sources.length > 0 && <Muted>{t("note", { sources: sources.join("; ") })}</Muted>}
     </Card>
   );
 }
