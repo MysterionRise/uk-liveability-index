@@ -847,7 +847,7 @@ indicators:
     coverage: [E, W, S, N, I]
     sources: [osm_england, osm_wales, osm_scotland, nspl, osm_ireland, te_buildings]
     builder: amenities:osm_access
-    params: {values: [sports_centre, fitness_centre], radius_m: 2000, cap: 10, exclude: {access: [private, no]}}
+    params: {values: [sports_centre, fitness_centre], radius_m: 2000, cap: 10, exclude: {access: [private, "no"]}}
     normalise: scale
     weight: 0.75
     overlap_group: leisure
