@@ -99,14 +99,47 @@ def attribution_md(registry: dict[str, DatasetSpec]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def write_docs() -> list[str]:
+def generated_docs() -> dict:
+    """The two generated files, path → text."""
     root = get_project_root()
     registry = load_registry()
-    (root / "docs").mkdir(exist_ok=True)
-    outputs = {
+    return {
         root / "docs" / "data-sources.md": data_sources_md(registry),
         root / "ATTRIBUTION.md": attribution_md(registry),
     }
+
+
+def write_docs() -> list[str]:
+    root = get_project_root()
+    (root / "docs").mkdir(exist_ok=True)
+    outputs = generated_docs()
     for path, text in outputs.items():
         path.write_text(text)
     return [str(p.relative_to(root)) for p in outputs]
+
+
+def _without_period(text: str) -> str:
+    """The sources table with its "Data for" cell blanked: that cell is read from the
+    data on the build machine (a timetable's dates, the months of crime files) and from
+    the lockfile where there is none, so it cannot be compared across machines."""
+    out = []
+    for line in text.splitlines():
+        if line.startswith("| `"):
+            cells = line.split(" | ")
+            if len(cells) >= 7:
+                cells[4] = "…"
+            line = " | ".join(cells)
+        out.append(line)
+    return "\n".join(out)
+
+
+def check_docs() -> list[str]:
+    """The generated files that differ from what is committed, ignoring the "Data for"
+    column; empty when `lix docs` would change nothing that CI can judge."""
+    root = get_project_root()
+    stale = []
+    for path, text in generated_docs().items():
+        current = path.read_text() if path.exists() else ""
+        if _without_period(current) != _without_period(text):
+            stale.append(str(path.relative_to(root)))
+    return stale

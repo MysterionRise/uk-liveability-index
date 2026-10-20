@@ -45,3 +45,14 @@ def test_every_indicator_source_feeds_a_nation_it_covers():
     from lix_pipeline.qa.validate import orphan_source_problems
 
     assert orphan_source_problems(load_indicators(), load_registry()) == []
+
+
+def test_docs_check_ignores_the_data_for_column_only():
+    from lix_pipeline.docs import _without_period
+
+    a = "| `x` | [T](u) | what | England | timetable for 3 November 2026 | daily | OGL-3.0 |"
+    b = "| `x` | [T](u) | what | England | downloaded 20 October 2026 | daily | OGL-3.0 |"
+    c = "| `x` | [T](u) | what | Wales | downloaded 20 October 2026 | daily | OGL-3.0 |"
+    assert _without_period(a) == _without_period(b)
+    assert _without_period(a) != _without_period(c)
+    assert _without_period("## Heading\ntext") == "## Heading\ntext"
