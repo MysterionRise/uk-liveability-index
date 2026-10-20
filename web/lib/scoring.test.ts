@@ -5,9 +5,12 @@ import { describe, expect, it } from "vitest";
 import {
   MIN_THEME_COVERAGE,
   aggregate,
+  bandOf,
+  headlinePercentile,
   percentileRank,
   percentileWithin,
   scoreLsoas,
+  shownPercentile,
 } from "./scoring";
 
 // Shared with core/tests/test_golden.py: both implementations must match
@@ -72,7 +75,17 @@ describe("golden cases match the Python scorer", () => {
         else if (col === "overall_pct") got = r.overallPercentile;
         else if (col === "overall_pct_nation") got = r.overallPercentileWithin;
         else if (col === "coverage") got = r.coverage;
-        else {
+        else if (col === "band") got = r.overallPercentile.map(bandOf);
+        else if (col === "headline.overall_pct")
+          got = headlinePercentile(r.overallPercentile, groups, golden.headline_within);
+        else if (col === "headline.overall_pct_all") got = r.overallPercentile;
+        else if (col === "headline.headline_within") {
+          const want = values as unknown as string[];
+          groups.forEach((g, i) =>
+            expect(golden.headline_within[g] ?? "all", `${name}.${col}[${i}]`).toBe(want[i]),
+          );
+          continue;
+        } else {
           const [kind, theme] = col.split("__");
           const t = r.themes[theme];
           got =
@@ -122,6 +135,24 @@ describe("helpers", () => {
     [...r.overallPercentile].forEach((v, i) =>
       expect(v).toBeCloseTo([0, 100 / 3, 200 / 3, 100][i], 9),
     );
+  });
+
+  it("bandOf follows the percentile as shown", () => {
+    expect([0, 19.4, 19.5, 19.9, 20, 79.6, 99.6, 100].map(bandOf)).toEqual([
+      1, 1, 2, 2, 2, 5, 5, 5,
+    ]);
+    expect([0, 19.4, 19.5, 79.6, 99.6, 100].map(shownPercentile)).toEqual([
+      0, 19, 20, 80, 99, 99,
+    ]);
+    expect(bandOf(NaN)).toBeNaN();
+  });
+
+  it("headlinePercentile re-ranks only the opted-in groups", () => {
+    const values = toArray([10, 40, 20, 30]);
+    const groups = ["E", "E", "I", "I"];
+    const out = headlinePercentile(values, groups, { E: "all", I: "nation" });
+    expect([...out]).toEqual([10, 40, 0, 100]);
+    expect(headlinePercentile(values, groups, { E: "all" })).toBe(values);
   });
 
   it("percentileWithin ranks inside each group", () => {

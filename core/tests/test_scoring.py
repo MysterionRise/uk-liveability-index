@@ -9,9 +9,12 @@ from hypothesis import strategies as st
 
 from lix_core.scoring import (
     band,
+    band_of,
+    headline_within,
     normalise,
     percentile_rank,
     score_lsoas,
+    shown_percentile_of,
     weighted_score,
 )
 
@@ -154,9 +157,92 @@ class TestScoreLsoas:
         assert after >= before - 1e-9
 
 
-def test_band():
-    out = pl.DataFrame({"p": [0.0, 19.9, 20.0, 99.9, 100.0]}).select(band(pl.col("p")))
-    assert out["p"].to_list() == [1, 1, 2, 5, 5]
+def test_band_follows_the_percentile_as_shown():
+    # 19.4 reads "19%" (bottom fifth); 19.5 reads "20%", so it sits in the second fifth,
+    # as does 20.0; 99.6 reads "99%" (the top is never 100) and is the top fifth
+    pcts = [0.0, 19.4, 19.5, 19.9, 20.0, 79.6, 99.6, 100.0, None]
+    out = pl.DataFrame({"p": pcts}).select(band(pl.col("p")))
+    assert out["p"].to_list() == [1, 1, 2, 2, 2, 5, 5, 5, None]
+    assert [band_of(p) for p in pcts] == [1, 1, 2, 2, 2, 5, 5, 5, None]
+    assert [shown_percentile_of(p) for p in pcts] == [0, 19, 20, 20, 20, 80, 99, 99, None]
+    assert band_of(float("nan")) is None
+
+
+class TestApplicableThemes:
+    """A theme the nation can have counts in the row's overall denominator even when the
+    row has no data for it; a theme the nation cannot have is left out."""
+
+    IND = [("a", "t1", 1.0), ("b", "t2", 1.0), ("c", "t3", 1.0)]
+    APPLICABLE = {"a": ["E", "S"], "b": ["E", "S"], "c": ["E"]}
+
+    def test_empty_theme_pulls_coverage_down_and_past_the_gate_withholds_the_overall(self):
+        norms = pl.DataFrame(
+            {
+                "n__a": [50.0, 50.0, None],
+                "n__b": [50.0, None, None],
+                "n__c": [50.0, None, 60.0],
+                "nation": ["E", "E", "E"],
+            }
+        )
+        out = score_lsoas(
+            norms, self.IND, {"t1": 1, "t2": 1, "t3": 1}, nation="nation",
+            applicable=self.APPLICABLE,
+        )  # fmt: skip
+        assert out["coverage"].to_list() == pytest.approx([1.0, 1 / 3, 1 / 3])
+        assert out["overall"].to_list() == [50.0, None, None]
+
+    def test_a_theme_the_nation_cannot_have_is_left_out(self):
+        # Scotland has no "c": its overall is over t1 and t2 only, at full coverage
+        norms = pl.DataFrame(
+            {"n__a": [40.0, 40.0], "n__b": [60.0, None], "n__c": [None, None],
+             "nation": ["S", "S"]}
+        )  # fmt: skip
+        out = score_lsoas(norms, self.IND, {"t1": 1, "t2": 1, "t3": 1}, applicable=self.APPLICABLE)
+        assert out["coverage"].to_list() == [1.0, 0.5]
+        assert out["overall"].to_list() == [50.0, 40.0]
+
+    def test_a_declared_gap_is_left_out_but_an_empty_theme_still_counts(self):
+        norms = pl.DataFrame(
+            {"n__a": [40.0, None], "n__b": [60.0, 60.0], "n__c": [None, None],
+             "nation": ["S", "S"]}
+        )  # fmt: skip
+        out = score_lsoas(
+            norms, self.IND, {"t1": 1, "t2": 1, "t3": 1}, applicable=self.APPLICABLE,
+            theme_gaps={"S": ["t3"]},
+        )  # fmt: skip
+        assert out["theme__t3"].to_list() == [None, None]
+        assert out["coverage"].to_list() == [1.0, 0.5]
+        assert out["overall"].to_list() == [50.0, 60.0]
+
+
+class TestHeadlineWithin:
+    def _scores(self):
+        norms = pl.DataFrame(
+            {"n__a": [10.0, 40.0, 20.0, 30.0], "nation": ["E", "E", "I", "I"]}
+        )  # fmt: skip
+        return score_lsoas(norms, [("a", "t", 1.0)], {"t": 1.0}, group="nation"), norms["nation"]
+
+    def test_opted_in_rows_take_the_nation_percentile_and_the_build_wide_one_is_kept(self):
+        scores, nations = self._scores()
+        out = headline_within(scores, nations, {"E": "all", "I": "nation"})
+        assert out["overall_pct_all"].to_list() == pytest.approx([0, 100, 100 / 3, 200 / 3])
+        assert out["overall_pct"].to_list() == pytest.approx([0, 100, 0, 100])
+        assert out["theme_pct__t"].to_list() == pytest.approx([0, 100, 0, 100])
+        assert out["theme_pct_all__t"].to_list() == pytest.approx([0, 100, 100 / 3, 200 / 3])
+        assert out["headline_within"].to_list() == ["all", "all", "nation", "nation"]
+
+    def test_without_an_opted_in_nation_nothing_moves(self):
+        scores, nations = self._scores()
+        out = headline_within(scores, nations, {"E": "all", "I": "all"})
+        assert out["overall_pct"].to_list() == scores["overall_pct"].to_list()
+        assert out["overall_pct_all"].to_list() == scores["overall_pct"].to_list()
+        assert out["headline_within"].unique().to_list() == ["all"]
+
+    def test_needs_the_nation_percentiles(self):
+        norms = pl.DataFrame({"n__a": [10.0, 40.0], "nation": ["E", "I"]})
+        scores = score_lsoas(norms, [("a", "t", 1.0)], {"t": 1.0})
+        with pytest.raises(ValueError, match="group='nation'"):
+            headline_within(scores, norms["nation"], {"I": "nation"})
 
 
 class TestGroupedScores:

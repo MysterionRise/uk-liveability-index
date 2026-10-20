@@ -1,11 +1,9 @@
 """Scores for any weighting: preset, custom theme weights and indicator multipliers."""
 
-import math
-
 import polars as pl
 
 from lix_api.store import Store
-from lix_core.scoring import score_lsoas
+from lix_core.scoring import score_lsoas, shown_percentile_of
 
 ThemeWeights = dict[str, float]
 MAX_CACHED = 64
@@ -114,10 +112,9 @@ def scored_ids(store: Store) -> set[str]:
 
 
 def percentile(v: float | None) -> float | None:
-    """A percentile for "better than N% of…": whole, and the top area is 99, never 100."""
-    if v is None or (isinstance(v, float) and math.isnan(v)):
-        return None
-    return min(99.0, float(round(v)))
+    """A percentile for "better than N% of…": whole, and the top area is 99, never 100
+    (``lix_core.scoring.shown_percentile_of``, the one rounding the band also follows)."""
+    return shown_percentile_of(v)
 
 
 def match_preset(store: Store, preset: str) -> str:

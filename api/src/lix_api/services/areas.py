@@ -7,6 +7,7 @@ from lix_api.services.names import english_if_different, localised
 from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
+from lix_core.scoring import band_of
 
 
 def _covered(store: Store, values: list[IndicatorValue]) -> set[str]:
@@ -192,7 +193,7 @@ def area_profile(
         overall_percentile=_pct(pct),
         overall_percentile_nation=_pct(scores.get("overall_pct_nation")),
         overall_percentile_urban_rural=_pct(scores.get("overall_pct_ruc_class")),
-        band=None if pct is None else min(int(pct // 20) + 1, 5),
+        band=band_of(pct),
         overall_percentile_range=None if lo is None or hi is None else [_pct(lo), _pct(hi)],
         coverage=_round(scores.get("coverage"), 2),
         preset=name,

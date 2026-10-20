@@ -11,7 +11,7 @@ import polars as pl
 import pytest
 
 from lix_core.paths import get_project_root
-from lix_core.scoring import normalise, score_lsoas
+from lix_core.scoring import band, headline_within, normalise, score_lsoas
 
 GOLDEN = get_project_root() / "contracts" / "fixtures" / "scoring_golden.json"
 
@@ -31,16 +31,22 @@ INDICATORS = [
 ]  # fmt: skip
 # Themes a nation declares it cannot cover: null there and left out of its overall
 THEME_GAPS = {"W": ["safety"]}
+# The base of each nation's headline percentile: the build, or the nation itself
+HEADLINE_WITHIN = {"E": "all", "W": "nation"}
+# Rows 7 and 8 are English areas with an empty theme: row 7 has no environment data
+# (coverage drops to two thirds, the overall stands), row 8 has only health (one third:
+# past the gate, so no overall); row 9 is Welsh with no environment data and, with safety
+# a declared gap and health England-only, nothing left to score
 RAW = {
-    "crime": [12.0, 3.0, None, 40.0, 7.5, 0.0],
-    "theft": [5.0, 5.0, 2.0, 30.0, None, 1.0],
-    "no2": [8.0, 15.5, 22.0, 31.0, 12.0, 9.9],
-    "parks": [0.9, 0.2, None, 1.0, 0.0, 0.55],
-    "gp_m": [400.0, 1500.0, 9000.0, 650.0, None, 3000.0],
+    "crime": [12.0, 3.0, None, 40.0, 7.5, 0.0, 2.0, None, None],
+    "theft": [5.0, 5.0, 2.0, 30.0, None, 1.0, 3.0, None, 4.0],
+    "no2": [8.0, 15.5, 22.0, 31.0, 12.0, 9.9, None, None, None],
+    "parks": [0.9, 0.2, None, 1.0, 0.0, 0.55, None, None, None],
+    "gp_m": [400.0, 1500.0, 9000.0, 650.0, None, 3000.0, 500.0, 700.0, None],
 }
 # One label per row; rank-normalised indicators with benchmark "nation" and the
 # *_pct_nation columns are computed within these groups
-GROUPS = {"nation": ["E", "E", "W", "E", "W", "W"]}
+GROUPS = {"nation": ["E", "E", "W", "E", "W", "W", "E", "E", "W"]}
 CASES = {
     "balanced": {"themes": {"safety": 1, "environment": 1, "health": 1}, "indicators": {}},
     "family": {"themes": {"safety": 2, "environment": 1.5, "health": 0.5},
@@ -72,7 +78,14 @@ def compute() -> dict:
             theme_gaps=THEME_GAPS,
         )
         expected[name] = {c: out[c].to_list() for c in out.columns}
+        # The band from the percentile as shown, and the headline after the nations'
+        # rules (Wales opts in: its rows take the within-Wales percentile)
+        expected[name]["band"] = out.select(band(pl.col("overall_pct")))[:, 0].to_list()
+        headline = headline_within(out, df["nation"], HEADLINE_WITHIN)
+        for col in ("overall_pct", "overall_pct_all", "headline_within"):
+            expected[name][f"headline.{col}"] = headline[col].to_list()
     return {
+        "headline_within": HEADLINE_WITHIN,
         "indicators": INDICATORS,
         "raw": RAW,
         "groups": GROUPS,

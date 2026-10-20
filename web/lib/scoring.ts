@@ -183,9 +183,21 @@ export function scoreLsoas(
         }
       }
     }
+    // The theme counts in a row's overall wherever its nation can have it (any weighted
+    // indicator applies), data or not, so an area missing most of its themes fails the
+    // gate rather than taking a band from the one or two it has; a theme the nation
+    // cannot have, or declares a gap for, is left out (as lix_core.scoring does)
+    const indicatorMasks = members
+      .map((i, j) => (weights[j] > 0 ? maskOf(i.coverage) : null))
+      .filter((m) => m !== null);
+    const everywhere = indicatorMasks.some((m) => m === undefined);
     themeMasks[theme] =
-      groups && (gapped || members.some((i) => maskOf(i.coverage)))
-        ? Uint8Array.from(coverage, (c, i) => (c > 0 && !gapped?.[i] ? 1 : 0))
+      groups && (gapped || !everywhere)
+        ? Uint8Array.from(coverage, (_, i) => {
+            const applies =
+              everywhere || indicatorMasks.some((m) => m !== undefined && m[i] === 1);
+            return applies && !gapped?.[i] ? 1 : 0;
+          })
         : undefined;
     themes[theme] = { score, percentile: percentileRank(score), coverage };
     if (groups && withinGroups)
@@ -207,6 +219,45 @@ export function scoreLsoas(
   if (groups && withinGroups)
     result.overallPercentileWithin = percentileWithin(overall, groups);
   return result;
+}
+
+/**
+ * The headline percentiles after each nation's rule (lix_core.scoring.headline_within):
+ * rows whose group is in `rule` as "nation" take their percentile within that group, the
+ * rest keep the build-wide value. One extra sort per opted-in nation.
+ */
+export function headlinePercentile(
+  values: Float64Array,
+  groups: string[],
+  rule: Record<string, "all" | "nation">,
+): Float64Array {
+  const own = new Set(Object.keys(rule).filter((g) => rule[g] === "nation"));
+  if (own.size === 0) return values;
+  const out = Float64Array.from(values);
+  const byGroup = new Map<string, number[]>();
+  for (let i = 0; i < groups.length; i++) {
+    if (!own.has(groups[i])) continue;
+    let members = byGroup.get(groups[i]);
+    if (!members) byGroup.set(groups[i], (members = []));
+    members.push(i);
+  }
+  for (const members of byGroup.values()) {
+    const ranks = percentileRank(Float64Array.from(members, (i) => values[i]));
+    members.forEach((i, k) => (out[i] = ranks[k]));
+  }
+  return out;
+}
+
+/** The percentile as people read it: whole (halves up), and the top area is 99, never 100. */
+export function shownPercentile(percentile: number): number {
+  return Math.min(99, Math.floor(percentile + 0.5));
+}
+
+/** Consumer-facing band 1–5 (fifths) from the percentile as shown, so "better than 80%"
+ * never sits beside "fourth fifth". NaN for NaN. */
+export function bandOf(percentile: number): number {
+  if (percentile !== percentile) return NaN;
+  return Math.min(Math.floor(shownPercentile(percentile) / 20), 4) + 1;
 }
 
 /** Percentile within groups (e.g. urban/rural class), for like-for-like comparison. */
