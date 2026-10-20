@@ -10,8 +10,11 @@ from pydantic import BaseModel, Field
 
 Level = Literal["lsoa", "msoa", "lad", "region", "nation"]
 Locale = Literal["en", "cy", "gd", "ga"]
-Weight = Annotated[float, Field(ge=0, le=3)]
-Multiplier = Annotated[float, Field(ge=0.25, le=3)]
+Weight = Annotated[float, Field(ge=0, le=3, allow_inf_nan=False)]
+# A request's sliders and multipliers: finite, in the sliders' range, keyed by id or label
+ThemeWeightMap = dict[str, Weight]
+IndicatorWeightMap = dict[str, Weight]
+Multiplier = Annotated[float, Field(ge=0.25, le=3, allow_inf_nan=False)]
 ProfileEngine = Literal["model", "rules"]
 EngineReason = Literal["free_model", "no_key", "budget", "model_error"]
 PlaceKind = Literal["postcode", "place", "lsoa", "msoa", "lad", "region", "nation"]

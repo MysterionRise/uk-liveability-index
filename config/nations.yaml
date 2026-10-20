@@ -20,6 +20,7 @@ countries:
     name: United Kingdom
     short: the UK
     names: {cy: y DU, gd: an RA, ga: an RA}
+    aliases: [UK, the UK, United Kingdom, the United Kingdom, Britain, Great Britain, GB]
     currency: GBP
     locale: en-GB
     postcode_regex: '^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$'
@@ -28,6 +29,7 @@ countries:
     name: Ireland
     short: Ireland
     names: {cy: Iwerddon, gd: Èirinn, ga: Éire}
+    aliases: [Republic of Ireland, the Republic of Ireland, ROI, Éire, Eire, Southern Ireland]
     currency: EUR
     locale: en-IE
     postcode_regex: null  # Eircode is licensed: no open postcode file
@@ -64,6 +66,7 @@ nations:
     country: UK
     name: Wales
     names: {cy: Cymru, gd: A' Chuimrigh, ga: An Bhreatain Bheag}
+    aliases: [Cymru]
     ctry_cd: W92000004
     input_crs: 27700
     bbox: [-5.4, 51.3, -2.6, 53.5]
@@ -90,6 +93,7 @@ nations:
     country: UK
     name: Scotland
     names: {cy: Yr Alban, gd: Alba, ga: Albain}
+    aliases: [Alba]
     ctry_cd: S92000003
     input_crs: 27700
     bbox: [-7.7, 54.6, -0.7, 60.9]
@@ -121,6 +125,7 @@ nations:
     country: UK
     name: Northern Ireland
     names: {cy: Gogledd Iwerddon, gd: Èirinn a Tuath, ga: Tuaisceart Éireann}
+    aliases: [NI, the North]
     ctry_cd: N92000002
     input_crs: 29902  # NSPL gives BT postcodes on the Irish Grid; stage_nspl recomputes them
     bbox: [-8.2, 54.0, -5.4, 55.4]
@@ -162,6 +167,11 @@ nations:
     country: IE
     name: Ireland
     names: {cy: Iwerddon, gd: Èirinn, ga: Éire}
+    aliases: [Republic of Ireland, the Republic of Ireland, ROI, Éire, Eire, Southern Ireland, the Republic]
+    # Its areas score on seven themes with stand-ins and are small, so the build-wide
+    # ranking's tails are nearly all Irish (622 of the top 628 in data-2026-10.5): the
+    # headline percentile and band compare within Ireland (#147)
+    headline_within: nation
     ctry_cd: I92000000  # minted: Ireland has no GSS code
     input_crs: 2157  # Irish Transverse Mercator, the grid Tailte Éireann publishes on
     bbox: [-10.7, 51.3, -5.9, 55.5]

@@ -246,6 +246,8 @@ def geography(area_counts: dict[str, int]) -> dict:
             },
             "theme_gaps": list(spec.theme_gaps),
             "names": dict(spec.names),
+            "aliases": list(spec.aliases),
+            "headline_within": spec.headline_within,
         }
     countries = sorted({cfg.nations[n].country for n in active_nations()})
     return {

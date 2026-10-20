@@ -16,8 +16,10 @@ def client(store):
 
 def test_health(client):
     health = client.get("/health").json()
-    assert health["lsoas"] == 8
-    assert health["geography"] == {"active": ["E", "W"], "area_counts": {"E": 6, "W": 2}}
+    assert health["lsoas"] == 12
+    assert health["geography"] == {
+        "active": ["E", "W", "I"], "area_counts": {"E": 7, "W": 2, "I": 3},
+    }  # fmt: skip
 
 
 def test_rest_routes(client):
@@ -36,7 +38,7 @@ def test_rest_routes(client):
         "/api/v1/rank", json={"within": "Leeds", "limit": 2, "sort_by": "indicator:noise_exposure"}
     ).json()
     assert quiet["sort_by"] == "indicator:noise_exposure" and quiet["sort_label"]
-    assert client.post("/api/v1/rank", json={"sort_by": "indicator:nope"}).status_code == 404
+    assert client.post("/api/v1/rank", json={"sort_by": "indicator:nope"}).status_code == 400
     assert (
         client.get(
             "/api/v1/compare", params=[("areas", "LS6 3HN"), ("areas", "BN2 9QA")]
@@ -53,13 +55,14 @@ def test_errors_map_to_status_codes(client):
     # Bad inputs are refused by the models, not honoured (#102)
     assert client.post("/api/v1/rank", json={"limit": -5}).status_code == 422
     assert client.get("/api/v1/search", params={"q": "Leeds", "limit": -1}).status_code == 422
-    assert client.post("/api/v1/rank", json={"level": "region"}).status_code == 404
-    assert client.post("/api/v1/rank", json={"min_theme_scores": {"vibes": 1}}).status_code == 404
+    # Bad input is a 400 (or a 422 from the models); 404 is for an area that does not exist
+    assert client.post("/api/v1/rank", json={"level": "region"}).status_code == 400
+    assert client.post("/api/v1/rank", json={"min_theme_scores": {"vibes": 1}}).status_code == 400
     # A refusal that quotes an id is still a JSON body (the pass found f-string bodies)
     r = client.post(
         "/api/v1/rank", json={"within": "Cardiff", "sort_by": "indicator:primary_school_quality"}
     )
-    assert r.status_code == 404 and "not available in Wales" in r.json()["detail"]
+    assert r.status_code == 400 and "not available in Wales" in r.json()["detail"]
     r = client.get('/api/v1/areas/say "hi" there')
     assert r.status_code == 404 and r.json()["detail"].startswith("Couldn't find")
     assert client.post("/api/v1/rank", json={"radius_km": -5, "within": "Leeds"}).status_code == 422
@@ -491,3 +494,52 @@ def test_profiles_and_comparisons_take_indicator_multipliers(client):
     assert (
         client.get("/api/v1/areas/LS6 3HN", params={"indicator_weights": "nope"}).status_code == 400
     )
+
+
+def test_weights_are_checked_once_for_every_route(client):
+    """Null, nested, infinite, negative or oversized weights are refused with the field
+    named, on the body and the query forms alike, never a 500 (#172)."""
+    for bad in ('{"safety": null}', '{"no2": {"a": 1}}', '{"safety": [1]}', '{"safety": "x"}'):
+        r = client.get("/api/v1/areas/E01000001", params={"theme_weights": bad})
+        assert r.status_code == 400, bad
+        assert "theme_weights" in r.json()["detail"]
+    out_of_range = ('{"safety": Infinity}', '{"safety": NaN}', '{"safety": 1e308}')
+    for bad in (*out_of_range, '{"safety": -1}', '{"safety": 9}'):
+        r = client.get("/api/v1/areas/E01000001", params={"theme_weights": bad})
+        assert r.status_code == 400, bad
+    params = [("areas", "LS6 3HN"), ("areas", "BN2 9QA"), ("theme_weights", '{"safety": [1]}')]
+    assert client.get("/api/v1/compare", params=params).status_code == 400
+    assert client.post("/api/v1/rank", json={"theme_weights": {"safety": 1e308}}).status_code == 422
+    assert client.post("/api/v1/rank", json={"indicator_weights": {"no2": 100}}).status_code == 422
+    assert client.post("/api/v1/rank", json={"max_median_price": -1}).status_code == 422
+    # A null overall gives a null percentile and band, never a mid-table 50
+    r = client.get("/api/v1/areas/I01000001", params={"theme_weights": '{"safety": 0}'})
+    assert r.status_code == 200
+
+
+def test_references_and_bodies_are_bounded(client):
+    """One request cannot pin a core: references are capped at 200 characters, a body at
+    16 KB, and only the first scopes of a comma list are read (#171)."""
+    long = "Leeds, " * 40
+    assert client.get("/api/v1/search", params={"q": long}).status_code == 422
+    assert client.post("/api/v1/rank", json={"within": long}).status_code == 422
+    assert client.get("/api/v1/pois", params={"category": "gp", "near": long}).status_code == 422
+    assert client.get(f"/api/v1/areas/{long}").status_code == 422
+    params = [("areas", long), ("areas", "LS6 3HN")]
+    assert client.get("/api/v1/compare", params=params).status_code == 422
+    body = json.dumps({"within": "Leeds", "pad": "x" * 20_000})
+    huge = client.post("/api/v1/rank", content=body, headers={"content-type": "application/json"})
+    assert huge.status_code == 413
+    # Twenty scopes cost no more than three: the rest are ignored
+    r = client.get("/api/v1/search", params={"q": "Headingley" + ", Leeds" * 20})
+    assert r.status_code == 200 and r.json()[0]["name"] == "Headingley"
+
+
+def test_head_and_docs_through_the_api_prefix(client):
+    """Uptime probes send HEAD; the schema and docs live under /api/v1 so the proxy can
+    reach them (#178)."""
+    assert client.head("/health").status_code == 200
+    assert client.head("/api/v1/search?q=Leeds").status_code == 200
+    assert client.get("/api/v1/openapi.json").status_code == 200
+    assert client.get("/api/v1/docs").status_code == 200
+    assert client.get("/openapi.json").status_code == 404

@@ -33,6 +33,53 @@ class TestSearch:
         caerdydd = search.search_place(store, "CAERDYDD")[0]
         assert (caerdydd.name, caerdydd.lsoa21cd) == ("Caerdydd", "W01001880")
 
+    def test_a_place_qualified_by_a_county_or_region_is_found_in_every_council(self, store):
+        """ "Ranelagh, Dublin" sits in Dublin City and "Dalkey, Dublin" in Dún
+        Laoghaire-Rathdown: the county names both councils; a region names its councils
+        too ("Headingley, Yorkshire and The Humber") (#156)."""
+        assert search.search_place(store, "Ranelagh, Dublin")[0].lsoa21cd == "I01000002"
+        assert search.resolve_lsoa(store, "Dalkey, Dublin") == "I01000003"
+        assert search.search_place(store, "Dalkey, Dublin City") == []
+        yorkshire = search.search_place(store, "Headingley, Yorkshire and The Humber")
+        assert yorkshire[0].name == "Headingley"
+        assert search.search_place(store, "Headingley, South East") == []
+
+    def test_a_nation_by_any_of_its_names_and_a_country_as_a_scope(self, store):
+        """ "Republic of Ireland" is the nation, not a hamlet called Ireland; "UK" scopes
+        to the UK's nations (#157)."""
+        for text in ("Republic of Ireland", "ROI", "Éire", "the Republic"):
+            (hit,) = search.search_place(store, text)
+            assert (hit.kind, hit.code) == ("nation", "I92000000"), text
+        assert search.search_place(store, "Ireland")[0].kind == "nation"
+        assert search.search_place(store, "Leeds, UK")[0].kind == "lad"
+        assert search.search_place(store, "Leeds, United Kingdom")[0].kind == "lad"
+        assert search.search_place(store, "Leeds, Ireland") == []
+        assert search.search_place(store, "Ranelagh, Republic of Ireland")[0].name == "Ranelagh"
+
+    def test_a_council_named_with_a_comma_is_found_whole(self, store):
+        """ "Bristol, City of" is a council's own name, not "Bristol" inside "City of"
+        (#173)."""
+        (hit,) = search.search_place(store, "Bristol, City of")
+        assert (hit.kind, hit.code) == ("lad", "E06000023")
+        assert search.search_place(store, "bristol, city of")[0].code == "E06000023"
+
+    def test_one_result_per_code(self, store):
+        """A place found through two of its names appears once (#173)."""
+        names = [p.code for p in search.search_place(store, "Raghnallach")]
+        assert names.count("p8") == 1
+
+    def test_a_long_reference_is_refused(self, store):
+        with pytest.raises(ValueError, match="200"):
+            search.search_place(store, "x" * 201)
+
+    def test_a_neighbourhood_or_council_resolves_to_an_area_inside_it(self, store):
+        """A code's profile is its most populous area, not the one nearest the middle of
+        its bounding box, which may lie in the next council (#170)."""
+        assert search.resolve_lsoa(store, "E02000002") in ("E01000003", "E01000004")
+        assert search.resolve_lsoa(store, "E02000002") == "E01000004"  # the more populous
+        assert search.resolve_lsoa(store, "I06000008") == "I01000003"
+        assert search.resolve_lsoa(store, "I02000001") == "I01000002"
+
     def test_alternative_name_matches(self, store):
         # "Londonderry" is Derry's alternative name (OpenStreetMap "Derry/Londonderry"):
         # the form typed is shown, with the main name beside it (#132)
@@ -126,7 +173,10 @@ class TestSqlGuard:
     def test_select(self, guard):
         r = guard.run("SELECT lad_nm, count(*) AS n FROM lsoa GROUP BY 1 ORDER BY 1")
         assert r.columns == ["lad_nm", "n"]
-        assert r.rows == [["Brighton and Hove", 2], ["Cardiff", 2], ["Leeds", 4]]
+        assert r.rows == [
+            ["Brighton and Hove", 2], ["Bristol, City of", 1], ["Cardiff", 2],
+            ["Dublin City", 2], ["Dún Laoghaire-Rathdown", 1], ["Leeds", 4],
+        ]  # fmt: skip
 
     @pytest.mark.parametrize(
         "sql",
@@ -196,7 +246,7 @@ def test_rankings_say_how_stable_each_result_is(store):
     result = rank_areas(store, level="lsoa", limit=3)
     assert all(0 <= r.stability <= 1 for r in result.results)
     # With every candidate shown, nothing can drop out
-    assert all(r.stability == 1 for r in rank_areas(store, level="lsoa", limit=10).results)
+    assert all(r.stability == 1 for r in rank_areas(store, level="lsoa", limit=20).results)
 
 
 def test_profile_themes_carry_country_nation_and_local_medians(store):
@@ -295,9 +345,9 @@ class TestRankingByOneMeasure:
         assert r.results[0].sort_score >= r.results[1].sort_score
 
     def test_unknown_measure_is_explained(self, store):
-        with pytest.raises(LookupError, match="list_indicators"):
+        with pytest.raises(ValueError, match="list_indicators"):
             ranking.rank_areas(store, sort_by="indicator:nope")
-        with pytest.raises(LookupError, match="theme:safety"):
+        with pytest.raises(ValueError, match="theme:safety"):
             ranking.rank_areas(store, sort_by="theme:nope")
 
     def test_overall_ranking_is_unchanged(self, store):
@@ -323,7 +373,7 @@ class TestRankingScopesAndSorts:
         for ident in [i.id for i in store.scored]:
             if "E" not in store.applicable.get(ident, []):
                 # Built for another nation: a clear refusal, not an empty list (#111)
-                with pytest.raises(LookupError, match="not available in England"):
+                with pytest.raises(ValueError, match="not available in England"):
                     rank_areas(store, within="Leeds", level="msoa", sort_by=f"indicator:{ident}")
                 continue
             out = rank_areas(
@@ -345,15 +395,17 @@ class TestRankingGuards:
     measure, lenient names, worst-first, capped percentiles, localised names."""
 
     def test_lad_level_aggregates_whole_councils(self, store):
-        r = ranking.rank_areas(store, level="lad", limit=5)
-        assert {a.code for a in r.results} == {"E08000035", "E06000043", "W06000015"}
+        r = ranking.rank_areas(store, level="lad", limit=10)
+        assert {a.code for a in r.results} == {
+            "E08000035", "E06000043", "W06000015", "E06000023", "I06000007", "I06000008",
+        }  # fmt: skip
         assert all(a.level == "lad" for a in r.results)
         leeds = next(a for a in r.results if a.code == "E08000035")
         assert leeds.name == "Leeds" and leeds.local_authority == "Leeds"
         assert leeds.population == 1500 + 1600 + 1700 + 1800
 
     def test_region_and_nation_levels_are_refused_with_the_allowed_ones(self, store):
-        with pytest.raises(LookupError, match="'lad'"):
+        with pytest.raises(ValueError, match="'lad'"):
             ranking.rank_areas(store, level="region")
 
     def test_areas_without_the_measure_are_left_out_not_first(self, store):
@@ -362,11 +414,11 @@ class TestRankingGuards:
             store, level="msoa", sort_by="indicator:primary_school_quality", limit=10
         )
         assert "W02000384" not in {a.code for a in r.results}
-        assert r.candidates == len(r.results) == 3
+        assert r.candidates == len(r.results) == 4
         assert all(a.sort_score is not None for a in r.results)
 
     def test_an_indicator_the_scope_lacks_is_explained_not_empty(self, store):
-        with pytest.raises(LookupError, match="not available in Wales"):
+        with pytest.raises(ValueError, match="not available in Wales"):
             ranking.rank_areas(store, within="Cardiff", sort_by="indicator:primary_school_quality")
 
     def test_theme_names_and_minimum_keys_are_lenient(self, store):
@@ -375,7 +427,7 @@ class TestRankingGuards:
         assert ranking.rank_areas(store, sort_by="Safety").sort_by == "theme:safety"
         r = ranking.rank_areas(store, level="lsoa", min_theme_scores={"Safety": 0}, limit=0)
         assert len(r.results) == 1  # limit is at least one
-        with pytest.raises(LookupError, match="min_theme_scores"):
+        with pytest.raises(ValueError, match="min_theme_scores"):
             ranking.rank_areas(store, min_theme_scores={"vibes": 50})
 
     def test_worst_first_reverses_the_order(self, store):
@@ -448,11 +500,11 @@ class TestReleasePassFindings:
     def test_saturated_scores_are_ordered_by_the_raw_value(self, store):
         # gp_distance is a threshold score: every home within reach reads 100, and the
         # tie is broken by the distance itself, nearest first (and furthest first, worst)
-        best = ranking.rank_areas(store, level="lsoa", limit=8, sort_by="indicator:gp_distance")
+        best = ranking.rank_areas(store, level="lsoa", limit=20, sort_by="indicator:gp_distance")
         values = [a.sort_value for a in best.results]
         assert values == sorted(values)
         worst = ranking.rank_areas(
-            store, level="lsoa", limit=8, sort_by="indicator:gp_distance", direction="worst"
+            store, level="lsoa", limit=20, sort_by="indicator:gp_distance", direction="worst"
         )
         assert [a.sort_value for a in worst.results] == sorted(values, reverse=True)
 
@@ -465,7 +517,7 @@ class TestReleasePassFindings:
             {"theme__education": pl.Float64}
         )
         measure = Measure("theme:education", "theme__education", (), label="Schools")
-        with pytest.raises(LookupError, match="not scored in Northern Ireland"):
+        with pytest.raises(ValueError, match="not scored in Northern Ireland"):
             _check_available(store, measure, df)
 
     def test_a_nation_is_not_an_area(self, store):

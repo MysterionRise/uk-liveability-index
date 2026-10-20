@@ -14,7 +14,7 @@ import json
 
 import polars as pl
 
-from lix_core.codes import in_scope
+from lix_core.codes import active_nations, in_scope
 from lix_core.config import load_nations
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
@@ -291,7 +291,27 @@ def build_areas(features: pl.DataFrame) -> pl.DataFrame:
             .rename({code: "code"})
             .with_columns(pl.lit(level).alias("level"))
         )
-    return pl.concat(frames, how="vertical_relaxed")
+    areas = pl.concat(frames, how="vertical_relaxed")
+    # A council's county where several share one (Dublin's four, Cork's two), so "Ranelagh,
+    # Dublin" finds the place in whichever council it sits
+    return areas.join(council_counties(), on="code", how="left")
+
+
+def council_counties() -> pl.DataFrame:
+    """Council code → the county people name it by, where the nation keeps such a list
+    (Ireland's curated councils); an empty table otherwise."""
+    empty = pl.DataFrame(schema={"code": pl.Utf8, "county": pl.Utf8})
+    if "I" not in active_nations():
+        return empty
+    try:
+        from lix_pipeline.stage.geo_ie import read_councils
+
+        councils = read_councils()
+    except FileNotFoundError:
+        return empty
+    if "county" not in councils.columns:
+        return empty
+    return councils.select(pl.col("lad_cd").alias("code"), "county").unique("code")
 
 
 def build_lookups(features: pl.DataFrame) -> dict:
