@@ -30,6 +30,9 @@ services:
     volumes:
       - ${LIX_SERVE_DIR:-./data/serve}:/data/serve:ro
       - ./data/logs:/data/logs
+    # The pack in memory, the score cache and the SQL views: about 2 GiB in use; a cap so
+    # a laptop running the demo never swaps (#179)
+    mem_limit: ${LIX_API_MEMORY:-3g}
 
   web:
     image: ghcr.io/mysterionrise/uk-liveability-index-web:${LIX_VERSION:-0.6.0}
@@ -68,6 +71,10 @@ services:
   pipeline:
     profiles: [build]
     build: { context: ., dockerfile: docker/pipeline.Dockerfile }
+    # The keyed sources (Open Charge Map, Logainm) read their keys from .env when it exists
+    env_file:
+      - path: .env
+        required: false
     volumes:
       - ./data:/data
       - ./config:/app/config

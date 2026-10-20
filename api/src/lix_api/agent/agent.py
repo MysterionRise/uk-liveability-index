@@ -46,8 +46,11 @@ Small Areas in Ireland: roughly 250–4,000 residents each)
 across nine themes — safety, environment, health services, schools & childcare,
 transport, amenities & nightlife, housing & affordability, community & wellbeing, and
 climate (sunshine, rain, summer and winter temperatures).
-Scores are 0–100 (higher is better) with a percentile against every scored
-neighbourhood and one within the area's own nation. Some indicators are benchmarked
+Scores are 0–100 (higher is better) with a headline percentile and band whose base
+`percentile_within` names: every scored neighbourhood in the build, or the area's own
+nation where that nation's open data is thinner (`overall_percentile_all` and
+`overall_percentile_nation` give both). Say which base a figure uses ("better than 62%
+of Ireland", "of the UK and Ireland"). Some indicators are benchmarked
 within the nation because the nations measure them differently (crime recording,
 school inspections, deprivation indices); a few are not available in every nation and
 the tools say so.
@@ -162,7 +165,15 @@ def coverage_note(store=None) -> str:
         if code not in geo["active"]
     ]
     counts = sum(geo.get("area_counts", {}).values())
-    note = f"Coverage: {' and '.join(covered)} ({counts:,} neighbourhoods)."
+    joined = covered[0] if len(covered) == 1 else f"{', '.join(covered[:-1])} and {covered[-1]}"
+    note = f"Coverage: {joined} ({counts:,} neighbourhoods)."
+    own = [
+        geo["nations"][n]["name"]
+        for n in geo["active"]
+        if geo["nations"][n].get("headline_within") == "nation"
+    ]
+    for name in own:
+        note += f" {name}'s headline percentile and band are within {name}."
     if missing:
         note += (
             f" Not covered: {'; '.join(missing)}. Places there cannot be ranked, profiled or "
@@ -282,7 +293,8 @@ def rank_areas(
         level: "msoa" (neighbourhoods of ~8,000 people), "lsoa" (small areas of roughly
             700–4,000) or "lad"
             (whole councils, as population-weighted averages)
-        max_median_price: only areas whose typical house price is at most this (£)
+        max_median_price: only areas whose typical house price is at most this, in the
+            local currency (not available where the nation has no open prices)
         min_theme_scores: e.g. {"safety": 60} to require a minimum theme score
         urban: True for towns and cities only, False for rural areas only
         limit: how many to return (max 20)
@@ -520,7 +532,8 @@ def run_sql(ctx: RunContext[Deps], query: str) -> dict:
     """Run one read-only SELECT (DuckDB SQL) over the index's tables; at most 5,000 rows.
 
     Tables: lsoa (every LSOA with raw__<indicator>, n__<indicator> 0–100 scores,
-    q__<indicator> quality flags, theme__<theme>, overall, overall_pct, overall_pct_nation,
+    q__<indicator> quality flags, theme__<theme>, overall, overall_pct (the headline, within
+    the nation where headline_within = 'nation'), overall_pct_all, overall_pct_nation,
     overall_pct_ruc_class, nation (E/W/S/N/I), ruc_class (urban/town/rural), lad_nm, rgn_nm,
     msoa_name, population, ...), pois (category, name, lat, lon, source, detail),
     areas (msoa/lad/region with population and bbox), places, indicators.

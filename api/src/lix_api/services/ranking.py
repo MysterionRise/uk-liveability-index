@@ -370,6 +370,7 @@ def rank_areas(
             local_authority=r["lad_nm"],
             overall=None if r["overall"] is None else round(r["overall"], 1),
             overall_percentile=percentile(r["overall_pct"]),
+            percentile_within=r.get("headline_within") or "all",
             themes={
                 t: None if r[f"theme__{t}"] is None else round(r[f"theme__{t}"], 1)
                 for t in store.themes

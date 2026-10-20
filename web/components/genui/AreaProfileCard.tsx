@@ -86,8 +86,11 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
   const tw = useTranslations("Weights");
   const tn = useTranslations("Nations");
   // The card's benchmark follows "compare against": within the nation or within the
-  // urban/rural class when either is chosen
-  const withinNation = state.compare_within === "nation";
+  // urban/rural class when either is chosen, and within the nation by default where the
+  // nation's headline compares within itself (percentile_within from the API, #147)
+  const withinNation =
+    state.compare_within === "nation" ||
+    (state.compare_within === "uk" && profile.percentile_within === "nation");
   const withinUrbanRural = state.compare_within === "urban_rural";
   const nationName = tn(profile.nation as "E" | "W" | "S" | "N" | "I");
   const nationOf = tn(`of_${profile.nation}` as "of_E" | "of_W" | "of_S" | "of_N" | "of_I");

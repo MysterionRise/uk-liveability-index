@@ -133,7 +133,8 @@
     "compareHint": {
       "uk": "Peircintílí thar gach ceantar scóráilte.",
       "nation": "Peircintílí laistigh de gach náisiún; fanann na scóir mar atá.",
-      "urban_rural": "Ní mheastar bailte beaga i gcoinne lár cathracha móra."
+      "urban_rural": "Ní mheastar bailte beaga i gcoinne lár cathracha móra.",
+      "uk_own": "Peircintílí thar gach ceantar scóráilte; {nations} laistigh dá náisiún féin."
     },
     "adjusted": "(coigeartaithe)",
     "describeYourself": "Nó déan cur síos ort féin",
@@ -175,7 +176,8 @@
     "worse": "níos measa",
     "typical": "tipiciúil",
     "better": "níos fearr",
-    "noData": "Gan sonraí"
+    "noData": "Gan sonraí",
+    "ownNation": "{nations}: i gcoinne ceantar {in}"
   },
   "Map": {
     "hover": "{name}: níos fearr ná {pct, number}% {of}",

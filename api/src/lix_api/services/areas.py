@@ -75,18 +75,35 @@ KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_expos
              "flood_risk", "tree_canopy", "sunshine", "gp_distance", "station_distance",
              "gigabit_broadband", "well_run_pubs", "households_with_children"]  # fmt: skip
 
-FLAG_TEXT = {
-    "imputed": "Crime figures here are estimated: Greater Manchester Police publishes no "
-    "street-level data.",
-    "low_n": "Few homes sold here in the last year, so the price is steadied towards the "
-    "surrounding area.",
-    "broadcast_lad": "Secondary school quality comes from the council's exam results, because "
-    "this nation publishes no per-school results or inspection grades.",
-    "not_available": "Some indicators are not available in this nation yet; the theme uses "
-    "the ones it has.",
-    "theme_gap": "This nation publishes too little open data for one theme to be scored: it is "
-    "shown as limited data and left out of the overall.",
-}
+# The flags an area can carry, worded in agent.messages (four languages)
+FLAG_CODES = ("imputed", "low_n", "broadcast_lad", "not_available", "theme_gap")
+
+
+def flag_texts(store: Store, codes: set[str], nation: str, locale: str | None) -> list[str]:
+    """The flags' texts in the interface language; the theme-gap one names the themes."""
+    from lix_api.agent.messages import message
+
+    lang = (locale or "en").split("-")[0]
+    labels = ((store.manifest.get("i18n") or {}).get(lang) or {}).get("themes") or {}
+    gaps = [
+        (labels.get(t) or {}).get("label") or store.themes[t].label
+        for t in store.theme_gaps.get(nation, [])
+        if t in store.themes
+    ]
+    out = []
+    for code in FLAG_CODES:
+        if code not in codes:
+            continue
+        themes = ", ".join(gaps) if gaps else "a theme"
+        out.append(message(f"flag_{code}", lang, themes=themes))
+    return out
+
+
+def nation_name_in(store: Store, nation: str, locale: str | None) -> str:
+    """The nation's name in the interface language where the pack carries it."""
+    lang = (locale or "en").split("-")[0]
+    names = (store.geography["nations"].get(nation) or {}).get("names") or {}
+    return names.get(lang) or store.nation_names.get(nation, nation)
 
 
 def _round(v: float | None, digits: int = 1) -> float | None:
@@ -133,6 +150,7 @@ def area_profile(
             percentile=_pct(scores.get(f"theme_pct__{t}")),
             percentile_nation=_pct(scores.get(f"theme_pct_nation__{t}")),
             percentile_urban_rural=_pct(scores.get(f"theme_pct_ruc_class__{t}")),
+            percentile_all=_pct(scores.get(f"theme_pct_all__{t}", scores.get(f"theme_pct__{t}"))),
             country_median=median(every, f"theme__{t}"),
             nation_median=median(nation, f"theme__{t}"),
             local_median=median(local, f"theme__{t}"),
@@ -167,7 +185,7 @@ def area_profile(
             else set()
         )
     )
-    flags = [FLAG_TEXT[c] for c in flag_codes if c in FLAG_TEXT]
+    flags = flag_texts(store, flag_codes, row["nation"], locale)
     pct = scores.get("overall_pct")
     # Precomputed per preset at build time; custom weights have no range
     preset_id = None if (theme_weights or indicator_weights) else name
@@ -186,13 +204,15 @@ def area_profile(
         local_authority_en=english_if_different(row, "lad_nm", locale),
         region=row["rgn_nm"],
         nation=row["nation"],
-        nation_name=store.nation_names.get(row["nation"], row["nation"]),
+        nation_name=nation_name_in(store, row["nation"], locale),
         urban_rural=row["ruc21nm"],
         population=row["population"],
         overall=_round(scores.get("overall")),
         overall_percentile=_pct(pct),
         overall_percentile_nation=_pct(scores.get("overall_pct_nation")),
         overall_percentile_urban_rural=_pct(scores.get("overall_pct_ruc_class")),
+        overall_percentile_all=_pct(scores.get("overall_pct_all", pct)),
+        percentile_within=scores.get("headline_within") or "all",
         band=band_of(pct),
         overall_percentile_range=None if lo is None or hi is None else [_pct(lo), _pct(hi)],
         coverage=_round(scores.get("coverage"), 2),

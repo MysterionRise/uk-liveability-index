@@ -179,7 +179,17 @@ export function LiveabilityMap() {
   // those nations, and the legend and hover say so (#136)
   const layerNations = coverageNations(manifest, state.map.layer);
   const coverageIn = useCoverageIn(layerNations ?? undefined);
-  const against = tLegend(`against.${state.compare_within}`, { coverageIn });
+  // Nations whose headline compares within themselves get a second line (#147)
+  const ownNations = Object.entries(headlineWithin(manifest))
+    .filter(([code, rule]) => rule === "nation" && manifest?.geography?.active?.includes(code))
+    .map(([code]) => code);
+  const against =
+    state.compare_within === "uk" && ownNations.length
+      ? `${tLegend("against.uk", { coverageIn })} · ${tLegend("ownNation", {
+          nations: ownNations.map((c) => tn(c as "E" | "W" | "S" | "N" | "I")).join(", "),
+          in: ownNations.map((c) => tn(`in_${c}` as "in_E" | "in_W" | "in_S" | "in_N" | "in_I")).join(", "),
+        })}`
+      : tLegend(`against.${state.compare_within}`, { coverageIn });
   const whereIn = layerNations ? coverageIn : null;
   const whereRef = useRef<string | null>(whereIn);
   useEffect(() => {

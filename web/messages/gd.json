@@ -133,7 +133,8 @@
     "compareHint": {
       "uk": "Ceudadan thar gach sgìre le sgòr.",
       "nation": "Ceudadan taobh a-staigh gach nàisein; tha na sgòran a' fuireach mar a tha iad.",
-      "urban_rural": "Chan eil bailtean beaga air am measadh an aghaidh meadhanan bhailtean mòra."
+      "urban_rural": "Chan eil bailtean beaga air am measadh an aghaidh meadhanan bhailtean mòra.",
+      "uk_own": "Ceudadan thar gach sgìre le sgòr; {nations} am broinn a nàisein fhèin."
     },
     "adjusted": "(air atharrachadh)",
     "describeYourself": "No thoir tuairisgeul ort fhèin",
@@ -175,7 +176,8 @@
     "worse": "nas miosa",
     "typical": "àbhaisteach",
     "better": "nas fheàrr",
-    "noData": "Gun dàta"
+    "noData": "Gun dàta",
+    "ownNation": "{nations}: an aghaidh sgìrean {in}"
   },
   "Map": {
     "hover": "{name}: nas fheàrr na {pct, number}% {of}",

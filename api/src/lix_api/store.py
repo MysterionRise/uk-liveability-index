@@ -237,10 +237,17 @@ class Store:
 
     @cached_property
     def poi_trees(self) -> dict[str, tuple[cKDTree, pl.DataFrame]]:
+        """A KD-tree per category, and one for the well-run pubs alone, so a nearest query
+        over them finds every one within reach rather than a share of the nearest pubs."""
         trees = {}
         for (category,), df in self.pois.partition_by("category", as_dict=True).items():
             xy = np.column_stack([df["x"].to_numpy(), df["y"].to_numpy()])
             trees[category] = (cKDTree(xy), df)
+            if category == "pub":
+                well_run = df.filter(pl.col("detail").str.contains(r'"well_run": ?true'))
+                if well_run.height:
+                    xy = np.column_stack([well_run["x"].to_numpy(), well_run["y"].to_numpy()])
+                    trees["well_run_pub"] = (cKDTree(xy), well_run)
         return trees
 
     def warm(self) -> "Store":

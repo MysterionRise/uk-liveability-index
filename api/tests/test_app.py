@@ -177,13 +177,21 @@ def test_runaway_tool_loop_is_stopped(client, monkeypatch):
 
 
 def test_openrouter_settings(monkeypatch):
-    from lix_api.agent.models import model_settings
+    from lix_api.agent.models import model_settings, provider_settings
 
     monkeypatch.setenv("LIX_MODEL", "openrouter:anthropic/claude-opus-5.5")
     s = model_settings()
     assert s["openrouter_reasoning"] == {"effort": "low"}
     assert s["openrouter_usage"] == {"include": True}
     assert s["openrouter_provider"]["order"] == ["anthropic"]
+    # The stable prefix is cached through OpenRouter as it is through Anthropic (#155)
+    assert s["openrouter_cache_tool_definitions"] == "1h"
+    assert s["openrouter_cache_instructions"] == "1h"
+    assert s["openrouter_cache_messages"] is True
+    # A fallback carries its own provider's settings, not the primary's
+    qwen = provider_settings("openrouter:qwen/qwen3.8-27b")
+    assert "openrouter_provider" not in qwen and "openrouter_cache_instructions" not in qwen
+    assert provider_settings("anthropic:claude-haiku-5.5")["anthropic_cache_instructions"] is True
     monkeypatch.setenv("LIX_MODEL", "openrouter:meta-llama/llama-4-maverick")
     assert "openrouter_provider" not in model_settings()
 

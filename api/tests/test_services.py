@@ -554,3 +554,73 @@ def test_explanations_name_the_area_in_the_locale(store):
 
     assert explain_score(store, "CF10 1AA", locale="cy").name.startswith("Cardiff 032A")
     assert explain_score(store, "CF10 1AA", locale="cy").preset == "balanced"
+
+
+class TestQaCloseOut:
+    """Findings of the v0.6.0 release QA pass, in the services."""
+
+    def test_refusals_speak_the_interface_language(self):
+        from lix_api.agent.limits import Limits
+
+        limits = Limits(session_turns=1, daily_budget=0.0)
+        assert limits.admit(1, "cy") is None
+        assert limits.admit(2, "cy").startswith("Mae'r sgwrs hon wedi cyrraedd ei therfyn o 1")
+        assert limits.admit(2, "ga").startswith("Tá teorainn 1 ceist")
+        assert limits.admit(2, "xx").startswith("This conversation has reached its limit of 1")
+        spent = Limits(daily_budget=0.5)
+        spent.spend(0.6)
+        assert spent.admit(1, "gd").startswith("Chleachd an cuidiche")
+
+    def test_an_irish_area_compares_within_ireland_and_says_so(self, store):
+        """The headline percentile and band of an Irish area are within Ireland
+        (headline_within in the manifest); an English area keeps the build-wide one (#147)."""
+        dublin = areas.area_profile(store, "I01000001")
+        assert dublin.percentile_within == "nation"
+        assert dublin.overall_percentile == dublin.overall_percentile_nation
+        assert dublin.overall_percentile_all is not None
+        assert dublin.themes[0].percentile == dublin.themes[0].percentile_nation
+        leeds = areas.area_profile(store, "E01000001")
+        assert leeds.percentile_within == "all"
+        assert leeds.overall_percentile == leeds.overall_percentile_all
+        ranked = ranking.rank_areas(store, level="lsoa", limit=20)
+        assert {r.percentile_within for r in ranked.results} == {"all", "nation"}
+
+    def test_flags_and_the_nation_name_follow_the_locale(self, store):
+        """An Irish area's theme-gap flag names its themes in the interface language, and
+        the nation's name is localised (#176)."""
+        en = areas.area_profile(store, "I01000001", locale="en")
+        assert any("Schools" in f or "schools" in f.lower() for f in en.flags)
+        ga = areas.area_profile(store, "I01000001", locale="ga")
+        assert ga.nation_name == "Éire"
+        assert any("Foilsíonn an náisiún seo" in f for f in ga.flags)
+
+    def test_explanations_list_only_the_caveats_of_indicators_the_nation_has(self, store):
+        from lix_api.services.explain import explain_score
+
+        dublin = explain_score(store, "I01000001")
+        assert not any("Ofsted" in c for c in dublin.caveats)
+        assert dublin.percentile_within == "nation"
+
+    def test_well_run_pubs_are_found_through_their_own_tree(self, store):
+        from lix_api.services.pois import nearest_pois
+
+        out = nearest_pois(store, "well_run_pub", "LS6 3HN", max_km=20, limit=10)
+        assert len(out.pois) == 2 and all(p.detail["well_run"] for p in out.pois)
+        assert "well_run_pub" in store.poi_trees
+
+    def test_sql_takes_a_trailing_comment_and_refuses_pragma(self, store):
+        from lix_api.services.sql import SqlError, SqlGuard
+
+        guard = SqlGuard(store)
+        assert guard.run("select 1 as one -- a note").rows == [[1]]
+        with pytest.raises(SqlError, match="SELECT"):
+            guard.run("PRAGMA table_info('lsoa')")
+        wide = guard.run("select * from lsoa")
+        assert wide.rows and len(wide.rows) * len(wide.columns) <= 200_000
+
+    def test_indicator_listing_matches_a_theme_leniently(self, store):
+        from lix_api.services.catalogue import list_indicators
+
+        assert {i.theme for i in list_indicators(store, "Schools", detail=False)} == {"education"}
+        with pytest.raises(LookupError):
+            list_indicators(store, "vibes", detail=False)

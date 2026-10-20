@@ -133,7 +133,8 @@
     "compareHint": {
       "uk": "Canraddau ar draws pob ardal a sgoriwyd.",
       "nation": "Canraddau o fewn pob cenedl; mae'r sgoriau'n aros yr un fath.",
-      "urban_rural": "Nid yw pentrefi'n cael eu barnu yn erbyn canol dinasoedd."
+      "urban_rural": "Nid yw pentrefi'n cael eu barnu yn erbyn canol dinasoedd.",
+      "uk_own": "Canraddau ar draws pob ardal a sgoriwyd; {nations} o fewn ei chenedl ei hun."
     },
     "adjusted": "(wedi'i addasu)",
     "describeYourself": "Neu disgrifiwch eich hun",
@@ -175,7 +176,8 @@
     "worse": "gwaeth",
     "typical": "arferol",
     "better": "gwell",
-    "noData": "Dim data"
+    "noData": "Dim data",
+    "ownNation": "{nations}: yn erbyn ardaloedd {in}"
   },
   "Map": {
     "hover": "{name}: yn well na {pct, number}% {of}",

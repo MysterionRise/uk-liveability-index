@@ -256,7 +256,7 @@ async def generate_profile(req: ProfileRequest) -> WeightProfile:
     matching when there is no key, the budget is spent or the model is the scripted one.
     The description is not stored; the run log keeps the kind, tokens and cost."""
     engine, _ = profiles.engine_choice()
-    if engine == "model" and (refusal := limits.admit(1)):
+    if engine == "model" and (refusal := limits.admit(1, req.locale)):
         raise HTTPException(status_code=429, detail=refusal)
     return await profiles.profile_from_description(get_store(), req.description.strip(), req.locale)
 
@@ -310,10 +310,12 @@ async def run_agent(request: Request) -> Response:
     """AG-UI endpoint: streams the assistant's messages, tool calls and state snapshots."""
     started = time.monotonic()
     try:
-        turns = user_turns(await request.json())  # the body is cached for the adapter
-    except ValueError:
-        turns = 0  # the adapter rejects the malformed request
-    refusal = limits.admit(turns)
+        body = await request.json()  # the body is cached for the adapter
+        turns = user_turns(body)
+        locale = str((body.get("state") or {}).get("locale") or "en")[:2]
+    except (ValueError, AttributeError):
+        turns, locale = 0, "en"  # the adapter rejects the malformed request
+    refusal = limits.admit(turns, locale)
     if refusal:
         # Answered without the model; the run still completes normally for the client
         return await FriendlyAGUIAdapter.dispatch_request(
