@@ -418,3 +418,98 @@ test("a profile compared against its urban/rural class says so", async ({ page }
   // The card follows "compare against" for the class as it does for the nation (#131)
   await expect(page.getByText("similar urban/rural areas").first()).toBeVisible();
 });
+
+// --- the v0.6.0 QA pass's browser findings ---------------------------------------------
+
+const ALL_ZERO = { safety: 0, environment: 0, health: 0, education: 0, transport: 0, amenities: 0, housing: 0, community: 0, climate: 0 };
+const encode = (h: object) => `#${encodeURIComponent(JSON.stringify(h))}`;
+
+test("every theme at 0 leaves the map blank with a notice, never an error", async ({ page }) => {
+  // A shared or bookmarked all-zero state used to throw inside the scorer (#181)
+  await page.goto(`/${encode({ p: "balanced", w: ALL_ZERO })}`);
+  await expect(page.getByTestId("legend")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId("legend")).toContainText(en.Map.noWeights);
+  await expect(page.getByText(/couldn't load/i)).toHaveCount(0);
+  // The sliders cannot reach it: the last theme with weight stays at a quarter
+  await page.goto("/");
+  await expect(page.getByTestId("legend")).toBeVisible({ timeout: 30_000 });
+  await page.getByTestId("tab-weights").click();
+  for (const theme of Object.keys(ALL_ZERO)) await page.getByTestId(`weight-${theme}`).fill("0");
+  await expect(page.getByTestId("weight-climate")).toHaveValue("0.25");
+});
+
+const SAVED = [
+  { code: "E01011350", name: "Leeds 034A", centre: { lat: 53.829, lon: -1.539 } },
+  { code: "I01018469", name: "Rathmines East D 005", centre: { lat: 53.326, lon: -6.256 } },
+  { code: "N21000251", name: "Botanic A", centre: { lat: 54.584, lon: -5.934 } },
+];
+
+test("a saved shortlist survives adding an area before the tab is opened", async ({ page }) => {
+  await page.addInitScript((saved) => localStorage.setItem("lix.shortlist", JSON.stringify(saved)), SAVED);
+  await mapReady(page);
+  // The tab counts the saved areas from the start (#182)
+  await expect(page.getByTestId("tab-shortlist")).toContainText("3");
+  await openFromSearch(page, "LS7 3DJ");
+  await page.getByTestId("area-profile").getByRole("button", { name: en.Profile.addToShortlist }).click();
+  await page.getByTestId("tab-shortlist").click();
+  await expect(page.getByTestId("shortlist").locator("li")).toHaveCount(4);
+  await page.reload();
+  await expect(page.getByTestId("legend")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId("tab-shortlist")).toContainText("4");
+});
+
+test("shortlisted Irish and Northern Irish areas select on click", async ({ page }) => {
+  await page.addInitScript((saved) => localStorage.setItem("lix.shortlist", JSON.stringify(saved)), SAVED);
+  await mapReady(page);
+  await page.getByTestId("tab-shortlist").click();
+  for (const [index, code] of [[1, "I01018469"], [2, "N21000251"]] as const) {
+    await page.getByTestId("shortlist").locator("li").nth(index).locator("button").first().click();
+    // The code test accepted E01/W01/S01/N01 only (#183)
+    await expect.poll(() => decodeURIComponent(page.url().split("#")[1] ?? "")).toContain(code);
+    await expect(page.getByTestId("tab-area")).toHaveAttribute("aria-selected", "true");
+    await page.getByTestId("tab-shortlist").click();
+  }
+});
+
+test("a shared link with an area opens its profile there, in Ireland's own terms", async ({ page }) => {
+  // The hash carries no view: the recipient used to land on the default map (#184)
+  await page.goto(`/${encode({ p: "balanced", s: "I01018469" })}`);
+  await expect(page.getByTestId("tab-area")).toHaveAttribute("aria-selected", "true", { timeout: 30_000 });
+  const profile = page.getByTestId("area-profile");
+  await expect(profile).toContainText("Rathmines East D", { timeout: 30_000 });
+  await expect.poll(() => page.evaluate(() => (window as any).__map?.getZoom?.() ?? 0), { timeout: 30_000 }).toBeGreaterThan(8);
+  // An Irish area's headline compares within Ireland (#147); a Leeds one across the build
+  await expect(profile).toContainText("of Ireland");
+  await page.goto(`/${encode({ p: "balanced", s: "E01011350" })}`);
+  await expect(page.getByTestId("area-profile")).toContainText("of the UK and Ireland", { timeout: 30_000 });
+});
+
+test("the first click on the map opens the area's profile", async ({ page }) => {
+  await mapReady(page);
+  await page.evaluate(() => (window as any).__map.jumpTo({ center: [-1.539, 53.829], zoom: 12 }));
+  await page.waitForFunction(() => (window as any).__map.loaded() && !(window as any).__map.isMoving());
+  await page.waitForTimeout(1500);
+  const box = (await page.getByTestId("map").boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  // The Assistant tab was open: the profile still shows (#184)
+  await expect(page.getByTestId("tab-area")).toHaveAttribute("aria-selected", "true", { timeout: 15_000 });
+  await expect(page.getByTestId("area-profile")).toBeVisible({ timeout: 30_000 });
+});
+
+test("in-page anchors in the docs resolve", async ({ page }) => {
+  // Headings carried no ids, so the methodology's own "#…" links went nowhere (#163)
+  await page.goto("/methodology");
+  await expect(page.locator("article.doc h2").first()).toBeVisible({ timeout: 30_000 });
+  const missing = await page.evaluate(() =>
+    [...document.querySelectorAll<HTMLAnchorElement>("article.doc a[href^='#']")]
+      .map((a) => decodeURIComponent(a.getAttribute("href")!.slice(1)))
+      .filter((id) => id && !document.getElementById(id)),
+  );
+  expect(missing).toEqual([]);
+});
+
+test("the map credits the Irish boundaries", async ({ page }) => {
+  await mapReady(page);
+  // The attribution control is built from the manifest's boundary sources (#186)
+  await expect(page.locator(".maplibregl-ctrl-attrib")).toContainText("Tailte Éireann", { timeout: 15_000 });
+});

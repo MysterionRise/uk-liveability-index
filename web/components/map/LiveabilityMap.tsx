@@ -9,7 +9,7 @@
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useData, useLiveability, useScores } from "@/components/AppData";
 import { MapLegend } from "@/components/map/MapLegend";
@@ -70,6 +70,33 @@ function carryOverlay(
 }
 
 /** Adds our sources and layers once per style, and (re)applies the theme's colours. */
+// The boundaries' own notices until the manifest says which sources drew them
+const FALLBACK_CREDITS = [
+  "Contains OS data © Crown copyright and database right; ONS; NRS; Contains Ordnance Survey of Northern Ireland information licensed under the OGL v3.0; NISRA",
+];
+
+/** What the map must credit for its boundaries: the attribution of every boundary source in
+ * the manifest (so a nation's notice cannot be missed when it joins, #186). */
+export function boundaryCredits(manifest: { sources?: Record<string, { attribution?: string }> } | null | undefined): string[] {
+  const sources = manifest?.sources ?? {};
+  const credits = Object.entries(sources)
+    .filter(([slug]) => /boundar|admin_areas|centroid/.test(slug))
+    .map(([, s]) => s.attribution?.trim())
+    .filter((a): a is string => !!a);
+  const unique = [...new Set(credits)];
+  return unique.length ? unique : FALLBACK_CREDITS;
+}
+
+/** The compact attribution opens expanded on load and would sit under the legend on a
+ * phone until the first drag; start it collapsed, the licence a tap away (#114). */
+function collapseAttribution(container: HTMLElement | null): void {
+  const attrib = container?.querySelector(".maplibregl-ctrl-attrib");
+  if (attrib?.classList.contains("maplibregl-compact-show")) {
+    attrib.classList.remove("maplibregl-compact-show");
+    attrib.querySelector("button")?.setAttribute("aria-expanded", "false");
+  }
+}
+
 function addOverlay(map: maplibregl.Map, dark: boolean): void {
   const chrome = CHROME[dark ? "dark" : "light"];
   if (!map.getSource("lsoa")) addOverlayLayers(map, chrome);
@@ -90,7 +117,6 @@ function addOverlayLayers(map: maplibregl.Map, chrome: (typeof CHROME)["light"])
       type: "vector",
       url: `pmtiles://${absoluteDataUrl()}/tiles/${layer.id}.pmtiles`,
       promoteId: { [layer.id]: layer.key },
-      attribution: "Contains OS data © Crown copyright and database right; ONS; NRS; Contains Ordnance Survey of Northern Ireland information licensed under the OGL v3.0; NISRA",
     });
     map.addLayer(
       {
@@ -235,7 +261,7 @@ export function LiveabilityMap() {
       container: container.current,
       style: basemap(darkRef.current),
       bounds: manifestRef.current ? activeBbox(manifestRef.current) : UK,
-      attributionControl: { compact: true },
+      attributionControl: false, // added below, with the manifest's boundary credits
     });
     styleDark.current = darkRef.current;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
@@ -246,22 +272,13 @@ export function LiveabilityMap() {
       if (err && (err.name === "AbortError" || /abort|cancel|Failed to fetch/i.test(err.message ?? ""))) return;
       console.error(err ?? e);
     });
-    // The compact attribution opens expanded on load and would sit under the legend on
-    // a phone until the first drag; start it collapsed, the licence a tap away (#114)
-    const collapseAttribution = () => {
-      const attrib = container.current?.querySelector(".maplibregl-ctrl-attrib");
-      if (attrib?.classList.contains("maplibregl-compact-show")) {
-        attrib.classList.remove("maplibregl-compact-show");
-        attrib.querySelector("button")?.setAttribute("aria-expanded", "false");
-      }
-    };
-    // MapLibre opens it on first paint; watch until the map has loaded, then leave it
-    // to the user
-    const attribWatch = new MutationObserver(collapseAttribution);
+    // MapLibre opens the attribution on first paint; watch until the map has loaded, then
+    // leave it to the user
+    const attribWatch = new MutationObserver(() => collapseAttribution(container.current));
     if (container.current) attribWatch.observe(container.current, { subtree: true, attributes: true, attributeFilter: ["class"] });
-    collapseAttribution();
+    collapseAttribution(container.current);
     map.once("load", () => {
-      collapseAttribution();
+      collapseAttribution(container.current);
       setTimeout(() => attribWatch.disconnect(), 1500);
     });
     map.on("style.load", () => {
@@ -280,6 +297,22 @@ export function LiveabilityMap() {
       mapRef.current = null;
     };
   }, []);
+
+  // The attribution control carries the boundaries' notices from the manifest (#186); it is
+  // rebuilt when they arrive, and starts collapsed as the first one does
+  const credits = useMemo(() => boundaryCredits(manifest), [manifest]);
+  const attribRef = useRef<maplibregl.AttributionControl | null>(null);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (attribRef.current) map.removeControl(attribRef.current);
+    const control = new maplibregl.AttributionControl({ compact: true, customAttribution: credits });
+    map.addControl(control, "bottom-right");
+    attribRef.current = control;
+    collapseAttribution(container.current);
+    const later = setTimeout(() => collapseAttribution(container.current), 300);
+    return () => clearTimeout(later);
+  }, [credits, ready]);
 
   // Swap the basemap when the theme changes (the style.load handler re-adds the overlay)
   useEffect(() => {
