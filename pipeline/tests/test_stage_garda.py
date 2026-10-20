@@ -47,6 +47,31 @@ def test_station_counts_keep_the_latest_year_and_map_the_groups():
     ]
 
 
+def test_station_flags_find_a_station_that_stopped_reporting_and_tiny_ones():
+    """Laytown recorded 906 incidents in 2024 and 0 in every group in 2025: not a
+    crime-free coast but a station that stopped reporting (#143)."""
+    rows = []
+    for station, by_year in {
+        "Drogheda, Louth Division (42101)": {"2024": 3800, "2025": 3790},
+        "Laytown, Louth Division (42105)": {"2024": 906, "2025": 0},
+        "Baltimore, Cork West Division (31207)": {"2024": 6, "2025": 4},
+        "Newtown, Galway Division (99998)": {"2025": 0},
+    }.items():
+        for year, n in by_year.items():
+            rows.append((station, year, "Burglary and related offences (07)", str(n)))
+            rows.append((station, year, "Homicide offences (01)", "1"))
+    cja = pl.DataFrame(
+        rows, schema=["Garda Station", "Year", "Type of Offence", "VALUE"], orient="row"
+    )
+    cja = cja.with_columns(pl.lit("x").alias("C03037V05454"))
+    non_reporting, low_n = garda.station_flags(cja, 2025)
+    assert non_reporting == {"Laytown, Louth Division (42105)"}
+    # A tiny station and a new one with nothing yet are low on counts, not non-reporting
+    assert low_n == {
+        "Baltimore, Cork West Division (31207)", "Newtown, Galway Division (99998)",
+    }  # fmt: skip
+
+
 def test_match_stations_by_name_irish_name_alias_and_county():
     aliases = pl.DataFrame(
         {
@@ -87,9 +112,10 @@ def test_spread_to_areas_by_population():
             "sub_code": ["A", "A", "B"],
         }
     )
-    out = garda.spread_to_areas(counts, areas)
+    out = garda.spread_to_areas(counts, areas, low={"A"})
     assert out.filter(pl.col("crime_type") == "Burglary")["n"].to_list() == [7.5, 2.5]
     assert set(out["force"]) == {garda.FORCE} and set(out["force_months"]) == {12}
+    assert out["low_n"].all()  # every area of a low-count sub-district carries the flag
     assert "I01000003" not in out["lsoa21cd"].to_list()  # its sub-district has no counts
 
 

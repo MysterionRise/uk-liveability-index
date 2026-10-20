@@ -40,7 +40,9 @@ def percentile_rank(values: pl.Expr, group: pl.Expr | None = None) -> pl.Expr:
     rank = values.rank(method="average")
     n = values.count()
     if group is not None:
+        # A row without a group is in no group: its within-group percentile is null
         rank, n = rank.over(group), n.over(group)
+        values = pl.when(group.is_null()).then(None).otherwise(values)
     pct = (rank - 1) / (n - 1) * 100
     return pl.when(n > 1).then(pct).when(values.is_not_null()).then(50.0)
 
@@ -201,7 +203,7 @@ def score_lsoas(
     instead of taking a band from the one or two it has.
     """
     mult = indicator_multipliers or {}
-    groups = [group] if isinstance(group, str) else list(group or [])
+    groups = [g for g in ([group] if isinstance(group, str) else list(group or [])) if g]
     within = {g: norms[g] for g in groups}
     nations = norms[nation] if (applicable or theme_gaps) else None
     if (applicable or theme_gaps) and nations is None:

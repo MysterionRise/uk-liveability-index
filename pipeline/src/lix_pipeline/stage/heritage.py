@@ -67,19 +67,25 @@ def _hes() -> pl.DataFrame:
     )
 
 
+# The Department for Communities' statutory grades; the file also carries delisted
+# buildings ("Delist"), records never allocated a grade, "Record Only" entries and blanks
+DFC_GRADES = ("A", "B+", "B1", "B2", "B")
+
+
 def _dfc() -> pl.DataFrame:
-    # A delisted building stays in the file with the grade "Delist"
     return (
         _parquet("dfc_listed")
-        .filter(pl.col("CurrentGra") != "Delist")
         .select(
             pl.col("HB_ref").cast(pl.Utf8).alias("ref"),
             pl.col("Address").alias("name"),
-            pl.col("CurrentGra").cast(pl.Utf8).alias("grade"),
+            pl.col("CurrentGra").cast(pl.Utf8).str.strip_chars().alias("grade"),
             pl.col("x").cast(pl.Float64),
             pl.col("y").cast(pl.Float64),
             pl.lit("Department for Communities").alias("source"),
         )
+        .filter(pl.col("grade").is_in(DFC_GRADES) & pl.col("ref").is_not_null())
+        # Several points per building in the file: one listed building is one point
+        .unique("ref", keep="first", maintain_order=True)
     )
 
 
@@ -111,8 +117,13 @@ def stage_heritage() -> pl.LazyFrame:
     frames = []
     for nation in active_nations():
         df = READERS[nation]()
+        if df.height == 0:
+            logger.warning(f"{nation}: no listed buildings in the fetched list")
+            continue
         logger.info(f"{nation}: {df.height:,} listed buildings ({df['source'][0]})")
         frames.append(df)
+    if not frames:
+        raise FileNotFoundError("No listed buildings for any active nation")
     df = pl.concat(frames)
     df = points_to_lsoa(df.filter(pl.col("x").is_not_null() & pl.col("y").is_not_null()))
     df = df.filter(in_scope("lsoa21cd"))

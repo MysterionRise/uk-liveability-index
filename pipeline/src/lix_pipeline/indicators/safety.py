@@ -26,8 +26,10 @@ def crime_rate(ctx, types: list[str]) -> pl.DataFrame:
     handful of police.uk records there come from neighbouring forces' border points).
     """
     crimes = ctx.staged("police_crime").filter(pl.col("crime_type").is_in(types))
+    # Ireland's rows say when a station's counts are too few to trust (#143)
+    low = pl.col("low_n").fill_null(False).any() if "low_n" in crimes.columns else pl.lit(False)
     annual = crimes.group_by("lsoa21cd").agg(
-        (pl.col("n") / pl.col("force_months") * 12).sum().alias("annual")
+        (pl.col("n") / pl.col("force_months") * 12).sum().alias("annual"), low.alias("low_n")
     )
     # The IoD crime domain (England only) is just the proxy for Greater Manchester, so it
     # must not decide which areas get a rate: Welsh areas have no proxy and need none
@@ -47,5 +49,10 @@ def crime_rate(ctx, types: list[str]) -> pl.DataFrame:
     return df.select(
         "lsoa21cd",
         "value",
-        pl.when(gmp).then(pl.lit("imputed")).otherwise(pl.lit("ok")).alias("quality"),
+        pl.when(gmp)
+        .then(pl.lit("imputed"))
+        .when(pl.col("low_n").fill_null(False))
+        .then(pl.lit("low_n"))
+        .otherwise(pl.lit("ok"))
+        .alias("quality"),
     )

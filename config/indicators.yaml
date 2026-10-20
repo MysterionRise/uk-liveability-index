@@ -226,7 +226,7 @@ indicators:
     coverage: [E, W, S, N, I]  # OS Open Greenspace in Great Britain, OpenStreetMap in Northern Ireland
     sources: [os_greenspace, osm_ireland, nspl, te_buildings]
     builder: common:nearest
-    params: {slug: os_greenspace, column: function, values: [Allotments Or Community Growing Spaces], beyond_cap: 20000}
+    params: {slug: os_greenspace, column: function, values: [Allotments Or Community Growing Spaces], beyond_cap: 50000}
     role: context
     caveats: Distance to the site, not whether a plot is free; waiting lists run to years in many towns. Northern Ireland's sites come from OpenStreetMap.
 
@@ -840,17 +840,17 @@ indicators:
   - id: leisure
     theme: amenities
     label: Sports and fitness facilities
-    description: Sports centres, gyms and swimming pools open to the public within 2km, weighted by distance (OpenStreetMap).
+    description: Sports centres and gyms open to the public within 2km, weighted by distance (OpenStreetMap).
     unit: index 0–1
     direction: higher_better
     coverage: [E, W, S, N, I]
     sources: [osm_england, osm_wales, osm_scotland, nspl, osm_ireland, te_buildings]
     builder: amenities:osm_access
-    params: {values: [sports_centre, fitness_centre, swimming_pool], radius_m: 2000, cap: 10, exclude: {access: [private]}}
+    params: {values: [sports_centre, fitness_centre], radius_m: 2000, cap: 10, exclude: {access: [private, no]}}
     normalise: scale
     weight: 0.75
     overlap_group: leisure
-    caveats: Mapped facilities, so a town's leisure centre counts once however many halls it has; Sport England's Active Places register (leisure_facilities) is the cross-check in England.
+    caveats: Mapped facilities, so a town's leisure centre counts once however many halls it has; swimming pools are left out because most mapped ones are private garden pools. Sport England's Active Places register (leisure_facilities) is the cross-check in England.
 
   - id: leisure_facilities
     theme: amenities

@@ -64,7 +64,7 @@ def impute_by_proxy(
     filled = df[value].to_numpy().astype(float).copy()
     mask = df.select(impute).to_series().to_numpy()
     filled[mask] = fitted
-    return pl.Series(value, filled)
+    return pl.Series(value, filled, nan_to_null=True)
 
 
 def _points(ctx, slug: str, column: str | None, values: list | None) -> pl.DataFrame:

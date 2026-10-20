@@ -134,7 +134,10 @@ def test_high_share_counts_homes_in_squares_at_or_above_the_threshold():
         }
     )
     out = high_share(homes, squares, threshold=2).sort("lsoa21cd")
-    assert out["high_share"].to_list() == [50.0, 50.0]  # A: 2 of 4; B: 1 of 2 (one outside)
+    # A: 2 of 4; B: 1 of the 1 home the map covers (the home off the map is unknown, #149)
+    assert out["high_share"].to_list() == [50.0, 100.0]
+    nowhere = homes.with_columns(pl.lit(99_999.0).alias("east1m"))
+    assert high_share(nowhere, squares, threshold=2)["high_share"].to_list() == [None, None]
 
 
 # --- a layer by URL ----------------------------------------------------------------------

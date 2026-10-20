@@ -118,6 +118,7 @@ def _stage(args: argparse.Namespace) -> int:
         raise SystemExit(f"Unknown stager: {args.slug!r}. Available: {list(available)}")
 
     registry, nations = load_registry(), list(active_nations())
+    failed = []
     for slug in [args.slug] if args.slug else list(available):
         if args.all and not graph.has_inputs(slug, registry, nations):
             logger.info(f"[{slug}] Inputs not fetched — skipping")
@@ -125,8 +126,18 @@ def _stage(args: argparse.Namespace) -> int:
         if args.all and not graph.covers(slug, registry, nations):
             logger.info(f"[{slug}] Its sources cover none of the active nations — skipping")
             continue
-        save_staged(available[slug](), slug)
+        try:
+            save_staged(available[slug](), slug)
+        except Exception as e:  # noqa: BLE001 (one stager's failure must not stop the rest)
+            if not args.all:
+                raise
+            logger.exception(f"[{slug}] Stage failed: {e}")
+            failed.append(slug)
+            continue
         graph.record_staged(slug, registry, nations)
+    if failed:
+        logger.error(f"{len(failed)} stager(s) failed: {failed}")
+        return 1
     return 0
 
 

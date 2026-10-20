@@ -353,6 +353,6 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "night_lights": night_lights.stage_night_lights,  # manual source; needs staged nspl
         "climate": climate.stage_climate,  # manual source; needs staged nspl
         "ukcp_hot_days": climate.stage_ukcp_hot_days,  # needs staged geo_lsoa
-        "logainm": logainm.stage_logainm,  # keyed source; skipped without LOGAINM_API_KEY
+        "logainm": logainm.stage_logainm,  # keyed source; an empty table without LOGAINM_API_KEY
         "deprivation": stage_deprivation,  # needs staged iod_2025
     }

@@ -322,10 +322,17 @@ def test_nearest_beyond_the_cap_can_count_as_the_cap():
     sites = pl.DataFrame({"type": ["type1"], "x": [1000.0], "y": [0.0]})
     ctx = FakeContext(origins=origins, ae_sites=sites)
     plain = nearest(ctx, "ae_sites", "type", ["type1"]).sort("lsoa21cd")
-    assert plain["value"].to_list()[0] == pytest.approx(1000.0)
-    assert plain["value"].to_list()[1] is None  # nothing within 50 km
+    # A home with nothing within the search cap reads the cap (#148), so an area whose
+    # homes have nothing in reach reads 50 km with or without beyond_cap
+    assert plain["value"].to_list() == pytest.approx([1000.0, 50_000.0])
     capped = nearest(ctx, "ae_sites", "type", ["type1"], beyond_cap=50_000).sort("lsoa21cd")
     assert capped["value"].to_list() == pytest.approx([1000.0, 50_000.0])
+    # No site at all: nothing measurable, and beyond_cap stands in
+    none = FakeContext(origins=origins, ae_sites=sites.filter(pl.col("type") == "none"))
+    assert nearest(none, "ae_sites", "type", ["type1"])["value"].to_list() == [None, None]
+    assert nearest(none, "ae_sites", "type", ["type1"], beyond_cap=50_000)["value"].to_list() == [
+        50_000.0, 50_000.0,
+    ]  # fmt: skip
 
 
 def test_well_run_counts_a_recent_scottish_pass_like_a_high_rating():
