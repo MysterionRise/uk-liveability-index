@@ -445,11 +445,17 @@ const SAVED = [
 ];
 
 test("a saved shortlist survives adding an area before the tab is opened", async ({ page }) => {
-  await page.addInitScript((saved) => localStorage.setItem("lix.shortlist", JSON.stringify(saved)), SAVED);
+  // Seeded once: the app's own writes must survive the reload below
+  await page.addInitScript((saved) => {
+    if (!localStorage.getItem("lix.shortlist")) localStorage.setItem("lix.shortlist", JSON.stringify(saved));
+  }, SAVED);
   await mapReady(page);
   // The tab counts the saved areas from the start (#182)
   await expect(page.getByTestId("tab-shortlist")).toContainText("3");
+  // A saved area's card knows it is saved; a new one can be added before the tab is opened
   await openFromSearch(page, "LS7 3DJ");
+  await expect(page.getByTestId("area-profile")).toContainText(en.Profile.inShortlist, { timeout: 30_000 });
+  await openFromSearch(page, "LS6 3AA");
   await page.getByTestId("area-profile").getByRole("button", { name: en.Profile.addToShortlist }).click();
   await page.getByTestId("tab-shortlist").click();
   await expect(page.getByTestId("shortlist").locator("li")).toHaveCount(4);
@@ -459,7 +465,9 @@ test("a saved shortlist survives adding an area before the tab is opened", async
 });
 
 test("shortlisted Irish and Northern Irish areas select on click", async ({ page }) => {
-  await page.addInitScript((saved) => localStorage.setItem("lix.shortlist", JSON.stringify(saved)), SAVED);
+  await page.addInitScript((saved) => {
+    if (!localStorage.getItem("lix.shortlist")) localStorage.setItem("lix.shortlist", JSON.stringify(saved));
+  }, SAVED);
   await mapReady(page);
   await page.getByTestId("tab-shortlist").click();
   for (const [index, code] of [[1, "I01018469"], [2, "N21000251"]] as const) {

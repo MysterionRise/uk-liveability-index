@@ -92,12 +92,25 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
     const hash = readHash();
     const saved = typeof window === "undefined" ? null : readSavedProfile();
     const seed = Object.keys(hash).length ? hash : saved ? profileState(saved) : {};
-    const shortlist = typeof window === "undefined" ? [] : readShortlist();
-    return normaliseState({ ...DEFAULT_STATE, ...seed, shortlist } as Partial<WireState>);
+    return normaliseState({ ...DEFAULT_STATE, ...seed } as Partial<WireState>);
   });
   const latest = useRef(state);
   const pushedTo = useRef<unknown>(null);
   const { scores } = useData();
+
+  // The shortlist this browser keeps joins the state right after mount (not in the first
+  // render, which must match the server's), merged with anything already there
+  useEffect(() => {
+    const saved = readShortlist();
+    if (!saved.length) return;
+    const s = latest.current;
+    const codes = new Set(s.shortlist.map((i) => i.code));
+    const next = { ...s, shortlist: [...saved.filter((i) => !codes.has(i.code)), ...s.shortlist] };
+    latest.current = next;
+    setState(next);
+    agent.setState(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // A link pasted into an open tab changes only the hash: follow it (our own writes use
   // replaceState, which fires no hashchange). The link replaces the shareable state, as
@@ -160,10 +173,15 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
     if (incoming && Object.keys(incoming).length) setState(normaliseState(incoming));
   }
 
+  const restored = useRef(false);
   useEffect(() => {
     latest.current = state;
     writeHash(state);
-    saveShortlist(state.shortlist);
+    // Never write the empty first frame over a saved list: persist once it has been read
+    if (restored.current || state.shortlist.length) {
+      restored.current = true;
+      saveShortlist(state.shortlist);
+    }
     if (state.profile) {
       const prev = readSavedProfile();
       const next = savedFromState(state, prev);

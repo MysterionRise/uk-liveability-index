@@ -17,6 +17,7 @@ from typing import Annotated, Literal
 from fastapi import Body, FastAPI, HTTPException, Path, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
+from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 from pydantic_ai.ui import StateDeps
@@ -84,18 +85,12 @@ app.add_middleware(
 
 @app.middleware("http")
 async def limit_body(request: Request, call_next):
-    """A request body larger than any legitimate one is refused before it is read, and a
-    HEAD (an uptime probe, a load balancer) is answered like the GET, without the body."""
+    """A request body larger than any legitimate one is refused before it is read."""
     length = request.headers.get("content-length")
     if length and length.isdigit() and int(length) > MAX_BODY_BYTES:
         return JSONResponse(
             {"detail": f"Request body over {MAX_BODY_BYTES:,} bytes"}, status_code=413
         )
-    if request.method == "HEAD":
-        request.scope["method"] = "GET"
-        response = await call_next(request)
-        headers = {k: v for k, v in response.headers.items() if k.lower() != "content-length"}
-        return Response(status_code=response.status_code, headers=headers)
     return await call_next(request)
 
 
@@ -362,3 +357,11 @@ def run() -> None:
         port=int(os.environ.get("LIX_PORT", "8000")),
         reload=os.environ.get("LIX_RELOAD") == "1",
     )
+
+
+# Every GET route answers HEAD as well (an uptime probe, a load balancer, a parquet reader
+# sizing a file): FastAPI does not add it the way Starlette's own routes do, and the server
+# drops the body itself (#178)
+for _route in app.routes:
+    if isinstance(_route, APIRoute) and "GET" in _route.methods:
+        _route.methods.add("HEAD")

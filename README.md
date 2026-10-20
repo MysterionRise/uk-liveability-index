@@ -20,7 +20,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
 - **Your weights, computed in your browser**, from five ready-made personas, a sentence
   about yourself ("young professional, one child starting school, I need sunshine") or
   any weighting of your own, with an honest range for how much a result depends on them.
-- **An assistant that shows its working**, tested on 59 cases, including that its replies
+- **An assistant that shows its working**, tested on 58 cases, including that its replies
   only use numbers from the data ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.
@@ -109,7 +109,7 @@ provider as the fallback:
 
 | Model (via OpenRouter) | Eval cases passed | Typical answer | Cost per question |
 |---|---|---|---|
-| Claude Haiku 5.5 (default) | 54/55 (the miss is a language-check flake) | 4 s | about $0.0015 |
+| Claude Haiku 5.5 (default) | 58/58 | 5 s | about $0.001 |
 | Qwen 3.8 27B (fallback, open weights) | 32/32 (the October 2026 suite) | 6 s | about $0.0017 |
 | Claude Opus 5.5 | 32/32 (the October 2026 suite) | 7 s | about $0.05 |
 

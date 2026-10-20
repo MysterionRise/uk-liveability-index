@@ -232,6 +232,8 @@ export function LiveabilityMap() {
   const styleDark = useRef<boolean | null>(null);
 
   const darkRef = useRef(dark);
+  // The attribution control, rebuilt when the manifest's boundary credits arrive (#186)
+  const attribRef = useRef<maplibregl.AttributionControl | null>(null);
   useEffect(() => {
     darkRef.current = dark;
   }, [dark]);
@@ -295,17 +297,20 @@ export function LiveabilityMap() {
       setStyleVersion(0);
       map.remove();
       mapRef.current = null;
+      attribRef.current = null;
     };
   }, []);
 
   // The attribution control carries the boundaries' notices from the manifest (#186); it is
   // rebuilt when they arrive, and starts collapsed as the first one does
   const credits = useMemo(() => boundaryCredits(manifest), [manifest]);
-  const attribRef = useRef<maplibregl.AttributionControl | null>(null);
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    if (attribRef.current) map.removeControl(attribRef.current);
+    // A control of a map that has since been removed (React re-running effects in
+    // development) must not be removed again: MapLibre would call off() on no map
+    const previous = attribRef.current as (maplibregl.AttributionControl & { _map?: unknown }) | null;
+    if (previous && previous._map === map) map.removeControl(previous);
     const control = new maplibregl.AttributionControl({ compact: true, customAttribution: credits });
     map.addControl(control, "bottom-right");
     attribRef.current = control;
