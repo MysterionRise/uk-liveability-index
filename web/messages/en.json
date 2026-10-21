@@ -133,7 +133,8 @@
     "compareHint": {
       "uk": "Percentiles across every scored area.",
       "nation": "Percentiles within each nation; scores stay the same.",
-      "urban_rural": "Villages aren't judged against city centres."
+      "urban_rural": "Villages aren't judged against city centres.",
+      "uk_own": "Percentiles across every scored area; {nations} within its own nation."
     },
     "adjusted": "(adjusted)",
     "describeYourself": "Or describe yourself",
@@ -175,7 +176,8 @@
     "worse": "worse",
     "typical": "typical",
     "better": "better",
-    "noData": "No data"
+    "noData": "No data",
+    "ownNation": "{nations}: against areas {in}"
   },
   "Map": {
     "hover": "{name}: better than {pct, number}% {of}",
@@ -189,7 +191,8 @@
     "hoverNationNoName": "better than {pct, number}% of its nation",
     "hoverUrbanRural": "{name}: better than {pct, number}% of similar urban/rural areas",
     "hoverUrbanRuralNoName": "better than {pct, number}% of similar urban/rural areas",
-    "layerUnavailable": "{layer} cannot be mapped; showing the overall score"
+    "layerUnavailable": "{layer} cannot be mapped; showing the overall score",
+    "noWeights": "No theme has any weight: raise at least one"
   },
   "Docs": {
     "nav": "Documentation",

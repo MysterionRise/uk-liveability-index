@@ -680,6 +680,12 @@ class NationSpec(_Strict):
     # Themes the nation's open data cannot cover: shown as "limited data" and left out
     # of its overall score instead of failing the coverage gate
     theme_gaps: list[ScoredTheme] = Field(default_factory=list)
+    # Other names people use for it ("Republic of Ireland", "ROI"), matched exactly by
+    # search and as a scope ("best areas in the Republic of Ireland")
+    aliases: list[str] = Field(default_factory=list)
+    # The base of the nation's headline percentile and band: every area in the build, or
+    # the nation itself where its data is thinner than the rest (#147)
+    headline_within: Literal["all", "nation"] = "all"
 
 
 class CountrySpec(_Strict):
@@ -688,6 +694,7 @@ class CountrySpec(_Strict):
     name: str
     short: str  # how copy refers to it ("the UK", "Ireland")
     names: dict[str, str] = Field(default_factory=dict)  # the short name per locale
+    aliases: list[str] = Field(default_factory=list)  # "UK", "United Kingdom": a scope
     currency: str
     locale: str
     postcode_regex: str | None = None  # none where there is no open postcode file

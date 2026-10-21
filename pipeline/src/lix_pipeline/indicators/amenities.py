@@ -15,7 +15,9 @@ def _pois(
         pois = pois.filter(pl.col("value").is_in(values))
     for tag, banned in (exclude or {}).items():
         if tag in pois.columns:
-            pois = pois.filter(~pl.col(tag).is_in(banned))
+            # Most facilities carry no access tag at all: only a listed value excludes
+            # (``~is_in`` alone is null for a null tag, and a filter drops null)
+            pois = pois.filter(pl.col(tag).is_null() | ~pl.col(tag).is_in(banned))
     return pois
 
 
@@ -34,7 +36,13 @@ def osm_access(
     return access.select("lsoa21cd", pl.col("score").alias("value"))
 
 
-def osm_nearest(ctx, values: list[str] | None = None, key: str | None = None) -> pl.DataFrame:
-    """Mean distance from homes to the nearest matching POI (metres)."""
+def osm_nearest(
+    ctx, values: list[str] | None = None, key: str | None = None, beyond_cap: float | None = None
+) -> pl.DataFrame:
+    """Mean distance from homes to the nearest matching POI (metres); ``beyond_cap``
+    stands in where no home has one within the search cap."""
     access = ctx.access(_pois(ctx, values, key), radius_m=1)
-    return access.select("lsoa21cd", pl.col("nearest_m").alias("value"))
+    out = access.select("lsoa21cd", pl.col("nearest_m").alias("value"))
+    if beyond_cap is not None:
+        out = out.with_columns(pl.col("value").fill_null(beyond_cap))
+    return out

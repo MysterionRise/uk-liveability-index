@@ -70,15 +70,18 @@ may be scored. The build's QA report lists scored indicators that correlate abov
   theirs, from the share of an LSOA's property points (OS Open UPRN) inside each band,
   applied to its dwellings, and the values are flagged as estimates. The rivers-and-sea
   part is shown on its own as context.
-- **Noise** reads the strategic noise maps (Defra round 4 for England, the Welsh
-  Government's 2022 maps for Wales, both on a 10m grid from the same modelling system)
-  at every residential postcode: a home counts as exposed when road or rail noise is
-  60 dB Lden or more, a busy road's level. The Directive counts people as exposed from
-  55 dB, but at that level the answer depends on whether ordinary streets were mapped:
-  England's maps cover every road only inside the larger agglomerations and major roads
-  elsewhere, while Wales's cover every road (39% of Welsh postcodes pass 55 dB against
-  30% of English ones; at 60 dB it is 12% and 14%). Aircraft and industry are not
-  included.
+- **Noise** reads each nation's strategic noise maps (Defra round 4 for England, the
+  Welsh Government's 2022 maps, Scotland's and DAERA's round 4 layers, the EPA's round 4
+  contours in Ireland) at every home: a home counts as exposed when the loudest mapped
+  source (road, rail, aircraft or industry, whichever the nation maps) is 60 dB Lden or
+  more, a busy road's level. Road and rail exposure, aircraft noise (England's sixteen
+  mapped airports, Belfast City, Dublin, Cork and Shannon) and industrial noise (Scotland's
+  five cities, Northern Ireland's two agglomerations, Ireland's) are shown as context on
+  their own. The Directive counts people as exposed from 55 dB, but at that level the
+  answer depends on whether ordinary streets were mapped: England's maps cover every road
+  only inside the larger agglomerations and major roads elsewhere, while Wales's cover
+  every road (39% of Welsh postcodes pass 55 dB against 30% of English ones; at 60 dB it
+  is 12% and 14%). Night-time noise (Lnight) is not yet included.
 - **Tree cover** is the share of land within about 500m of each home that satellite
   land cover (ESA WorldCover, 10m, 2021) classes as tree cover, averaged over the LSOA's
   postcodes. Water and unmapped cells are left out of the land total. A cell counts when
@@ -105,6 +108,21 @@ may be scored. The build's QA report lists scored indicators that correlate abov
 - **Area-level values** are copied to each LSOA where a source isn't published for
   smaller areas: council tax per billing authority (`broadcast_lad`) and household
   income per MSOA (`broadcast_msoa`).
+- **Listed buildings** (context) are the statutory lists' points within 1 km of homes,
+  per km²: Historic England's, Cadw's, Historic Environment Scotland's, the Department for
+  Communities' statutory grades and, in Ireland, the National Inventory of Architectural
+  Heritage at regional rating or above.
+- **Radon potential** (context) is the share of homes in grid squares where more than a
+  tenth of homes are expected above the action level: the BGS and UKHSA indicative atlas
+  (1 km squares, classes 5 and 6) and the EPA's radon map of Ireland (10 km squares). A
+  home the map does not cover is unknown, not "not high".
+- **Charging sites** merge OpenStreetMap, ESB's network across the island of Ireland and
+  Open Charge Map's openly licensed locations (with a key): rows within 50 m of each
+  other are one site, whichever source lists them, so a provider's per-bay records do not
+  inflate the count.
+- **Play spaces** are OpenStreetMap playgrounds everywhere, measured like green space to
+  the site's nearest edge; parks and allotments come from OpenStreetMap too in Northern
+  Ireland and Ireland, which have no open greenspace product.
 
 Climate (v0.5.0) is read from the Met Office's HadUK-Grid 1 km averages for 1991–2020:
 each residential postcode takes its grid cell's value and the area is the mean of its
@@ -144,9 +162,20 @@ the nation, so a Welsh neighbourhood's crime score says where it stands among We
 neighbourhoods. The profile shows which benchmark each indicator uses.
 
 Theme and overall percentiles are reported three ways: against every scored
-neighbourhood (the headline, and the band), within the nation and within the urban/rural
-class ("compare against" on the map and in profiles). Scores themselves do not change
-with the comparison.
+neighbourhood, within the nation and within the urban/rural class ("compare against" on
+the map and in profiles). Scores themselves do not change with the comparison.
+
+Which of them is the headline (the percentile and the band a card leads with) is a
+per-nation setting, `headline_within` in `config/nations.yaml`, carried by the pack's
+manifest. The UK nations keep the build-wide percentile. Ireland opts in to its own: its
+areas score on seven themes, two of them through stand-ins (Pobal for income
+deprivation, bus frequency for connectivity), and a Small Area averages a few dozen
+buildings where an English LSOA averages 1,650 people, so Irish areas crowd both ends of
+the build-wide ranking (in the first Irish pack, 622 of the 628 areas in the top 1% and
+498 of the bottom 628 were Irish; the median Irish percentile was 36 against England's
+56). An Irish card therefore reads "better than 62% of Ireland", a UK card "of the UK and
+Ireland"; `overall_pct_all` keeps the build-wide figure for every area, and the QA
+report warns when a nation that has not opted in holds more than 60% of either 1% tail.
 
 Nations are offset from one another where they do not measure the same things. A theme
 built from fewer indicators is not a lower one, but it is a different one: Scotland's
@@ -156,13 +185,15 @@ substitute carries its own distribution: the SIMD's access domain is a rank with
 median of 50 by construction, where the DfT connectivity index it replaces has a median
 near 90, so Scotland's transport percentile median was 18.5 against England's 57.6; and
 a threshold indicator fed a within-nation percentile (Scotland's secondary school
-tariff) is squeezed through thresholds set for England. The bottom band therefore holds
-different shares of each nation (17.5% of England, 27.8% of Scotland, 34.1% of Wales in
-v0.4.0). The build's QA report tables each nation's theme medians and bottom-band
-share; the within-nation comparison removes the offsets, which is why profiles and
-the map offer it, and every substitute is marked "stands in for …" wherever it is
-shown. Mapping a substitute onto the distribution of what it replaces is an open
-question (#112).
+tariff) is squeezed through thresholds set for England. The bottom band of the build-wide
+percentile therefore holds different shares of each nation (in the first five-nation
+pack: 8.1% of England, 24.4% of Wales, 27.7% of Scotland, 26.7% of Northern Ireland,
+37.5% of Ireland). The build's QA report tables each nation's theme medians and
+bottom-band share; the within-nation comparison removes the offsets, which is why
+profiles and the map offer it (and Ireland's headline uses it, above), and every
+substitute is marked "stands in for …" wherever it is shown. Mapping a substitute onto
+the distribution of what it replaces (#112) was set aside: the within-nation headline
+answers the practical problem.
 
 ## 4. Themes and the overall score
 
@@ -171,8 +202,9 @@ question (#112).
 - **Overall score**: weighted mean of theme scores, using the preset's theme weights.
 - **Percentiles** of each theme and of the overall score are reported alongside
   ("better than 72% of neighbourhoods in the index"), and again within the nation. The
-  consumer view shows a band of 1–5 (quintiles of every scored neighbourhood) rather
-  than a rank: a "#1 of 43,064" would claim far more precision than the data have.
+  consumer view shows a band of 1–5 (fifths of the headline percentile, derived from
+  the percentile as shown) rather than a rank: a "#1 of 62,833" would claim far more
+  precision than the data have.
 - **Coverage** is the share of the weight that was available; it is shown when below 70%.
 
 ### Presets and custom weights
@@ -209,7 +241,7 @@ says which engine ran. Steering by a protected characteristic is ignored by both
 | Nurseries never inspected | Count as average (0.6), as do school nursery classes, which share their school's grade | — |
 | Childminders' addresses are withheld by Ofsted | Only nurseries and pre-schools on non-domestic premises are located | — |
 | Flood-risk file includes pseudo-postcodes that aren't in NSPL | Dropped; they hold under 0.1% of the homes at high or medium risk | — |
-| An indicator is not built for a nation (OHID life expectancy, Ofsted childcare, GP capacity and ratings and primary school quality are England-only; the DfT connectivity metric and police.uk crime stop at Scotland, where SIMD measures stand in) | No value; the profile says "not available in this nation" unless a substitute stands in, and the theme uses the indicators it has | `not_available` |
+| An indicator is not built for a nation (OHID life expectancy, Ofsted childcare, GP capacity and ratings and primary school quality are England-only; the DfT connectivity metric and police.uk crime stop at the border, where the SIMD, the PSNI and NIMDM, and the Garda statistics, Pobal and bus frequency stand in) | No value; the profile says "not available in this nation" unless a substitute stands in, and the theme uses the indicators it has | `not_available` |
 | Wales publishes no per-school results or inspection grades | Secondary school quality takes the local authority's Capped 9 points score, as a percentile among Welsh authorities, copied to its neighbourhoods; primary school quality has no Welsh value (Scotland publishes per-school leaver tariffs, so its secondaries are scored one by one, without grades) | `broadcast_lad` |
 
 ### School quality across Ofsted's framework changes
@@ -368,7 +400,12 @@ publishes no current lists); charging sites from OpenStreetMap, ESB's network an
 National Inventory of Architectural Heritage at regional rating or above, standing in for
 the councils' Records of Protected Structures, which have no national open file; and a
 curated list of the 27 emergency departments and 7 injury units. Schools (no results or inspection grades) and housing (no neighbourhood
-prices or property tax) are declared gaps: limited data, outside the Irish overall.
+prices or property tax) are declared gaps: limited data, outside the Irish overall. Ireland
+also lacks road danger (the RSA's collision data is suspended), flood risk (the OPW's maps
+are non-commercial), well-run pubs (no hygiene scheme), rail service levels and the health
+deprivation share, which is why its themes keep 50–86% of their weight in the table below;
+its five no-home Small Areas and the Laytown reporting gap found in the v0.6.0 QA pass are
+handled as described in the changelog.
 Irish names of divisions and areas come from Tailte Éireann's files, of councils from
 the curated list, and of places from OpenStreetMap.
 
@@ -390,8 +427,11 @@ what it replaces (the coverage gate, `lix validate config`):
 An area's theme score is the weighted mean of the indicators its nation has, so a thinner
 theme is not a lower one (see the offsets under [benchmarks](#benchmarks-the-whole-country-or-the-nation));
 a theme a nation declares it cannot cover (`theme_gaps`: schools and childcare in
-Northern Ireland, which publishes neither grades nor results) shows as limited data and
-stays out of that nation's overall.
+Northern Ireland, which publishes neither grades nor results; schools and housing in
+Ireland) shows as limited data and stays out of that nation's overall. A theme the nation
+can have but an area has no data for still counts in the area's coverage, so an area
+missing most of its themes fails the gate rather than taking a band from the one or two it
+has.
 
 ## 7. Known limitations
 

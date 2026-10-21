@@ -14,11 +14,12 @@ from contextlib import asynccontextmanager
 from importlib.metadata import version
 from typing import Annotated, Literal
 
-from fastapi import Body, FastAPI, HTTPException, Query, Request
+from fastapi import Body, FastAPI, HTTPException, Path, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
+from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 from pydantic_ai.ui import StateDeps
 
 from lix_api.agent.agent import agent
@@ -32,11 +33,13 @@ from lix_api.models import (
     Comparison,
     Explanation,
     IndicatorInfo,
+    IndicatorWeightMap,
     Level,
     Locale,
     Place,
     PoiResult,
     RankResult,
+    ThemeWeightMap,
     WeightProfile,
 )
 from lix_api.services import areas, catalogue, compare, explain, pois, profiles, ranking, search
@@ -56,12 +59,21 @@ async def lifespan(app: FastAPI):
         yield
 
 
+# The longest reference a request may carry (a postcode, a code, "Place, Scope") and the
+# largest body: anything bigger is a mistake or an attack, and search time grows with it
+MAX_REF = 200
+MAX_BODY_BYTES = 16_384
+
 app = FastAPI(
     title="UK Liveability Index API",
     version=VERSION,
-    description="Scores for UK neighbourhoods from open data (the data pack says which "
-    "nations are covered). See /api/v1/sources for attribution.",
+    description="Scores for neighbourhoods of the UK and Ireland from open data (the data "
+    "pack says which nations are covered). See /api/v1/sources for attribution.",
     lifespan=lifespan,
+    # Behind the proxy only /api/v1/* reaches the API, so the schema and docs live there
+    openapi_url="/api/v1/openapi.json",
+    docs_url="/api/v1/docs",
+    redoc_url=None,
 )
 app.add_middleware(
     CORSMiddleware,
@@ -69,6 +81,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def limit_body(request: Request, call_next):
+    """A request body larger than any legitimate one is refused before it is read."""
+    length = request.headers.get("content-length")
+    if length and length.isdigit() and int(length) > MAX_BODY_BYTES:
+        return JSONResponse(
+            {"detail": f"Request body over {MAX_BODY_BYTES:,} bytes"}, status_code=413
+        )
+    return await call_next(request)
 
 
 @app.exception_handler(LookupError)
@@ -119,19 +142,37 @@ def health() -> dict:
 api = "/api/v1"
 
 
+Ref = Annotated[str, Query(max_length=MAX_REF)]
+ThemeScore = Annotated[float, Field(ge=0, le=100, allow_inf_nan=False)]
+
+
 @app.get(f"{api}/search")
-def search_place(q: str, limit: Annotated[int, Query(ge=1, le=20)] = 8) -> list[Place]:
+def search_place(q: Ref, limit: Annotated[int, Query(ge=1, le=20)] = 8) -> list[Place]:
     return search.search_place(get_store(), q, limit=limit)
 
 
+_WEIGHTS = {
+    "theme_weights": TypeAdapter(ThemeWeightMap),
+    "indicator_weights": TypeAdapter(IndicatorWeightMap),
+}
+
+
 def _weights_json(name: str, raw: str | None) -> dict[str, float] | None:
-    """A weights map given as a JSON object in a query string."""
+    """A weights map given as a JSON object in a query string: the same checks as the
+    body form (finite numbers from 0 to 3, keyed by id or label)."""
     if not raw:
         return None
     try:
-        return {str(k): float(v) for k, v in json.loads(raw).items()}
-    except (ValueError, AttributeError) as e:
+        parsed = json.loads(raw)
+    except ValueError as e:
         raise ValueError(f"{name} must be a JSON object of numbers: {e}") from e
+    try:
+        return _WEIGHTS[name].validate_python(parsed)
+    except ValidationError as e:
+        problems = "; ".join(
+            f"{'.'.join(str(p) for p in err['loc']) or name}: {err['msg']}" for err in e.errors()
+        )
+        raise ValueError(f"{name} must be a JSON object of numbers from 0 to 3: {problems}") from e
 
 
 WEIGHTS_DOC = 'The sliders\' weights as a JSON object, e.g. {"safety": 3}'
@@ -140,7 +181,7 @@ MULTIPLIERS_DOC = 'Indicator multipliers as a JSON object, e.g. {"sunshine": 2}'
 
 @app.get(f"{api}/areas/{{ref}}")
 def area_profile(
-    ref: str,
+    ref: Annotated[str, Path(max_length=MAX_REF)],
     preset: str | None = None,
     locale: str | None = None,
     theme_weights: str | None = Query(None, description=WEIGHTS_DOC),
@@ -160,26 +201,20 @@ def area_profile(
 
 
 class RankRequest(BaseModel):
-    within: str | None = None
+    within: str | None = Field(None, max_length=MAX_REF)
     radius_km: float | None = Field(None, gt=0, le=200)
     level: Level = "msoa"
-    preset: str | None = None
-    theme_weights: dict[str, float] | None = None
-    indicator_weights: dict[str, float] | None = None
-    max_median_price: float | None = None
-    min_theme_scores: dict[str, float] | None = None
+    preset: str | None = Field(None, max_length=MAX_REF)
+    theme_weights: ThemeWeightMap | None = None
+    indicator_weights: IndicatorWeightMap | None = None
+    max_median_price: float | None = Field(None, ge=0, allow_inf_nan=False)
+    min_theme_scores: dict[str, ThemeScore] | None = None
     urban: bool | None = None
     limit: int = Field(10, ge=1, le=50)
-    sort_by: str = "overall"  # or "theme:<id>" / "indicator:<id>": rank by one measure
+    # or "theme:<id>" / "indicator:<id>": rank by one measure
+    sort_by: str = Field("overall", max_length=MAX_REF)
     direction: Literal["best", "worst"] = "best"
-    locale: str | None = None  # en, cy, gd or ga: the language of the area names
-
-    @field_validator("theme_weights", "indicator_weights")
-    @classmethod
-    def _weights_not_negative(cls, v):
-        if v and any(w < 0 for w in v.values()):
-            raise ValueError("weights cannot be negative")
-        return v
+    locale: str | None = Field(None, max_length=10)  # en, cy, gd or ga: the area names' language
 
 
 @app.post(f"{api}/rank")
@@ -189,7 +224,7 @@ def rank_areas(req: RankRequest) -> RankResult:
 
 @app.get(f"{api}/compare")
 def compare_areas(
-    areas_: Annotated[list[str], Query(alias="areas")],
+    areas_: Annotated[list[Ref], Query(alias="areas")],
     preset: str | None = None,
     locale: str | None = None,
     theme_weights: str | None = Query(None, description=WEIGHTS_DOC),
@@ -216,15 +251,15 @@ async def generate_profile(req: ProfileRequest) -> WeightProfile:
     matching when there is no key, the budget is spent or the model is the scripted one.
     The description is not stored; the run log keeps the kind, tokens and cost."""
     engine, _ = profiles.engine_choice()
-    if engine == "model" and (refusal := limits.admit(1)):
+    if engine == "model" and (refusal := limits.admit(1, req.locale)):
         raise HTTPException(status_code=429, detail=refusal)
     return await profiles.profile_from_description(get_store(), req.description.strip(), req.locale)
 
 
 @app.get(f"{api}/pois")
 def nearest_pois(
-    category: str,
-    near: str,
+    category: Annotated[str, Query(max_length=60)],
+    near: Ref,
     max_km: Annotated[float, Query(gt=0, le=20)] = 2.0,
     limit: Annotated[int, Query(ge=1, le=50)] = 10,
 ) -> PoiResult:
@@ -233,7 +268,10 @@ def nearest_pois(
 
 @app.get(f"{api}/explain/{{ref}}")
 def explain_score(
-    ref: str, theme: str | None = None, preset: str | None = None, locale: str | None = None
+    ref: Annotated[str, Path(max_length=MAX_REF)],
+    theme: str | None = None,
+    preset: str | None = None,
+    locale: str | None = None,
 ) -> Explanation:
     return explain.explain_score(get_store(), ref, theme=theme, preset=preset, locale=locale)
 
@@ -267,10 +305,12 @@ async def run_agent(request: Request) -> Response:
     """AG-UI endpoint: streams the assistant's messages, tool calls and state snapshots."""
     started = time.monotonic()
     try:
-        turns = user_turns(await request.json())  # the body is cached for the adapter
-    except ValueError:
-        turns = 0  # the adapter rejects the malformed request
-    refusal = limits.admit(turns)
+        body = await request.json()  # the body is cached for the adapter
+        turns = user_turns(body)
+        locale = str((body.get("state") or {}).get("locale") or "en")[:2]
+    except (ValueError, AttributeError):
+        turns, locale = 0, "en"  # the adapter rejects the malformed request
+    refusal = limits.admit(turns, locale)
     if refusal:
         # Answered without the model; the run still completes normally for the client
         return await FriendlyAGUIAdapter.dispatch_request(
@@ -317,3 +357,11 @@ def run() -> None:
         port=int(os.environ.get("LIX_PORT", "8000")),
         reload=os.environ.get("LIX_RELOAD") == "1",
     )
+
+
+# Every GET route answers HEAD as well (an uptime probe, a load balancer, a parquet reader
+# sizing a file): FastAPI does not add it the way Starlette's own routes do, and the server
+# drops the body itself (#178)
+for _route in app.routes:
+    if isinstance(_route, APIRoute) and "GET" in _route.methods:
+        _route.methods.add("HEAD")

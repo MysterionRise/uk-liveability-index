@@ -64,7 +64,7 @@ def impute_by_proxy(
     filled = df[value].to_numpy().astype(float).copy()
     mask = df.select(impute).to_series().to_numpy()
     filled[mask] = fitted
-    return pl.Series(value, filled)
+    return pl.Series(value, filled, nan_to_null=True)
 
 
 def _points(ctx, slug: str, column: str | None, values: list | None) -> pl.DataFrame:
@@ -145,7 +145,11 @@ def share(ctx, slug: str, numerator: list[str], denominator: str) -> pl.DataFram
     df = ctx.staged(slug)
     return df.select(
         "lsoa21cd",
-        (pl.sum_horizontal(numerator) / pl.col(denominator) * 100).alias("value"),
+        # The parts and the total can come from different tables or roundings: a share is
+        # never over 100
+        (pl.sum_horizontal(numerator) / pl.col(denominator) * 100)
+        .clip(upper_bound=100)
+        .alias("value"),
     )
 
 

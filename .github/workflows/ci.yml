@@ -39,6 +39,9 @@ jobs:
           uv run python -m lix_api.schemas
           git diff --exit-code contracts/
 
+      - name: Generated source docs and attribution are up to date (make docs)
+        run: uv run lix docs --check
+
   web:
     runs-on: ubuntu-latest
     defaults:

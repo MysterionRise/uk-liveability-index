@@ -23,6 +23,7 @@ mean of theme scores. Both are 0–100 scores; percentiles ("better than N% of
 England's neighbourhoods") are reported alongside, not instead.
 """
 
+import math
 from collections.abc import Collection, Mapping, Sequence
 
 import polars as pl
@@ -39,7 +40,9 @@ def percentile_rank(values: pl.Expr, group: pl.Expr | None = None) -> pl.Expr:
     rank = values.rank(method="average")
     n = values.count()
     if group is not None:
+        # A row without a group is in no group: its within-group percentile is null
         rank, n = rank.over(group), n.over(group)
+        values = pl.when(group.is_null()).then(None).otherwise(values)
     pct = (rank - 1) / (n - 1) * 100
     return pl.when(n > 1).then(pct).when(values.is_not_null()).then(50.0)
 
@@ -73,8 +76,6 @@ def normalise(
         if (direction == "lower_better") != (good < bad):
             raise ValueError(f"good/bad ({good}, {bad}) contradict direction {direction}")
         if log1p:
-            import math
-
             v, g, b = values.log1p(), math.log1p(good), math.log1p(bad)
         else:
             v, g, b = values, good, bad
@@ -133,9 +134,42 @@ def percentile_of(scores: pl.Series, group: pl.Series | None = None) -> pl.Serie
     return df.select(percentile_rank(pl.col("s"), pl.col("g")))["s"]
 
 
+def shown_percentile(percentile: pl.Expr) -> pl.Expr:
+    """The percentile as people read it: a whole number (halves round up, as the browser's
+    ``Math.round`` does), and the top area is 99, never 100."""
+    return (percentile + 0.5).floor().clip(0, 99)
+
+
 def band(percentile: pl.Expr) -> pl.Expr:
-    """Consumer-facing band from a percentile: 1 (bottom fifth of England) … 5 (top fifth)."""
-    return (percentile / 20).floor().clip(0, 4).cast(pl.Int8) + 1
+    """Consumer-facing band from a percentile: 1 (bottom fifth of the headline's base) … 5
+    (top fifth), derived from the percentile as shown so "better than 80%" never sits
+    beside "fourth fifth"."""
+    return (shown_percentile(percentile) / 20).floor().clip(0, 4).cast(pl.Int8) + 1
+
+
+def shown_percentile_of(percentile: float | None) -> float | None:
+    """``shown_percentile`` for one value (the API's cards)."""
+    if percentile is None or percentile != percentile:
+        return None
+    return float(min(99, math.floor(percentile + 0.5)))
+
+
+def band_of(percentile: float | None) -> int | None:
+    """``band`` for one value: the fifth the shown percentile falls in."""
+    shown = shown_percentile_of(percentile)
+    return None if shown is None else min(int(shown // 20), 4) + 1
+
+
+def _theme_applies(
+    masks: Mapping[str, pl.Series] | None, active: Sequence[str], height: int
+) -> pl.Series:
+    """Per row, whether a theme applies: any of its weighted indicators does (an indicator
+    without a mask applies everywhere)."""
+    if masks is None or any(c not in masks for c in active):
+        return pl.Series([True] * height, dtype=pl.Boolean)
+    if not active:
+        return pl.Series([False] * height, dtype=pl.Boolean)
+    return pl.DataFrame({c: masks[c] for c in active}).select(pl.any_horizontal(pl.all()))[:, 0]
 
 
 def score_lsoas(
@@ -164,9 +198,12 @@ def score_lsoas(
     area scores its safety from the indicators Scotland has rather than reading as thin;
     a theme with no applicable weight is null and left out of the row's overall, and so is
     a theme listed in ``theme_gaps`` (nation → themes the nation declares it cannot cover).
+    A theme the nation can have but the row has no data for stays in the row's overall
+    denominator with coverage 0, so an area missing most of its themes fails the gate
+    instead of taking a band from the one or two it has.
     """
     mult = indicator_multipliers or {}
-    groups = [group] if isinstance(group, str) else list(group or [])
+    groups = [g for g in ([group] if isinstance(group, str) else list(group or [])) if g]
     within = {g: norms[g] for g in groups}
     nations = norms[nation] if (applicable or theme_gaps) else None
     if (applicable or theme_gaps) and nations is None:
@@ -197,9 +234,12 @@ def score_lsoas(
                 coverage = pl.DataFrame({"c": coverage, "g": gap}).select(
                     pl.when(pl.col("g")).then(0.0).otherwise(pl.col("c")).alias("c")
                 )["c"]
-        # The theme counts towards a row's overall only where it can exist
-        has_weight = coverage > 0
-        theme_masks[f"theme__{theme}"] = has_weight if gap is None else (has_weight & ~gap)
+        # The theme counts towards a row's overall wherever the nation can have it, whether
+        # or not this row has data for it: a theme that applies but is empty pulls the
+        # row's coverage down (and past the gate, its overall out), while a theme the
+        # nation cannot have (no applicable indicator, or a declared gap) is left out
+        applies = _theme_applies(masks, [c for c, w in weights.items() if w > 0], norms.height)
+        theme_masks[f"theme__{theme}"] = applies if gap is None else (applies & ~gap)
         columns[f"theme__{theme}"] = score
         columns[f"theme_pct__{theme}"] = percentile_of(score)
         for g, members in within.items():
@@ -216,3 +256,38 @@ def score_lsoas(
     for g, members in within.items():
         out = out.with_columns(pl.Series(f"overall_pct_{g}", percentile_of(overall, members)))
     return out.with_columns(coverage=coverage)
+
+
+def headline_within(
+    scores: pl.DataFrame, nations: pl.Series, rule: Mapping[str, str]
+) -> pl.DataFrame:
+    """The headline percentiles after each nation's rule: where ``rule[nation]`` is
+    ``"nation"``, ``overall_pct`` and every ``theme_pct__*`` become the within-nation
+    percentile (``overall_pct_nation``, ``theme_pct_nation__*``), elsewhere they keep the
+    build-wide value; the build-wide values stay as ``overall_pct_all`` and
+    ``theme_pct_all__*``, and ``headline_within`` ("all" | "nation") says per row which
+    base the headline uses. A nation with too little comparable data opts in through
+    ``headline_within: nation`` in config/nations.yaml (#147).
+    """
+    within = [n for n, r in rule.items() if r == "nation"]
+    own = pl.Series("__own", nations.is_in(within)) if within else None
+    out = scores.with_columns(
+        pl.Series("headline_within", ["nation" if o else "all" for o in own])
+        if own is not None
+        else pl.lit("all").alias("headline_within")
+    )
+    pairs = [("overall_pct", "overall_pct_nation", "overall_pct_all")] + [
+        (c, f"theme_pct_nation__{c.removeprefix('theme_pct__')}",
+         f"theme_pct_all__{c.removeprefix('theme_pct__')}")
+        for c in scores.columns
+        if c.startswith("theme_pct__")
+    ]  # fmt: skip
+    for headline, nation_col, all_col in pairs:
+        if nation_col not in scores.columns:
+            raise ValueError(f"headline_within needs {nation_col!r} (score with group='nation')")
+        out = out.with_columns(pl.col(headline).alias(all_col))
+        if own is not None:
+            out = out.with_columns(
+                pl.when(own).then(pl.col(nation_col)).otherwise(pl.col(headline)).alias(headline)
+            )
+    return out

@@ -455,7 +455,14 @@ def stage_ofsted_schools(as_of: date | None = None) -> pl.LazyFrame:
         infer_schema_length=0,
         encoding="utf8-lossy",
     )
-    rc_dates = [f"{label} - date of grade" for label in REPORT_CARD_AREAS]
+    rc_dates = [c for c in (f"{a} - date of grade" for a in REPORT_CARD_AREAS) if c in raw.columns]
+    if not rc_dates:
+        # The September 2026 edition dropped the per-area grade dates: the latest full
+        # inspection's start date (its publication date failing that) dates every grade
+        rc_dates = [c for c in ("Inspection start date", "Publication date") if c in raw.columns]
+        rc_dates = rc_dates[:1]
+    if not rc_dates:
+        raise ValueError("The Ofsted file carries no inspection date column")
     df = raw.select(
         pl.col("URN").cast(pl.Int64).alias("urn"),
         pl.col("Ofsted phase").alias("ofsted_phase"),

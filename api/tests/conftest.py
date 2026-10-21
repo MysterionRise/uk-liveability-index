@@ -44,25 +44,43 @@ LSOAS = [
     ("E01000006", "Brighton and Hove 010B", "E02000003", "Hanover", "E06000043", "Brighton and Hove", "E12000008", 50.8310, -0.1230, True, 520_000),
     ("W01001880", "Cardiff 032A", "W02000384", "Cathays", "W06000015", "Cardiff", "W92000004", 51.4850, -3.1790, True, 240_000),
     ("W01001881", "Cardiff 032B", "W02000384", "Cathays", "W06000015", "Cardiff", "W92000004", 51.4880, -3.1750, True, 300_000),
+    # A council whose name holds a comma, and Ireland's Small Areas in two Dublin councils
+    ("E01000007", "Bristol 001A", "E02000004", "Clifton", "E06000023", "Bristol, City of", "E12000009", 51.4650, -2.6200, True, 410_000),
+    ("I01000001", "Rathmines 001", "I02000001", "Rathmines", "I06000007", "Dublin City", "I92000000", 53.3240, -6.2650, True, None),
+    ("I01000002", "Rathmines 002", "I02000001", "Rathmines", "I06000007", "Dublin City", "I92000000", 53.3260, -6.2600, True, None),
+    ("I01000003", "Dalkey 001", "I02000002", "Dalkey", "I06000008", "Dún Laoghaire-Rathdown", "I92000000", 53.2780, -6.1000, True, None),
 ]  # fmt: skip
 REGION_NAMES = {
     "E12000003": "Yorkshire and The Humber",
     "E12000008": "South East",
+    "E12000009": "South West",
     "W92000004": "Wales",
+    "I92000000": "Ireland",
 }
-COUNTRY_CODES = {"E": "E92000001", "W": "W92000004"}
+COUNTRY_CODES = {"E": "E92000001", "W": "W92000004", "I": "I92000000"}
+# Councils that share a county (Dublin's), as the pack's areas table carries it
+COUNTIES = {"I06000007": "Dublin", "I06000008": "Dublin"}
 
 
-def _raw_value(ind_id: str, i: int) -> float:
-    """Deterministic, varied raw values; E01000003 is the safest and E01000006 the least."""
+def _raw_value(ind_id: str, i: int) -> float | None:
+    """Deterministic, varied raw values; E01000003 is the safest and E01000006 the least;
+    the Irish rows (the last three) read worse than every UK row."""
+    if i >= 9:
+        if ind_id.startswith("crime_"):
+            return 80.0 + i
+        if ind_id in ("no2",):
+            return 24.0 + i / 10
+        if ind_id.endswith("_distance"):
+            return 6000.0 + 100 * i
+        return 0.05
     if ind_id.startswith("crime_"):
-        return [40.0, 25.0, 5.0, 12.0, 30.0, 60.0, 20.0, 35.0][i]
+        return [40.0, 25.0, 5.0, 12.0, 30.0, 60.0, 20.0, 35.0][i % 8]
     if ind_id == "house_price":
-        return float(LSOAS[i][10])
+        return None if LSOAS[i][10] is None else float(LSOAS[i][10])
     if ind_id in ("no2",):
-        return [18.0, 16.0, 12.0, 9.0, 14.0, 15.0, 13.0, 17.0][i]
+        return [18.0, 16.0, 12.0, 9.0, 14.0, 15.0, 13.0, 17.0][i % 8]
     if ind_id.endswith("_distance"):
-        return [300.0, 450.0, 800.0, 2500.0, 350.0, 400.0, 500.0, 650.0][i]
+        return [300.0, 450.0, 800.0, 2500.0, 350.0, 400.0, 500.0, 650.0][i % 8]
     return float((i * 7 + len(ind_id)) % 10) / 10 + 0.05
 
 
@@ -128,11 +146,12 @@ def build_serve_dir(path) -> None:
                        "levels": {lv: {"official": s.official, "count": s.count,
                                        "label": s.label, "labels": s.labels}
                                   for lv, s in n.levels.items()},
-                       "theme_gaps": list(n.theme_gaps), "names": dict(n.names)}
+                       "theme_gaps": list(n.theme_gaps), "names": dict(n.names),
+                       "aliases": list(n.aliases), "headline_within": n.headline_within}
                 for code, n in nations.nations.items()
             },
-            "active": ["E", "W"],  # Edinburgh rows arrive with the Scottish store (v0.4.0 phase 3),
-            "area_counts": {"E": 6, "W": 2},
+            "active": ["E", "W", "I"],
+            "area_counts": {"E": 7, "W": 2, "I": 3},
         },
         "quality_levels": list(QUALITY_LEVELS),
         "scored_indicators": [i.id for i in catalogue.scored()],
@@ -154,23 +173,32 @@ def build_serve_dir(path) -> None:
     }).write_parquet(path / "postcodes.parquet")  # fmt: skip
 
     pl.DataFrame({
-        "place_id": ["p1", "p2", "p3", "p4", "p5", "p6", "p7"],
-        "name": ["Headingley", "Leeds", "Leeds", "Brighton", "Cardiff", "Ynys Môn", "Derry"],
+        "place_id": ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10"],
+        "name": ["Headingley", "Leeds", "Leeds", "Brighton", "Cardiff", "Ynys Môn", "Derry",
+                 # Two Dublin suburbs in different councils, and a hamlet called Ireland
+                 "Ranelagh", "Dalkey", "Ireland"],
         # OpenStreetMap names the city "Derry/Londonderry": the second form is name_alt
-        "name_alt": [None, None, None, None, None, None, "Londonderry"],
-        "name_cy": [None, None, None, None, "Caerdydd", None, None],
-        "name_gd": [None, None, None, None, None, None, None],
-        "place_type": ["Suburban Area", "City", "Village", "Other Settlement", "City", "Village", "City"],
-        "postcode_district": ["LS6", "LS1", "ME17", "BN1", "CF10", "LL77", "BT48"],
-        "local_authority": ["Leeds", "Leeds", "Maidstone", "Brighton and Hove", "Cardiff", "Isle of Anglesey", "Derry City and Strabane"],
-        "region": ["Yorkshire", "Yorkshire", "South East", "South East", "Wales", "Wales", "Northern Ireland"],
-        "lon": [-1.5766, -1.5500, 0.6070, -0.1370, -3.1790, -4.3300, -7.3100],
-        "lat": [53.8196, 53.8000, 51.2467, 50.8220, 51.4850, 53.2700, 54.9970],
-        "lsoa21cd": ["E01000001", "E01000002", "E01000002", "E01000005", "W01001880", "W01001881", "E01000002"],
+        "name_alt": [None, None, None, None, None, None, "Londonderry", None, None, None],
+        "name_cy": [None, None, None, None, "Caerdydd", None, None, None, None, None],
+        "name_gd": [None, None, None, None, None, None, None, None, None, None],
+        "name_ga": [None, None, None, None, None, None, None, "Raghnallach", "Deilginis", None],
+        "place_type": ["Suburban Area", "City", "Village", "Other Settlement", "City", "Village", "City",
+                       "Suburban Area", "Village", "Hamlet"],
+        "postcode_district": ["LS6", "LS1", "ME17", "BN1", "CF10", "LL77", "BT48", None, None, "LS7"],
+        "local_authority": ["Leeds", "Leeds", "Maidstone", "Brighton and Hove", "Cardiff", "Isle of Anglesey",
+                            "Derry City and Strabane", "Dublin City", "Dún Laoghaire-Rathdown", "Leeds"],
+        "region": ["Yorkshire", "Yorkshire", "South East", "South East", "Wales", "Wales", "Northern Ireland",
+                   "Ireland", "Ireland", "Yorkshire"],
+        "lon": [-1.5766, -1.5500, 0.6070, -0.1370, -3.1790, -4.3300, -7.3100, -6.2560, -6.1050, -1.5380],
+        "lat": [53.8196, 53.8000, 51.2467, 50.8220, 51.4850, 53.2700, 54.9970, 53.3260, 53.2770, 53.8310],
+        "lsoa21cd": ["E01000001", "E01000002", "E01000002", "E01000005", "W01001880", "W01001881", "E01000002",
+                     "I01000002", "I01000003", "E01000004"],
     }).write_parquet(path / "places.parquet")  # fmt: skip
 
     df = df.with_columns(
-        pl.col("nation").replace_strict({"E": "England", "W": "Wales"}).alias("nation_name")
+        pl.col("nation")
+        .replace_strict({"E": "England", "W": "Wales", "I": "Ireland"})
+        .alias("nation_name")
     )
     areas = []
     for level, code_col, name_col, keep in (
@@ -188,7 +216,10 @@ def build_serve_dir(path) -> None:
                 pl.col("bbox_e").max(), pl.col("bbox_n").max(),
             ).rename({code_col: "code"}).with_columns(pl.lit(level).alias("level"))
         )  # fmt: skip
-    pl.concat(areas, how="vertical_relaxed").write_parquet(path / "areas.parquet")
+    counties = pl.DataFrame({"code": list(COUNTIES), "county": list(COUNTIES.values())})
+    pl.concat(areas, how="vertical_relaxed").join(counties, on="code", how="left").write_parquet(
+        path / "areas.parquet"
+    )
     df = df.drop("nation_name")
 
     pois = [

@@ -10,8 +10,11 @@ from pydantic import BaseModel, Field
 
 Level = Literal["lsoa", "msoa", "lad", "region", "nation"]
 Locale = Literal["en", "cy", "gd", "ga"]
-Weight = Annotated[float, Field(ge=0, le=3)]
-Multiplier = Annotated[float, Field(ge=0.25, le=3)]
+Weight = Annotated[float, Field(ge=0, le=3, allow_inf_nan=False)]
+# A request's sliders and multipliers: finite, in the sliders' range, keyed by id or label
+ThemeWeightMap = dict[str, Weight]
+IndicatorWeightMap = dict[str, Weight]
+Multiplier = Annotated[float, Field(ge=0.25, le=3, allow_inf_nan=False)]
 ProfileEngine = Literal["model", "rules"]
 EngineReason = Literal["free_model", "no_key", "budget", "model_error"]
 PlaceKind = Literal["postcode", "place", "lsoa", "msoa", "lad", "region", "nation"]
@@ -44,7 +47,9 @@ class ThemeScore(BaseModel):
     label: str
     score: float | None = Field(None, description="0–100, higher is better")
     percentile: float | None = Field(
-        None, description="Better than this % of the country's neighbourhoods"
+        None,
+        description="Better than this % of the neighbourhoods the headline compares against "
+        "(see percentile_within)",
     )
     percentile_nation: float | None = Field(
         None, description="Better than this % of the neighbourhoods in the same nation"
@@ -52,7 +57,12 @@ class ThemeScore(BaseModel):
     percentile_urban_rural: float | None = Field(
         None, description="Better than this % of the neighbourhoods of the same urban/rural class"
     )
-    country_median: float | None = Field(None, description="Median score across the country")
+    percentile_all: float | None = Field(
+        None,
+        description="Better than this % of every neighbourhood in the build, whatever the "
+        "nation's headline rule (equals `percentile` unless the nation compares within itself)",
+    )
+    country_median: float | None = Field(None, description="Median score across the build")
     nation_median: float | None = Field(None, description="Median score across the nation")
     local_median: float | None = Field(None, description="Median score in the local authority")
 
@@ -104,12 +114,23 @@ class AreaProfile(BaseModel):
     overall_percentile_urban_rural: float | None = Field(
         None, description="Percentile among the neighbourhoods of the same urban/rural class"
     )
-    band: int | None = Field(None, description="1 (bottom fifth of the country) … 5 (top fifth)")
+    band: int | None = Field(
+        None, description="1 (bottom fifth of the headline's base, see percentile_within) … 5 (top)"
+    )
+    percentile_within: Literal["all", "nation"] = Field(
+        "all",
+        description="What overall_percentile and band compare against: every neighbourhood in "
+        "the build, or the area's own nation where that nation's data is thinner "
+        "(headline_within in the manifest)",
+    )
+    overall_percentile_all: float | None = Field(
+        None, description="Percentile among every neighbourhood in the build, whatever the rule"
+    )
     overall_percentile_range: list[float] | None = Field(
         None,
         min_length=2,
         max_length=2,
-        description="5–95% range of the country percentile when each theme weight is "
+        description="5–95% range of the build-wide percentile when each theme weight is "
         "nudged by about a quarter (for presets; None with custom weights)",
     )
     coverage: float | None
@@ -138,6 +159,9 @@ class RankedArea(BaseModel):
     local_authority: str
     overall: float | None
     overall_percentile: float | None
+    percentile_within: Literal["all", "nation"] | None = Field(
+        None, description="What overall_percentile compares against (see AreaProfile)"
+    )
     themes: dict[str, float | None]
     median_price: float | None = None
     population: int
@@ -184,6 +208,9 @@ class ComparedArea(BaseModel):
     level: Level
     overall: float | None
     overall_percentile: float | None
+    percentile_within: Literal["all", "nation"] | None = Field(
+        None, description="What overall_percentile compares against (see AreaProfile)"
+    )
     themes: dict[str, float | None]
     indicators: dict[str, float | None] = Field(description="Raw indicator values")
 
@@ -259,6 +286,9 @@ class Explanation(BaseModel):
     preset: str
     overall: float | None
     overall_percentile: float | None
+    percentile_within: Literal["all", "nation"] | None = Field(
+        None, description="What overall_percentile compares against (see AreaProfile)"
+    )
     contributions: list[Contribution]
     caveats: list[str]
     sources: list[SourceRef]

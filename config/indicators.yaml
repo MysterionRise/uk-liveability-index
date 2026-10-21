@@ -46,7 +46,7 @@ indicators:
   - id: crime_violence
     theme: safety
     label: Violent and sexual offences
-    description: Recorded violence and sexual offences per 1,000 residents a year (36-month average).
+    description: Recorded violence and sexual offences per 1,000 residents a year (36-month average from police.uk and the PSNI; in Ireland the latest year's Garda station counts, statistics under reservation, spread over the station's 2011 sub-district).
     unit: per 1,000 residents a year
     direction: lower_better
     benchmark: nation
@@ -193,7 +193,7 @@ indicators:
   - id: green_space_access
     theme: environment
     label: Parks and green spaces nearby
-    description: Entrances to public parks, gardens and playing fields within a 1km walk, weighted by distance (in Northern Ireland, OpenStreetMap parks and pitches).
+    description: Entrances to public parks, gardens and playing fields within a 1km walk, weighted by distance (in Northern Ireland and Ireland, OpenStreetMap parks and pitches).
     unit: index 0–1
     direction: higher_better
     coverage: [E, W, S, N, I]
@@ -226,9 +226,9 @@ indicators:
     coverage: [E, W, S, N, I]  # OS Open Greenspace in Great Britain, OpenStreetMap in Northern Ireland
     sources: [os_greenspace, osm_ireland, nspl, te_buildings]
     builder: common:nearest
-    params: {slug: os_greenspace, column: function, values: [Allotments Or Community Growing Spaces], beyond_cap: 20000}
+    params: {slug: os_greenspace, column: function, values: [Allotments Or Community Growing Spaces], beyond_cap: 50000}
     role: context
-    caveats: Distance to the site, not whether a plot is free; waiting lists run to years in many towns. Northern Ireland's sites come from OpenStreetMap.
+    caveats: Distance to the site, not whether a plot is free; waiting lists run to years in many towns. Northern Ireland's and Ireland's sites come from OpenStreetMap.
 
   - id: radon_potential
     theme: environment
@@ -279,7 +279,7 @@ indicators:
   - id: noise_exposure
     theme: environment
     label: Homes in transport or industrial noise
-    description: Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road, rail and aircraft in England; road and rail in Wales; every mapped source in Scotland and Northern Ireland).
+    description: Share of homes where mapped noise averages 60 dB Lden or more over the day, evening and night (road, rail and aircraft in England; road and rail in Wales; every mapped source in Scotland, Northern Ireland and Ireland).
     unit: "% of homes"
     direction: lower_better
     coverage: [E, W, S, N, I]
@@ -312,7 +312,7 @@ indicators:
   - id: aircraft_noise
     theme: environment
     label: Homes in aircraft noise
-    description: Share of homes where aircraft noise averages 55 dB Lden or more over the day, evening and night, around the sixteen airports England maps and Belfast City Airport.
+    description: Share of homes where aircraft noise averages 55 dB Lden or more over the day, evening and night, around the sixteen airports England maps, Belfast City Airport, and Dublin, Cork and Shannon.
     unit: "% of homes"
     direction: lower_better
     coverage: [E, N, I]  # Scotland's consolidated map does not separate airports; Wales maps none
@@ -325,7 +325,7 @@ indicators:
   - id: industrial_noise
     theme: environment
     label: Homes in industrial noise
-    description: Share of homes where industrial noise averages 55 dB Lden or more over the day, evening and night, in Scotland's five mapped cities and Northern Ireland's two agglomerations.
+    description: Share of homes where industrial noise averages 55 dB Lden or more over the day, evening and night, in Scotland's five mapped cities, Northern Ireland's two agglomerations and Ireland's mapped sites.
     unit: "% of homes"
     direction: lower_better
     coverage: [S, N, I]  # England and Wales publish no industry layer
@@ -333,7 +333,7 @@ indicators:
     builder: environment:percent
     params: {slug: noise, column: share_industry_55}
     role: context
-    caveats: Mapped only in Aberdeen, Dundee, Edinburgh, Falkirk and Glasgow, and in Belfast and Derry (2017); elsewhere in Scotland and Northern Ireland the value is 0 rather than unknown.
+    caveats: Mapped only in Aberdeen, Dundee, Edinburgh, Falkirk and Glasgow, in Belfast and Derry (2017) and around Ireland's licensed industrial sites (EPA round 4); elsewhere in those nations the value is 0 rather than unknown.
 
   - id: tree_canopy
     theme: environment
@@ -401,7 +401,8 @@ indicators:
     description: Average straight-line distance from homes to the nearest emergency department or minor injury unit.
     unit: metres
     direction: lower_better
-    sources: [ae_sites, nspl]
+    coverage: [E, W, S, N, I]
+    sources: [ae_sites, nspl, te_buildings]
     builder: common:nearest
     params: {slug: ae_sites, column: type, values: [type1, other], beyond_cap: 50000}
     role: context
@@ -478,7 +479,7 @@ indicators:
   - id: pharmacy_distance
     theme: health
     label: Distance to nearest pharmacy
-    description: Average straight-line distance from homes to the nearest NHS community pharmacy.
+    description: Average straight-line distance from homes to the nearest community pharmacy (NHS lists in Great Britain and Northern Ireland, OpenStreetMap in Wales and Ireland).
     unit: metres
     direction: lower_better
     coverage: [E, W, S, N, I]  # NHSBSA in England, OpenStreetMap in Wales, PHS dispenser list in Scotland
@@ -495,7 +496,7 @@ indicators:
   - id: dentist_distance
     theme: health
     label: Distance to nearest NHS dentist
-    description: Average straight-line distance from homes to the nearest dental practice with an NHS contract.
+    description: Average straight-line distance from homes to the nearest dental practice (with an NHS contract in the UK; OpenStreetMap in Ireland).
     unit: metres
     direction: lower_better
     coverage: [E, W, S, N, I]
@@ -660,7 +661,7 @@ indicators:
   - id: access_deprivation
     theme: transport
     label: Access to services (SIMD, NIMDM)
-    description: Geographic access domain of the Scottish Index of Multiple Deprivation 2020 (drive and public transport times to GPs, schools, shops, post offices and petrol stations), brought onto 2022 data zones.
+    description: Geographic access domain of the Scottish Index of Multiple Deprivation 2020 (drive and public transport times to GPs, schools, shops, post offices and petrol stations), brought onto 2022 data zones; in Northern Ireland the NIMDM 2017 proximity to services domain.
     unit: score 0–100
     direction: lower_better
     benchmark: nation
@@ -828,7 +829,7 @@ indicators:
     description: Shops of every kind within 800m, weighted by distance.
     unit: index 0–1
     direction: higher_better
-    coverage: [E, W, S, N]
+    coverage: [E, W, S, N, I]
     sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {key: shop, radius_m: 800, cap: 30}
@@ -840,17 +841,17 @@ indicators:
   - id: leisure
     theme: amenities
     label: Sports and fitness facilities
-    description: Sports centres, gyms and swimming pools open to the public within 2km, weighted by distance (OpenStreetMap).
+    description: Sports centres and gyms open to the public within 2km, weighted by distance (OpenStreetMap).
     unit: index 0–1
     direction: higher_better
     coverage: [E, W, S, N, I]
     sources: [osm_england, osm_wales, osm_scotland, nspl, osm_ireland, te_buildings]
     builder: amenities:osm_access
-    params: {values: [sports_centre, fitness_centre, swimming_pool], radius_m: 2000, cap: 10, exclude: {access: [private]}}
+    params: {values: [sports_centre, fitness_centre], radius_m: 2000, cap: 10, exclude: {access: [private, "no"]}}
     normalise: scale
     weight: 0.75
     overlap_group: leisure
-    caveats: Mapped facilities, so a town's leisure centre counts once however many halls it has; Sport England's Active Places register (leisure_facilities) is the cross-check in England.
+    caveats: Mapped facilities, so a town's leisure centre counts once however many halls it has; swimming pools are left out because most mapped ones are private garden pools. Sport England's Active Places register (leisure_facilities) is the cross-check in England.
 
   - id: leisure_facilities
     theme: amenities
@@ -908,7 +909,7 @@ indicators:
     description: Fast-food outlets within 800m.
     unit: index 0–1
     direction: lower_better
-    coverage: [E, W, S, N]
+    coverage: [E, W, S, N, I]
     sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {values: [fast_food], radius_m: 800, cap: 15}
@@ -921,7 +922,7 @@ indicators:
     description: Betting shops, gambling venues and casinos within 800m.
     unit: index 0–1
     direction: lower_better
-    coverage: [E, W, S, N]
+    coverage: [E, W, S, N, I]
     sources: [osm_england, osm_wales, nspl, osm_scotland, osm_ireland]
     builder: amenities:osm_access
     params: {values: [gambling, casino, bookmaker, lottery], radius_m: 800, cap: 5}
@@ -1168,7 +1169,7 @@ indicators:
   - id: imd
     theme: community
     label: Index of multiple deprivation
-    description: Overall deprivation score; not scored because its domains overlap other indicators.
+    description: Overall deprivation score; not scored because its domains overlap other indicators. In Ireland it is Pobal's HP index with its sign flipped, so higher means more deprived there too.
     unit: score
     direction: lower_better
     benchmark: nation

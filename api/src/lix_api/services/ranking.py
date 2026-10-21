@@ -127,7 +127,7 @@ def sort_measure(store: Store, sort_by: str | None) -> Measure:
                 raw_higher_better=spec.direction == "higher_better",
             )
     themes = ", ".join(f"theme:{t}" for t in store.themes)
-    raise LookupError(
+    raise ValueError(
         f'Unknown sort_by {sort_by!r}: use "overall", one of {themes}, or "indicator:<id>" '
         "with an id from list_indicators"
     )
@@ -140,7 +140,7 @@ def _theme_minimums(store: Store, minimums: dict[str, float] | None) -> dict[str
     for key, value in (minimums or {}).items():
         theme = match_theme(store, key)
         if theme is None:
-            raise LookupError(
+            raise ValueError(
                 f"Unknown theme {key!r} in min_theme_scores; themes: {', '.join(store.themes)}"
             )
         out[theme] = float(value)
@@ -168,7 +168,7 @@ def _check_available(store: Store, measure: Measure, df: pl.DataFrame) -> None:
         here = ", ".join(
             store.nation_names.get(n, n) for n in sorted(df["nation"].unique().to_list())
         )
-        raise LookupError(
+        raise ValueError(
             f"{measure.label} is not scored in {here}: the nation declares it has too little "
             "open data for the theme (shown as limited data)"
         )
@@ -184,7 +184,7 @@ def _check_available(store: Store, measure: Measure, df: pl.DataFrame) -> None:
             if stand_in
             else ""
         )
-        raise LookupError(f"{measure.label} is not available in {here}: {where}.{hint}")
+        raise ValueError(f"{measure.label} is not available in {here}: {where}.{hint}")
 
 
 def rank_areas(
@@ -212,7 +212,7 @@ def rank_areas(
     beside it. Areas without the measure are left out rather than sorted first.
     """
     if level not in RANK_LEVELS:
-        raise LookupError(
+        raise ValueError(
             f"Rankings are made at {', '.join(repr(lv) for lv in RANK_LEVELS)} level, not {level!r}"
         )
     limit = max(1, int(limit))
@@ -311,6 +311,15 @@ def rank_areas(
             in_locale("lad_nm").alias("lad_nm"),
         )
 
+    if max_median_price is not None and df.height and "q__house_price" in df.columns:
+        if (df["q__house_price"] == "not_available").all():
+            here = ", ".join(
+                store.nation_names.get(n, n) for n in sorted(df["nation"].unique().to_list())
+            )
+            raise ValueError(
+                f"Typical house price is not available in {here}, so a price limit leaves "
+                "nothing: rank without max_median_price"
+            )
     if max_median_price is not None:
         df = df.filter(pl.col("raw__house_price") <= max_median_price)
     for theme, minimum in minimums.items():
@@ -318,7 +327,7 @@ def rank_areas(
             here = ", ".join(
                 store.nation_names.get(n, n) for n in sorted(df["nation"].unique().to_list())
             )
-            raise LookupError(
+            raise ValueError(
                 f"{store.themes[theme].label} is not scored in {here}, so a minimum on it "
                 "leaves nothing"
             )
@@ -361,6 +370,7 @@ def rank_areas(
             local_authority=r["lad_nm"],
             overall=None if r["overall"] is None else round(r["overall"], 1),
             overall_percentile=percentile(r["overall_pct"]),
+            percentile_within=r.get("headline_within") or "all",
             themes={
                 t: None if r[f"theme__{t}"] is None else round(r[f"theme__{t}"], 1)
                 for t in store.themes

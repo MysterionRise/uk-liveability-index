@@ -10,19 +10,30 @@ import { UseAgentUpdate, useAgent } from "@copilotkit/react-core/v2";
 import { useLocale, useTranslations } from "next-intl";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import { type Manifest, type ScoreData, loadManifest, loadScores, scoredIndicators, themeGaps } from "@/lib/data";
+import { searchPlaces } from "@/lib/api";
+import {
+  type Manifest,
+  type ScoreData,
+  headlineWithin,
+  loadManifest,
+  loadScores,
+  scoredIndicators,
+  themeGaps,
+} from "@/lib/data";
 import {
   MIN_THEME_COVERAGE,
   type ScoreResult,
   aggregate,
+  headlinePercentile,
   percentileRank,
   percentileWithin,
   scoreLsoas,
 } from "@/lib/scoring";
 import type { LiveabilityState as WireState } from "@/lib/contracts.gen";
-import { DEFAULT_STATE, type LiveabilityState, effectiveWeights, normaliseState } from "@/lib/state";
+import { DEFAULT_STATE, type LiveabilityState, bboxOf, effectiveWeights, normaliseState } from "@/lib/state";
 import { labelsFor } from "@/lib/labels";
 import { profileState, readSavedProfile, saveProfile, savedFromState } from "@/lib/profileStore";
+import { readShortlist, saveShortlist } from "@/lib/shortlistStore";
 import { readHash, writeHash } from "@/lib/urlState";
 
 interface DataContext {
@@ -71,7 +82,9 @@ const StateCtx = createContext<StateContext>({ state: DEFAULT_STATE, update: () 
  *   seconds after load) is given the current state, so early changes aren't lost;
  * - the URL hash mirrors the shareable part, and a shared link seeds the first state;
  *   without one, the profile this browser keeps (lix.profile) does, and while a profile
- *   is active the saved copy follows the sliders.
+ *   is active the saved copy follows the sliders;
+ * - the shortlist this browser keeps (lix.shortlist) seeds the first state and follows
+ *   every change, so an area saved before the Shortlist tab opens is never lost.
  */
 export function LiveabilityStateProvider({ children }: { children: React.ReactNode }) {
   const { agent } = useAgent({ updates: [UseAgentUpdate.OnStateChanged] });
@@ -83,17 +96,74 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
   });
   const latest = useRef(state);
   const pushedTo = useRef<unknown>(null);
+  const { scores } = useData();
+
+  // The shortlist this browser keeps joins the state right after mount (not in the first
+  // render, which must match the server's), merged with anything already there
+  useEffect(() => {
+    const saved = readShortlist();
+    if (!saved.length) return;
+    const s = latest.current;
+    const codes = new Set(s.shortlist.map((i) => i.code));
+    const next = { ...s, shortlist: [...saved.filter((i) => !codes.has(i.code)), ...s.shortlist] };
+    latest.current = next;
+    setState(next);
+    agent.setState(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // A link pasted into an open tab changes only the hash: follow it (our own writes use
-  // replaceState, which fires no hashchange)
+  // replaceState, which fires no hashchange). The link replaces the shareable state, as
+  // a fresh load would, and keeps what is this browser's own (shortlist, mode, language);
+  // the assistant is told, so its next answer starts from the view the user sees
   useEffect(() => {
     const onHash = () => {
       const hash = readHash();
-      if (Object.keys(hash).length) setState((s) => normaliseState({ ...s, ...hash } as Partial<WireState>));
+      if (!Object.keys(hash).length) return;
+      const s = latest.current;
+      const next = normaliseState({
+        ...DEFAULT_STATE,
+        ...hash,
+        shortlist: s.shortlist,
+        mode: s.mode,
+        locale: s.locale,
+      } as Partial<WireState>);
+      latest.current = next;
+      setState(next);
+      agent.setState(next);
     };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
-  }, []);
+  }, [agent]);
+
+  // A shared link names an area but no view: take the recipient there once the data is
+  // in (the hash never carries the map's position)
+  const flownTo = useRef<string | null>(null);
+  useEffect(() => {
+    const code = latest.current.map.selected;
+    if (!scores || !code || latest.current.map.bbox || flownTo.current === code) return;
+    flownTo.current = code;
+    if (!scores.index.has(code)) return;
+    let cancelled = false;
+    searchPlaces(code)
+      .then((places) => {
+        const hit = places.find((p) => p.code === code || p.lsoa21cd === code) ?? places[0];
+        const bbox =
+          bboxOf(hit?.bbox) ??
+          (hit?.centre
+            ? ([hit.centre.lon - 0.02, hit.centre.lat - 0.012, hit.centre.lon + 0.02, hit.centre.lat + 0.012] as const)
+            : null);
+        if (cancelled || !bbox) return;
+        const next = { ...latest.current, map: { ...latest.current.map, bbox: [...bbox] as [number, number, number, number] } };
+        latest.current = next;
+        setState(next);
+        agent.setState(next);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [scores, agent]);
 
   // Snapshots from the agent replace the page state (adjusted during render, not in an effect)
   const [seenAgentState, setSeenAgentState] = useState<unknown>(agent.state);
@@ -103,9 +173,15 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
     if (incoming && Object.keys(incoming).length) setState(normaliseState(incoming));
   }
 
+  const restored = useRef(false);
   useEffect(() => {
     latest.current = state;
     writeHash(state);
+    // Never write the empty first frame over a saved list: persist once it has been read
+    if (restored.current || state.shortlist.length) {
+      restored.current = true;
+      saveShortlist(state.shortlist);
+    }
     if (state.profile) {
       const prev = readSavedProfile();
       const next = savedFromState(state, prev);
@@ -148,6 +224,8 @@ export interface LayerValues {
   label: string;
   /** Theme of the active layer (a theme, or the indicator's theme); none for the overall score */
   theme?: string;
+  /** Why the map shows nothing: every theme weight is 0 */
+  notice?: string;
 }
 
 /** Scores for the current weights and the values the map colours by. */
@@ -218,7 +296,14 @@ export function useScores(state: LiveabilityState): LayerValues | null {
           ? t("overall")
           : t("layerUnavailable", { layer: layer.slice(layer.indexOf(":") + 1) });
     }
-    if (state.compare_within === "nation") {
+    // Every theme at 0 is no weighting: the overall is unknown everywhere, and the legend
+    // says why instead of the page falling over
+    const notice = Object.values(weights?.themes ?? {}).some((w) => w > 0) ? undefined : t("noWeights");
+    if (state.compare_within === "uk") {
+      // A nation whose data is thinner compares its areas among themselves by default
+      // (headline_within in the manifest, #147); the rest keep the build-wide percentile
+      lsoa = headlinePercentile(lsoa, scores.nation, headlineWithin(manifest));
+    } else if (state.compare_within === "nation") {
       lsoa = percentileWithin(lsoa, scores.nation);
       label = t("withinNation", { label });
     } else if (state.compare_within === "urban_rural") {
@@ -233,6 +318,7 @@ export function useScores(state: LiveabilityState): LayerValues | null {
       result,
       label,
       theme,
+      notice,
     };
-  }, [manifest, scores, result, state.map.layer, state.compare_within, t, locale]);
+  }, [manifest, scores, result, weights, state.map.layer, state.compare_within, t, locale]);
 }

@@ -17,6 +17,11 @@
 		# compressing a range breaks the client's offsets, so only JSON is encoded
 		@json path *.json
 		encode @json zstd gzip
+		# The data files have no extension Caddy knows: say what they are
+		@parquet path *.parquet
+		header @parquet Content-Type application/vnd.apache.parquet
+		@pmtiles path *.pmtiles
+		header @pmtiles Content-Type application/vnd.pmtiles
 		# Revalidate (ETag) every time: a stale range from a previous build would
 		# corrupt the read
 		header Cache-Control "no-cache"
@@ -25,6 +30,8 @@
 
 	@api path /api/v1/* /health /mcp /mcp/*
 	handle @api {
+		# API replies are JSON and compress well (a ranking of 50 areas is 100 KB)
+		encode zstd gzip
 		reverse_proxy api:8000
 	}
 

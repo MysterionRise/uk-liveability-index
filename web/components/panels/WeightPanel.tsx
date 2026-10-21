@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { headlineWithin } from "@/lib/data";
 
 import { useData, useLiveability } from "@/components/AppData";
 import { ProfileBox } from "@/components/ProfileBox";
@@ -16,6 +17,11 @@ export function WeightPanel() {
   const { manifest } = useData();
   const { state, update } = useLiveability();
   const t = useTranslations("Weights");
+  const tn = useTranslations("Nations");
+  // Nations whose headline compares within themselves (headline_within, #147)
+  const ownNations = Object.entries(headlineWithin(manifest))
+    .filter(([code, rule]) => rule === "nation" && manifest?.geography?.active?.includes(code))
+    .map(([code]) => code);
   const labels = useLabels();
   const saved = useSavedProfile();
   if (!manifest) return null;
@@ -105,9 +111,13 @@ export function WeightPanel() {
               value={weights[theme] ?? 0}
               aria-label={t("weightOf", { theme: labels.theme(theme) })}
               data-testid={`weight-${theme}`}
-              onChange={(e) =>
-                update((s) => ({ ...s, theme_weights: { ...s.theme_weights, [theme]: Number(e.target.value) } }))
-              }
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                // With every other theme at 0 there would be nothing to score: the last
+                // theme with weight stays at a quarter
+                const others = Object.keys(manifest.themes).some((o) => o !== theme && (weights[o] ?? 0) > 0);
+                update((s) => ({ ...s, theme_weights: { ...s.theme_weights, [theme]: v > 0 || others ? v : 0.25 } }));
+              }}
             />
             <span className="text-right text-xs tabular-nums">{(weights[theme] ?? 0).toFixed(2).replace(/\.?0+$/, "")}</span>
           </label>
@@ -160,7 +170,11 @@ export function WeightPanel() {
           {(manifest.geography?.active ?? []).length > 1 && <option value="nation">{t("compare.nation")}</option>}
           <option value="urban_rural">{t("compare.urban_rural")}</option>
         </select>
-        <span className="mt-1 block text-[var(--text-muted)]">{t(`compareHint.${state.compare_within}`)}</span>
+        <span className="mt-1 block text-[var(--text-muted)]">
+          {state.compare_within === "uk" && ownNations.length
+            ? t("compareHint.uk_own", { nations: ownNations.map((c) => tn(c as "E" | "W" | "S" | "N" | "I")).join(", ") })
+            : t(`compareHint.${state.compare_within}`)}
+        </span>
       </label>
     </div>
   );

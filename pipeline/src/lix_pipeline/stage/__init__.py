@@ -92,6 +92,8 @@ STAGE_INPUTS: dict[str, list[str]] = {
         *LOW_BOUNDARIES,
     ],
     "radon": ["bgs_radon_gb", "bgs_radon_ni", "epa_radon"],
+    # Live postcodes are placed in the area whose polygon holds their point (#153)
+    "nspl": ["nspl", *LOW_BOUNDARIES],
     # PSNI records carry no LSOA code and are placed by their coordinates
     "police_crime": [
         "police_crime",
@@ -353,6 +355,6 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "night_lights": night_lights.stage_night_lights,  # manual source; needs staged nspl
         "climate": climate.stage_climate,  # manual source; needs staged nspl
         "ukcp_hot_days": climate.stage_ukcp_hot_days,  # needs staged geo_lsoa
-        "logainm": logainm.stage_logainm,  # keyed source; skipped without LOGAINM_API_KEY
+        "logainm": logainm.stage_logainm,  # keyed source; an empty table without LOGAINM_API_KEY
         "deprivation": stage_deprivation,  # needs staged iod_2025
     }

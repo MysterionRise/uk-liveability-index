@@ -4,7 +4,117 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [0.6.0] - 2026-10-18
+## [0.6.1] - 2026-10-21
+
+The close-out of the v0.6.0 release's QA pass (47 findings, #142–#188): the data pack is
+rebuilt on refreshed inputs as **data-2026-10.6** (serve schema 5), and the fixes below
+ship with it.
+
+### Changed
+
+- **Irish areas compare within Ireland by default.** The headline percentile and band of
+  an Irish area are taken within Ireland (`headline_within: nation` in
+  config/nations.yaml, carried by the manifest, so a nation opts in by data): Ireland
+  scores on seven themes, two of them through stand-ins, and its small areas crowded both
+  ends of the build-wide ranking (622 of the top 628). UK areas keep the build-wide
+  headline, `overall_pct_all` and `overall_percentile_all` keep it for every area, the
+  card, hover and legend say "of Ireland", and the QA report warns when a nation that has
+  not opted in holds more than 60% of a tail (#147).
+- **An empty theme counts against coverage.** A theme the nation can have but an area
+  has no data for stays in the area's denominator, so an area missing most of its themes
+  fails the coverage gate rather than taking a band from the one or two it has; the
+  browser scorer and the Python one now agree on it (#142).
+- **Bands follow the percentile as shown.** The band is derived from the whole-number
+  percentile (halves up, 99 at most) in the pipeline, the API and the browser, so "better
+  than 80%" never sits beside "fourth fifth" (#177).
+- **Distances beyond the search cap read the cap.** A home with nothing within 50 km
+  counts as 50 km in its area's mean rather than being left out, and every nearest
+  indicator caps at the search distance (allotments no longer at 20 km) (#148).
+- **Prompt caching through OpenRouter.** Anthropic models behind OpenRouter carry cache
+  breakpoints on the tool definitions, instructions and last message, and each model
+  (fallbacks included) carries its own provider's settings; an Opus question costs a few
+  cents instead of about $0.12 (#155).
+- **Bad input is a 400.** Theme and indicator weights are checked once, finite and 0–3,
+  on the body and the query forms; an unknown sort measure, theme or level answers 400
+  or 422, and 404 is kept for an area that does not exist (#172).
+
+### Fixed
+
+- **Scoring and data.** Five Dublin Small Areas had no home points and were scored on two
+  themes: an area with no building centroid inside it takes one home at a point inside
+  its polygon, and `lix validate geo` checks every populated area has a home (#142).
+  Laytown Garda station recorded nothing in 2025 after 906 incidents in 2024, so 87
+  Meath areas read crime-free with a top safety score: a station whose counts collapse
+  to zero after a full year is non-reporting and its sub-district borrows the nearest
+  reporting station's, and sub-districts under 20 incidents flag their areas `low_n`
+  (#143). The scored leisure indicator was 0 for three quarters of urban areas because
+  every facility without an access tag was dropped; garden swimming pools are no longer
+  counted (#180). A home on a radon grid line belongs to both squares, and a home the
+  map does not cover is unknown rather than "not high" (#149). Northern Ireland's listed
+  buildings keep the statutory grades only, one point per reference (#150). A share never
+  exceeds 100% (#151). Urgent care distance is built for Ireland; shops, fast food and
+  gambling cover it; `lix validate config` refuses an indicator that lists a source for a
+  nation it excludes (#152). A live postcode whose point lies in another area's polygon
+  takes that area (188 Northern Irish ones sat up to 17 km from their listed zone)
+  (#153). The score and tiles commands record what they built, offshore marine "parks"
+  are left out, school ids are prefixed by their list, "urban" means the urban class in
+  every nation, and Ireland's deprivation index says what it is (#154). Hardening: a null
+  group gets no percentile, an empty heritage list is skipped, ArcGIS object ids may be
+  null, a stop on rail and tram counts as rail, an imputation without a proxy leaves null
+  (#169).
+- **Sources and licences.** GP practices carry their source and licence from the stager
+  (ODS, Public Health Scotland, the Business Services Organisation, OpenStreetMap under
+  the ODbL) instead of every point reading "NHS England ODS"; Ireland's OpenStreetMap
+  doctors and clinics are kept only where they read as GP practices; a pub without a
+  hygiene rating is unknown rather than badly run (#144). Open Charge Map imports are
+  admitted by their licence text (a CC BY-NC-SA provider is out), a point count that is
+  not positive is unknown, rows of one source within 50 m collapse to one site, and the
+  National Chargepoint Registry's OGL v2.0 is named (#145). ATTRIBUTION.md and
+  docs/data-sources.md are regenerated (the EEA air-quality notice was missing, in the
+  repo and in the data-2026-10.5 pack) and CI fails when they drift; DATA-LICENCE.md
+  names every OGL publisher (#164). A build without `LOGAINM_API_KEY` stages an empty
+  Logainm table instead of crashing, and one stager's failure no longer stops the rest
+  of `lix stage --all` (#146). The compose pipeline service reads .env (#168).
+- **Search and the API.** "Ranelagh, Dublin" and "Dalkey, Dublin" resolve: a scope word
+  means every council it names, the councils sharing a county and a region's councils
+  (#156). "Republic of Ireland", "ROI" and "Éire" are the nation, not a hamlet called
+  Ireland; "UK" and "Britain" scope to the UK (#157). "Bristol, City of" is matched whole,
+  and results carry one row per code (#173). A neighbourhood or council code resolves to
+  its most populous area (#170). References are capped at 200 characters, bodies at
+  16 KB and comma scopes at three (#171). A price limit where nothing has a price is
+  refused with the reason (#158). The SQL guard reads the store's frames as views, runs
+  each query on its own cursor, takes a trailing comment, refuses PRAGMA and caps a reply
+  at 200,000 cells; the proxy compresses API replies (#174). Well-run pubs have their own
+  tree (#175). Explanations list only the caveats of indicators the area's nation has,
+  the theme-gap flag names its themes, flags and the nation's name follow the locale,
+  and the indicator listing matches a theme leniently (#176). HEAD is answered on every
+  route and the OpenAPI docs live under /api/v1 (#178). The score cache holds sixteen
+  float32 frames and the api container has a 3 GiB cap (#179). The budget, rate and
+  session-limit refusals speak the interface language (#160).
+- **Browser.** Every theme at 0 gives an unknown overall and a legend notice instead of
+  an error that took the page down, the last theme with weight cannot be dragged to 0,
+  and a link's weights are checked (#181). The shortlist is read and saved by the state
+  provider, so an area saved before the Shortlist tab opens no longer overwrites the
+  saved list (#182); a saved area of any nation selects on click (#183). A shared link
+  with an area flies to it and opens the Area tab, carries its language, and a map click
+  opens the Area tab whatever tab was showing (#184). A link pasted into an open tab
+  replaces the shareable state over the defaults and tells the assistant; every hash
+  field is type-checked (#162). A tool's retry message no longer renders as a "no result"
+  chip and an empty places card has no source line (#159). Docs headings carry ids so
+  in-page anchors resolve (#163). Theme layers with nation gaps name the nations they
+  cover (#185); the map's attribution carries the Tailte Éireann and CSO notice (#186).
+- **Docs and catalogue.** README figures, the methodology (noise, Ireland's missing
+  indicators, offsets, the headline), development, demo and validation notes updated for
+  the five-nation build (#165, #166); indicator descriptions, caveats, the registry and
+  the three translations name Ireland where it is covered, and the Irish chat suggestions
+  are Irish places (#167).
+
+### Added
+
+- A Dublin question in the recorded demo and the walkthrough, and three eval cases
+  ("Ranelagh, Dublin", the Republic of Ireland, a Dublin price limit).
+
+## [0.6.0] - 2026-10-19
 
 ### Added
 
@@ -473,6 +583,8 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.6.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.1
+[0.6.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.0
 [0.5.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.5.1
 [0.5.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.5.0
 [0.4.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.4.1

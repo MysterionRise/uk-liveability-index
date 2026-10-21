@@ -15,6 +15,25 @@ LANGUAGE_NAMES = {
 MESSAGES: dict[str, dict[str, str]] = {
     "en": {
         "still_works": "The map, weights and area pages still work.",
+        "budget": "The assistant has used today's budget, so it's resting until tomorrow "
+        "(midnight UTC). {still_works}",
+        "rate": "The assistant is busy right now; please try again in a minute. {still_works}",
+        "session_limit": "This conversation has reached its limit of {turns} questions. Reload "
+        "the page "
+        "to start a new one. {still_works}",
+        "flag_imputed": "Crime figures here are estimated: Greater Manchester Police publishes no "
+        "street-level data.",
+        "flag_low_n": "Few observations behind some values here (home sales, or a small Garda "
+        "station's counts), so they are steadied or read with care.",
+        "flag_broadcast_lad": "Secondary school quality comes from the council's exam results, "
+        "because this "
+        "nation publishes no per-school results or inspection grades.",
+        "flag_not_available": "Some indicators are not available in this nation yet; the theme "
+        "uses the ones "
+        "it has.",
+        "flag_theme_gap": "This nation publishes too little open data for {themes} to be scored: "
+        "shown as "
+        "limited data and left out of the overall.",
         "usage_limit": "That needed more steps than I'm allowed for one question, so I stopped. "
         "Try asking for one thing at a time.",
         "tool_retry": "I couldn't get the data I needed for that. Try rephrasing, or name a town "
@@ -37,6 +56,26 @@ MESSAGES: dict[str, dict[str, str]] = {
     },
     "cy": {
         "still_works": "Mae'r map, y pwysau a thudalennau'r ardaloedd yn dal i weithio.",
+        "budget": "Mae'r cynorthwyydd wedi defnyddio cyllideb heddiw, felly mae'n gorffwys tan "
+        "yfory (hanner nos UTC). {still_works}",
+        "rate": "Mae'r cynorthwyydd yn brysur ar hyn o bryd; rhowch gynnig arall arni mewn "
+        "munud. {still_works}",
+        "session_limit": "Mae'r sgwrs hon wedi cyrraedd ei therfyn o {turns} cwestiwn. "
+        "Ail-lwythwch y "
+        "dudalen i ddechrau un newydd. {still_works}",
+        "flag_imputed": "Amcangyfrif yw'r ffigurau trosedd yma: nid yw Heddlu Manceinion Fwyaf yn "
+        "cyhoeddi data lefel stryd.",
+        "flag_low_n": "Ychydig o arsylwadau sydd y tu ôl i rai gwerthoedd yma (gwerthiannau tai, "
+        "neu "
+        "gyfrif gorsaf Garda fach), felly cânt eu sefydlogi neu eu darllen yn ofalus.",
+        "flag_broadcast_lad": "Daw ansawdd ysgolion uwchradd o ganlyniadau arholiadau'r cyngor, "
+        "oherwydd nid "
+        "yw'r genedl hon yn cyhoeddi canlyniadau na graddau arolygu fesul ysgol.",
+        "flag_not_available": "Nid yw rhai dangosyddion ar gael yn y genedl hon eto; mae'r thema'n "
+        "defnyddio'r rhai sydd ganddi.",
+        "flag_theme_gap": "Mae'r genedl hon yn cyhoeddi rhy ychydig o ddata agored i sgorio "
+        "{themes}: "
+        "fe'i dangosir fel data cyfyngedig a'i adael allan o'r cyfanswm.",
         "usage_limit": "Roedd angen mwy o gamau ar hynny nag a ganiateir i mi ar gyfer un "
         "cwestiwn, felly rhoddais y gorau iddi. Ceisiwch ofyn am un peth ar y tro.",
         "tool_retry": "Methais gael y data roedd ei angen arnaf ar gyfer hynny. Ceisiwch ei "
@@ -62,6 +101,27 @@ MESSAGES: dict[str, dict[str, str]] = {
     },
     "gd": {
         "still_works": "Tha am mapa, na cuideaman agus duilleagan nan sgìrean ag obair fhathast.",
+        "budget": "Chleachd an cuidiche buidseat an latha an-diugh, mar sin tha e a' gabhail fois "
+        "gu màireach (meadhan-oidhche UTC). {still_works}",
+        "rate": "Tha an cuidiche trang an-dràsta; feuch a-rithist ann am mionaid. {still_works}",
+        "session_limit": "Ràinig an còmhradh seo a chrìoch de {turns} ceistean. Ath-luchdaich an "
+        "duilleag airson fear ùr a thòiseachadh. {still_works}",
+        "flag_imputed": "Tha na figearan eucoir an seo nan tuairmse: chan fhoillsich Poileas "
+        "Manchester "
+        "Mhòr dàta aig ìre sràide.",
+        "flag_low_n": "Chan eil ach beagan bheachdan air cùl cuid de na luachan an seo (reic "
+        "thaighean, no cunntasan stèisein Garda bhig), mar sin tha iad air an "
+        "socrachadh no air an leughadh le cùram.",
+        "flag_broadcast_lad": "Tha càileachd nan àrd-sgoiltean a' tighinn bho thoraidhean "
+        "deuchainn na "
+        "comhairle, oir chan fhoillsich an nàisean seo toraidhean no ìrean sgrùdaidh "
+        "airson gach sgoil.",
+        "flag_not_available": "Chan eil cuid de na comharran rim faighinn san nàisean seo "
+        "fhathast; "
+        "cleachdaidh an cuspair an fheadhainn a th' aige.",
+        "flag_theme_gap": "Tha an nàisean seo a' foillseachadh ro bheag de dhàta fosgailte airson "
+        "{themes} a sgòradh: air a shealltainn mar dhàta cuingealaichte agus air "
+        "fhàgail a-mach às an iomlan.",
         "usage_limit": "Bha feum air barrachd cheumannan na tha ceadaichte dhomh airson aon "
         "cheist, mar sin stad mi. Feuch ri aon rud iarraidh aig an aon àm.",
         "tool_retry": "Cha b' urrainn dhomh an dàta a bha a dhìth orm fhaighinn airson sin. "
@@ -91,6 +151,29 @@ MESSAGES: dict[str, dict[str, str]] = {
     },
     "ga": {
         "still_works": "Oibríonn an léarscáil, na hualaí agus leathanaigh na gceantar i gcónaí.",
+        "budget": "D'úsáid an cúntóir buiséad an lae inniu, mar sin tá sé ag glacadh sosa go dtí "
+        "amárach (meán oíche UTC). {still_works}",
+        "rate": "Tá an cúntóir gnóthach faoi láthair; bain triail eile as i gceann nóiméid. "
+        "{still_works}",
+        "session_limit": "Tá teorainn {turns} ceist an chomhrá seo sroichte. Athlódáil an "
+        "leathanach "
+        "chun ceann nua a thosú. {still_works}",
+        "flag_imputed": "Is meastacháin iad na figiúirí coireachta anseo: ní fhoilsíonn Póilíní "
+        "Mhanchain Mhóir sonraí ar leibhéal na sráide.",
+        "flag_low_n": "Is beag breathnóireacht atá taobh thiar de roinnt luachanna anseo "
+        "(díolacháin "
+        "tithe, nó comhaireamh stáisiúin Garda bhig), mar sin déantar iad a chobhsú nó "
+        "a léamh go cúramach.",
+        "flag_broadcast_lad": "Tagann caighdeán na meánscoileanna ó thorthaí scrúduithe na "
+        "comhairle, toisc "
+        "nach bhfoilsíonn an náisiún seo torthaí ná gráid chigireachta in aghaidh na "
+        "scoile.",
+        "flag_not_available": "Níl roinnt táscairí ar fáil sa náisiún seo go fóill; úsáideann an "
+        "téama na "
+        "cinn atá aige.",
+        "flag_theme_gap": "Foilsíonn an náisiún seo rófhuar sonraí oscailte chun {themes} a "
+        "scóráil: "
+        "taispeántar é mar shonraí teoranta agus fágtar amach as an iomlán é.",
         "usage_limit": "Theastaigh níos mó céimeanna uaidh sin ná mar atá ceadaithe dom d'aon "
         "cheist amháin, mar sin stop mé. Bain triail as rud amháin a iarraidh ag an am.",
         "tool_retry": "Níorbh fhéidir liom na sonraí a bhí uaim a fháil chuige sin. Bain triail "

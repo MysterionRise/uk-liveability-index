@@ -61,7 +61,9 @@ function useToolCard<T>(name: string, render: (result: T, args: Record<string, u
       render: ({ status, result, parameters }) => {
         if (status !== "complete") return <Pending name={name} />;
         const data = parseResult<T>(result);
-        if (data == null) return <NoResult name={name} />;
+        // A tool that asked the model to retry returns plain text, not a result: the
+        // model's next call carries the card, so nothing is shown for this one
+        if (data == null) return typeof result === "string" && result.trim() ? null : <NoResult name={name} />;
         return render(data, (parameters ?? {}) as Record<string, unknown>);
       },
     },

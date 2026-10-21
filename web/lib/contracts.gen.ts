@@ -6,7 +6,7 @@
  */
 
 /**
- * 1 (bottom fifth of the country) … 5 (top fifth)
+ * 1 (bottom fifth of the headline's base, see percentile_within) … 5 (top)
  */
 export type Band = number | null;
 /**
@@ -79,23 +79,31 @@ export type NeighbourhoodEn = string | null;
 export type Overall = number | null;
 export type OverallPercentile = number | null;
 /**
+ * Percentile among every neighbourhood in the build, whatever the rule
+ */
+export type OverallPercentileAll = number | null;
+/**
  * Percentile among the neighbourhoods of the same nation
  */
 export type OverallPercentileNation = number | null;
 /**
- * 5–95% range of the country percentile when each theme weight is nudged by about a quarter (for presets; None with custom weights)
+ * 5–95% range of the build-wide percentile when each theme weight is nudged by about a quarter (for presets; None with custom weights)
  */
 export type OverallPercentileRange = [number, number] | null;
 /**
  * Percentile among the neighbourhoods of the same urban/rural class
  */
 export type OverallPercentileUrbanRural = number | null;
+/**
+ * What overall_percentile and band compare against: every neighbourhood in the build, or the area's own nation where that nation's data is thinner (headline_within in the manifest)
+ */
+export type PercentileWithin = "all" | "nation";
 export type Population = number;
 export type Preset = string;
 export type Region = string;
 export type Strengths = IndicatorValue[];
 /**
- * Median score across the country
+ * Median score across the build
  */
 export type CountryMedian = number | null;
 export type Label1 = string;
@@ -108,9 +116,13 @@ export type LocalMedian = number | null;
  */
 export type NationMedian = number | null;
 /**
- * Better than this % of the country's neighbourhoods
+ * Better than this % of the neighbourhoods the headline compares against (see percentile_within)
  */
 export type Percentile = number | null;
+/**
+ * Better than this % of every neighbourhood in the build, whatever the nation's headline rule (equals `percentile` unless the nation compares within itself)
+ */
+export type PercentileAll = number | null;
 /**
  * Better than this % of the neighbourhoods in the same nation
  */
@@ -132,6 +144,10 @@ export type Level = "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type Name = string;
 export type Overall1 = number | null;
 export type OverallPercentile1 = number | null;
+/**
+ * What overall_percentile compares against (see AreaProfile)
+ */
+export type PercentileWithin1 = ("all" | "nation") | null;
 export type Areas = ComparedArea[];
 export type Preset1 = string;
 /**
@@ -152,6 +168,10 @@ export type Lsoa21Cd1 = string;
 export type Name1 = string;
 export type Overall2 = number | null;
 export type OverallPercentile2 = number | null;
+/**
+ * What overall_percentile compares against (see AreaProfile)
+ */
+export type PercentileWithin2 = ("all" | "nation") | null;
 export type Preset2 = string;
 export type Attribution = string;
 /**
@@ -308,6 +328,10 @@ export type Name6 = string;
 export type NameEn1 = string | null;
 export type Overall3 = number | null;
 export type OverallPercentile3 = number | null;
+/**
+ * What overall_percentile compares against (see AreaProfile)
+ */
+export type PercentileWithin3 = ("all" | "nation") | null;
 export type Population1 = number;
 export type Rank = number;
 /**
@@ -381,9 +405,11 @@ export interface AreaProfile {
   neighbourhood_en?: NeighbourhoodEn;
   overall: Overall;
   overall_percentile: OverallPercentile;
+  overall_percentile_all?: OverallPercentileAll;
   overall_percentile_nation?: OverallPercentileNation;
   overall_percentile_range?: OverallPercentileRange;
   overall_percentile_urban_rural?: OverallPercentileUrbanRural;
+  percentile_within?: PercentileWithin;
   population: Population;
   preset: Preset;
   region: Region;
@@ -427,6 +453,7 @@ export interface ThemeScore {
   local_median?: LocalMedian;
   nation_median?: NationMedian;
   percentile?: Percentile;
+  percentile_all?: PercentileAll;
   percentile_nation?: PercentileNation;
   percentile_urban_rural?: PercentileUrbanRural;
   score?: Score1;
@@ -443,6 +470,7 @@ export interface ComparedArea {
   name: Name;
   overall: Overall1;
   overall_percentile: OverallPercentile1;
+  percentile_within?: PercentileWithin1;
   themes: Themes1;
 }
 /**
@@ -500,6 +528,7 @@ export interface Explanation {
   name: Name1;
   overall: Overall2;
   overall_percentile: OverallPercentile2;
+  percentile_within?: PercentileWithin2;
   preset: Preset2;
   sources: Sources;
 }
@@ -691,6 +720,7 @@ export interface RankedArea {
   name_en?: NameEn1;
   overall: Overall3;
   overall_percentile: OverallPercentile3;
+  percentile_within?: PercentileWithin3;
   population: Population1;
   rank: Rank;
   sort_score?: SortScore;

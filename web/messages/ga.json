@@ -69,14 +69,14 @@
     "send": "Seol",
     "moreOptions": "Tuilleadh roghanna",
     "suggestions": {
-      "familyTitle": "Oiriúnach do theaghlaigh in aice le Leeds",
-      "familyMessage": "Tá beirt pháistí óga againn agus buiséad £350k. Cá háit ar chóir dúinn breathnú timpeall Leeds?",
-      "pubsTitle": "Tithe tábhairne maithe in aice láimhe",
-      "pubsMessage": "Taispeáin dom tithe tábhairne maithe in aice le SW1A 1AA",
+      "familyTitle": "Oiriúnach do theaghlaigh i mBaile Átha Cliath",
+      "familyMessage": "Tá beirt pháistí óga againn. Cá háit ar chóir dúinn breathnú timpeall Bhaile Átha Cliath?",
+      "pubsTitle": "Tithe tábhairne in aice láimhe",
+      "pubsMessage": "Taispeáin dom tithe tábhairne in aice le Bóthar na Trá, Gaillimh",
       "compareTitle": "Cuir dhá áit i gcomparáid",
-      "compareMessage": "Cuir Headingley agus Chapel Allerton i gcomparáid",
+      "compareMessage": "Cuir Raghnallach agus Ráth Maonais i gcomparáid",
       "explainTitle": "Mínigh scór",
-      "explainMessage": "Cén fáth a bhfaigheann lár chathair Manchester scór íseal ar shábháilteacht?"
+      "explainMessage": "Cén fáth a bhfaigheann lár chathair Bhaile Átha Cliath scór íseal ar shábháilteacht?"
     },
     "copyMessage": "Cóipeáil"
   },
@@ -133,7 +133,8 @@
     "compareHint": {
       "uk": "Peircintílí thar gach ceantar scóráilte.",
       "nation": "Peircintílí laistigh de gach náisiún; fanann na scóir mar atá.",
-      "urban_rural": "Ní mheastar bailte beaga i gcoinne lár cathracha móra."
+      "urban_rural": "Ní mheastar bailte beaga i gcoinne lár cathracha móra.",
+      "uk_own": "Peircintílí thar gach ceantar scóráilte; {nations} laistigh dá náisiún féin."
     },
     "adjusted": "(coigeartaithe)",
     "describeYourself": "Nó déan cur síos ort féin",
@@ -175,7 +176,8 @@
     "worse": "níos measa",
     "typical": "tipiciúil",
     "better": "níos fearr",
-    "noData": "Gan sonraí"
+    "noData": "Gan sonraí",
+    "ownNation": "{nations}: i gcoinne ceantar {in}"
   },
   "Map": {
     "hover": "{name}: níos fearr ná {pct, number}% {of}",
@@ -189,7 +191,8 @@
     "hoverNationNoName": "níos fearr ná {pct, number}% dá náisiún",
     "hoverUrbanRural": "{name}: níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla",
     "hoverUrbanRuralNoName": "níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla",
-    "layerUnavailable": "Ní féidir {layer} a mhapáil; an scór foriomlán á thaispeáint"
+    "layerUnavailable": "Ní féidir {layer} a mhapáil; an scór foriomlán á thaispeáint",
+    "noWeights": "Níl aon mheáchan ar théama ar bith: ardaigh ceann amháin ar a laghad"
   },
   "Docs": {
     "nav": "Doiciméadú",

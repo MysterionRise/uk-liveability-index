@@ -49,6 +49,13 @@ OFFENCE_GROUPS = {
 }
 # Dublin's divisions are named after the metropolitan region, not the county
 REGION_COUNTIES = {"D.M.R.": "Dublin", "DMR": "Dublin"}
+# A station whose counted groups total 0 in the scoring year after a year with at least
+# this many incidents has stopped reporting (its work moved to another station), not
+# become crime-free: its sub-district joins the nearest reporting one (Laytown, #143)
+NONREPORTING_FLOOR = 50
+# A sub-district with fewer incidents than this in the year gives its areas the
+# low-count flag, as police.uk's small forces do
+LOW_N = 20
 
 
 def fold(text: str | None) -> str:
@@ -80,6 +87,40 @@ def station_counts(cja11: pl.DataFrame, year: int | None = None) -> tuple[pl.Dat
         .sort("station", "crime_type")
     )
     return out, year
+
+
+def _mapped_by_year(cja11: pl.DataFrame) -> pl.DataFrame:
+    """Each station's total over the counted offence groups per year."""
+    return (
+        cja11.select(
+            pl.col("Garda Station").alias("station"),
+            pl.col("Year").cast(pl.Int32).alias("year"),
+            pl.col("Type of Offence").str.extract(r"\((\d\d)\)\s*$", 1).alias("group"),
+            pl.col("VALUE").cast(pl.Float64, strict=False).alias("n"),
+        )
+        .filter(pl.col("group").is_in(list(OFFENCE_GROUPS)) & pl.col("n").is_not_null())
+        .group_by("station", "year")
+        .agg(pl.col("n").sum())
+    )
+
+
+def station_flags(cja11: pl.DataFrame, year: int) -> tuple[set[str], set[str]]:
+    """Stations that no longer report in ``year`` (a total of 0 after a prior year of at
+    least ``NONREPORTING_FLOOR``) and stations with fewer than ``LOW_N`` incidents."""
+    totals = _mapped_by_year(cja11)
+    this_year = dict(totals.filter(pl.col("year") == year).select("station", "n").rows())
+    prior = {
+        s: n
+        for s, n in totals.filter(pl.col("year") < year)
+        .group_by("station")
+        .agg(pl.col("n").max())
+        .rows()
+    }
+    non_reporting = {
+        s for s, n in this_year.items() if n == 0 and prior.get(s, 0) >= NONREPORTING_FLOOR
+    }
+    low_n = {s for s, n in this_year.items() if n < LOW_N} - non_reporting
+    return non_reporting, low_n
 
 
 def match_stations(
@@ -166,9 +207,12 @@ def areas_to_subdistricts(
     )
 
 
-def spread_to_areas(counts: pl.DataFrame, areas: pl.DataFrame) -> pl.DataFrame:
+def spread_to_areas(
+    counts: pl.DataFrame, areas: pl.DataFrame, low: set[str] | None = None
+) -> pl.DataFrame:
     """Sub-district counts (``sub_code``, ``crime_type``, ``n``) → each of its areas
-    (``lsoa21cd``, ``population``, ``sub_code``) in proportion to population."""
+    (``lsoa21cd``, ``population``, ``sub_code``) in proportion to population; ``low``
+    names the sub-districts whose counts are too few to trust (``low_n``)."""
     weights = areas.with_columns(
         (pl.col("population") / pl.col("population").sum().over("sub_code")).alias("share")
     )
@@ -180,6 +224,7 @@ def spread_to_areas(counts: pl.DataFrame, areas: pl.DataFrame) -> pl.DataFrame:
             pl.lit(FORCE).alias("force"),
             (pl.col("n") * pl.col("share")).alias("n"),
             pl.lit(12, pl.Int32).alias("force_months"),
+            pl.col("sub_code").is_in(sorted(low or [])).alias("low_n"),
         )
         .sort("lsoa21cd", "crime_type")
     )
@@ -188,6 +233,14 @@ def spread_to_areas(counts: pl.DataFrame, areas: pl.DataFrame) -> pl.DataFrame:
 def garda_crime() -> pl.DataFrame:
     cja11 = pl.read_csv(raw_file("cso_cja11", "csv"), infer_schema_length=0, encoding="utf8-lossy")
     counts, year = station_counts(cja11)
+    non_reporting, low_stations = station_flags(cja11, year)
+    if non_reporting:
+        logger.warning(
+            f"{len(non_reporting)} stations recorded nothing in {year} after a full prior "
+            f"year: their sub-districts join the nearest reporting station: "
+            f"{[station_name(s) for s in sorted(non_reporting)][:10]}"
+        )
+        counts = counts.filter(~pl.col("station").is_in(sorted(non_reporting)))
     folder = data_dir("raw") / "cso_garda_subdistricts"
     shp = sorted(folder.glob("**/*.shp"))
     if not shp:
@@ -211,13 +264,17 @@ def garda_crime() -> pl.DataFrame:
         .group_by("sub_code", "crime_type")
         .agg(pl.col("n").sum())
     )
+    # A sub-district with too few incidents over the counted groups is flagged low_n
+    totals = counts.group_by("sub_code").agg(pl.col("n").sum())
+    low = set(totals.filter(pl.col("n") < LOW_N)["sub_code"])
     geo = pl.read_parquet(data_dir("staged") / "geo_lsoa.parquet").filter(pl.col("nation") == "I")
     areas = areas_to_subdistricts(
         geo.select("lsoa21cd", "pwc_x", "pwc_y"), polygons, set(counts["sub_code"])
     ).join(geo.select("lsoa21cd", "population"), on="lsoa21cd")
-    out = spread_to_areas(counts, areas)
+    out = spread_to_areas(counts, areas, low)
     logger.info(
         f"Garda {year}: {counts['n'].sum():,.0f} incidents at {counts['sub_code'].n_unique()} "
-        f"stations spread over {out['lsoa21cd'].n_unique():,} Small Areas"
+        f"stations spread over {out['lsoa21cd'].n_unique():,} Small Areas "
+        f"({len(low)} sub-districts under {LOW_N} incidents flagged low_n)"
     )
     return out

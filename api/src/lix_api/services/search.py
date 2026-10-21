@@ -14,6 +14,11 @@ POSTCODE = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$")
 # the same shape; whether it names an LSOA or an area in this build is decided by looking
 # it up
 GSS = re.compile(r"^[EWSNI]\d{8}$")
+# The longest text a reference may be (a postcode, a code, a place and a scope or two):
+# anything longer is a mistake or an attack, not a place
+MAX_QUERY = 200
+# How many "Place, Scope, Scope" parts are read: each costs a scan of every name
+MAX_SCOPES = 3
 
 # Higher wins when names score equally: "Leeds" the city beats Leeds village in Kent
 # WRatio similarity a name must reach: typos ("Headingly", "Mancheser") score ~95,
@@ -96,8 +101,28 @@ def _area_place(row: dict, name: str | None = None) -> Place:
                  name_en=row["name"] if shown != row["name"] else None)  # fmt: skip
 
 
+def lookup_area_name(store: Store, text: str) -> Place | None:
+    """An area whose name, as the pack spells it, is the whole query ("Bristol, City of",
+    "Kingston upon Hull, City of"): an exact folded match, so the comma inside the name
+    is never read as a scope. The highest level wins when several share a name."""
+    folded = fold(text)
+    if "," not in text or not folded:
+        return None
+    n_areas = store.areas.height
+    hits = [i % n_areas for i, name in enumerate(store.area_search_names) if name == folded]
+    if not hits:
+        return None
+    rows = [store.areas.row(i, named=True) for i in dict.fromkeys(hits)]
+    rows = [r for r in rows if r["level"] != "nation"]
+    if not rows:
+        return None
+    row = max(rows, key=lambda r: KIND_PRIORITY.get(r["level"], 0))
+    return _area_place(row)
+
+
 def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
-    """Fuzzy matches for free text over places and areas (nations excepted), best first."""
+    """Fuzzy matches for free text over places and areas (nations excepted), best first;
+    one row per code, the best-scoring form of its name shown."""
     candidates: list[tuple[float, Place]] = []
     folded = fold(query)
 
@@ -139,7 +164,8 @@ def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
     candidates.sort(key=lambda c: c[0], reverse=True)
     seen, out = set(), []
     for _, place in candidates:
-        key = (place.kind, place.name, place.detail)
+        # One result per code: "Dùn Èideann" and "Dún Éideann" are the same Edinburgh
+        key = (place.kind, place.code)
         if key not in seen:
             seen.add(key)
             out.append(place)
@@ -163,33 +189,60 @@ def _council_of(place: Place) -> str | None:
     return None
 
 
+def scope_councils(store: Store, scope: str) -> set[str]:
+    """The council codes a scope word means: a region's councils ("London"), the councils
+    sharing a county ("Dublin": Dublin City, South Dublin, Fingal, Dún Laoghaire-Rathdown;
+    "Cork": city and county), and every council whose name is or contains the word
+    ("Dublin" also finds "South Dublin"); the best fuzzy match alone when nothing matches
+    that way ("Edinburgh" for "Edinbrugh")."""
+    folded = fold(scope)
+    codes = set(store.region_councils.get(folded, ())) | set(store.county_councils.get(folded, ()))
+    councils = [p for p in _candidates(store, scope, limit=10) if p.kind == "lad"]
+    word = re.compile(rf"(^|\W){re.escape(folded)}($|\W)")
+    named = [
+        p
+        for p in councils
+        if word.search(fold(p.name)) or (p.name_en and word.search(fold(p.name_en)))
+    ]
+    codes |= {p.code for p in named}
+    if not codes and councils:
+        codes.add(councils[0].code)
+    return {c for c in codes if c}
+
+
 def _within_scopes(
     store: Store, candidates: list[Place], scopes: list[str]
 ) -> tuple[list[Place], bool]:
     """Keep the candidates inside every scope named after the comma ("Morningside,
-    Edinburgh", "Stirling, Scotland"): a nation by name in any language, a council by
-    name. A scope that names nothing known is ignored; the flag says whether any scope
-    was recognised, so "Richmond, Scotland" is empty rather than Richmond in Yorkshire."""
+    Edinburgh", "Stirling, Scotland", "Ranelagh, Dublin", "Clapham, London"): a nation
+    or country by any of its names, a region, a county, or councils by name. A scope that
+    names nothing known is ignored; the flag says whether any scope was recognised, so
+    "Richmond, Scotland" is empty rather than Richmond in Yorkshire."""
     keep = candidates
     recognised = False
-    for scope in scopes:
-        nation = store.nation_aliases.get(fold(scope))
-        if nation:
+    for scope in scopes[:MAX_SCOPES]:
+        nations = store.scope_aliases.get(fold(scope))
+        if nations:
             recognised = True
-            keep = [p for p in keep if nation_of(p) == nation]
+            keep = [p for p in keep if nation_of(p) in nations]
             continue
-        councils = [p for p in _candidates(store, scope, limit=10) if p.kind == "lad"]
-        if not councils:
+        codes = scope_councils(store, scope)
+        if not codes:
             continue
         recognised = True
-        council = councils[0]
-        names = {fold(council.name), fold(council.name_en or council.name)}
-        keep = [
-            p
-            for p in keep
-            if (p.kind == "lad" and p.code == council.code) or _council_of(p) in names
-        ]
+        names = {fold(name) for code in codes for name in _council_names(store, code)}
+        keep = [p for p in keep if (p.kind == "lad" and p.code in codes) or _council_of(p) in names]
     return keep, recognised
+
+
+def _council_names(store: Store, code: str) -> list[str]:
+    """Every form of a council's name the pack knows (English and the other languages),
+    so a place's "detail" matches whichever form the search returned."""
+    rows = store.areas.filter((pl.col("level") == "lad") & (pl.col("code") == code))
+    if rows.is_empty():
+        return []
+    row = rows.row(0, named=True)
+    return [row[c] for c in store.area_name_columns if row.get(c)]
 
 
 def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
@@ -202,10 +255,13 @@ def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
     query = query.strip()
     if not query:
         return []
+    if len(query) > MAX_QUERY:
+        raise ValueError(f"A place reference is at most {MAX_QUERY} characters")
     for exact in (
         lookup_postcode(store, query),
         lookup_code(store, query),
         lookup_nation(store, query),
+        lookup_area_name(store, query),
     ):
         if exact:
             return [exact]
@@ -250,6 +306,13 @@ def resolve_lsoa(store: Store, ref: str) -> str:
     )
     if namesake:
         return namesake.lsoa21cd
+    # A neighbourhood or council without a namesake place: its most populous area, which
+    # is inside it (the middle of its bounding box may be a bay or the next council)
+    column = {"msoa": "msoa21cd", "lad": "lad_cd"}.get(top.kind)
+    if column and top.code:
+        inside = store.features.filter(pl.col(column) == top.code)
+        if inside.height:
+            return inside.sort("population", descending=True)["lsoa21cd"][0]
     if top.centre:
         return nearest_lsoa(store, top.centre)
     raise LookupError(f"Couldn't find an area for {ref!r}")

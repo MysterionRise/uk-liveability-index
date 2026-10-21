@@ -53,7 +53,6 @@ def build_model() -> Model:
     so a missing key doesn't stop the map and API from starting."""
     global MODEL_PROBLEM
     from pydantic_ai.exceptions import UserError
-    from pydantic_ai.models import infer_model
 
     name = model_name()
     if name == "test":
@@ -66,10 +65,8 @@ def build_model() -> Model:
         m.strip() for m in os.environ.get("LIX_FALLBACK_MODELS", "").split(",") if m.strip()
     ]
     try:
-        primary = infer_model(name)
-        return (
-            FallbackModel(primary, *[infer_model(m) for m in fallbacks]) if fallbacks else primary
-        )
+        primary = _model(name)
+        return FallbackModel(primary, *[_model(m) for m in fallbacks]) if fallbacks else primary
     except (UserError, ValueError, ImportError) as e:
         MODEL_PROBLEM = f"{name}: {e}"
         logger.error(
@@ -96,23 +93,54 @@ def _explain(problem: str):
     return reply
 
 
-def model_settings() -> ModelSettings:
-    """Provider-specific settings; ignored by providers they don't apply to."""
-    name = model_name()
+def _model(name: str) -> Model:
+    """A model carrying its own provider settings, so a fallback never inherits the
+    primary's (an OpenRouter Qwen fallback once asked for Anthropic's endpoint)."""
+    from pydantic_ai.models import infer_model
+
+    settings = provider_settings(name)
+    if settings and name.startswith("openrouter:"):
+        from pydantic_ai.models.openrouter import OpenRouterModel
+
+        return OpenRouterModel(name.split(":", 1)[1], provider="openrouter", settings=settings)
+    if settings and name.startswith("anthropic:"):
+        from pydantic_ai.models.anthropic import AnthropicModel
+
+        return AnthropicModel(name.split(":", 1)[1], provider="anthropic", settings=settings)
+    return infer_model(name)
+
+
+def provider_settings(name: str) -> ModelSettings:
+    """What a provider needs for one model: prompt caching of the stable prefix (tool
+    definitions and instructions) and effort, by the model's own provider."""
     effort = os.environ.get("LIX_EFFORT", "low")
-    settings: dict = {"max_tokens": 4000, "timeout": float(os.environ.get("LIX_MODEL_TIMEOUT", 60))}
+    settings: dict = {}
     if name.startswith("anthropic:"):
         # Tool definitions are the stable prefix (tools render before the system
         # prompt); per-turn state sits in the instructions after them
         settings["anthropic_cache_tool_definitions"] = True
+        settings["anthropic_cache_instructions"] = True
         settings["anthropic_effort"] = effort
     elif name.startswith("openrouter:"):
         settings["openrouter_reasoning"] = {"effort": effort}
         # Report the cost of each request, so usage limits and the turn log can use it
         settings["openrouter_usage"] = {"include": True}
         if name.split(":", 1)[1].startswith("anthropic/"):
-            # Anthropic's own endpoint first: prompt caching and the newest features
+            # Anthropic's own endpoint first, and cache breakpoints on the stable prefix:
+            # without them every request re-bills the instructions and 13 tool schemas,
+            # about $0.12 a question on Opus (#155)
             settings["openrouter_provider"] = {"order": ["anthropic"], "allow_fallbacks": True}
+            settings["openrouter_cache_tool_definitions"] = "1h"
+            settings["openrouter_cache_instructions"] = "1h"
+            settings["openrouter_cache_messages"] = True
+    return settings  # type: ignore[return-value]
+
+
+def model_settings() -> ModelSettings:
+    """The run's settings for the configured model: the generic caps plus its provider's
+    (a fallback carries its own, see ``_model``)."""
+    settings: dict = {"max_tokens": 4000, "timeout": float(os.environ.get("LIX_MODEL_TIMEOUT", 60))}
+    settings.update(provider_settings(model_name()))
     return settings  # type: ignore[return-value]
 
 

@@ -79,9 +79,11 @@ def explain_score(
         for s in store.indicators[v.id].sources
         if covers(s)
     }
+    # Only the caveats of indicators this area's nation has (an Irish area has no Ofsted)
     caveats = sorted(
         {store.indicators[v.id].caveats for c in contributions for v in c.indicators
-         if store.indicators[v.id].caveats and v.role == "scored"}
+         if store.indicators[v.id].caveats and v.role == "scored"
+         and v.quality != "not_available"}
     )  # fmt: skip
     sources = [
         SourceRef(
@@ -107,5 +109,6 @@ def explain_score(
         preset=name,
         overall=None if scores.get("overall") is None else round(scores["overall"], 1),
         overall_percentile=percentile(scores.get("overall_pct")),
+        percentile_within=scores.get("headline_within") or "all",
         contributions=contributions, caveats=caveats, sources=sources,
     )  # fmt: skip

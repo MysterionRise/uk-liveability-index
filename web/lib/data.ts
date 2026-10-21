@@ -50,6 +50,9 @@ export interface NationMeta {
   theme_gaps?: string[];
   /** The nation's name in the other interface languages */
   names?: Record<string, string>;
+  /** The base of the nation's headline percentile and band: every area in the build, or
+   * the nation itself where its data is thinner (absent in older packs: "all") */
+  headline_within?: "all" | "nation";
 }
 
 export interface CountryMeta {
@@ -123,6 +126,8 @@ export interface Manifest {
       period?: Period | null;
       stale?: boolean;
       stale_reason?: "newer_edition" | "older_than_cadence" | "none";
+      /** Nation codes the source feeds (a boundary file names its nation) */
+      coverage?: string[];
     }
   >;
   /** The latest day any source's data reaches (ISO date) */
@@ -346,6 +351,17 @@ export function scoredIndicators(manifest: Manifest): ScoredIndicator[] {
     const i = byId.get(id)!;
     return { id, theme: i.theme, weight: i.weight, coverage: i.coverage };
   });
+}
+
+/** Nation → the base of its headline percentile ("all" or "nation"); "all" for a pack
+ * made before nations could opt in. */
+export function headlineWithin(manifest: Manifest | null | undefined): Record<string, "all" | "nation"> {
+  return Object.fromEntries(
+    Object.entries(manifest?.geography?.nations ?? {}).map(([code, n]) => [
+      code,
+      n.headline_within === "nation" ? "nation" : "all",
+    ]),
+  );
 }
 
 /** Nation → the themes it declares it cannot cover (manifest geography). */

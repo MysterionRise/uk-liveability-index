@@ -204,3 +204,40 @@ def test_codes_that_look_numeric_early_are_not_type_inferred(tmp_path, nspl_part
 
     df = read_nspl_raw(path).collect()
     assert df["ruc_ind"].to_list()[-1] == "UN1"
+
+
+def test_place_by_polygon_moves_only_postcodes_well_outside_their_listed_area(monkeypatch):
+    """A point just over a generalised boundary keeps NSPL's area; one kilometres away
+    takes the polygon that holds it (#153)."""
+    import geopandas as gpd
+    import polars as pl
+    from shapely.geometry import box
+
+    from lix_pipeline.stage import nspl as mod
+
+    polygons = gpd.GeoDataFrame(
+        {"lsoa21cd": ["E01000001", "E01000002"]},
+        geometry=[box(0, 0, 1000, 1000), box(1000, 0, 2000, 1000)],
+        crs="EPSG:27700",
+    ).set_index("lsoa21cd")
+    monkeypatch.setattr(mod, "tier_polygons", lambda level: polygons, raising=False)
+    import lix_pipeline.geo.boundaries as boundaries
+
+    monkeypatch.setattr(boundaries, "tier_polygons", lambda level, **kw: polygons)
+    df = pl.DataFrame(
+        {
+            "postcode": ["AA1 1AA", "AA1 1AB", "AA1 1AC"],
+            "lsoa21cd": ["E01000001", "E01000001", "E01000002"],
+            "east1m": [500, 1050, 1500],  # inside; 50 m over the line; 500 m into the other
+            "north1m": [500, 500, 500],
+            "lat": [51.5, 51.5, 51.5],
+            "live": [True, True, True],
+        }
+    )
+    out = mod.place_by_polygon(df.lazy()).collect()
+    assert out["lsoa21cd"].to_list() == ["E01000001", "E01000001", "E01000002"]
+    far = df.with_columns(pl.Series("east1m", [500, 1050, 1500])).with_columns(
+        pl.Series("lsoa21cd", ["E01000001", "E01000001", "E01000001"])
+    )
+    out = mod.place_by_polygon(far.lazy()).collect()
+    assert out["lsoa21cd"].to_list() == ["E01000001", "E01000001", "E01000002"]

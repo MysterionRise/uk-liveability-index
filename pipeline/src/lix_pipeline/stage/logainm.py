@@ -8,6 +8,7 @@ name and distance (``serve.lookups.with_irish_names``).
 """
 
 import json
+import os
 import re
 
 import polars as pl
@@ -70,7 +71,15 @@ def plain(expr: pl.Expr) -> pl.Expr:
 def stage_logainm() -> pl.LazyFrame:
     path = data_dir("raw") / SLUG / f"{SLUG}.json"
     if not path.exists():
-        raise FileNotFoundError(f"{path} not fetched (needs LOGAINM_API_KEY)")
+        if os.environ.get("LOGAINM_API_KEY", "").strip():
+            raise FileNotFoundError(f"{path} not fetched: run lix fetch --slug {SLUG}")
+        # Without the key the source is skipped at fetch time: an empty table keeps the
+        # stage going, and places take their Irish names from OpenStreetMap alone
+        logger.warning(f"No LOGAINM_API_KEY and no {path.name}: no Logainm names this build")
+        return parse_places([]).with_columns(
+            pl.lit(None, pl.Float64).alias("x"), pl.lit(None, pl.Float64).alias("y"),
+            pl.lit(None, pl.Utf8).alias("key"),
+        ).lazy()  # fmt: skip
     records = json.loads(path.read_text(encoding="utf-8"))
     df = parse_places(records).filter(
         pl.col("name_ga").is_not_null() & pl.col("lat").is_not_null() & pl.col("lon").is_not_null()

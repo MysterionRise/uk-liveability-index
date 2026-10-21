@@ -1788,7 +1788,7 @@ ae_sites:
   theme: health
   access: {type: curated, path: config/data/ae_sites.csv}
   format: csv
-  description: Consultant-led emergency departments (type 1) and other urgent-care sites, compiled from Public Health Scotland's site list and OpenStreetMap hospitals tagged with an emergency department in England and Wales; every row names its source and when it was checked.
+  description: Consultant-led emergency departments (type 1) and other urgent-care sites, compiled from Public Health Scotland's site list, OpenStreetMap hospitals tagged with an emergency department in England and Wales, the Northern Ireland trusts' departments and Ireland's 27 emergency departments and 7 injury units; every row names its source and when it was checked.
   licence: OGL-3.0
   attribution: "Contains Public Health Scotland data licensed under the Open Government Licence v3.0 and OpenStreetMap data © OpenStreetMap contributors (ODbL 1.0)."
   cadence: adhoc
@@ -2376,7 +2376,7 @@ osm_ireland:
   access: {type: http, url: "https://download.geofabrik.de/europe/ireland-and-northern-ireland-latest.osm.pbf"}
   format: pbf
   landing_page: https://download.geofabrik.de/europe/ireland-and-northern-ireland.html
-  description: Every OpenStreetMap feature on the island of Ireland, read for Northern Ireland's and Ireland's places of interest, parks, nurseries, pharmacies, GPs, dentists and settlementsside every active area and drop out.
+  description: Every OpenStreetMap feature on the island of Ireland, read for Northern Ireland's and Ireland's places of interest, parks, nurseries, pharmacies, GPs, dentists and settlements; points outside every active area drop out.
   licence: ODbL-1.0
   attribution: "© OpenStreetMap contributors, Open Database Licence (ODbL) 1.0."
   cadence: daily
@@ -2548,7 +2548,7 @@ te_buildings:
     export_format: geoPackage
     hub: https://data-osi.opendata.arcgis.com
   format: gpkg
-  landing_page: https://data.gov.ie/dataset/high-value-dataset-buildings
+  landing_page: https://data.gov.ie/dataset/high-value-dataset-buildings1
   description: Every permanent roofed building in Ireland (3.8 million footprints, no use attribute); their centroids stand in for homes where there is no open postcode file, after dropping footprints too small or too large to be dwellings.
   licence: CC-BY-4.0
   attribution: "Contains Tailte Éireann data © Government of Ireland, licensed under CC BY 4.0."

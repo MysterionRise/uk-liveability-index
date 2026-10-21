@@ -66,7 +66,7 @@ indicators:
   recorded_crime: {label: Troseddau a gofnodwyd (SIMD), description: "Troseddau a gofnodwyd fesul 1,000 o drigolion y flwyddyn ym Mynegai Amddifadedd Lluosog yr Alban 2020, wedi'u trosglwyddo i barthau data 2022."}
   access_deprivation: {label: Mynediad at wasanaethau (SIMD), description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol), wedi'i ddwyn i barthau data 2022."}
   noise_exposure: {label: Cartrefi mewn sŵn trafnidiaeth neu ddiwydiant, description: "Cyfran y cartrefi lle mae'r sŵn a fapiwyd yn cyfartalu 60 dB Lden neu fwy (ffyrdd a rheilffyrdd yng Nghymru a Lloegr; pob ffynhonnell a fapiwyd yn yr Alban)."}
-  aircraft_noise: {label: Cartrefi mewn sŵn awyrennau, description: "Cyfran y cartrefi lle mae sŵn awyrennau'n cyfartalu 55 dB Lden neu fwy, o amgylch yr un ar bymtheg o feysydd awyr a fapiwyd yn Lloegr."}
+  aircraft_noise: {label: Cartrefi mewn sŵn awyrennau, description: "Cyfran y cartrefi lle mae sŵn awyrennau'n cyfartalu 55 dB Lden neu fwy, o amgylch yr un ar bymtheg o feysydd awyr a fapiwyd yn Lloegr, Maes Awyr Dinas Belfast, a Dulyn, Corc a Shannon."}
   industrial_noise: {label: Cartrefi mewn sŵn diwydiannol, description: "Cyfran y cartrefi lle mae sŵn diwydiannol yn cyfartalu 55 dB Lden neu fwy, ym mhum dinas fapiedig yr Alban."}
   rail_service: {label: Gwasanaeth rheilffordd gerllaw, description: "Mynediadau ac allanfeydd blynyddol gorsafoedd (ORR) o fewn 2km i gartrefi, wedi'u pwysoli yn ôl pellter, fel bod gorsaf brysur gerllaw yn cyfrif mwy nag arhosfan."}
   hospital_ae_distance: {label: Pellter i'r adran achosion brys agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r adran achosion brys agosaf dan arweiniad ymgynghorydd."}
@@ -81,7 +81,7 @@ indicators:
   iod_crime: {label: Parth troseddu'r mynegai amddifadedd, description: Risg wedi'i modelu o erledigaeth bersonol a materol (data 2021–2023).}
   no2: {label: Nitrogen deuocsid (NO₂), description: "NO₂ cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra; yn Iwerddon, map 1km yr EEA)."}
   pm25: {label: Gronynnau mân (PM2.5), description: "PM2.5 cefndirol blynyddol cymedrig lle mae trigolion yn byw (model 1km Defra; yn Iwerddon, map 1km yr EEA)."}
-  green_space_access: {label: Parciau a mannau gwyrdd gerllaw, description: "Mynedfeydd i barciau, gerddi a chaeau chwarae cyhoeddus o fewn 1km o gerdded, wedi'u pwysoli yn ôl pellter."}
+  green_space_access: {label: Parciau a mannau gwyrdd gerllaw, description: "Mynedfeydd i barciau, gerddi a chaeau chwarae cyhoeddus o fewn 1km o gerdded, wedi'u pwysoli yn ôl pellter (yng Ngogledd Iwerddon ac Iwerddon, parciau a chaeau OpenStreetMap)."}
   play_spaces: {label: Mannau chwarae gerllaw, description: "Mynedfeydd i fannau chwarae cyhoeddus o fewn 800m i gartrefi, wedi'u pwysoli yn ôl pellter (yng Ngogledd Iwerddon ac Iwerddon, meysydd chwarae OpenStreetMap)."}
   flood_risk: {label: Cartrefi mewn perygl o lifogydd, description: "Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd, y môr neu ddŵr wyneb (siawns o 1% y flwyddyn o leiaf)."}
   flood_rivers_sea: {label: Cartrefi mewn perygl o afonydd neu'r môr, description: Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd neu'r môr yn unig (siawns o 1% y flwyddyn o leiaf).}

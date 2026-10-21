@@ -53,7 +53,10 @@ def poi_access(
         poi_tree = cKDTree(p_xy)
 
         nearest, _ = poi_tree.query(o_xy, k=1, distance_upper_bound=max_nearest_m)
-        nearest = np.where(np.isinf(nearest), np.nan, nearest)
+        # A home with nothing within the search cap is at least the cap away: it counts as
+        # the cap in the area's mean, so an area whose homes mostly have nothing in reach
+        # reads as far, not as the few homes that do
+        nearest = np.where(np.isinf(nearest), max_nearest_m, nearest)
 
         pairs = cKDTree(o_xy).sparse_distance_matrix(
             poi_tree, max_distance=radius_m, output_type="coo_matrix"

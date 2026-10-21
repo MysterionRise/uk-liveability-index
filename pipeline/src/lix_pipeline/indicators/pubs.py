@@ -199,10 +199,17 @@ def build_pubs(ctx, as_of: date | None = None) -> pl.DataFrame:
     )
     # A 0–5 rating of 4 or 5 (FHRS), or a Pass under Scotland's FHIS, which has no numbers
     good = (pl.col("rating") >= 4) | pl.col("rating_status").is_in(FHIS_PASS)
+    rated = pl.col("rating").is_not_null() | pl.col("rating_status").is_not_null()
     pubs = pubs.with_columns(
-        (good & recent).fill_null(False).alias("well_run"),
+        # A pub without a hygiene rating (no scheme covers it) is unknown, not badly run
+        pl.when(rated).then((good & recent).fill_null(False)).otherwise(None).alias("well_run"),
         (1 + (character * CHARACTER_BONUS).clip(0, MAX_BONUS)).alias("weight"),
-        pl.col("source").replace_strict({k: v[0] for k, v in SOURCES.items()}).alias("source_name"),
+        pl.when(rated)
+        .then(pl.col("source").replace_strict({k: v[0] for k, v in SOURCES.items()}))
+        .otherwise(
+            pl.col("source").replace_strict({k: v[0].split(" + ")[0] for k, v in SOURCES.items()})
+        )  # noqa: E501
+        .alias("source_name"),
         pl.col("source").replace_strict({k: v[1] for k, v in SOURCES.items()}).alias("licence"),
     )
     return pubs

@@ -20,11 +20,10 @@ from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
+from lix_api.agent.messages import message
 from lix_core.log import setup_logging
 
 logger = setup_logging("agent.limits")
-
-STILL_WORKS = "The map, search, weights and area profiles still work."
 
 
 def _today() -> str:
@@ -71,27 +70,22 @@ class Limits:
         self._roll()
         return self.daily_budget > 0 and self.spent >= self.daily_budget
 
-    def admit(self, user_turns: int) -> str | None:
-        """None if the question may go ahead (and counts it), else the reason it can't.
+    def admit(self, user_turns: int, locale: str = "en") -> str | None:
+        """None if the question may go ahead (and counts it), else the reason it can't, in
+        the interface language.
 
         ``user_turns`` is the number of user messages in the conversation so far,
         including this one: AG-UI clients send the whole conversation each time.
         """
         if self.budget_spent():
-            return (
-                "The assistant has used today's budget, so it's resting until tomorrow "
-                f"(midnight UTC). {STILL_WORKS}"
-            )
+            return message("budget", locale)
         now = self.clock()
         while self.recent and now - self.recent[0] > 60:
             self.recent.popleft()
         if len(self.recent) >= self.rate_per_minute:
-            return f"The assistant is busy right now; please try again in a minute. {STILL_WORKS}"
+            return message("rate", locale)
         if user_turns > self.session_turns:
-            return (
-                f"This conversation has reached its limit of {self.session_turns} questions. "
-                f"Reload the page to start a new one. {STILL_WORKS}"
-            )
+            return message("session_limit", locale, turns=str(self.session_turns))
         self.recent.append(now)
         return None
 

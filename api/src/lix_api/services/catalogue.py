@@ -9,6 +9,13 @@ def list_indicators(
 ) -> list[IndicatorInfo] | list[IndicatorBrief]:
     """Every indicator (or one theme's): the full card, or without ``detail`` the name
     card alone (id, label, theme, unit, role, coverage), a tenth of the size."""
+    if theme is not None:
+        from lix_api.services.scoring import match_theme
+
+        matched = match_theme(store, theme)
+        if matched is None:
+            raise LookupError(f"Unknown theme {theme!r}; themes are {sorted(store.themes)}")
+        theme = matched
     if not detail:
         return [
             IndicatorBrief(

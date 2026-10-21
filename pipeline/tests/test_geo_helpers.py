@@ -172,7 +172,12 @@ class TestPoiAccess:
         assert out["nearest_m"].to_list() == [None, None]
         assert out["count"].to_list() == [0.0, 0.0]
 
-    def test_nearest_beyond_max_is_null(self):
+    def test_nearest_beyond_max_counts_as_the_cap(self):
+        # A home with nothing within the search cap is at least the cap away (#148)
         pois = pl.DataFrame({"x": [100_000.0], "y": [0.0]})
         out = poi_access(self.ORIGINS, pois, radius_m=500, max_nearest_m=50_000)
+        assert out["nearest_m"].to_list() == [50_000.0, 50_000.0]
+
+    def test_no_pois_at_all_leaves_nearest_unknown(self):
+        out = poi_access(self.ORIGINS, pl.DataFrame({"x": [], "y": []}), radius_m=500)
         assert out["nearest_m"].to_list() == [None, None]

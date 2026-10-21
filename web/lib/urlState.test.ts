@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { DEFAULT_STATE, type LiveabilityState } from "./state";
-import { decodeHash, encodeHash } from "./urlState";
+import { decodeHash, encodeHash, hashLocale } from "./urlState";
 
 const state: LiveabilityState = {
   ...DEFAULT_STATE,
@@ -41,5 +41,27 @@ describe("the URL hash", () => {
     expect(decodeHash("#not json")).toEqual({});
     expect(decodeHash("")).toEqual({});
     expect(decodeHash("#%22a%20string%22")).toEqual({});
+  });
+
+  it("checks every field's type and clamps weights, so a bad link cannot take the page down", () => {
+    const bad = encodeURIComponent(
+      JSON.stringify({ p: 5, l: 5, s: ["E01"], w: { safety: "3", climate: Infinity, health: -2, transport: 9, nested: { a: 1 } }, i: [1, 2], n: 42 }),
+    );
+    const back = decodeHash(`#${bad}`);
+    expect(back.preset).toBeUndefined();
+    expect(back.map?.layer).toBe("overall");
+    expect(back.map?.selected).toBeNull();
+    expect(back.theme_weights).toEqual({ health: 0, transport: 3 });
+    expect(back.indicator_weights).toBeUndefined();
+    expect(back.profile).toBeUndefined();
+    expect(decodeHash(`#${encodeURIComponent("[1,2]")}`)).toEqual({});
+  });
+
+  it("carries the interface language when it is not English", () => {
+    expect(hashLocale(`#${encodeHash(state)}`)).toBeNull();
+    const welsh = `#${encodeHash({ ...state, locale: "cy" })}`;
+    expect(hashLocale(welsh)).toBe("cy");
+    expect(hashLocale(`#${encodeURIComponent(JSON.stringify({ g: "../x" }))}`)).toBeNull();
+    expect(hashLocale("#not json")).toBeNull();
   });
 });

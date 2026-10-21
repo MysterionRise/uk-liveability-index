@@ -118,6 +118,7 @@ def _stage(args: argparse.Namespace) -> int:
         raise SystemExit(f"Unknown stager: {args.slug!r}. Available: {list(available)}")
 
     registry, nations = load_registry(), list(active_nations())
+    failed = []
     for slug in [args.slug] if args.slug else list(available):
         if args.all and not graph.has_inputs(slug, registry, nations):
             logger.info(f"[{slug}] Inputs not fetched — skipping")
@@ -125,8 +126,18 @@ def _stage(args: argparse.Namespace) -> int:
         if args.all and not graph.covers(slug, registry, nations):
             logger.info(f"[{slug}] Its sources cover none of the active nations — skipping")
             continue
-        save_staged(available[slug](), slug)
+        try:
+            save_staged(available[slug](), slug)
+        except Exception as e:  # noqa: BLE001 (one stager's failure must not stop the rest)
+            if not args.all:
+                raise
+            logger.exception(f"[{slug}] Stage failed: {e}")
+            failed.append(slug)
+            continue
         graph.record_staged(slug, registry, nations)
+    if failed:
+        logger.error(f"{len(failed)} stager(s) failed: {failed}")
+        return 1
     return 0
 
 
@@ -184,20 +195,32 @@ def _indicators(args: argparse.Namespace) -> int:
 
 def _score(args: argparse.Namespace) -> int:
     from lix_pipeline.qa.report import write_report
+    from lix_pipeline.refresh import plan as planning
     from lix_pipeline.serve.scores import build_serve
+    from lix_pipeline.stage import graph
 
     build_serve()
     problems = write_report()
     for p in problems:
         logger.warning(f"QA: {p}")
     logger.info(f"QA report: {data_dir('serve') / 'qa.md'} ({len(problems)} warning(s))")
+    # The sidecar says what the scores were built from, as `lix refresh` records it, so
+    # the next plan knows they are current
+    digest, parts = planning.serve_fingerprint()
+    graph.write_sidecar(planning.serve_sidecar(), "serve", digest, parts)
     return 0
 
 
 def _tiles(args: argparse.Namespace) -> int:
+    from lix_core.codes import active_nations
+    from lix_pipeline.fetch.lock import read_lock
+    from lix_pipeline.refresh import plan as planning
     from lix_pipeline.serve.tiles import build_tiles
+    from lix_pipeline.stage import graph
 
     build_tiles()
+    digest, parts = planning.tiles_fingerprint(read_lock(), list(active_nations()))
+    graph.write_sidecar(planning.tiles_sidecar(), "tiles", digest, parts)
     return 0
 
 
@@ -247,8 +270,15 @@ def _data_release(args: argparse.Namespace) -> int:
 
 
 def _docs(args: argparse.Namespace) -> int:
-    from lix_pipeline.docs import write_docs
+    from lix_pipeline.docs import check_docs, write_docs
 
+    if args.check:
+        stale = check_docs()
+        for path in stale:
+            print(f"{path} is out of date: run make docs and commit it")
+        if not stale:
+            print("docs/data-sources.md and ATTRIBUTION.md are up to date")
+        return 1 if stale else 0
     for path in write_docs():
         print(f"wrote {path}")
     return 0
@@ -347,6 +377,12 @@ def main(argv: list[str] | None = None) -> None:
     data_release.set_defaults(func=_data_release)
 
     docs = sub.add_parser("docs", help="Regenerate docs/data-sources.md and ATTRIBUTION.md")
+    docs.add_argument(
+        "--check",
+        action="store_true",
+        help='Fail if the committed files differ (the "Data for" column aside, which is read '
+        "from the data on the build machine)",
+    )
     docs.set_defaults(func=_docs)
 
     args = parser.parse_args(argv)

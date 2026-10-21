@@ -182,7 +182,9 @@ def has_inputs(stager: str, registry: dict, nations: Iterable[str]) -> bool:
         if (data_dir("raw") / slug / ".meta.json").exists():
             return True
         # A keyed source without its key is skipped at fetch time, and its stager reads
-        # what it has (chargers without Open Charge Map): it does not hold the stage back
+        # what it has (chargers without Open Charge Map, Logainm as an empty table): it
+        # does not hold the stage back. With the key set, a missing file is a failed
+        # fetch, which does
         return (
             spec is not None
             and spec.access.type == "api_key"

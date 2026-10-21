@@ -67,10 +67,12 @@ def high_share(homes: pl.DataFrame, polygons, threshold: float) -> pl.DataFrame:
     value = band_at_points(
         polygons, "value", homes["east1m"].to_numpy(), homes["north1m"].to_numpy()
     )
-    high = np.where(np.isnan(value), 0.0, (value >= threshold).astype(float))
+    # A home in a square without data (the map's -999, or off the map) is unknown, not
+    # "not high": the share is over the homes the map covers, and null where it covers none
+    high = np.where(np.isnan(value), np.nan, (value >= threshold).astype(float))
     return (
         homes.select("lsoa21cd")
-        .with_columns(pl.Series("high", high))
+        .with_columns(pl.Series("high", high, nan_to_null=True))
         .group_by("lsoa21cd")
         .agg((pl.col("high").mean() * 100).alias("high_share"))
     )

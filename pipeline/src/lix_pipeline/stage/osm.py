@@ -42,6 +42,7 @@ POI_KEYS: dict[str, set[str] | None] = {
 EXTRA_TAGS = [
     "name", "brand", "fhrs:id", "real_ale", "outdoor_seating", "beer_garden", "food",
     "microbrewery", "opening_hours", "website", "wheelchair", "cuisine", "access", "emergency",
+    "healthcare", "healthcare:speciality", "boundary", "protect_class",
 ]  # fmt: skip
 
 

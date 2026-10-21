@@ -313,6 +313,18 @@ def test_optional_column_is_empty_without_the_staged_table(tmp_path, monkeypatch
     assert optional_column(ctx, "night_lights", "radiance")["value"].to_list() == [3.5]
 
 
+def test_a_share_never_exceeds_100():
+    """Parts and totals from different tables can disagree by rounding (#151)."""
+    from lix_pipeline.indicators.common import share
+
+    table = pl.DataFrame(
+        {"lsoa21cd": ["a", "b"], "built_2000_on": [104.0, 20.0], "dwellings": [100.0, 100.0]}
+    )
+    ctx = FakeContext(voa_ctsop=table)
+    out = share(ctx, "voa_ctsop", ["built_2000_on"], "dwellings")
+    assert out["value"].to_list() == [100.0, 20.0]
+
+
 def test_nearest_beyond_the_cap_can_count_as_the_cap():
     from lix_pipeline.indicators.common import nearest
 
@@ -322,10 +334,17 @@ def test_nearest_beyond_the_cap_can_count_as_the_cap():
     sites = pl.DataFrame({"type": ["type1"], "x": [1000.0], "y": [0.0]})
     ctx = FakeContext(origins=origins, ae_sites=sites)
     plain = nearest(ctx, "ae_sites", "type", ["type1"]).sort("lsoa21cd")
-    assert plain["value"].to_list()[0] == pytest.approx(1000.0)
-    assert plain["value"].to_list()[1] is None  # nothing within 50 km
+    # A home with nothing within the search cap reads the cap (#148), so an area whose
+    # homes have nothing in reach reads 50 km with or without beyond_cap
+    assert plain["value"].to_list() == pytest.approx([1000.0, 50_000.0])
     capped = nearest(ctx, "ae_sites", "type", ["type1"], beyond_cap=50_000).sort("lsoa21cd")
     assert capped["value"].to_list() == pytest.approx([1000.0, 50_000.0])
+    # No site at all: nothing measurable, and beyond_cap stands in
+    none = FakeContext(origins=origins, ae_sites=sites.filter(pl.col("type") == "none"))
+    assert nearest(none, "ae_sites", "type", ["type1"])["value"].to_list() == [None, None]
+    assert nearest(none, "ae_sites", "type", ["type1"], beyond_cap=50_000)["value"].to_list() == [
+        50_000.0, 50_000.0,
+    ]  # fmt: skip
 
 
 def test_well_run_counts_a_recent_scottish_pass_like_a_high_rating():

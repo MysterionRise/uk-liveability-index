@@ -1,3 +1,4 @@
+import { shownPercentile } from "./scoring";
 /** Indicator values in words and units a reader can take in at a glance. */
 export function formatValue(value: number | null | undefined, unit: string, locale = "en-GB"): string {
   if (value == null || Number.isNaN(value)) return "–";
@@ -47,5 +48,5 @@ export function unitCode(unit: string): string {
 
 /** A percentile as "better than N%": whole numbers, and the top area is 99, never 100. */
 export function pctRank(percentile: number): number {
-  return Math.min(99, Math.round(percentile));
+  return shownPercentile(percentile);
 }

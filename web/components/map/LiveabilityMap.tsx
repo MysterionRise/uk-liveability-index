@@ -9,10 +9,11 @@
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useData, useLiveability, useScores } from "@/components/AppData";
 import { MapLegend } from "@/components/map/MapLegend";
+import { usePanel } from "@/components/PanelContext";
 import { LABEL_PREFIX, placeLabels, setLabelLanguage } from "@/components/map/placeLabels";
 import { useTheme } from "@/components/ThemeProvider";
 import { fillColorExpression } from "@/lib/colors";
@@ -22,7 +23,7 @@ import { CHROME, FILL_OPACITY } from "@/lib/palette";
 import { useLocale, useTranslations } from "next-intl";
 
 import { useCoverageIn, useCoverageOf } from "@/lib/copy";
-import { activeBbox, coverageNations } from "@/lib/data";
+import { activeBbox, coverageNations, headlineWithin } from "@/lib/data";
 import { bboxOf } from "@/lib/state";
 
 const LAYERS = [
@@ -69,6 +70,33 @@ function carryOverlay(
 }
 
 /** Adds our sources and layers once per style, and (re)applies the theme's colours. */
+// The boundaries' own notices until the manifest says which sources drew them
+const FALLBACK_CREDITS = [
+  "Contains OS data © Crown copyright and database right; ONS; NRS; Contains Ordnance Survey of Northern Ireland information licensed under the OGL v3.0; NISRA",
+];
+
+/** What the map must credit for its boundaries: the attribution of every boundary source in
+ * the manifest (so a nation's notice cannot be missed when it joins, #186). */
+export function boundaryCredits(manifest: { sources?: Record<string, { attribution?: string }> } | null | undefined): string[] {
+  const sources = manifest?.sources ?? {};
+  const credits = Object.entries(sources)
+    .filter(([slug]) => /boundar|admin_areas|centroid/.test(slug))
+    .map(([, s]) => s.attribution?.trim())
+    .filter((a): a is string => !!a);
+  const unique = [...new Set(credits)];
+  return unique.length ? unique : FALLBACK_CREDITS;
+}
+
+/** The compact attribution opens expanded on load and would sit under the legend on a
+ * phone until the first drag; start it collapsed, the licence a tap away (#114). */
+function collapseAttribution(container: HTMLElement | null): void {
+  const attrib = container?.querySelector(".maplibregl-ctrl-attrib");
+  if (attrib?.classList.contains("maplibregl-compact-show")) {
+    attrib.classList.remove("maplibregl-compact-show");
+    attrib.querySelector("button")?.setAttribute("aria-expanded", "false");
+  }
+}
+
 function addOverlay(map: maplibregl.Map, dark: boolean): void {
   const chrome = CHROME[dark ? "dark" : "light"];
   if (!map.getSource("lsoa")) addOverlayLayers(map, chrome);
@@ -89,7 +117,6 @@ function addOverlayLayers(map: maplibregl.Map, chrome: (typeof CHROME)["light"])
       type: "vector",
       url: `pmtiles://${absoluteDataUrl()}/tiles/${layer.id}.pmtiles`,
       promoteId: { [layer.id]: layer.key },
-      attribution: "Contains OS data © Crown copyright and database right; ONS; NRS; Contains Ordnance Survey of Northern Ireland information licensed under the OGL v3.0; NISRA",
     });
     map.addLayer(
       {
@@ -161,13 +188,34 @@ export function LiveabilityMap() {
   useEffect(() => {
     compareRef.current = state.compare_within;
   }, [state.compare_within]);
+  // Nations whose headline compares within themselves (#147): the hover says "of Ireland"
+  const rulesRef = useRef<Record<string, "all" | "nation">>({});
+  useEffect(() => {
+    rulesRef.current = headlineWithin(manifest);
+  }, [manifest]);
+  const tn = useTranslations("Nations");
+  const { setTab } = usePanel();
+  const setTabRef = useRef(setTab);
+  useEffect(() => {
+    setTabRef.current = setTab;
+  }, [setTab]);
   const t = useTranslations("Map");
   const tLegend = useTranslations("Legend");
   // An indicator only some nations have (domestic rates) is compared among the areas of
   // those nations, and the legend and hover say so (#136)
   const layerNations = coverageNations(manifest, state.map.layer);
   const coverageIn = useCoverageIn(layerNations ?? undefined);
-  const against = tLegend(`against.${state.compare_within}`, { coverageIn });
+  // Nations whose headline compares within themselves get a second line (#147)
+  const ownNations = Object.entries(headlineWithin(manifest))
+    .filter(([code, rule]) => rule === "nation" && manifest?.geography?.active?.includes(code))
+    .map(([code]) => code);
+  const against =
+    state.compare_within === "uk" && ownNations.length
+      ? `${tLegend("against.uk", { coverageIn })} · ${tLegend("ownNation", {
+          nations: ownNations.map((c) => tn(c as "E" | "W" | "S" | "N" | "I")).join(", "),
+          in: ownNations.map((c) => tn(`in_${c}` as "in_E" | "in_W" | "in_S" | "in_N" | "in_I")).join(", "),
+        })}`
+      : tLegend(`against.${state.compare_within}`, { coverageIn });
   const whereIn = layerNations ? coverageIn : null;
   const whereRef = useRef<string | null>(whereIn);
   useEffect(() => {
@@ -184,6 +232,8 @@ export function LiveabilityMap() {
   const styleDark = useRef<boolean | null>(null);
 
   const darkRef = useRef(dark);
+  // The attribution control, rebuilt when the manifest's boundary credits arrive (#186)
+  const attribRef = useRef<maplibregl.AttributionControl | null>(null);
   useEffect(() => {
     darkRef.current = dark;
   }, [dark]);
@@ -213,7 +263,7 @@ export function LiveabilityMap() {
       container: container.current,
       style: basemap(darkRef.current),
       bounds: manifestRef.current ? activeBbox(manifestRef.current) : UK,
-      attributionControl: { compact: true },
+      attributionControl: false, // added below, with the manifest's boundary credits
     });
     styleDark.current = darkRef.current;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
@@ -224,22 +274,13 @@ export function LiveabilityMap() {
       if (err && (err.name === "AbortError" || /abort|cancel|Failed to fetch/i.test(err.message ?? ""))) return;
       console.error(err ?? e);
     });
-    // The compact attribution opens expanded on load and would sit under the legend on
-    // a phone until the first drag; start it collapsed, the licence a tap away (#114)
-    const collapseAttribution = () => {
-      const attrib = container.current?.querySelector(".maplibregl-ctrl-attrib");
-      if (attrib?.classList.contains("maplibregl-compact-show")) {
-        attrib.classList.remove("maplibregl-compact-show");
-        attrib.querySelector("button")?.setAttribute("aria-expanded", "false");
-      }
-    };
-    // MapLibre opens it on first paint; watch until the map has loaded, then leave it
-    // to the user
-    const attribWatch = new MutationObserver(collapseAttribution);
+    // MapLibre opens the attribution on first paint; watch until the map has loaded, then
+    // leave it to the user
+    const attribWatch = new MutationObserver(() => collapseAttribution(container.current));
     if (container.current) attribWatch.observe(container.current, { subtree: true, attributes: true, attributeFilter: ["class"] });
-    collapseAttribution();
+    collapseAttribution(container.current);
     map.once("load", () => {
-      collapseAttribution();
+      collapseAttribution(container.current);
       setTimeout(() => attribWatch.disconnect(), 1500);
     });
     map.on("style.load", () => {
@@ -256,8 +297,27 @@ export function LiveabilityMap() {
       setStyleVersion(0);
       map.remove();
       mapRef.current = null;
+      attribRef.current = null;
     };
   }, []);
+
+  // The attribution control carries the boundaries' notices from the manifest (#186); it is
+  // rebuilt when they arrive, and starts collapsed as the first one does
+  const credits = useMemo(() => boundaryCredits(manifest), [manifest]);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    // A control of a map that has since been removed (React re-running effects in
+    // development) must not be removed again: MapLibre would call off() on no map
+    const previous = attribRef.current as (maplibregl.AttributionControl & { _map?: unknown }) | null;
+    if (previous && previous._map === map) map.removeControl(previous);
+    const control = new maplibregl.AttributionControl({ compact: true, customAttribution: credits });
+    map.addControl(control, "bottom-right");
+    attribRef.current = control;
+    collapseAttribution(container.current);
+    const later = setTimeout(() => collapseAttribution(container.current), 300);
+    return () => clearTimeout(later);
+  }, [credits, ready]);
 
   // Swap the basemap when the theme changes (the style.load handler re-adds the overlay)
   useEffect(() => {
@@ -352,6 +412,8 @@ export function LiveabilityMap() {
       if (f.layer.id === "lsoa-fill") {
         const code = String(f.properties.lsoa21cd);
         update((s) => ({ ...s, map: { ...s.map, selected: code } }));
+        // The profile lives under the Area tab: a click shows it, whatever tab was open
+        setTabRef.current("area");
       } else {
         map.easeTo({ center: e.lngLat, zoom: f.layer.id === "lad-fill" ? 8 : 10.5 });
       }
@@ -363,15 +425,22 @@ export function LiveabilityMap() {
       const name = f?.properties?.name;
       // The wording follows "compare against": the value shown is already within the
       // nation or the urban/rural class when that is chosen (#113)
+      // The feature id is the area's code, whose first letter is its nation
+      const nation = String(f?.id ?? "")[0];
+      const ownNation = compareRef.current === "uk" && rulesRef.current[nation] === "nation";
       const key =
         compareRef.current === "nation"
           ? "hoverNation"
           : compareRef.current === "urban_rural"
             ? "hoverUrbanRural"
-            : whereRef.current
+            : whereRef.current && !ownNation
               ? "hoverIn"
               : "hover";
-      const args = { pct: pctRank(v), coverageIn: whereRef.current ?? "", of: ofRef.current };
+      const args = {
+        pct: pctRank(v),
+        coverageIn: whereRef.current ?? "",
+        of: ownNation ? tn(`of_${nation}` as "of_E" | "of_W" | "of_S" | "of_N" | "of_I") : ofRef.current,
+      };
       setHover(
         f && typeof v === "number"
           ? { x: e.point.x, y: e.point.y, text: name ? t(key, { name, ...args }) : t(`${key}NoName`, args) }
@@ -385,7 +454,7 @@ export function LiveabilityMap() {
       map.off("click", onClick);
       map.off("mousemove", onMove);
     };
-  }, [ready, update, t]);
+  }, [ready, update, t, tn]);
 
   return (
     <div className="relative h-full w-full" data-testid="map">
@@ -398,7 +467,7 @@ export function LiveabilityMap() {
           {hover.text}
         </div>
       )}
-      {values && <MapLegend label={values.label} against={against} dark={dark} />}
+      {values && <MapLegend label={values.notice ?? values.label} against={against} dark={dark} />}
     </div>
   );
 }

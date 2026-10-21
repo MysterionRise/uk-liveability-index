@@ -113,3 +113,4 @@ This project's outputs are built from the datasets below. Reuse must keep these 
 - Radon Map of Ireland, Environmental Protection Agency, licensed under CC BY 4.0. (`epa_radon`)
 - ESB ecars public charging network data, ESB, licensed under CC BY 4.0. (`esb_ev_sites`)
 - Open Charge Map data © Open Charge Map contributors, licensed under CC BY 4.0; imported locations carry their provider's own licence and only openly licensed ones are used. (`open_charge_map_gb`, `open_charge_map_ie`)
+- European Environment Agency, European air quality data interpolated at 1 km (2023), licensed under CC BY 4.0. (`eea_aq_no2`, `eea_aq_pm25`, `eea_aq_pm10`)

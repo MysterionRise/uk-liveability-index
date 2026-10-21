@@ -113,8 +113,8 @@ def _nta_stations() -> pl.DataFrame:
     df = (
         served.join(stops, on="stop_id", how="inner")
         .with_columns(pl.col("route_type").replace_strict(GTFS_MODES, default=None).alias("mode"))
-        .sort("mode")
-        .unique("stop_id", keep="first")  # a stop on both counts as rail
+        .sort((pl.col("mode") == "rail").cast(pl.Int8), descending=True)
+        .unique("stop_id", keep="first", maintain_order=True)  # a stop on both counts as rail
     )
     x, y = lonlat_to_bng(df["lon"], df["lat"])
     out = df.select(

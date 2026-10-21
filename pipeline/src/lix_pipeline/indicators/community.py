@@ -8,7 +8,11 @@ def census_share(ctx, table: str, numerator: list[str], denominator: str = "tota
     df = ctx.staged(table)
     return df.select(
         "lsoa21cd",
-        (pl.sum_horizontal(numerator) / pl.col(denominator) * 100).alias("value"),
+        # The parts and the total can come from different tables or roundings: a share is
+        # never over 100
+        (pl.sum_horizontal(numerator) / pl.col(denominator) * 100)
+        .clip(upper_bound=100)
+        .alias("value"),
     )
 
 

@@ -1,6 +1,6 @@
 {
   "name": "lix-web",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "type": "module",
   "engines": {
@@ -33,6 +33,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-markdown": "^10.1.0",
+    "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "zod": "4.6.5"
   },

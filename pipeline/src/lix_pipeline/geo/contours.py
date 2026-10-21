@@ -27,7 +27,9 @@ def band_at_points(polygons, band_column: str, x: np.ndarray, y: np.ndarray) -> 
         # Many small polygons (a radon atlas of grid squares): index them and query the
         # points, which is where a tree with a predicate is quick
         tree = shapely.STRtree(geoms)
-        point_idx, poly_idx = tree.query(shapely.points(x, y), predicate="within")
+        # "intersects", not "within": a home on a grid line between two squares (NSPL
+        # rounds to the metre) belongs to both and takes the higher band
+        point_idx, poly_idx = tree.query(shapely.points(x, y), predicate="intersects")
         if point_idx.size:
             np.fmax.at(out, point_idx, bands[poly_idx])
         return out
@@ -39,7 +41,7 @@ def band_at_points(polygons, band_column: str, x: np.ndarray, y: np.ndarray) -> 
         if inside_box.size == 0:
             continue
         shapely.prepare(geom)
-        hit = inside_box[shapely.contains_xy(geom, x[inside_box], y[inside_box])]
+        hit = inside_box[shapely.intersects_xy(geom, x[inside_box], y[inside_box])]
         if hit.size:
             out[hit] = np.fmax(out[hit], band)
     return out

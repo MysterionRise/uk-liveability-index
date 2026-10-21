@@ -1,6 +1,6 @@
 [project]
 name = "lix-core"
-version = "0.6.0"
+version = "0.6.1"
 description = "UK Liveability Index: shared paths, config, contracts and scoring"
 requires-python = ">=3.11"
 dependencies = [

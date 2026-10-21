@@ -3,6 +3,7 @@ import path from "node:path";
 
 import type { ReactNode } from "react";
 import Markdown from "react-markdown";
+import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 
 import { DocHeader } from "@/components/DocHeader";
@@ -49,6 +50,8 @@ export function DocPage({ current, sources, intro }: {
           <article key={i} className="doc">
             <Markdown
               remarkPlugins={[remarkGfm]}
+              // GitHub-style heading ids, so a doc's own "#…" links work in the app too
+              rehypePlugins={[rehypeSlug]}
               components={{
                 a: ({ href, children }) => {
                   const to = resolve(href, s.base);

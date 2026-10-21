@@ -166,9 +166,10 @@ def fetch_featureserver(
         # An older ArcGIS Server (Historic Environment Scotland's INSPIRE services) has no
         # result offset: read ranges of object ids instead
         ids = sorted(
-            _json(session, f"{layer_url}/query", {"where": "1=1", "returnIdsOnly": "true"})[
+            _json(session, f"{layer_url}/query", {"where": "1=1", "returnIdsOnly": "true"}).get(
                 "objectIds"
-            ]
+            )
+            or []  # a server answers null, not [], for an empty layer
         )
         chunks = [ids[i : i + page_size] for i in range(0, len(ids), page_size)]
         logger.info(f"Fetching {expected:,} records in {len(chunks)} id ranges from {layer_url}")
