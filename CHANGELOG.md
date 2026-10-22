@@ -4,6 +4,18 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.6.2] - 2026-10-22
+
+### Fixed
+
+- The assistant refused a conversation after about four questions, with "Request body
+  over 16,384 bytes" where its answer should have been: the request-size cap that 0.6.1
+  put on the REST routes (#171) also covered the assistant's own endpoint, whose body
+  carries every message and tool result of the conversation so far. The cap now applies
+  to `/api/v1/*` alone, and `/agent` and `/mcp` take 8 MB (#195). Found while recording
+  the 0.6.1 walkthrough; the demo clips are recorded on this build. Reads the same data
+  release as 0.6.1.
+
 ## [0.6.1] - 2026-10-21
 
 The close-out of the v0.6.0 release's QA pass (47 findings, #142–#188): the data pack is
@@ -583,6 +595,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.6.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.2
 [0.6.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.1
 [0.6.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.0
 [0.5.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.5.1
