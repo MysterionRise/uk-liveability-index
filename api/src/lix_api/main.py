@@ -60,9 +60,12 @@ async def lifespan(app: FastAPI):
 
 
 # The longest reference a request may carry (a postcode, a code, "Place, Scope") and the
-# largest body: anything bigger is a mistake or an attack, and search time grows with it
+# largest body a REST call may send: anything bigger is a mistake or an attack, and search
+# time grows with it. The assistant's own endpoint carries the whole conversation each
+# turn (every answer and tool result so far), so it has room for a long one
 MAX_REF = 200
 MAX_BODY_BYTES = 16_384
+MAX_AGENT_BODY_BYTES = 8 * 1024 * 1024
 
 app = FastAPI(
     title="UK Liveability Index API",
@@ -85,12 +88,12 @@ app.add_middleware(
 
 @app.middleware("http")
 async def limit_body(request: Request, call_next):
-    """A request body larger than any legitimate one is refused before it is read."""
+    """A request body larger than any legitimate one is refused before it is read: a REST
+    call carries a few hundred bytes, the assistant's a conversation."""
     length = request.headers.get("content-length")
-    if length and length.isdigit() and int(length) > MAX_BODY_BYTES:
-        return JSONResponse(
-            {"detail": f"Request body over {MAX_BODY_BYTES:,} bytes"}, status_code=413
-        )
+    limit = MAX_BODY_BYTES if request.url.path.startswith("/api/v1/") else MAX_AGENT_BODY_BYTES
+    if length and length.isdigit() and int(length) > limit:
+        return JSONResponse({"detail": f"Request body over {limit:,} bytes"}, status_code=413)
     return await call_next(request)
 
 

@@ -538,6 +538,15 @@ def test_references_and_bodies_are_bounded(client):
     body = json.dumps({"within": "Leeds", "pad": "x" * 20_000})
     huge = client.post("/api/v1/rank", content=body, headers={"content-type": "application/json"})
     assert huge.status_code == 413
+    # The assistant's endpoint carries the whole conversation: a long one is not a 413
+    # (the v0.6.1 walkthrough was refused after four questions)
+    long_chat = {
+        "threadId": "t", "runId": "r", "state": {}, "tools": [], "context": [],
+        "forwardedProps": {},
+        "messages": [{"id": str(i), "role": "user", "content": "x" * 2000} for i in range(12)],
+    }  # fmt: skip
+    r = client.post("/agent", json=long_chat)
+    assert r.status_code != 413
     # Twenty scopes cost no more than three: the rest are ignored
     r = client.get("/api/v1/search", params={"q": "Headingley" + ", Leeds" * 20})
     assert r.status_code == 200 and r.json()[0]["name"] == "Headingley"
