@@ -307,6 +307,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         **census,
         "police_crime": stage_police,
         **pcm,  # needs staged nspl
+        "osm_pois": stage_osm,  # before its readers (ods_gp, chargers, dentists, pharmacies …)
         "ods_gp": health.stage_ods_gp,
         "gp_registrations": health.stage_gp_registrations,
         "gp_workforce": health.stage_gp_workforce,
@@ -329,7 +330,6 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "fsa_fhrs": stage_fsa,
         "overture_pubs": stage_overture_pubs,
         "active_places": stage_active_places,
-        "osm_pois": stage_osm,
         "stats19": safety.stage_stats19,
         "ods_dentists": health.stage_ods_dentists,
         "nhsbsa_pharmacies": health.stage_nhsbsa_pharmacies,

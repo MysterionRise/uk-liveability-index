@@ -49,6 +49,19 @@ def test_every_declared_read_is_a_stager(all_stagers):
     assert not unknown
 
 
+def test_stagers_run_after_the_tables_they_read(all_stagers):
+    """stagers() is the run order, so a reader must come after each table it reads:
+    the planner's one-pass cascade and the rehash walk the same order (#202)."""
+    order = list(all_stagers)
+    early = [
+        f"{slug} (position {order.index(slug)}) reads {table} (position {order.index(table)})"
+        for slug in order
+        for table in STAGE_READS.get(slug, [])
+        if order.index(table) > order.index(slug)
+    ]
+    assert not early, "\n".join(early)
+
+
 def test_raw_inputs_close_over_staged_reads(registry):
     # flood reads the staged UPRN table, whose stager reads the raw boundaries
     inputs = g.raw_inputs("flood", registry)
