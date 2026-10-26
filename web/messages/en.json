@@ -103,7 +103,9 @@
       "postcode": "Postcode",
       "place": "Place",
       "region": "Region",
-      "nation": "Nation"
+      "nation": "Nation",
+      "postcode_district": "Postcode district",
+      "postcode_sector": "Postcode sector"
     },
     "types": {
       "city": "City",

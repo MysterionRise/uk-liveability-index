@@ -286,7 +286,8 @@ export type Code2 = string | null;
  * Disambiguation, e.g. the local authority
  */
 export type Detail1 = string | null;
-export type Kind1 = "postcode" | "place" | "lsoa" | "msoa" | "lad" | "region" | "nation";
+export type Kind1 =
+  "postcode" | "postcode_district" | "postcode_sector" | "place" | "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type Lsoa21Cd2 = string | null;
 /**
  * The form that matched (Welsh or Gaelic when the query was)

@@ -11,7 +11,7 @@ import { useCoverageIn } from "@/lib/copy";
 import { nationOf, useLevelWords } from "@/lib/levels";
 
 // Kinds with a word of their own; an area tier takes its nation's word (lib/levels)
-const KINDS = ["postcode", "place", "region", "nation"] as const;
+const KINDS = ["postcode", "postcode_district", "postcode_sector", "place", "region", "nation"] as const;
 const TIERS = ["lsoa", "msoa", "lad"];
 // The gazetteer's settlement types → the words the catalogue has for them
 const TYPE_KEYS: Record<string, "city" | "town" | "village" | "hamlet" | "suburb" | "other"> = {

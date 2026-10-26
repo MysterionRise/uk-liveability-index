@@ -103,7 +103,9 @@
       "postcode": "Cod post",
       "place": "Lle",
       "region": "Rhanbarth",
-      "nation": "Cenedl"
+      "nation": "Cenedl",
+      "postcode_district": "Ardal cod post",
+      "postcode_sector": "Sector cod post"
     },
     "types": {
       "city": "Dinas",

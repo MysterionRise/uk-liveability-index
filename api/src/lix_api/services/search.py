@@ -11,6 +11,10 @@ from lix_api.services.text import fold
 from lix_api.store import Store, to_bng
 
 POSTCODE = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$")
+# A district ("LS6", "EC1A") is the outward code; a sector ("LS6 3") adds the inward
+# code's digit. Both are read from the postcode table, so only districts that exist match
+POSTCODE_DISTRICT = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?$")
+POSTCODE_SECTOR = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?\d$")
 # Any ONS GSS code (nation letter + entity type + 6 digits), or one minted for Ireland in
 # the same shape; whether it names an LSOA or an area in this build is decided by looking
 # it up
@@ -43,6 +47,66 @@ def _bbox(row: dict) -> tuple[float, float, float, float] | None:
     if row.get("bbox_w") is None:
         return None
     return (row["bbox_w"], row["bbox_s"], row["bbox_e"], row["bbox_n"])
+
+
+def postcode_groups(postcodes: pl.DataFrame) -> dict[str, dict[str, dict]]:
+    """``{"district": {"LS6": {...}}, "sector": {"LS63": {...}}}`` from the postcode table:
+    each group's postcode count, mean point, bounding box and the area of the postcode
+    nearest its mean point (so a district resolves to a real neighbourhood inside it)."""
+    length = pl.col("postcode_norm").str.len_chars()
+    pc = postcodes.with_columns(
+        pl.col("postcode_norm").str.slice(0, length - 3).alias("district"),
+        pl.col("postcode_norm").str.slice(0, length - 2).alias("sector"),
+    )
+    out: dict[str, dict[str, dict]] = {}
+    for kind in ("district", "sector"):
+        # The postcode nearest the group's mean point names the area the group stands in
+        off = (pl.col("lat") - pl.col("lat").mean().over(kind)) ** 2 + (
+            pl.col("lon") - pl.col("lon").mean().over(kind)
+        ) ** 2
+        groups = (
+            pc.with_columns(off.alias("_off"))
+            .group_by(kind)
+            .agg(
+                pl.len().alias("count"),
+                pl.col("lat").mean().alias("lat"),
+                pl.col("lon").mean().alias("lon"),
+                pl.col("lon").min().alias("bbox_w"),
+                pl.col("lat").min().alias("bbox_s"),
+                pl.col("lon").max().alias("bbox_e"),
+                pl.col("lat").max().alias("bbox_n"),
+                pl.col("lsoa21cd").sort_by("_off").first().alias("lsoa21cd"),
+            )
+        )
+        out[kind] = {row[kind]: row for row in groups.iter_rows(named=True)}
+    return out
+
+
+def _group_place(kind: str, code: str, shown: str, row: dict) -> Place:
+    return Place(
+        kind=f"postcode_{kind}", name=shown, code=code, lsoa21cd=row["lsoa21cd"],
+        detail=f"{row['count']:,} postcodes",
+        centre=Point(lat=row["lat"], lon=row["lon"]),
+        bbox=(row["bbox_w"], row["bbox_s"], row["bbox_e"], row["bbox_n"]),
+    )  # fmt: skip
+
+
+def lookup_postcode_group(store: Store, text: str) -> Place | None:
+    """A postcode district ("LS6") or sector ("LS6 3", "ls63") as the pack's postcodes
+    know it; a sector is tried first when the text is written with its space."""
+    norm = normalise_postcode(text)
+    spaced = " " in text.strip()
+    tries = ("sector", "district") if spaced else ("district", "sector")
+    for kind in tries:
+        pattern = POSTCODE_SECTOR if kind == "sector" else POSTCODE_DISTRICT
+        if not pattern.match(norm):
+            continue
+        row = store.postcode_groups[kind].get(norm)
+        if row is None:
+            continue
+        shown = f"{norm[:-1]} {norm[-1]}" if kind == "sector" else norm
+        return _group_place(kind, norm, shown, row)
+    return None
 
 
 def lookup_postcode(store: Store, text: str) -> Place | None:
@@ -158,7 +222,13 @@ def _candidates(
     folded = fold(query)
 
     def too_short(matched: str) -> bool:
-        return len(matched) < MIN_FUZZY_LETTERS and fold(matched) != folded
+        """A short name matches only the query that is it, or nearly: WRatio finds "Cath"
+        and "Lairg" inside "Cathair Phort Láirge", so names under six letters must also
+        score as a whole against the whole query (#193)."""
+        name = fold(matched)
+        if len(matched) < MIN_FUZZY_LETTERS and name != folded:
+            return True
+        return len(matched) < 6 and name != folded and fuzz.ratio(folded, name) < MIN_SIMILARITY
 
     n_places = store.places.height
     for _, score, idx in process.extract(
@@ -296,6 +366,7 @@ def search_place(
         raise ValueError(f"A place reference is at most {MAX_QUERY} characters")
     for exact in (
         lookup_postcode(store, query),
+        lookup_postcode_group(store, query),
         lookup_code(store, query),
         lookup_nation(store, query, locale),
         lookup_area_name(store, query, locale),
@@ -312,12 +383,22 @@ def search_place(
     return _candidates(store, query, locale=locale)[:limit]
 
 
+def _reject_wide(place: Place) -> None:
+    """A nation or a region is no neighbourhood and no point: say so."""
+    if place.kind in ("nation", "region"):
+        raise LookupError(
+            f"{place.name} is a {place.kind}, not an area: name a place, a postcode or a "
+            "council, or rank within it"
+        )
+
+
 def resolve_point(store: Store, ref: str) -> tuple[Point, str]:
     """A location for "near X": postcode, code or place name → (point, label)."""
     places = search_place(store, ref, limit=1)
     if not places or places[0].centre is None:
         raise LookupError(f"Couldn't find a place called {ref!r}")
     place = places[0]
+    _reject_wide(place)
     return place.centre, place.name if not place.detail else f"{place.name} ({place.detail})"
 
 
@@ -332,12 +413,7 @@ def resolve_lsoa(store: Store, ref: str) -> str:
     if not places:
         raise LookupError(f"Couldn't find an area for {ref!r}")
     top = places[0]
-    if top.kind in ("nation", "region"):
-        # The middle of a nation is not a neighbourhood: a profile needs a place
-        raise LookupError(
-            f"{top.name} is a {top.kind}, not an area: name a place, a postcode or a "
-            "council, or rank within it"
-        )
+    _reject_wide(top)  # the middle of a nation is not a neighbourhood
     if top.lsoa21cd:
         return top.lsoa21cd
     namesake = next(

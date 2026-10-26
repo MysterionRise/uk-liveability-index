@@ -17,7 +17,17 @@ IndicatorWeightMap = dict[str, Weight]
 Multiplier = Annotated[float, Field(ge=0.25, le=3, allow_inf_nan=False)]
 ProfileEngine = Literal["model", "rules"]
 EngineReason = Literal["free_model", "no_key", "budget", "model_error"]
-PlaceKind = Literal["postcode", "place", "lsoa", "msoa", "lad", "region", "nation"]
+PlaceKind = Literal[
+    "postcode",
+    "postcode_district",
+    "postcode_sector",
+    "place",
+    "lsoa",
+    "msoa",
+    "lad",
+    "region",
+    "nation",
+]
 
 
 class Point(BaseModel):

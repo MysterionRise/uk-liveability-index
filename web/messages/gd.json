@@ -103,7 +103,9 @@
       "postcode": "Còd-puist",
       "place": "Àite",
       "region": "Roinn",
-      "nation": "Nàisean"
+      "nation": "Nàisean",
+      "postcode_district": "Sgìre còd-puist",
+      "postcode_sector": "Roinn còd-puist"
     },
     "types": {
       "city": "Baile-mòr",

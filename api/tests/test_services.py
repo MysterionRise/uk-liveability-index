@@ -659,3 +659,46 @@ class TestRepeatedAreaNames:
         assert search._area_place(rows[2], store=store).detail == "Carlow"
         # The council scope still reads through the suffix
         assert search._council_of(search._area_place(rows[0], store=store)) == "waterford"
+
+
+class TestSearchRemainder:
+    """#193: postcode districts and sectors, short names inside long queries, a nation as
+    a point, the same area twice in a comparison."""
+
+    def test_a_district_or_sector_resolves_to_a_neighbourhood_inside_it(self, store):
+        (district,) = search.search_place(store, "ls6")
+        assert (district.kind, district.name, district.lsoa21cd) == (
+            "postcode_district",
+            "LS6",
+            "E01000001",
+        )
+        assert district.detail == "1 postcodes" and district.bbox is not None
+        (sector,) = search.search_place(store, "LS6 3")
+        assert (sector.kind, sector.name, sector.code) == ("postcode_sector", "LS6 3", "LS63")
+        assert search.search_place(store, "ZZ9") == []  # no such district in the pack
+        assert search.resolve_lsoa(store, "LS7") == "E01000003"
+
+    def test_a_short_name_does_not_match_inside_a_long_query(self, store):
+        # "Leeds" (five letters) scores against anything that contains it; a whole phrase
+        # is not Leeds
+        assert "Leeds" not in [
+            p.name for p in search.search_place(store, "Cathair Phort Láirge Leeds")
+        ]
+        assert search.search_place(store, "leeds")[0].name == "Leeds"
+        assert search.search_place(store, "Leds")[0].name == "Leeds"  # a typo still finds it
+
+    def test_a_nation_is_no_point(self, store):
+        with pytest.raises(LookupError, match="not an area"):
+            search.resolve_point(store, "England")
+        with pytest.raises(LookupError, match="not an area"):
+            pois.nearest_pois(store, "pub", "Ireland")
+
+    def test_compare_dedupes_its_inputs(self, store):
+        c = compare.compare_areas(store, ["LS6 3HN", "ls6 3hn", "Brighton and Hove", " LS6 3HN "])
+        assert len(c.areas) == 2
+        # The same area by another reference (its code) is one area too
+        assert len(compare.compare_areas(store, ["LS6 3HN", "E01000001", "BN2 9QA"]).areas) == 2
+        with pytest.raises(ValueError, match="different"):
+            compare.compare_areas(store, ["LS6 3HN", "ls6 3hn"])
+        with pytest.raises(ValueError, match="different"):
+            compare.compare_areas(store, ["LS6 3HN", "E01000001"])

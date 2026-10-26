@@ -103,7 +103,9 @@
       "postcode": "Postchód",
       "place": "Áit",
       "region": "Réigiún",
-      "nation": "Náisiún"
+      "nation": "Náisiún",
+      "postcode_district": "Ceantar postchóid",
+      "postcode_sector": "Earnáil postchóid"
     },
     "types": {
       "city": "Cathair",

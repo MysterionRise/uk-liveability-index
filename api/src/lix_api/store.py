@@ -218,6 +218,16 @@ class Store:
         return out
 
     @cached_property
+    def postcode_groups(self) -> dict[str, dict[str, dict]]:
+        """Postcode districts ("LS6") and sectors ("LS6 3") derived from the postcode
+        table: each with its postcode count, the mean point, the bounding box and the
+        area its mean point's nearest postcode sits in (#193). Ireland has no open
+        postcodes, so the groups are the UK's."""
+        from lix_api.services.search import postcode_groups
+
+        return postcode_groups(self.postcodes)
+
+    @cached_property
     def council_names(self) -> dict[str, dict[str, str]]:
         """Each council's English name → its Welsh, Gaelic and Irish forms where the areas
         table has them, for search results' detail lines."""
