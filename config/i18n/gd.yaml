@@ -129,7 +129,7 @@ indicators:
   connectivity_public_transport: {label: Ceangalachd còmhdhail phoblaich, description: "Sgòr ceangalachd DfT airson còmhdhail phoblaich gu gach ceann-uidhe."}
   connectivity_walking: {label: Coiseachdachd, description: "Sgòr ceangalachd DfT airson coiseachd gu gach ceann-uidhe."}
   connectivity_cycling: {label: Ceangalachd baidhsagail, description: "Sgòr ceangalachd DfT airson baidhsagal gu gach ceann-uidhe."}
-  access_deprivation: {label: Ruigsinneachd sheirbheisean (SIMD, NIMDM), description: "Raon ruigsinneachd cruinn-eòlasach Clàr-amais Ioma-bhochdainn na h-Alba 2020 (ùineachan dràibhidh agus còmhdhail phoblaich gu dotairean-teaghlaich, sgoiltean, bùthan, oifisean-puist agus stèiseanan peatrail), air an toirt gu sònaichean dàta 2022."}
+  access_deprivation: {label: "Ruigsinneachd sheirbheisean (SIMD, NIMDM)", description: "Raon ruigsinneachd cruinn-eòlasach Clàr-amais Ioma-bhochdainn na h-Alba 2020 (ùineachan dràibhidh agus còmhdhail phoblaich gu dotairean-teaghlaich, sgoiltean, bùthan, oifisean-puist agus stèiseanan peatrail), air an toirt gu sònaichean dàta 2022."}
   station_distance: {label: Astar chun an stèisein as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun an stad rèile, metro no trama as fhaisge."}
   rail_service: {label: Seirbheis rèile faisg air làimh, description: "Inntrigidhean agus fàgail stèisein bliadhnail (ORR) taobh a-staigh 2km de dhachaighean, air an cuideamachadh a rèir astair agus a' sàsachadh, gus am bi stèisean trang faisg air làimh a' cunntadh barrachd na stad beag."}
   bus_frequency: {label: Tricead bhusaichean, description: "Busaichean san uair (làithean-seachdain, 07:00–19:00) aig an stad as trainge taobh a-staigh 400m de dhachaighean."}
