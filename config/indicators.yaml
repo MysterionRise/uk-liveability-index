@@ -853,6 +853,60 @@ indicators:
     bad: 10000
     log1p: true
 
+  - id: everyday_services
+    theme: amenities
+    label: Everyday services within 15 minutes
+    description: Share of seven everyday service types (a GP practice, a pharmacy, a supermarket, a primary school, a post office, a park or playground, and frequent public transport) that the typical home has within 1.2 km, about a 15-minute walk in a straight line.
+    unit: "%"
+    direction: higher_better
+    coverage: [E, W, S, N, I]
+    sources: [ods_gp, phs_gp_practices, bso_gp_list_sizes, nhsbsa_pharmacies, phs_pharmacies, bso_dispensing, osm_england, osm_wales, osm_scotland, osm_ireland, gias, wg_schools, sg_school_roll, de_schools_primary, de_schools_post_primary, de_schools_special, nspl, os_greenspace, bods_gtfs, bods_gtfs_wales, naptan, nta_gtfs, translink_rail_txc, nspl, te_buildings]
+    builder: amenities:service_mix
+    params:
+      radius_m: 1200
+      services:
+        - {name: GP practice, slug: ods_gp}
+        - {name: pharmacy, slug: pharmacies}
+        - {name: supermarket, slug: osm_pois, key: shop, values: [supermarket]}
+        - {name: primary school, slug: schools, column: phase, values: [Primary, Middle deemed primary, All-through]}
+        - {name: post office, slug: osm_pois, key: amenity, values: [post_office]}
+        - name: park or playground
+          any:
+            - {slug: os_greenspace, column: function, values: [Public Park Or Garden, Playing Field]}
+            - {slug: osm_pois, key: leisure, values: [park, playground]}
+        - name: frequent public transport
+          any:
+            - {slug: bods_gtfs, column: per_hour, min: 2}
+            - {slug: naptan, column: mode, values: [rail, metro_tram]}
+    role: context
+    caveats: Straight-line reach, not walking time, so a river or a railway between home and shop is not seen (a walking network is planned). Frequent transport means a stop with at least two weekday daytime departures an hour or a railway, metro or tram station. Ireland stages no school list, so its homes are measured over the other six types.
+
+  - id: library_distance
+    theme: amenities
+    label: Distance to a library
+    description: Mean straight-line distance from homes to the nearest public library (OpenStreetMap).
+    unit: metres
+    direction: lower_better
+    coverage: [E, W, S, N, I]
+    sources: [osm_england, osm_wales, osm_scotland, osm_ireland, nspl, te_buildings]
+    builder: amenities:osm_nearest
+    params: {values: [library], beyond_cap: 20000}
+    role: context
+    caveats: Libraries as OpenStreetMap maps them; a council's list may be fuller.
+
+  - id: post_office_distance
+    theme: amenities
+    label: Distance to a post office
+    description: Mean straight-line distance from homes to the nearest post office (OpenStreetMap).
+    unit: metres
+    direction: lower_better
+    coverage: [E, W, S, N, I]
+    sources: [osm_england, osm_wales, osm_scotland, osm_ireland, nspl, te_buildings]
+    builder: amenities:osm_nearest
+    params: {values: [post_office], beyond_cap: 20000}
+    role: context
+    caveats: Post offices as OpenStreetMap maps them, counters inside shops included where mapped.
+
   - id: shops
     theme: amenities
     label: Shops nearby

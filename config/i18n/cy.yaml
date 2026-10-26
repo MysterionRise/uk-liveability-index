@@ -116,6 +116,9 @@ indicators:
   well_run_pubs: {label: Tafarndai da gerllaw, description: "Tafarndai o fewn 15 munud o gerdded sydd â sgôr hylendid bwyd o 4 neu 5 o'r tair blynedd diwethaf, wedi'u pwysoli yn ôl pellter, gyda bonws bach am gwrw go iawn, bwyd neu seddi awyr agored."}
   food_and_drink: {label: Caffis a bwytai, description: "Caffis a bwytai o fewn 800m, wedi'u pwysoli yn ôl pellter."}
   supermarket_distance: {label: Pellter i'r archfarchnad agosaf, description: Pellter cyfartalog mewn llinell syth o gartrefi i'r archfarchnad agosaf.}
+  everyday_services: {label: Gwasanaethau bob dydd o fewn 15 munud, description: "Cyfran y saith math o wasanaeth bob dydd (practis meddyg teulu, fferyllfa, archfarchnad, ysgol gynradd, swyddfa bost, parc neu faes chwarae, a thrafnidiaeth gyhoeddus aml) sydd gan y cartref nodweddiadol o fewn 1.2 km, tua 15 munud o gerdded mewn llinell syth."}
+  library_distance: {label: Pellter i lyfrgell, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r llyfrgell gyhoeddus agosaf (OpenStreetMap)."}
+  post_office_distance: {label: Pellter i swyddfa bost, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r swyddfa bost agosaf (OpenStreetMap)."}
   shops: {label: Siopau gerllaw, description: "Siopau o bob math o fewn 800m, wedi'u pwysoli yn ôl pellter."}
   leisure: {label: Cyfleusterau chwaraeon a ffitrwydd, description: "Canolfannau chwaraeon, campfeydd a phyllau nofio sy'n agored i'r cyhoedd o fewn 2km, wedi'u pwysoli yn ôl pellter (OpenStreetMap)."}
   swimming_pool_distance: {label: Pellter i'r pwll cyhoeddus agosaf, description: Pellter cyfartalog mewn llinell syth o gartrefi i'r pwll nofio agosaf sy'n agored i'r cyhoedd.}

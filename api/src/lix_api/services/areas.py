@@ -73,7 +73,8 @@ def with_substitutes(store: Store, row: dict, values: list[IndicatorValue]) -> l
 
 KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_exposure",
              "flood_risk", "tree_canopy", "sunshine", "gp_distance", "station_distance",
-             "gigabit_broadband", "well_run_pubs", "households_with_children"]  # fmt: skip
+             "everyday_services", "gigabit_broadband", "well_run_pubs",
+             "households_with_children"]  # fmt: skip
 
 # The flags an area can carry, worded in agent.messages (four languages)
 FLAG_CODES = ("imputed", "low_n", "broadcast_lad", "not_available", "theme_gap")

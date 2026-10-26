@@ -139,6 +139,9 @@ indicators:
   well_run_pubs: {label: Tithe tábhairne dea-reáchtáilte in aice láimhe, description: "Tithe tábhairne laistigh de shiúlóid 15 nóiméad a bhfuil rátáil sláinteachais bia 4 nó 5 acu ó na trí bliana seo caite, ualaithe de réir faid."}
   food_and_drink: {label: Caiféanna agus bialanna, description: "Caiféanna agus bialanna laistigh de 800m, ualaithe de réir faid."}
   supermarket_distance: {label: Fad chuig an ollmhargadh is gaire, description: "Meánfhad díreach ó thithe chuig an ollmhargadh is gaire."}
+  everyday_services: {label: Seirbhísí laethúla laistigh de 15 nóiméad, description: "Sciar de na seacht gcineál seirbhíse laethúla (cleachtas dochtúra teaghlaigh, cógaslann, ollmhargadh, bunscoil, oifig an phoist, páirc nó clós súgartha, agus iompar poiblí minic) atá ag an ngnáth-theach laistigh de 1.2 km, timpeall 15 nóiméad siúil i líne dhíreach."}
+  library_distance: {label: Fad go leabharlann, description: "Meánfhad i líne dhíreach ó thithe go dtí an leabharlann phoiblí is gaire (OpenStreetMap)."}
+  post_office_distance: {label: Fad go hoifig an phoist, description: "Meánfhad i líne dhíreach ó thithe go dtí oifig an phoist is gaire (OpenStreetMap)."}
   shops: {label: Siopaí in aice láimhe, description: "Siopaí de gach cineál laistigh de 800m, ualaithe de réir faid."}
   leisure: {label: Áiseanna spóirt agus aclaíochta, description: "Ionaid spóirt, giomanna agus linnte snámha atá ar oscailt don phobal laistigh de 2km, ualaithe de réir faid (OpenStreetMap)."}
   leisure_facilities: {label: Áiseanna spóirt (Active Places), description: "Hallaí spóirt, giomanna, linnte, stiúideonna, cúirteanna agus páirceanna atá ar oscailt don phobal laistigh de 2km i gclár Active Places Sport England, ualaithe de réir faid."}

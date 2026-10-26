@@ -2,6 +2,10 @@
 
 import polars as pl
 
+from lix_core.log import setup_logging
+
+logger = setup_logging("indicators.amenities")
+
 
 def _pois(
     ctx, values: list[str] | None, key: str | None, exclude: dict[str, list[str]] | None = None
@@ -46,3 +50,72 @@ def osm_nearest(
     if beyond_cap is not None:
         out = out.with_columns(pl.col("value").fill_null(beyond_cap))
     return out
+
+
+# A service type counts as staged for a nation when some home there has one this close
+STAGED_WITHIN_M = 50_000.0
+
+
+def _service_points(ctx, service: dict) -> pl.DataFrame:
+    """The points of one everyday service type: a union of ``any`` entries, OpenStreetMap
+    by key and values, or a staged table filtered by ``column`` to ``values`` or to at
+    least ``min``."""
+    if "any" in service:
+        frames = [_service_points(ctx, part).select("x", "y") for part in service["any"]]
+        return pl.concat(frames)
+    if service["slug"] == "osm_pois":
+        return _pois(ctx, service.get("values"), service.get("key")).select("x", "y")
+    pts = ctx.staged(service["slug"])
+    column = service.get("column")
+    if column and "values" in service:
+        pts = pts.filter(pl.col(column).is_in(service["values"]))
+    if column and "min" in service:
+        pts = pts.filter(pl.col(column) >= service["min"])
+    return pts.select("x", "y")
+
+
+def service_mix(ctx, radius_m: float, services: list[dict]) -> pl.DataFrame:
+    """The share of everyday service types the typical home has within ``radius_m``
+    (0–100): over the types, the share of the area's homes with any of that type in
+    reach, summed, over the number of types the nation has data for (Ireland stages no
+    schools, so its homes are measured over the other types). A type is "staged" for a
+    nation when some home there has one within 50 km; a type nobody has
+    in reach still counts against the homes, and the log names the types left out (#75)."""
+    from lix_core.codes import nation_of
+
+    shares = []
+    for i, service in enumerate(services):
+        access = ctx.access(
+            _service_points(ctx, service), radius_m=radius_m, max_nearest_m=STAGED_WITHIN_M
+        )
+        shares.append(
+            access.select(
+                "lsoa21cd",
+                pl.col("share_with_any").alias(f"s{i}"),
+                # A home with nothing within the cap reads the cap itself
+                (pl.col("nearest_m") < STAGED_WITHIN_M).alias(f"near{i}"),
+            )
+        )
+    wide = shares[0]
+    for frame in shares[1:]:
+        wide = wide.join(frame, on="lsoa21cd", how="full", coalesce=True)
+    columns = [f"s{i}" for i in range(len(services))]
+    wide = wide.with_columns(nation_of("lsoa21cd").alias("nation"))
+    # A type with no point within the search cap of any home in the nation is not
+    # measured there
+    staged = wide.group_by("nation").agg(
+        *[pl.col(f"near{i}").fill_null(False).any().alias(c) for i, c in enumerate(columns)]
+    )
+    for row in staged.iter_rows(named=True):
+        missing = [services[int(c[1:])].get("name", c) for c in columns if not row[c]]
+        if missing:
+            logger.info(f"{row['nation']}: no points for {missing}, measured over the rest")
+    counted = staged.select(
+        "nation", pl.sum_horizontal([pl.col(c).cast(pl.Int32) for c in columns]).alias("n_types")
+    )
+    return wide.join(counted, on="nation", how="left").select(
+        "lsoa21cd",
+        (
+            pl.sum_horizontal([pl.col(c).fill_null(0) for c in columns]) / pl.col("n_types") * 100
+        ).alias("value"),
+    )
