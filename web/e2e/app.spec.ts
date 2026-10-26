@@ -521,3 +521,72 @@ test("the map credits the Irish boundaries", async ({ page }) => {
   // The attribution control is built from the manifest's boundary sources (#186)
   await expect(page.locator(".maplibregl-ctrl-attrib")).toContainText("Tailte Éireann", { timeout: 15_000 });
 });
+
+// ---------------------------------------------------------------- v0.6.3
+
+test("the Welsh interface shows no English in a profile, the search list or the build date", async ({ page }) => {
+  await mapReady(page);
+  await page.getByTestId("locale-toggle").selectOption("cy");
+  await expect(page.locator("html")).toHaveAttribute("lang", "cy-GB");
+  // Search results word the settlement type and the council in Welsh (#187)
+  const input = page.getByTestId("search").locator("input");
+  await input.fill("Cardiff");
+  const options = page.getByRole("option");
+  await expect(options.first()).toBeVisible({ timeout: 15_000 });
+  await expect(options.first()).not.toContainText(/\b(City|Town|Village)\b/);
+  await input.fill("");
+  // The card's subtitle carries the urban/rural class from the Welsh catalogue
+  await openFromSearch(page, "LS6 3AA");
+  const card = page.getByTestId("area-profile");
+  await expect(card).toBeVisible({ timeout: 30_000 });
+  await expect(card).not.toContainText(/\bUrban: |\bRural: /);
+  await expect(card).toContainText(/Trefol|Gwledig/);
+  // Dates print from the catalogue's month names, whatever the browser knows
+  await page.goto("/about");
+  await expect(page.getByTestId("build-info")).toContainText(/\d/);
+  await expect(page.getByTestId("build-info")).not.toContainText(
+    /January|February|March|April|May|June|July|August|September|October|November|December/,
+  );
+  await page.getByTestId("locale-toggle").selectOption("en");
+});
+
+test("the About page loads without the scores file", async ({ page }) => {
+  const parquet: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().includes("scores.parquet")) parquet.push(r.url());
+  });
+  await page.goto("/about");
+  await expect(page.getByTestId("build-info")).toContainText(/data built/, { timeout: 30_000 });
+  expect(parquet, "the docs pages must not download the pack (#188)").toEqual([]);
+});
+
+test("printing hides the map chrome and keeps the cards", async ({ page }) => {
+  await mapReady(page);
+  await page.emulateMedia({ media: "print" });
+  await expect(page.getByTestId("search")).toBeHidden();
+  await expect(page.getByTestId("legend-body")).toBeVisible();
+  await page.emulateMedia({ media: "screen" });
+});
+
+test("a postcode district opens a neighbourhood inside it", async ({ page }) => {
+  await mapReady(page);
+  const input = page.getByTestId("search").locator("input");
+  await input.fill("LS6");
+  const option = page.getByRole("option").first();
+  await expect(option).toBeVisible({ timeout: 15_000 });
+  await expect(option).toContainText(en.Search.kinds.postcode_district);
+  await option.click();
+  await expect(page.getByTestId("area-profile")).toBeVisible({ timeout: 30_000 });
+});
+
+test.describe("on a phone, the legend", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("starts folded and opens on a tap", async ({ page }) => {
+    await mapReady(page);
+    await expect(page.getByTestId("legend-body")).toBeHidden();
+    await page.getByTestId("legend-toggle").click();
+    await expect(page.getByTestId("legend-body")).toBeVisible();
+    await expect(page.getByTestId("legend-toggle")).toHaveAttribute("aria-expanded", "true");
+  });
+});
