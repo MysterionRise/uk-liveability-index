@@ -8,7 +8,7 @@ import gd from "../messages/gd.json";
 // Placeholders sit in narrow boxes (the header search is about 170 px, the chat input
 // about 240 px in the side panel); a longer translation would wrap or be cut off
 const LIMITS: [string, (m: typeof en) => string, number][] = [
-  ["SidePanel.chatPlaceholder", (m) => m.SidePanel.chatPlaceholder, 30],
+  ["SidePanel.chatPlaceholder", (m) => m.SidePanel.chatPlaceholder, 26],
   ["Search.placeholder", (m) => m.Search.placeholder, 20],
 ];
 

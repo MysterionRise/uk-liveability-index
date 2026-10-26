@@ -8,6 +8,7 @@
  */
 import { UseAgentUpdate, useAgent } from "@copilotkit/react-core/v2";
 import { useLocale, useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { searchPlaces } from "@/lib/api";
@@ -44,13 +45,22 @@ interface DataContext {
 
 const Ctx = createContext<DataContext>({ manifest: null, scores: null, error: null });
 
+// Pages of text need the manifest (the build date, the sources) but not the scores
+// file, the largest download of the site (#188)
+const DOCS_ROUTES = /^\/(about|methodology)(\/|$)/;
+
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const [value, setValue] = useState<DataContext>({ manifest: null, scores: null, error: null });
+  const pathname = usePathname();
+  const docsOnly = DOCS_ROUTES.test(pathname ?? "");
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const manifest = await loadManifest();
+        if (cancelled) return;
+        setValue((v) => ({ ...v, manifest, error: null }));
+        if (docsOnly) return;
         const scores = await loadScores(manifest);
         if (!cancelled) setValue({ manifest, scores, error: null });
       } catch (e) {
@@ -60,7 +70,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [docsOnly]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

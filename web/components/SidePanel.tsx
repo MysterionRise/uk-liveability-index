@@ -54,7 +54,10 @@ export function SidePanel() {
   ];
 
   return (
-    <aside className="flex h-full min-h-0 flex-col border-l border-[var(--border)] bg-[var(--surface-1)]">
+    <aside
+      className="flex h-full min-h-0 flex-col border-l border-[var(--border)] bg-[var(--surface-1)]"
+      data-testid="side-panel"
+    >
       <div className="flex shrink-0 flex-wrap items-center gap-1 border-b border-[var(--border)] px-2">
         <div
           className="flex flex-wrap items-center gap-1"

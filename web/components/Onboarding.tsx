@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { useData, useLiveability } from "@/components/AppData";
 import { usePanel } from "@/components/PanelContext";
@@ -55,6 +55,13 @@ export function Onboarding() {
   const coverageIn = useCoverageIn();
   const labels = useLabels();
   const welcomed = useWelcomed();
+  // Escape closes the dialog, as a dialog should (#188)
+  useEffect(() => {
+    if (welcomed) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && dismiss();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [welcomed]);
   if (welcomed) return null;
   const presets = PERSONAS.filter((p) => !manifest || manifest.presets[p]);
 
