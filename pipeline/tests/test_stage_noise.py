@@ -123,3 +123,23 @@ class TestNoiseAtHomes:
         homes = pl.DataFrame({"lsoa21cd": ["S01"], "east1m": [5.0], "north1m": [20.0]})
         out = noise_at_homes(homes, {"all": [every]}).row(0, named=True)
         assert out["share_all_60"] == 1.0 and out["share_road_rail_60"] is None
+
+
+class TestContourBands:
+    def test_daera_gridcodes_give_the_band_floor_down_to_the_night_maps_lowest(self, tmp_path):
+        """DAERA's gridcode is the top of a 5 dB band; the night maps add 49 (45–49.9 dB),
+        which stopped the November 2026 refresh when it was unknown."""
+        import geopandas as gpd
+        from shapely.geometry import box
+
+        from lix_pipeline.stage.noise import contour_db_at_points
+
+        polys = gpd.GeoDataFrame(
+            {"gridcode": [49, 54, 1000]},
+            geometry=[box(0, 0, 10, 10), box(20, 0, 30, 10), box(40, 0, 50, 10)],
+            crs="EPSG:27700",
+        )
+        path = tmp_path / "R3_con_lngt.gpkg"
+        polys.to_file(path, driver="GPKG")
+        got = contour_db_at_points([path], np.array([5.0, 25.0, 45.0, 65.0]), np.array([5.0] * 4))
+        assert got[:3].tolist() == [45.0, 50.0, 75.0] and np.isnan(got[3])

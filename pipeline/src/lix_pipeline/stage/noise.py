@@ -99,9 +99,10 @@ CONTOUR_FILES: dict[str, dict[str, dict[str, list[str]]]] = {
         for metric, suffix in (("lden", ""), ("lnight", "_lnight"))
     },  # fmt: skip
 }
-# DAERA's gridcode is the top of a 5 dB band (54 = 50–54.9 dB … 74 = 70–74.9; 1000 = 75+):
-# a home takes the band's floor, as the rasters' cells hold the modelled level
-CONTOUR_BANDS = {54: 50.0, 59: 55.0, 64: 60.0, 69: 65.0, 74: 70.0, 1000: 75.0}
+# DAERA's gridcode is the top of a 5 dB band (54 = 50–54.9 dB … 74 = 70–74.9; 1000 = 75+;
+# the night maps start a band lower, 49 = 45–49.9): a home takes the band's floor, as
+# the rasters' cells hold the modelled level
+CONTOUR_BANDS = {49: 45.0, 54: 50.0, 59: 55.0, 64: 60.0, 69: 65.0, 74: 70.0, 1000: 75.0}
 # The EPA writes the band as text ("55-59dB", ">=75dB"): the floor is its first number
 BAND_TEXT = re.compile(r"(\d+)")
 
