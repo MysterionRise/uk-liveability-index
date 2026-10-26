@@ -190,3 +190,39 @@ levels:
     low: {one: ardal fach, other: ardaloedd bach}
     mid: {one: rhaniad etholiadol, other: rhaniadau etholiadol}
     upper: {one: cyngor, other: cynghorau}
+
+# The urban/rural class of each nation's classification, by its code (the pack's
+# ruc21cd): the card's subtitle and the hover (#187)
+urban_rural:
+  E:
+    "RLF1": "Gwledig mwy: ymhellach o dref neu ddinas fawr"
+    "RLN1": "Gwledig mwy: yn nes at dref neu ddinas fawr"
+    "RSF1": "Gwledig llai: ymhellach o dref neu ddinas fawr"
+    "RSN1": "Gwledig llai: yn nes at dref neu ddinas fawr"
+    "UF1": "Trefol: ymhellach o dref neu ddinas fawr"
+    "UN1": "Trefol: yn nes at dref neu ddinas fawr"
+  W:
+    "RLF1": "Gwledig mwy: ymhellach o dref neu ddinas fawr"
+    "RLN1": "Gwledig mwy: yn nes at dref neu ddinas fawr"
+    "RSF1": "Gwledig llai: ymhellach o dref neu ddinas fawr"
+    "RSN1": "Gwledig llai: yn nes at dref neu ddinas fawr"
+    "UF1": "Trefol: ymhellach o dref neu ddinas fawr"
+    "UN1": "Trefol: yn nes at dref neu ddinas fawr"
+  S:
+    "1": "Ardaloedd trefol mawr"
+    "2": "Ardaloedd trefol eraill"
+    "3": "Trefi bach hygyrch"
+    "4": "Trefi bach anghysbell"
+    "5": "Gwledig hygyrch"
+    "6": "Gwledig anghysbell"
+  N:
+    "Urban": "Trefol"
+    "Rural": "Gwledig"
+    "Mixed": "Cymysg"
+  I:
+    "1": "Dinasoedd"
+    "2": "Trefi trefol lloeren"
+    "3": "Trefi trefol annibynnol"
+    "4": "Ardaloedd gwledig â dylanwad trefol uchel"
+    "5": "Ardaloedd gwledig â dylanwad trefol cymedrol"
+    "6": "Ardaloedd gwledig iawn neu anghysbell"

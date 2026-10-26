@@ -190,3 +190,39 @@ indicators:
   radon_potential: {label: Dachaighean ann an sgìre radon àrd, description: "An cuid de dhachaighean ann an ceàrnagan griod far a bheil dùil gum bi còrr is 10% de dhachaighean os cionn ìre gnìomha radon (atlas comharrachaidh BGS is UKHSA; mapa radon an EPA ann an Èirinn)."}
   ev_charging: {label: Puingean cosgais poblach faisg air làimh, description: "Làraichean cosgais charbadan dealain poblach taobh a-staigh 1.5km de dhachaighean, sa chumantas (OpenStreetMap, ESB air eilean na h-Èireann, Open Charge Map)."}
   listed_buildings: {label: Togalaichean clàraichte faisg air làimh, description: "Togalaichean clàraichte taobh a-staigh 1km de dhachaighean, gach km² (Historic England, Cadw, Àrainneachd Eachdraidheil Alba agus Roinn nan Coimhearsnachdan; ann an Èirinn, an Clàr Nàiseanta de Dhualchas Ailtireachd aig ìre roinneil no nas àirde)."}
+
+# The urban/rural class of each nation's classification, by its code (the pack's
+# ruc21cd): the card's subtitle and the hover (#187)
+urban_rural:
+  E:
+    "RLF1": "Dùthchail nas motha: nas fhaide bho bhaile mòr"
+    "RLN1": "Dùthchail nas motha: nas fhaisge air baile mòr"
+    "RSF1": "Dùthchail nas lugha: nas fhaide bho bhaile mòr"
+    "RSN1": "Dùthchail nas lugha: nas fhaisge air baile mòr"
+    "UF1": "Bailteil: nas fhaide bho bhaile mòr"
+    "UN1": "Bailteil: nas fhaisge air baile mòr"
+  W:
+    "RLF1": "Dùthchail nas motha: nas fhaide bho bhaile mòr"
+    "RLN1": "Dùthchail nas motha: nas fhaisge air baile mòr"
+    "RSF1": "Dùthchail nas lugha: nas fhaide bho bhaile mòr"
+    "RSN1": "Dùthchail nas lugha: nas fhaisge air baile mòr"
+    "UF1": "Bailteil: nas fhaide bho bhaile mòr"
+    "UN1": "Bailteil: nas fhaisge air baile mòr"
+  S:
+    "1": "Sgìrean bailteil mòra"
+    "2": "Sgìrean bailteil eile"
+    "3": "Bailtean beaga so-ruigsinn"
+    "4": "Bailtean beaga iomallach"
+    "5": "Dùthchail so-ruigsinn"
+    "6": "Dùthchail iomallach"
+  N:
+    "Urban": "Bailteil"
+    "Rural": "Dùthchail"
+    "Mixed": "Measgaichte"
+  I:
+    "1": "Cathraichean"
+    "2": "Bailtean saideil"
+    "3": "Bailtean neo-eisimeileach"
+    "4": "Sgìrean dùthchail le buaidh bhailteil àrd"
+    "5": "Sgìrean dùthchail le buaidh bhailteil mheadhanach"
+    "6": "Sgìrean fìor dhùthchail no iomallach"

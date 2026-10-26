@@ -114,6 +114,7 @@ places:
       - {indicator: summer_warmth, op: le, value: 15, anchor: true}  # cool Shetland summers
       - {indicator: station_distance, op: ge, value: 40000, anchor: true}  # capped at 50km
       - {indicator: hospital_ae_distance, op: le, value: 5000, anchor: true}  # the Gilbert Bain
+      - {indicator: coast_distance, op: le, value: 2, anchor: true}  # the harbour town (km)
       - {theme: environment, op: ge, value: 50}
 
   - name: St Andrews
@@ -133,6 +134,9 @@ places:
       - {theme: amenities, op: ge, value: 80, anchor: true}
       - {theme: community, op: ge, value: 60, anchor: true}
       - {theme: housing, op: le, value: 45}
+      - {indicator: income_deprivation, op: ge, value: 0.02, anchor: true}  # a rate, not a percentile (#104)
+      - {indicator: income_deprivation, op: le, value: 0.25, anchor: true}
+      - {indicator: everyday_services, op: ge, value: 80, anchor: true}  # inner-city: everything in reach
 
   - name: Rhyl
     local_authority: Denbighshire
@@ -262,6 +266,7 @@ places:
     checks:
       - {theme: community, op: ge, value: 55}
       - {overall: true, op: ge, value: 50}
+      - {indicator: coast_distance, op: ge, value: 90, anchor: true}  # the Midlands (km)
 
   - name: Cambridge
     local_authority: Cambridge
@@ -339,8 +344,17 @@ places:
     why: Fenland town on the tidal Nene
     checks:
       - {indicator: flood_risk, op: ge, value: 10}
+      - {indicator: everyday_services, op: le, value: 85}  # a market town's spread-out edges
+      - {indicator: night_noise, op: le, value: 15, anchor: true}  # no major road or railway through it
 
   # ------------------------------------------------------------------ other types
+  - name: Cranford
+    local_authority: Hounslow
+    why: "Under Heathrow's northern runway approach and beside the M4: aircraft by day, aircraft and road at night"
+    checks:
+      - {indicator: aircraft_noise, op: ge, value: 50, anchor: true}  # inside the 55 dB Lden contour
+      - {indicator: night_noise, op: ge, value: 30, anchor: true}  # the night-time map (#86)
+
   - name: Milton Keynes
     local_authority: Milton Keynes
     why: "New town: almost no homes from before 1919; grid roads kept away from homes"

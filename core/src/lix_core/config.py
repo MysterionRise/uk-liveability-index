@@ -758,7 +758,7 @@ def boundary_slugs(level: str = "low", nations: tuple[str, ...] | None = None) -
 # Data-label catalogues (config/i18n/<locale>.yaml)
 # ---------------------------------------------------------------------------------------
 
-CATALOGUE_SECTIONS = ("themes", "presets", "units", "flags", "indicators", "levels")
+CATALOGUE_SECTIONS = ("themes", "presets", "units", "flags", "indicators", "levels", "urban_rural")
 
 
 def load_label_catalogues() -> dict[str, dict]:
@@ -792,6 +792,11 @@ def catalogue_gaps(
             entry = ((labels.get("levels") or {}).get(code) or {}).get(level) or {}
             if not (entry.get("one") and entry.get("other")):
                 gaps.append(f"levels.{code}.{level}")
+        # The urban/rural classes of the nation's classification, by code (#187)
+        classes = (labels.get("urban_rural") or {}).get(code) or {}
+        for ruc_code in nation.ruc_map or {}:
+            if not classes.get(str(ruc_code)):
+                gaps.append(f"urban_rural.{code}.{ruc_code}")
     for theme in catalogue.themes:
         if theme not in (labels.get("themes") or {}):
             gaps.append(f"themes.{theme}")

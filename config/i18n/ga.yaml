@@ -190,3 +190,39 @@ indicators:
   radon_potential: {label: Tithe i limistéar ard radóin, description: "Sciar na dtithe i gcearnóga greille ina meastar go mbeidh breis is 10% de thithe os cionn leibhéal gnímh an radóin (atlas táscach BGS agus UKHSA; léarscáil radóin an EPA in Éirinn)."}
   ev_charging: {label: Pointí luchtaithe poiblí in aice láimhe, description: "Láithreáin luchtaithe feithiclí leictreacha poiblí laistigh de 1.5km de thithe, ar an meán (OpenStreetMap, ESB ar oileán na hÉireann, Open Charge Map)."}
   listed_buildings: {label: Foirgnimh liostaithe in aice láimhe, description: "Foirgnimh liostaithe laistigh de 1km de thithe, in aghaidh an km² (Historic England, Cadw, Historic Environment Scotland agus an Roinn Pobal; in Éirinn, an Fardal Náisiúnta d'Oidhreacht Ailtireachta ag rátáil réigiúnach nó níos airde)."}
+
+# The urban/rural class of each nation's classification, by its code (the pack's
+# ruc21cd): the card's subtitle and the hover (#187)
+urban_rural:
+  E:
+    "RLF1": "Tuaithe níos mó: níos faide ó bhaile mór nó cathair"
+    "RLN1": "Tuaithe níos mó: níos gaire do bhaile mór nó cathair"
+    "RSF1": "Tuaithe níos lú: níos faide ó bhaile mór nó cathair"
+    "RSN1": "Tuaithe níos lú: níos gaire do bhaile mór nó cathair"
+    "UF1": "Uirbeach: níos faide ó bhaile mór nó cathair"
+    "UN1": "Uirbeach: níos gaire do bhaile mór nó cathair"
+  W:
+    "RLF1": "Tuaithe níos mó: níos faide ó bhaile mór nó cathair"
+    "RLN1": "Tuaithe níos mó: níos gaire do bhaile mór nó cathair"
+    "RSF1": "Tuaithe níos lú: níos faide ó bhaile mór nó cathair"
+    "RSN1": "Tuaithe níos lú: níos gaire do bhaile mór nó cathair"
+    "UF1": "Uirbeach: níos faide ó bhaile mór nó cathair"
+    "UN1": "Uirbeach: níos gaire do bhaile mór nó cathair"
+  S:
+    "1": "Ceantair uirbeacha mhóra"
+    "2": "Ceantair uirbeacha eile"
+    "3": "Bailte beaga inrochtana"
+    "4": "Bailte beaga iargúlta"
+    "5": "Tuaithe inrochtana"
+    "6": "Tuaithe iargúlta"
+  N:
+    "Urban": "Uirbeach"
+    "Rural": "Tuaithe"
+    "Mixed": "Measctha"
+  I:
+    "1": "Cathracha"
+    "2": "Bailte uirbeacha satailíte"
+    "3": "Bailte uirbeacha neamhspleácha"
+    "4": "Ceantair thuaithe le tionchar uirbeach ard"
+    "5": "Ceantair thuaithe le tionchar uirbeach measartha"
+    "6": "Ceantair an-tuaithe nó iargúlta"
