@@ -242,7 +242,12 @@ def _refresh(args: argparse.Namespace) -> int:
     from lix_pipeline.refresh.run import RefreshFailed, refresh
 
     try:
-        refresh(dry_run=args.dry_run, force=args.force, skip_fetch=args.skip_fetch)
+        refresh(
+            dry_run=args.dry_run,
+            force=args.force,
+            skip_fetch=args.skip_fetch,
+            keep_going=args.keep_going,
+        )
     except RefreshFailed as e:
         logger.error(str(e))
         return 1
@@ -383,6 +388,12 @@ def main(argv: list[str] | None = None) -> None:
     refresh.add_argument("--force", action="store_true", help="Rebuild every stage")
     refresh.add_argument(
         "--skip-fetch", action="store_true", help="Neither resolve nor fetch; rebuild from data/raw"
+    )
+    refresh.add_argument(
+        "--keep-going",
+        action="store_true",
+        help="Build from the locked editions of sources that fail to resolve or fetch "
+        "(a publisher's maintenance window)",
     )
     refresh.set_defaults(func=_refresh)
 

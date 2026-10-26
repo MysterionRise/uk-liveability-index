@@ -216,8 +216,11 @@ one, `lix stage --slug <table> --with-dependents` re-stages the table and its re
 run order, or `lix refresh --force` rebuilds everything. After a change to the fingerprint
 scheme itself, `lix stage --rehash` rewrites the sidecars without re-staging. A source
 that fails to resolve or fetch stops the run before anything is rebuilt: a publisher that
-moved or reshaped a file is a registry fix, not something to build around. The run's
-plan, timings and changed sources go to `data/logs/refresh-*.json`.
+moved or reshaped a file is a registry fix, not something to build around. A publisher's
+maintenance window is the other case: `lix refresh --keep-going` (`make refresh
+REFRESH_FLAGS=--keep-going`) builds from the editions the lock names for the sources it
+could not reach and lists them at the end. The run's plan, timings and changed sources
+go to `data/logs/refresh-*.json`.
 
 After a refresh: read `data/serve/qa.md` (the correlation report, the stale list and the
 anchor review), fix any anchor the data has genuinely moved past, add a `period:` to the

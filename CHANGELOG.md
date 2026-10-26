@@ -29,6 +29,10 @@ already had, and the November refresh: the data pack is rebuilt as **data-2026-1
 - `lix stage --slug X --with-dependents` re-stages a table and every table that reads
   it, in run order; `lix stage --rehash` brings existing sidecars under a new fingerprint
   scheme without re-staging (#190).
+- `lix refresh --keep-going` builds around a publisher's maintenance window: a source
+  that cannot be resolved or fetched keeps the edition the lock names and the run lists
+  it at the end; a source whose resolve failed is no longer fetched from its old entry
+  (#204, UK-AIR on the night of the November refresh).
 
 ### Changed
 
