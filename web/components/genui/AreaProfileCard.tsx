@@ -116,8 +116,8 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
       title={title}
       subtitle={`${english ? `${english} · ` : ""}${
         profile.neighbourhood
-          ? t("subtitle", { area: profile.lsoa_name, ruc: profile.urban_rural, population: profile.population })
-          : t("subtitleOwnTier", { ruc: profile.urban_rural, population: profile.population })
+          ? t("subtitle", { area: profile.lsoa_name, ruc: profile.urban_rural_label ?? profile.urban_rural, population: profile.population })
+          : t("subtitleOwnTier", { ruc: profile.urban_rural_label ?? profile.urban_rural, population: profile.population })
       }`}
     >
       <div className="flex flex-wrap items-baseline gap-2">
