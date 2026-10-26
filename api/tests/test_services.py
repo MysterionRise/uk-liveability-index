@@ -1,5 +1,6 @@
 """Tests for the API services on the synthetic store."""
 
+import polars as pl
 import pytest
 
 from lix_api.services import areas, compare, explain, pois, ranking, search
@@ -624,3 +625,34 @@ class TestQaCloseOut:
         assert {i.theme for i in list_indicators(store, "Schools", detail=False)} == {"education"}
         with pytest.raises(LookupError):
             list_indicators(store, "vibes", detail=False)
+
+
+class TestRepeatedAreaNames:
+    def test_a_name_repeated_within_a_council_shows_its_code(self):
+        """Waterford has two Kilmeadan divisions (#194): the council alone cannot tell
+        them apart, so their results carry the code; a name repeated across councils
+        does not need it."""
+        from types import SimpleNamespace
+
+        kilmeadan, newtown = ["Kilmeadan"] * 2, ["Newtown"] * 2
+        areas = pl.DataFrame(
+            {
+                "level": ["msoa"] * 4 + ["lsoa"] * 2,
+                "name": kilmeadan + newtown + ["Kilmeadan 001"] * 2,
+                "lad_nm": ["Waterford", "Waterford", "Carlow", "Wexford", "Waterford", "Waterford"],
+                "code": ["I02000001", "I02000002", "I02000003", "I02000004"] + ["I01000001", "I01000002"],
+                "bbox_w": [-7.2] * 6, "bbox_s": [52.2] * 6, "bbox_e": [-7.1] * 6, "bbox_n": [52.3] * 6,
+            }
+        )  # fmt: skip
+        repeated = search.repeated_area_names(areas)
+        assert repeated == {
+            ("msoa", "kilmeadan", "Waterford"),
+            ("lsoa", "kilmeadan 001", "Waterford"),
+        }
+        store = SimpleNamespace(repeated_areas=repeated)
+        rows = [areas.row(i, named=True) for i in range(4)]
+        assert search._area_place(rows[0], store=store).detail == "Waterford (I02000001)"
+        assert search._area_place(rows[1], store=store).detail == "Waterford (I02000002)"
+        assert search._area_place(rows[2], store=store).detail == "Carlow"
+        # The council scope still reads through the suffix
+        assert search._council_of(search._area_place(rows[0], store=store)) == "waterford"

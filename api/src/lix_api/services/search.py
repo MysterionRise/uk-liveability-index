@@ -91,10 +91,35 @@ def lookup_nation(store: Store, text: str) -> Place | None:
     return _area_place(row, shown)
 
 
-def _area_place(row: dict, name: str | None = None) -> Place:
+def repeated_area_names(areas: pl.DataFrame) -> set[tuple[str, str, str]]:
+    """(level, folded name, council) of every area whose name another area of the same
+    level and council also carries: Ireland has 38 division names repeated within one
+    council ("Kilmeadan" twice in Waterford), so the council alone cannot tell them
+    apart in a result list (#194)."""
+    if "lad_nm" not in areas.columns:
+        return set()
+    dup = (
+        areas.filter(pl.col("level").is_in(["lsoa", "msoa"]))
+        .group_by("level", "name", "lad_nm")
+        .len()
+        .filter(pl.col("len") > 1)
+    )
+    return {
+        (level, fold(name), lad)
+        for level, name, lad in dup.select("level", "name", "lad_nm").iter_rows()
+    }
+
+
+def _area_place(row: dict, name: str | None = None, store: Store | None = None) -> Place:
     bbox = _bbox(row)
     centre = Point(lat=(bbox[1] + bbox[3]) / 2, lon=(bbox[0] + bbox[2]) / 2) if bbox else None
     detail = row["lad_nm"] if row["level"] == "msoa" else None
+    if (
+        store is not None
+        and (row["level"], fold(row["name"]), row.get("lad_nm")) in store.repeated_areas
+    ):
+        # A name shared within the council: the code tells the areas apart
+        detail = f"{row['lad_nm']} ({row['code']})"
     shown = name or row["name"]
     return Place(kind=row["level"], name=shown, code=row["code"], detail=detail,
                  centre=centre, bbox=bbox,
@@ -117,7 +142,7 @@ def lookup_area_name(store: Store, text: str) -> Place | None:
     if not rows:
         return None
     row = max(rows, key=lambda r: KIND_PRIORITY.get(r["level"], 0))
-    return _area_place(row)
+    return _area_place(row, store=store)
 
 
 def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
@@ -159,7 +184,9 @@ def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
         matched = row[store.area_name_columns[idx // n_areas]]
         if too_short(matched):
             continue
-        candidates.append((score + KIND_PRIORITY.get(row["level"], 0), _area_place(row, matched)))
+        candidates.append(
+            (score + KIND_PRIORITY.get(row["level"], 0), _area_place(row, matched, store))
+        )
 
     candidates.sort(key=lambda c: c[0], reverse=True)
     seen, out = set(), []
@@ -183,7 +210,7 @@ def _council_of(place: Place) -> str | None:
     if place.kind == "lad":
         return fold(place.name_en or place.name)
     if place.kind == "msoa" and place.detail:
-        return fold(place.detail)
+        return fold(place.detail.split(" (")[0])
     if place.kind == "place" and place.detail and ", " in place.detail:
         return fold(place.detail.rsplit(", ", 1)[1])
     return None
