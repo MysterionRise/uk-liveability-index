@@ -150,8 +150,10 @@ ThemeScore = Annotated[float, Field(ge=0, le=100, allow_inf_nan=False)]
 
 
 @app.get(f"{api}/search")
-def search_place(q: Ref, limit: Annotated[int, Query(ge=1, le=20)] = 8) -> list[Place]:
-    return search.search_place(get_store(), q, limit=limit)
+def search_place(
+    q: Ref, limit: Annotated[int, Query(ge=1, le=20)] = 8, locale: str | None = None
+) -> list[Place]:
+    return search.search_place(get_store(), q, limit=limit, locale=locale)
 
 
 _WEIGHTS = {

@@ -3,7 +3,7 @@
 import polars as pl
 
 from lix_api.models import AreaProfile, IndicatorValue, Point, ThemeScore
-from lix_api.services.names import english_if_different, localised
+from lix_api.services.names import english_if_different, localised, ruc_label
 from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
@@ -207,6 +207,7 @@ def area_profile(
         nation=row["nation"],
         nation_name=nation_name_in(store, row["nation"], locale),
         urban_rural=row["ruc21nm"],
+        urban_rural_label=ruc_label(store, row, locale),
         population=row["population"],
         overall=_round(scores.get("overall")),
         overall_percentile=_pct(pct),

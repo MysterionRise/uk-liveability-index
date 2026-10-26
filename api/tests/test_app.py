@@ -560,3 +560,18 @@ def test_head_and_docs_through_the_api_prefix(client):
     assert client.get("/api/v1/openapi.json").status_code == 200
     assert client.get("/api/v1/docs").status_code == 200
     assert client.get("/openapi.json").status_code == 404
+
+
+def test_search_and_profile_speak_the_interface_language(client):
+    """#187: a result's council and a profile's urban/rural class come back in the
+    requested locale; the settlement type is a key the page words."""
+    places = client.get("/api/v1/search", params={"q": "Cardiff", "locale": "cy"}).json()
+    city = next(p for p in places if p["kind"] == "place")
+    assert (city["place_type"], city["detail"]) == ("City", "Caerdydd")
+    plain = client.get("/api/v1/search", params={"q": "Cardiff"}).json()
+    assert next(p for p in plain if p["kind"] == "place")["detail"] == "Cardiff"
+    welsh = client.get("/api/v1/areas/W01001880", params={"locale": "cy"}).json()
+    assert welsh["urban_rural"] == "Urban"
+    assert welsh["urban_rural_label"] == "Trefol: yn nes at dref neu ddinas fawr"
+    english = client.get("/api/v1/areas/W01001880").json()
+    assert english["urban_rural_label"] == "Urban"

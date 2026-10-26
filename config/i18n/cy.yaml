@@ -65,7 +65,7 @@ flags:
 
 indicators:
   recorded_crime: {label: Troseddau a gofnodwyd (SIMD), description: "Troseddau a gofnodwyd fesul 1,000 o drigolion y flwyddyn ym Mynegai Amddifadedd Lluosog yr Alban 2020, wedi'u trosglwyddo i barthau data 2022."}
-  access_deprivation: {label: Mynediad at wasanaethau (SIMD), description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol), wedi'i ddwyn i barthau data 2022."}
+  access_deprivation: {label: Mynediad at wasanaethau (SIMD, NIMDM), description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol), wedi'i ddwyn i barthau data 2022."}
   noise_exposure: {label: Cartrefi mewn sŵn trafnidiaeth neu ddiwydiant, description: "Cyfran y cartrefi lle mae'r sŵn a fapiwyd yn cyfartalu 60 dB Lden neu fwy (ffyrdd a rheilffyrdd yng Nghymru a Lloegr; pob ffynhonnell a fapiwyd yn yr Alban)."}
   aircraft_noise: {label: Cartrefi mewn sŵn awyrennau, description: "Cyfran y cartrefi lle mae sŵn awyrennau'n cyfartalu 55 dB Lden neu fwy, o amgylch yr un ar bymtheg o feysydd awyr a fapiwyd yn Lloegr, Maes Awyr Dinas Belfast, a Dulyn, Corc a Shannon."}
   industrial_noise: {label: Cartrefi mewn sŵn diwydiannol, description: "Cyfran y cartrefi lle mae sŵn diwydiannol yn cyfartalu 55 dB Lden neu fwy, o amgylch safleoedd mapiedig Cymru, ym mhum dinas fapiedig yr Alban."}

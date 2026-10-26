@@ -34,6 +34,10 @@ class Place(BaseModel):
         None, description="The English name when `name` is another language's"
     )
     detail: str | None = Field(None, description="Disambiguation, e.g. the local authority")
+    place_type: str | None = Field(
+        None,
+        description="A place's settlement type as the gazetteer words it (City, Town, Village…)",
+    )
     code: str | None = None
     lsoa21cd: str | None = None
     centre: Point | None = None
@@ -105,6 +109,9 @@ class AreaProfile(BaseModel):
     nation: str = Field(description="Nation code: E, W, S, N or I (Ireland)")
     nation_name: str
     urban_rural: str
+    urban_rural_label: str | None = Field(
+        None, description="The urban/rural class in the requested locale (English when none)"
+    )
     population: int
     overall: float | None
     overall_percentile: float | None

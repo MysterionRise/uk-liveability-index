@@ -20,7 +20,8 @@ class TestSearch:
     def test_city_beats_village_and_lad_first(self, store):
         results = search.search_place(store, "Leeds")
         assert results[0].kind == "lad"
-        assert [r.detail for r in results if r.kind == "place"][0] == "City, Leeds"
+        city = [r for r in results if r.kind == "place"][0]
+        assert (city.place_type, city.detail) == ("City", "Leeds")
 
     def test_typo_and_nonsense(self, store):
         assert search.search_place(store, "Headingly")[0].name == "Headingley"
@@ -32,7 +33,8 @@ class TestSearch:
         assert search.search_place(store, "ynys mon")[0].name == "Ynys Môn"
         # A query in the other language matches the alternative name and shows it
         caerdydd = search.search_place(store, "CAERDYDD")[0]
-        assert (caerdydd.name, caerdydd.lsoa21cd) == ("Caerdydd", "W01001880")
+        # The council's Welsh name matches whole, so the council comes first, as "leeds" does
+        assert (caerdydd.name, caerdydd.kind, caerdydd.name_en) == ("Caerdydd", "lad", "Cardiff")
 
     def test_a_place_qualified_by_a_county_or_region_is_found_in_every_council(self, store):
         """ "Ranelagh, Dublin" sits in Dublin City and "Dalkey, Dublin" in Dún
@@ -640,8 +642,9 @@ class TestRepeatedAreaNames:
                 "level": ["msoa"] * 4 + ["lsoa"] * 2,
                 "name": kilmeadan + newtown + ["Kilmeadan 001"] * 2,
                 "lad_nm": ["Waterford", "Waterford", "Carlow", "Wexford", "Waterford", "Waterford"],
-                "code": ["I02000001", "I02000002", "I02000003", "I02000004"] + ["I01000001", "I01000002"],
-                "bbox_w": [-7.2] * 6, "bbox_s": [52.2] * 6, "bbox_e": [-7.1] * 6, "bbox_n": [52.3] * 6,
+                "code": [f"I0200000{i}" for i in range(1, 5)] + ["I01000001", "I01000002"],
+                "bbox_w": [-7.2] * 6, "bbox_s": [52.2] * 6,
+                "bbox_e": [-7.1] * 6, "bbox_n": [52.3] * 6,
             }
         )  # fmt: skip
         repeated = search.repeated_area_names(areas)

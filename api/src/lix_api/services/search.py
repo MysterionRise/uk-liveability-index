@@ -6,6 +6,7 @@ import polars as pl
 from rapidfuzz import fuzz, process
 
 from lix_api.models import Place, Point
+from lix_api.services.names import council_name
 from lix_api.services.text import fold
 from lix_api.store import Store, to_bng
 
@@ -73,10 +74,10 @@ def lookup_code(store: Store, text: str) -> Place | None:
     if hit.is_empty():
         return None
     row = hit.row(0, named=True)
-    return _area_place(row)
+    return _area_place(row, store=store)
 
 
-def lookup_nation(store: Store, text: str) -> Place | None:
+def lookup_nation(store: Store, text: str, locale: str | None = None) -> Place | None:
     """A nation by its name in any language the pack knows ("Scotland", "Alba", "Yr
     Alban"): an exact match only, never a fuzzy one, so "Stirling, Scotland" is never
     read as Scotland."""
@@ -88,7 +89,7 @@ def lookup_nation(store: Store, text: str) -> Place | None:
         return None
     row = hit.row(0, named=True)
     shown = text.strip() if fold(text) != fold(row["name"]) else row["name"]
-    return _area_place(row, shown)
+    return _area_place(row, shown, store, locale)
 
 
 def repeated_area_names(areas: pl.DataFrame) -> set[tuple[str, str, str]]:
@@ -110,23 +111,26 @@ def repeated_area_names(areas: pl.DataFrame) -> set[tuple[str, str, str]]:
     }
 
 
-def _area_place(row: dict, name: str | None = None, store: Store | None = None) -> Place:
+def _area_place(
+    row: dict, name: str | None = None, store: Store | None = None, locale: str | None = None
+) -> Place:
     bbox = _bbox(row)
     centre = Point(lat=(bbox[1] + bbox[3]) / 2, lon=(bbox[0] + bbox[2]) / 2) if bbox else None
-    detail = row["lad_nm"] if row["level"] == "msoa" else None
+    council = council_name(store, row.get("lad_nm"), locale) if store else row.get("lad_nm")
+    detail = council if row["level"] == "msoa" else None
     if (
         store is not None
         and (row["level"], fold(row["name"]), row.get("lad_nm")) in store.repeated_areas
     ):
         # A name shared within the council: the code tells the areas apart
-        detail = f"{row['lad_nm']} ({row['code']})"
+        detail = f"{council} ({row['code']})"
     shown = name or row["name"]
     return Place(kind=row["level"], name=shown, code=row["code"], detail=detail,
                  centre=centre, bbox=bbox,
                  name_en=row["name"] if shown != row["name"] else None)  # fmt: skip
 
 
-def lookup_area_name(store: Store, text: str) -> Place | None:
+def lookup_area_name(store: Store, text: str, locale: str | None = None) -> Place | None:
     """An area whose name, as the pack spells it, is the whole query ("Bristol, City of",
     "Kingston upon Hull, City of"): an exact folded match, so the comma inside the name
     is never read as a scope. The highest level wins when several share a name."""
@@ -142,10 +146,12 @@ def lookup_area_name(store: Store, text: str) -> Place | None:
     if not rows:
         return None
     row = max(rows, key=lambda r: KIND_PRIORITY.get(r["level"], 0))
-    return _area_place(row, store=store)
+    return _area_place(row, store=store, locale=locale)
 
 
-def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
+def _candidates(
+    store: Store, query: str, limit: int = 40, locale: str | None = None
+) -> list[Place]:
     """Fuzzy matches for free text over places and areas (nations excepted), best first;
     one row per code, the best-scoring form of its name shown."""
     candidates: list[tuple[float, Place]] = []
@@ -167,7 +173,9 @@ def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
             continue
         place = Place(
             kind="place", name=matched, code=row["place_id"], lsoa21cd=row["lsoa21cd"],
-            detail=f"{row['place_type']}, {row['local_authority']}",
+            # The settlement type is a key the page words; the council in its language
+            place_type=row["place_type"],
+            detail=council_name(store, row["local_authority"], locale),
             centre=Point(lat=row["lat"], lon=row["lon"]),
             name_en=row["name"] if matched != row["name"] else None,
         )  # fmt: skip
@@ -185,7 +193,7 @@ def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
         if too_short(matched):
             continue
         candidates.append(
-            (score + KIND_PRIORITY.get(row["level"], 0), _area_place(row, matched, store))
+            (score + KIND_PRIORITY.get(row["level"], 0), _area_place(row, matched, store, locale))
         )
 
     candidates.sort(key=lambda c: c[0], reverse=True)
@@ -211,8 +219,8 @@ def _council_of(place: Place) -> str | None:
         return fold(place.name_en or place.name)
     if place.kind == "msoa" and place.detail:
         return fold(place.detail.split(" (")[0])
-    if place.kind == "place" and place.detail and ", " in place.detail:
-        return fold(place.detail.rsplit(", ", 1)[1])
+    if place.kind == "place" and place.detail:
+        return fold(place.detail)
     return None
 
 
@@ -272,7 +280,9 @@ def _council_names(store: Store, code: str) -> list[str]:
     return [row[c] for c in store.area_name_columns if row.get(c)]
 
 
-def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
+def search_place(
+    store: Store, query: str, limit: int = 8, locale: str | None = None
+) -> list[Place]:
     """Rank candidate places for free text, best first.
 
     A postcode, an area code or a nation's name is exact. "Place, Scope" (one or more
@@ -287,17 +297,19 @@ def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
     for exact in (
         lookup_postcode(store, query),
         lookup_code(store, query),
-        lookup_nation(store, query),
-        lookup_area_name(store, query),
+        lookup_nation(store, query, locale),
+        lookup_area_name(store, query, locale),
     ):
         if exact:
             return [exact]
     parts = [p.strip() for p in query.split(",") if p.strip()]
     if len(parts) >= 2:
-        scoped, recognised = _within_scopes(store, _candidates(store, parts[0]), parts[1:])
+        scoped, recognised = _within_scopes(
+            store, _candidates(store, parts[0], locale=locale), parts[1:]
+        )
         if scoped or recognised:
             return scoped[:limit]
-    return _candidates(store, query)[:limit]
+    return _candidates(store, query, locale=locale)[:limit]
 
 
 def resolve_point(store: Store, ref: str) -> tuple[Point, str]:

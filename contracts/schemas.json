@@ -256,6 +256,19 @@
           "title": "Urban Rural",
           "type": "string"
         },
+        "urban_rural_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The urban/rural class in the requested locale (English when none)",
+          "title": "Urban Rural Label"
+        },
         "weaknesses": {
           "items": {
             "$ref": "#/$defs/IndicatorValue"
@@ -1034,6 +1047,19 @@
           "default": null,
           "description": "The English name when `name` is another language's",
           "title": "Name En"
+        },
+        "place_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A place's settlement type as the gazetteer words it (City, Town, Village\u2026)",
+          "title": "Place Type"
         }
       },
       "required": [

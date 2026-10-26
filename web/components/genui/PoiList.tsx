@@ -6,14 +6,13 @@ import { useLiveability } from "@/components/AppData";
 import { Card, Muted, formatValue } from "@/components/ui";
 import type { PoiResult } from "@/lib/contracts.gen";
 
-const TITLED = ["well_run_pub", "pub", "gp", "primary_school", "secondary_school", "nursery", "supermarket"] as const;
-
 export function PoiList({ result }: { result: PoiResult }) {
   const { update } = useLiveability();
   const t = useTranslations("Poi");
   const locale = useLocale();
-  const title = (TITLED as readonly string[]).includes(result.category)
-    ? t(`titles.${result.category as (typeof TITLED)[number]}`)
+  // Every category the pack serves has a title in the catalogue; a new one reads as its id
+  const title = t.has(`titles.${result.category}`)
+    ? t(`titles.${result.category}` as never)
     : result.category.replaceAll("_", " ");
   const sources = [...new Set(result.pois.map((p) => `${p.source} (${p.licence})`))];
 

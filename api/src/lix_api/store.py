@@ -218,6 +218,17 @@ class Store:
         return out
 
     @cached_property
+    def council_names(self) -> dict[str, dict[str, str]]:
+        """Each council's English name → its Welsh, Gaelic and Irish forms where the areas
+        table has them, for search results' detail lines."""
+        lads = self.areas.filter(pl.col("level") == "lad")
+        forms = [c for c in ("name_cy", "name_gd", "name_ga") if c in lads.columns]
+        out: dict[str, dict[str, str]] = {}
+        for row in lads.select("name", *forms).iter_rows(named=True):
+            out[row["name"]] = {c[-2:]: row[c] for c in forms if row.get(c)}
+        return out
+
+    @cached_property
     def repeated_areas(self) -> set[tuple[str, str, str]]:
         """Areas whose name repeats within their council (search shows their code)."""
         from lix_api.services.search import repeated_area_names

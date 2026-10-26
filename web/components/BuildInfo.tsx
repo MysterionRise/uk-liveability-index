@@ -1,21 +1,21 @@
 "use client";
 
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { useData } from "@/components/AppData";
+import { useMonths } from "@/lib/dates";
 import { BCP47, type Locale } from "@/lib/i18n";
-import { formatDataTo } from "@/lib/period";
+import { formatDataTo, formatDay } from "@/lib/period";
 
 /** Which release and data build the page is showing (the About page). */
 export function BuildInfo({ version }: { version: string }) {
   const { manifest } = useData();
   const t = useTranslations("BuildInfo");
   const locale = useLocale();
-  const format = useFormatter();
-  const built = manifest
-    ? format.dateTime(new Date(manifest.generated_at), { day: "numeric", month: "long", year: "numeric" })
-    : null;
-  const dataTo = manifest?.data_to ? formatDataTo(manifest.data_to, BCP47[locale as Locale] ?? "en-GB") : null;
+  const months = useMonths();
+  const tag = BCP47[locale as Locale] ?? "en-GB";
+  const built = manifest ? formatDay(manifest.generated_at, tag, months) : null;
+  const dataTo = manifest?.data_to ? formatDataTo(manifest.data_to, tag, months) : null;
   return (
     <p className="mb-6 rounded-md border border-[var(--border)] bg-[var(--surface-1)] px-3 py-2 text-sm" data-testid="build-info">
       {t("version", { version })}

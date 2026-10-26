@@ -104,6 +104,14 @@
       "place": "Place",
       "region": "Region",
       "nation": "Nation"
+    },
+    "types": {
+      "city": "City",
+      "town": "Town",
+      "village": "Village",
+      "hamlet": "Hamlet",
+      "suburb": "Suburban area",
+      "other": "Settlement"
     }
   },
   "BuildInfo": {
@@ -254,13 +262,37 @@
   },
   "Poi": {
     "titles": {
-      "well_run_pub": "Well-run pubs",
-      "pub": "Pubs",
+      "arts_centre": "Arts centres",
+      "bakery": "Bakeries",
+      "bar": "Bars",
+      "butcher": "Butchers",
+      "cafe": "Cafés",
+      "cinema": "Cinemas",
+      "community_centre": "Community centres",
+      "convenience_store": "Convenience stores",
+      "dentist": "Dentists",
+      "ev_charging": "EV charging points",
+      "fast_food": "Takeaways",
       "gp": "GP practices",
-      "primary_school": "Primary schools",
-      "secondary_school": "Secondary schools",
+      "greengrocer": "Greengrocers",
+      "gym": "Gyms",
+      "library": "Libraries",
+      "market": "Markets",
+      "museum": "Museums and galleries",
       "nursery": "Nurseries",
-      "supermarket": "Supermarkets"
+      "other_school": "Other schools",
+      "park": "Parks",
+      "pharmacy": "Pharmacies",
+      "playground": "Playgrounds",
+      "post_office": "Post offices",
+      "primary_school": "Primary schools",
+      "pub": "Pubs",
+      "restaurant": "Restaurants",
+      "secondary_school": "Secondary schools",
+      "sports_centre": "Sports centres",
+      "supermarket": "Supermarkets",
+      "theatre": "Theatres",
+      "well_run_pub": "Well-run pubs"
     },
     "near": "{title} near {place}",
     "found": "{count, plural, one {# found} other {# found}}",
@@ -339,5 +371,21 @@
     "aria": "Correlation matrix of scored indicators",
     "legendHint": "Boxes group each theme",
     "pair": "{a} × {b}: ρ {rho}"
+  },
+  "Dates": {
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
   }
 }
