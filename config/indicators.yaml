@@ -355,11 +355,11 @@ indicators:
   - id: coast_distance
     theme: environment
     label: Distance to the coast
-    description: Distance from homes to the nearest coast, in kilometres (the high water mark in Great Britain, the seawater line of the national map in Ireland, the Northern Ireland outline).
+    description: Distance from homes to the nearest coast, in kilometres (the high water mark in Great Britain and Ireland, the Northern Ireland outline).
     unit: km
     direction: lower_better
     coverage: [E, W, S, N, I]
-    sources: [os_boundary_line, te_seawater_line, osni_ni_outline, te_admin_areas, nspl, te_buildings]
+    sources: [os_boundary_line, te_high_water_mark, osni_ni_outline, te_admin_areas, nspl, te_buildings]
     builder: common:nearest
     params: {slug: coastline, max_nearest_m: 200000, scale: 0.001}
     role: context

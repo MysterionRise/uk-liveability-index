@@ -54,7 +54,7 @@ may be scored. The build's QA report lists scored indicators that correlate abov
   are measured over six). A walking network is planned to replace the radius.
 - **Distance to the coast** (context) is the straight-line kilometres from each home to
   the nearest point of the mapped coastline (OS Boundary-Line's high water mark in Great
-  Britain, Tailte Éireann's seawater line in Ireland, the OSNI outline in Northern
+  Britain, Tailte Éireann's high water mark in Ireland, the OSNI outline in Northern
   Ireland with its land border dropped), densified to a vertex every 100 m.
 - **Saturation.** Access measures reach full marks at a typical suburb's level of
   provision rather than a city centre's (for example about six cafés and restaurants

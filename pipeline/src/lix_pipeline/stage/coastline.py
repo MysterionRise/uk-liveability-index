@@ -1,7 +1,7 @@
 """The coastline as points, for the distance from homes to the sea (#130).
 
-Great Britain's coast is OS Boundary-Line's high water mark, Ireland's the seawater line
-of Tailte Éireann's 1:1m map, Northern Ireland's the OSNI outline with its land border
+Great Britain's coast is OS Boundary-Line's high water mark, Ireland's Tailte Éireann's
+high water mark (National Water Marks), Northern Ireland's the OSNI outline with its land border
 dropped (an outline runs along the border with Ireland, which is no coast). Each line is
 densified to a vertex every 100 m, so the nearest vertex is within 50 m of the true
 distance, well inside the kilometre the indicator shows.
@@ -81,7 +81,9 @@ def stage_coastline() -> pl.LazyFrame:
         frames.append(coast_points(_gb_high_water(), "os_boundary_line"))
     if "I" in nations:
         frames.append(
-            coast_points(gpd.read_file(raw_file("te_seawater_line", "gpkg")), "te_seawater_line")
+            coast_points(
+                gpd.read_file(raw_file("te_high_water_mark", "gpkg")), "te_high_water_mark"
+            )
         )
     if "N" in nations:
         outline = coast_points(

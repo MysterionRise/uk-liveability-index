@@ -147,7 +147,7 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nspl",
     ],
     "tree_cover": ["esa_worldcover", "nspl"],
-    "coastline": ["os_boundary_line", "te_seawater_line", "osni_ni_outline", "te_admin_areas"],
+    "coastline": ["os_boundary_line", "te_high_water_mark", "osni_ni_outline", "te_admin_areas"],
     "os_open_uprn": ["os_open_uprn", *LOW_BOUNDARIES],
     "night_lights": ["viirs_vnl", "nspl"],
     "climate": ["haduk_grid", "nspl", "met_eireann_temp_9120", "met_eireann_rr_9120"],

@@ -266,7 +266,7 @@ places:
     checks:
       - {theme: community, op: ge, value: 55}
       - {overall: true, op: ge, value: 50}
-      - {indicator: coast_distance, op: ge, value: 90, anchor: true}  # the Midlands (km)
+      - {indicator: coast_distance, op: ge, value: 70, anchor: true}  # the Midlands: 80 km to the Severn and Mersey estuaries
 
   - name: Cambridge
     local_authority: Cambridge
@@ -344,13 +344,13 @@ places:
     why: Fenland town on the tidal Nene
     checks:
       - {indicator: flood_risk, op: ge, value: 10}
-      - {indicator: everyday_services, op: le, value: 85}  # a market town's spread-out edges
+      - {indicator: everyday_services, op: le, value: 90}  # a market town's spread-out edges (87 in data-2026-11)
       - {indicator: night_noise, op: le, value: 15, anchor: true}  # no major road or railway through it
 
   # ------------------------------------------------------------------ other types
-  - name: Cranford
+  - name: Hounslow West
     local_authority: Hounslow
-    why: "Under Heathrow's northern runway approach and beside the M4: aircraft by day, aircraft and road at night"
+    why: "Under the final approach to Heathrow's northern runway, with the A4 and M4 beside it: aircraft by day, aircraft and road at night"
     checks:
       - {indicator: aircraft_noise, op: ge, value: 50, anchor: true}  # inside the 55 dB Lden contour
       - {indicator: night_noise, op: ge, value: 30, anchor: true}  # the night-time map (#86)

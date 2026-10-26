@@ -22,7 +22,7 @@ already had, and the November refresh: the data pack is rebuilt as **data-2026-1
   1.2 km in a straight line, over the types the nation stages; with the distances to the
   nearest library and post office, and a place on the card's key facts (#75).
 - **Distance to the coast** (`coast_distance`, context, km): OS Boundary-Line's high
-  water mark, Tailte Éireann's seawater line and the OSNI outline, densified to a vertex
+  water mark, Tailte Éireann's high water mark and the OSNI outline, densified to a vertex
   every 100 m (#130).
 - Postcode districts and sectors ("LS6", "LS6 3") resolve in search to the
   neighbourhood their mean point stands in, with the group's extent on the map (#193).

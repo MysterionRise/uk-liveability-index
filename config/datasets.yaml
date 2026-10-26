@@ -2730,25 +2730,29 @@ te_admin_areas:
   size_hint: 30MB
 
 
-te_seawater_line:
+te_high_water_mark:
   coverage: [I]
-  title: Boundaries Seawater Line, National 1m Map of Ireland (Tailte Éireann)
+  title: High Water Mark, National Water Marks (Tailte Éireann)
   theme: geography
   access:
     type: arcgis_item
-    query: 'title:"Boundaries Seawater Line - National 1m Map Of Ireland" AND owner:TailteEireannMapGenie'
-    title_regex: '^Boundaries Seawater Line - National 1m Map Of Ireland$'
+    query: 'title:"High Water Mark - National Water Marks" AND owner:TailteEireannMapGenie'
+    # The exact title: the yearly "Ungeneralised 2024/2026" snapshots are separate items
+    # whose line is layer 0; the maintained item keeps its line at layer 1
+    title_regex: '^High Water Mark - National Water Marks$'
     item_type: Feature Service
-    pin: 8f7ae41d7a2f44feba6c0c08cfad77d7
+    pin: b45ee43280324f309cf7c0bd4fa650eb
     mode: featureserver
+    layer: 1
+    fields: [waterlevel]
     geometry: line
   format: gpkg
-  landing_page: https://data-osi.opendata.arcgis.com/datasets/osi::boundaries-seawater-line-national-1m-map-of-ireland
-  description: The coastline of Ireland (the seawater line of the national 1:1,000,000 map), the line the distance to the coast is measured to.
+  landing_page: https://data-osi.opendata.arcgis.com/datasets/osi::high-water-mark-national-water-marks
+  description: The high water mark around the coast of Ireland, the line the distance to the coast is measured to (not the 1:1m map's "Boundaries Seawater Line", which is the map sheet's sea frame).
   licence: CC-BY-4.0
   attribution: "Contains Tailte Éireann data © Government of Ireland, licensed under CC BY 4.0."
   cadence: static
-  size_hint: 2MB
+  size_hint: 40MB
 
 cso_saps22_sa:
   coverage: [I]
