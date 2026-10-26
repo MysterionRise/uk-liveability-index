@@ -18,10 +18,18 @@ from pathlib import Path
 from lix_core.codes import active_nations
 from lix_core.config import IndicatorSpec, boundary_slugs
 from lix_core.paths import data_dir, get_project_root
-from lix_pipeline.stage import graph
+from lix_pipeline.stage import STAGE_READS, graph
 
-# Serve files depend on these configuration files as well as on the indicator table
-SERVE_CONFIG = ("indicators.yaml", "weights.yaml", "nations.yaml")
+# Serve files depend on these configuration files as well as on the indicator table (the
+# translation catalogues ride the manifest, so a corrected label re-scores: #197)
+SERVE_CONFIG = (
+    "indicators.yaml",
+    "weights.yaml",
+    "nations.yaml",
+    "i18n/cy.yaml",
+    "i18n/gd.yaml",
+    "i18n/ga.yaml",
+)
 
 
 def tile_inputs() -> tuple[str, ...]:
@@ -127,6 +135,7 @@ def stage_steps(
     """(stagers to run, in order; stagers skipped and why)."""
     nations = list(nations)
     todo, skipped = [], []
+    planned: set[str] = set()
     for slug in order:
         if not graph.covers(slug, registry, nations):
             skipped.append(Step(slug, "covers no active nation"))
@@ -134,12 +143,19 @@ def stage_steps(
         if not graph.has_inputs(slug, registry, nations):
             skipped.append(Step(slug, "inputs not fetched"))
             continue
-        digest, parts = graph.fingerprint(graph.inputs_for(slug, registry, nations), lock)
+        digest, parts = graph.stage_fingerprint(slug, registry, nations, lock)
         reason = "forced" if force else graph.stale_reason(graph.sidecar_path(slug), digest, parts)
         if not reason:
             reason = nations_changed(graph.read_sidecar(graph.sidecar_path(slug)), nations)
+        if not reason:
+            # A table this stager reads is re-staged earlier in this run: its sidecar
+            # has not moved yet, but the reader is stale all the same (#190)
+            upstream = [t for t in STAGE_READS.get(slug, []) if t in planned]
+            if upstream:
+                reason = f"inputs restaged: {', '.join(upstream[:4])}"
         if reason:
             todo.append(Step(slug, reason))
+            planned.add(slug)
     return todo, skipped
 
 

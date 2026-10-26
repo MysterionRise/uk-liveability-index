@@ -203,9 +203,17 @@ files and the tiles record the lockfile checksums of the raw sources they were b
 (`data/staged/<slug>.meta.json`, `data/indicators/long.meta.json`, `data/serve/.meta.json`,
 `data/serve/tiles/.meta.json`), so a run killed half way resumes, a second run after a
 complete one finds nothing to do, and a new NSPL re-stages everything that reads
-postcodes. A source that fails to resolve or fetch stops the run before anything is
-rebuilt: a publisher that moved or reshaped a file is a registry fix, not something to
-build around. The run's plan, timings and changed sources go to `data/logs/refresh-*.json`.
+postcodes. A staged table's fingerprint also covers the fingerprints of the staged tables
+it reads and the source of its own stager (with the stage-package functions it calls), so
+a table rebuilt for its code or its boundaries re-stages its readers too, while a table
+re-staged by hand from the same inputs and code changes nothing downstream. A helper
+outside the stage package (`geo/*.py`) is left out of that hash on purpose: after fixing
+one, `lix stage --slug <table> --with-dependents` re-stages the table and its readers in
+run order, or `lix refresh --force` rebuilds everything. After a change to the fingerprint
+scheme itself, `lix stage --rehash` rewrites the sidecars without re-staging. A source
+that fails to resolve or fetch stops the run before anything is rebuilt: a publisher that
+moved or reshaped a file is a registry fix, not something to build around. The run's
+plan, timings and changed sources go to `data/logs/refresh-*.json`.
 
 After a refresh: read `data/serve/qa.md` (the correlation report, the stale list and the
 anchor review), fix any anchor the data has genuinely moved past, add a `period:` to the
