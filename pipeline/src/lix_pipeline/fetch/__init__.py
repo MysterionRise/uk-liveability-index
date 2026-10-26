@@ -9,6 +9,7 @@ import hashlib
 import json
 import time
 from datetime import date, datetime, timedelta, timezone
+from email.message import Message
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
@@ -44,6 +45,19 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _attachment_name(resp: requests.Response) -> str | None:
+    """The file name a Content-Disposition header states (RFC 6266), else None. Where a
+    server states no validator the name is the edition: the DfE statistics API names its
+    data-set version in it ("<id>_v1.0.1.csv"), and every other such source names its
+    file the same way each time (#203)."""
+    header = resp.headers.get("Content-Disposition")
+    if not header:
+        return None
+    message = Message()
+    message["Content-Disposition"] = header
+    return message.get_filename() or None
 
 
 def _probe(url: str, session: requests.Session, timeout_s: int = 60) -> requests.Response:
@@ -98,7 +112,9 @@ def resolve(slug: str, spec: DatasetSpec, session: requests.Session) -> dict:
             # Dated URLs are their own version; otherwise trust the server's validators
             "version": url
             if access.date_format
-            else head.headers.get("Last-Modified") or head.headers.get("ETag"),
+            else head.headers.get("Last-Modified")
+            or head.headers.get("ETag")
+            or _attachment_name(head),
         }
     elif access.type == "arcgis_item":
         resolved = arcgis.resolve_item(access, session)
@@ -440,7 +456,13 @@ def _reachable(
     content_range = resp.headers.get("Content-Range", "")
     if "/" in content_range and content_range.rsplit("/", 1)[1].isdigit():
         size = int(content_range.rsplit("/", 1)[1])
-    elif resp.status_code == 200 and (resp.headers.get("Content-Length") or "").isdigit():
+    elif (
+        resp.status_code == 200
+        and (resp.headers.get("Content-Length") or "").isdigit()
+        and (resp.headers.get("Content-Encoding") or "identity").lower() == "identity"
+    ):
+        # A compressed transfer's length is the wire size, not the file's: the DfE
+        # statistics API gzips every CSV (#203)
         size = int(resp.headers["Content-Length"])
     answered = {
         "etag": resp.headers.get("ETag"),

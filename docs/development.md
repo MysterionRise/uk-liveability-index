@@ -25,8 +25,10 @@ The pipeline downloads, stages and joins the open datasets below:
   plus a QA report. The method, including how Greater Manchester's missing crime data and
   Ofsted's framework changes are handled, is in [docs/methodology.md](methodology.md)
 - CI runs ruff and pytest on every push and PR to `master` (tests never touch the network);
-  a nightly job checks every source is still reachable (a 403 is reported as "not
-  verified" rather than failed: some publishers block cloud addresses such as the runners')
+  a nightly job checks every source is still reachable and whether a newer edition is
+  out (the edition is the server's `Last-Modified`, else its `ETag`, else the file name
+  it states; a 403 is reported as "not verified" rather than failed: some publishers
+  block cloud addresses such as the runners')
 
 Datasets ingested so far (full list with licences: [docs/data-sources.md](data-sources.md)):
 

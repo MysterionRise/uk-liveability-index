@@ -58,8 +58,10 @@ already had, and the November refresh: the data pack is rebuilt as **data-2026-1
   rationales that name fewer measures rather than being cut mid-phrase (#161).
 - The nightly source check reports a connection failure from the runner as "not
   verified" after one retry (Pobal), compares the validator a server answers with (NISRA,
-  NRS and PHS answer 206 to a conditional range request), and takes a null version for
-  no new edition (#192, #196).
+  NRS and PHS answer 206 to a conditional range request), takes a null version for no
+  new edition, and reads the edition from the file name a server states where it gives
+  no validator: the DfE statistics API gzips every CSV, so its size told nothing and the
+  check flagged the key stage files every night (#192, #196, #203).
 - A name under six letters no longer matches inside a long query; `/pois?near=England`
   is refused like `/areas/England`; a comparison dedupes its areas by text and by
   resolved code (#193).
@@ -70,6 +72,9 @@ already had, and the November refresh: the data pack is rebuilt as **data-2026-1
   the scores file; on a phone the legend starts folded; a print stylesheet; the Irish
   chat placeholder fits its box; hyparquet reads the scores file's size from the
   manifest (#188).
+- The OpenStreetMap POI table is staged before the tables that read it: Irish GP
+  surgeries and the charger table were built from the previous run's POIs, and the
+  planner's cascade and rehash walked the same order (#202).
 
 ## [0.6.2] - 2026-10-22
 
