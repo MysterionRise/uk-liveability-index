@@ -99,7 +99,7 @@ class ArcgisItemAccess(_Strict):
     layer: int = 0
     # featureserver only: fields to keep, and the CRS for geometry (27700 = British National Grid)
     fields: list[str] | None = None
-    geometry: Literal["none", "point", "polygon"] = "none"
+    geometry: Literal["none", "point", "line", "polygon"] = "none"
     out_sr: int = 27700
 
 
@@ -112,7 +112,7 @@ class ArcgisLayerAccess(_Strict):
     type: Literal["arcgis_layer"]
     url: str
     fields: list[str] | None = None
-    geometry: Literal["none", "point", "polygon"] = "none"
+    geometry: Literal["none", "point", "line", "polygon"] = "none"
     out_sr: int = 27700
 
 
@@ -375,6 +375,7 @@ UNIT_CODES: dict[str, str] = {
     "% of pupils": "pct_pupils",
     "% of 16–64s": "pct_working_age",
     "metres": "metres",
+    "km": "km",
     "per 1,000 residents a year": "per_1000_year",
     "score": "score",
     "score 0–100": "score_100",

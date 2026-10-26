@@ -30,6 +30,7 @@ units:
   pct_pupils: "% o ddisgyblion"
   pct_working_age: "% o rai 16–64 oed"
   metres: metrau
+  km: km
   per_1000_year: "fesul 1,000 o drigolion y flwyddyn"
   score: sgôr
   score_100: "sgôr 0–100"
@@ -67,7 +68,8 @@ indicators:
   access_deprivation: {label: Mynediad at wasanaethau (SIMD), description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol), wedi'i ddwyn i barthau data 2022."}
   noise_exposure: {label: Cartrefi mewn sŵn trafnidiaeth neu ddiwydiant, description: "Cyfran y cartrefi lle mae'r sŵn a fapiwyd yn cyfartalu 60 dB Lden neu fwy (ffyrdd a rheilffyrdd yng Nghymru a Lloegr; pob ffynhonnell a fapiwyd yn yr Alban)."}
   aircraft_noise: {label: Cartrefi mewn sŵn awyrennau, description: "Cyfran y cartrefi lle mae sŵn awyrennau'n cyfartalu 55 dB Lden neu fwy, o amgylch yr un ar bymtheg o feysydd awyr a fapiwyd yn Lloegr, Maes Awyr Dinas Belfast, a Dulyn, Corc a Shannon."}
-  industrial_noise: {label: Cartrefi mewn sŵn diwydiannol, description: "Cyfran y cartrefi lle mae sŵn diwydiannol yn cyfartalu 55 dB Lden neu fwy, ym mhum dinas fapiedig yr Alban."}
+  industrial_noise: {label: Cartrefi mewn sŵn diwydiannol, description: "Cyfran y cartrefi lle mae sŵn diwydiannol yn cyfartalu 55 dB Lden neu fwy, o amgylch safleoedd mapiedig Cymru, ym mhum dinas fapiedig yr Alban."}
+  night_noise: {label: Cartrefi mewn sŵn yn y nos, description: "Cyfran y cartrefi lle mae sŵn wedi'i fapio yn cyfartalu 50 dB Lnight neu fwy rhwng 23:00 a 07:00, y lefel y mae'r Gyfarwyddeb Sŵn Amgylcheddol yn cyfrif pobl fel rhai agored iddi yn y nos."}
   rail_service: {label: Gwasanaeth rheilffordd gerllaw, description: "Mynediadau ac allanfeydd blynyddol gorsafoedd (ORR) o fewn 2km i gartrefi, wedi'u pwysoli yn ôl pellter, fel bod gorsaf brysur gerllaw yn cyfrif mwy nag arhosfan."}
   hospital_ae_distance: {label: Pellter i'r adran achosion brys agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r adran achosion brys agosaf dan arweiniad ymgynghorydd."}
   hospital_distance: {label: Pellter i ofal brys agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r adran achosion brys neu'r uned mân anafiadau agosaf."}
@@ -86,6 +88,7 @@ indicators:
   flood_risk: {label: Cartrefi mewn perygl o lifogydd, description: "Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd, y môr neu ddŵr wyneb (siawns o 1% y flwyddyn o leiaf)."}
   flood_rivers_sea: {label: Cartrefi mewn perygl o afonydd neu'r môr, description: Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd neu'r môr yn unig (siawns o 1% y flwyddyn o leiaf).}
   road_rail_noise: {label: Cartrefi mewn sŵn ffyrdd neu reilffyrdd, description: "Cyfran y cartrefi lle mae sŵn ffyrdd neu reilffyrdd yn cyfartalu 60 dB Lden neu fwy dros y dydd, yr hwyr a'r nos, o'r mapiau sŵn strategol."}
+  coast_distance: {label: Pellter i'r arfordir, description: "Pellter o gartrefi i'r arfordir agosaf, mewn cilometrau (y marc penllanw ym Mhrydain Fawr, llinell dŵr y môr y map cenedlaethol yn Iwerddon, amlinell Gogledd Iwerddon)."}
   tree_canopy: {label: Gorchudd coed o amgylch cartrefi, description: "Cyfran y tir o fewn 500m i gartrefi y mae gorchudd tir lloeren yn ei ddosbarthu fel gorchudd coed (ESA WorldCover, 10m)."}
   light_pollution: {label: Golau yn y nos, description: "Disgleirdeb cyfartalog yn y nos o fewn 1km i gartrefi, o gyfansawdd blynyddol lloeren VIIRS (nW/cm²/sr)."}
   iod_outdoors: {label: Amgylchedd byw awyr agored IoD 2025, description: Ansawdd aer a damweiniau traffig ffordd (is-barth IoD 2025).}

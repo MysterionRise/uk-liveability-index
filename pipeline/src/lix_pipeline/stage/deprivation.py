@@ -64,6 +64,36 @@ def _england() -> pl.DataFrame:
     )
 
 
+# StatsWales indicator names → the harmonised rate columns (percentages → 0–1)
+WIMD_RATES = {
+    "People in income deprivation": "income_score",
+    "Working age people in employment deprivation": "employment_score",
+}
+
+
+def wimd_rates(indicators: pl.DataFrame) -> pl.DataFrame:
+    """The income and employment deprivation rates behind WIMD 2025's domain scores, one
+    row per LSOA, from the StatsWales indicator table (long: ``Area code``, ``Indicator``,
+    ``Data values`` in per cent; the councils and Wales share the table and are dropped)."""
+    rates = (
+        indicators.filter(
+            pl.col("Area code").str.starts_with("W01") & pl.col("Indicator").is_in(list(WIMD_RATES))
+        )
+        .select(
+            pl.col("Area code").alias("lsoa21cd"),
+            pl.col("Indicator").replace_strict(WIMD_RATES).alias("column"),
+            (pl.col("Data values").cast(pl.Float64, strict=False) / 100).alias("value"),
+        )
+        .pivot("column", index="lsoa21cd", values="value")
+    )
+    missing = [c for c in WIMD_RATES.values() if c not in rates.columns]
+    if missing:
+        raise ValueError(
+            f"WIMD indicator table lacks {missing}: {indicators['Indicator'].unique()}"
+        )
+    return rates
+
+
 def _wales() -> pl.DataFrame:
     scores = _sheet(raw_file("wimd_2025_scores", "ods"), "Data", "LSOA code")
     missing = [c for c in WIMD_SCORES if c not in scores.columns]
@@ -82,22 +112,23 @@ def _wales() -> pl.DataFrame:
         pl.col("LSOA code").alias("lsoa21cd"),
         pl.col(rank_col).cast(pl.Int32, strict=False).alias("imd_rank"),
     )
-    out = out.join(ranks, on="lsoa21cd", how="left").with_columns(
-        # Decile within Wales, 1 = most deprived, as the IoD's is within England
-        ((pl.col("imd_rank") - 1) * 10 // pl.col("imd_rank").count() + 1)
-        .cast(pl.Int32)
-        .alias("imd_decile"),
-        # WIMD publishes its income and employment domains as exponentially transformed
-        # scores, not the deprivation rates behind them (those are on StatsWales as
-        # "indicator data", not yet staged: #104). Until they are, the raw value is the
-        # domain's within-Wales percentile (0–1, higher = more deprived), which the
-        # within-nation rank normalisation scores the same and which is not mistaken
-        # for a rate
-        *[
-            (pl.col(c).rank("average") / pl.col(c).count()).alias(c)
-            for c in ("income_score", "employment_score")
-        ],
+    # WIMD publishes its income and employment domains as exponentially transformed
+    # scores; the deprivation rates behind them are StatsWales's indicator table (#104)
+    rates = wimd_rates(pl.read_csv(raw_file("wimd_2025_indicators", "csv"), infer_schema_length=0))
+    out = (
+        out.drop("income_score", "employment_score")
+        .join(ranks, on="lsoa21cd", how="left")
+        .join(rates, on="lsoa21cd", how="left")
+        .with_columns(
+            # Decile within Wales, 1 = most deprived, as the IoD's is within England
+            ((pl.col("imd_rank") - 1) * 10 // pl.col("imd_rank").count() + 1)
+            .cast(pl.Int32)
+            .alias("imd_decile"),
+        )
     )
+    without = out.filter(pl.col("income_score").is_null()).height
+    if without:
+        logger.warning(f"{without} Welsh LSOAs have no WIMD income rate")
     return out.select(COLUMNS)
 
 

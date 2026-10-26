@@ -95,6 +95,29 @@ class TestNoiseAtHomes:
         assert out["share_any_60"] == 0.5  # the loud road home and the 63 dB aircraft home
         assert out["share_road_rail_60"] == 0.25  # aircraft left out
 
+    def test_night_shares_follow_the_night_maps(self, tmp_path):
+        """Night-time exposure counts from 50 dB Lnight (the Directive's reporting
+        threshold at night) over the loudest kind; without night maps the columns are
+        null, not zero (#86)."""
+        road = _tile(tmp_path / "road.tif", 0, 40, [[70, 70, 0, 0]] * 4)
+        road_night = _tile(tmp_path / "road_n.tif", 0, 40, [[52, 48, 0, 0]] * 4)
+        rail_night = _tile(tmp_path / "rail_n.tif", 0, 40, [[0, 0, 56, 0]] * 4)
+        homes = pl.DataFrame(
+            {
+                "lsoa21cd": ["E01"] * 4,
+                "east1m": [5.0, 15.0, 25.0, 35.0],
+                "north1m": [20.0] * 4,
+            }
+        )
+        out = noise_at_homes(
+            homes, {"road": [road]}, night_layers={"road": [road_night], "rail": [rail_night]}
+        ).row(0, named=True)
+        assert out["share_any_night_50"] == 0.5 and out["share_any_night_55"] == 0.25
+        assert out["mean_night_db"] == (52 + 48 + 56 + 0) / 4
+        assert out["share_any_60"] == 0.5  # the day-time shares are untouched
+        quiet = noise_at_homes(homes, {"road": [road]}).row(0, named=True)
+        assert quiet["share_any_night_50"] is None and quiet["mean_night_db"] is None
+
     def test_without_surface_layers_the_road_rail_share_is_null(self, tmp_path):
         every = _tile(tmp_path / "all.tif", 0, 40, [[70, 0, 0, 0]] * 4)
         homes = pl.DataFrame({"lsoa21cd": ["S01"], "east1m": [5.0], "north1m": [20.0]})

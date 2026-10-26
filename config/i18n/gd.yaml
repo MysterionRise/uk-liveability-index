@@ -31,6 +31,7 @@ units:
   pct_pupils: "% de sgoilearan"
   pct_working_age: "% de dhaoine aois 16–64"
   metres: meatairean
+  km: km
   per_1000_year: "gach 1,000 luchd-còmhnaidh sa bhliadhna"
   score: sgòr
   score_100: "sgòr 0–100"
@@ -103,8 +104,10 @@ indicators:
   flood_rivers_sea: {label: Dachaighean ann an cunnart bho aibhnichean no bhon mhuir, description: "Cuid de dhachaighean ann an cunnart àrd no meadhanach tuil bho aibhnichean no bhon mhuir a-mhàin (co-dhiù 1% de sheans sa bhliadhna)."}
   noise_exposure: {label: Dachaighean ann am fuaim còmhdhail no gnìomhachais, description: "Cuid de dhachaighean far a bheil fuaim mapaichte a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche (rathaidean agus rèile ann an Sasainn agus sa Chuimrigh; gach tùs mapaichte ann an Alba)."}
   aircraft_noise: {label: Dachaighean ann am fuaim itealain, description: "Cuid de na dachaighean far a bheil fuaim itealain a' cuibheasachadh 55 dB Lden no barrachd, timcheall nan sia puirt-adhair deug a tha air am mapadh ann an Sasainn."}
-  industrial_noise: {label: Dachaighean ann am fuaim gnìomhachais, description: "Cuid de na dachaighean far a bheil fuaim gnìomhachais a' cuibheasachadh 55 dB Lden no barrachd, ann an còig bailtean mapaichte na h-Alba."}
+  industrial_noise: {label: Dachaighean ann am fuaim gnìomhachais, description: "Cuid de na dachaighean far a bheil fuaim gnìomhachais a' cuibheasachadh 55 dB Lden no barrachd, timcheall làraichean mapaichte na Cuimrigh, ann an còig bailtean mapaichte na h-Alba."}
+  night_noise: {label: Dachaighean ann am fuaim na h-oidhche, description: "Cuid de na dachaighean far a bheil fuaim mhapaichte a' cuibheasachadh 50 dB Lnight no barrachd eadar 23:00 agus 07:00, an ìre aig a bheil an Stiùireadh Fuaim Àrainneachdail a' cunntadh dhaoine mar fhosgailte dhi air an oidhche."}
   road_rail_noise: {label: Dachaighean ann am fuaim rathaid no rèile, description: "Cuid de dhachaighean far a bheil fuaim rathaid no rèile a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche, bho na mapaichean fuaim ro-innleachdail."}
+  coast_distance: {label: Astar chun a' chladaich, description: "Astar bho dhachaighean chun a' chladaich as fhaisge, ann an cilemeatairean (comharra àrd-làin ann am Breatainn Mhòr, loidhne uisge na mara a' mhapa nàiseanta ann an Èirinn, iomall-crìche Èirinn a Tuath)."}
   tree_canopy: {label: Còmhdach chraobhan timcheall dhachaighean, description: "Cuid den fhearann taobh a-staigh 500m de dhachaighean a tha còmhdach-fearainn saideil a' seòrsachadh mar chòmhdach chraobhan (ESA WorldCover, 10m)."}
   light_pollution: {label: Solas na h-oidhche, description: "Deàrrsadh oidhche cuibheasach taobh a-staigh 1km de dhachaighean, bho cho-mheasgachadh bliadhnail saideil VIIRS (nW/cm²/sr)."}
   iod_outdoors: {label: Àrainneachd-còmhnaidh a-muigh IoD 2025, description: "Càileachd èadhair agus tubaistean trafaig rathaid (fo-raon IoD 2025)."}

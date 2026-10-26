@@ -31,6 +31,7 @@ units:
   pct_pupils: "% de dhaltaí"
   pct_working_age: "% de dhaoine 16–64"
   metres: méadair
+  km: km
   per_1000_year: "in aghaidh 1,000 cónaitheoir sa bhliain"
   score: scór
   score_100: "scór 0–100"
@@ -103,8 +104,10 @@ indicators:
   flood_rivers_sea: {label: Tithe i mbaol ó aibhneacha nó ón bhfarraige, description: "Sciar de thithe i mbaol ard nó meánach tuilte ó aibhneacha nó ón bhfarraige amháin (seans 1% sa bhliain ar a laghad)."}
   noise_exposure: {label: Tithe i dtorann iompair nó tionsclaíoch, description: "Sciar de thithe ina sroicheann torann mapáilte 60 dB Lden nó níos mó thar an lá, an tráthnóna agus an oíche (bóithre, iarnróid agus aerárthaí i Sasana; bóithre agus iarnróid sa Bhreatain Bheag; gach foinse mhapáilte in Albain)."}
   aircraft_noise: {label: Tithe i dtorann aerárthaí, description: "Sciar de thithe ina bhfuil torann aerárthaí 55 dB Lden nó níos mó ar an meán, timpeall na sé aerfort déag atá mapáilte i Sasana, Aerfort Chathair Bhéal Feirste, agus Baile Átha Cliath, Corcaigh agus an tSionainn."}
-  industrial_noise: {label: Tithe i dtorann tionsclaíoch, description: "Sciar de thithe ina bhfuil torann tionsclaíoch 55 dB Lden nó níos mó ar an meán, i gcúig chathair mhapáilte na hAlban."}
+  industrial_noise: {label: Tithe i dtorann tionsclaíoch, description: "Sciar de thithe ina bhfuil torann tionsclaíoch 55 dB Lden nó níos mó ar an meán, timpeall suíomhanna mapáilte na Breataine Bige, i gcúig chathair mhapáilte na hAlban."}
+  night_noise: {label: Tithe i dtorann oíche, description: "Sciar de thithe ina bhfuil torann mapáilte 50 dB Lnight nó níos mó ar an meán idir 23:00 agus 07:00, an leibhéal ag a n-áiríonn an Treoir um Thorann Comhshaoil daoine a bheith nochta dó san oíche."}
   road_rail_noise: {label: Tithe i dtorann bóthair nó iarnróid, description: "Sciar de thithe ina sroicheann torann bóthair nó iarnróid 60 dB Lden nó níos mó thar an lá, an tráthnóna agus an oíche, ó na mapaí torainn straitéiseacha."}
+  coast_distance: {label: Fad go dtí an cósta, description: "Fad ó thithe go dtí an cósta is gaire, i gciliméadair (marc an lán mara sa Bhreatain Mhór, líne uisce na farraige ar an léarscáil náisiúnta in Éirinn, imlíne Thuaisceart Éireann)."}
   tree_canopy: {label: Clúdach crann timpeall tithe, description: "Sciar den talamh laistigh de 500m de thithe a rangaíonn clúdach talún satailíte mar chlúdach crann (ESA WorldCover, 10m)."}
   light_pollution: {label: Solas na hoíche, description: "Meánradaíocht oíche laistigh de 1km de thithe, ó chomhiomlán bliantúil satailíte VIIRS (nW/cm²/sr)."}
   iod_outdoors: {label: Timpeallacht chónaithe amuigh IoD 2025, description: "Cáilíocht aeir agus timpistí tráchta bóthair (fofhearann IoD 2025)."}

@@ -147,10 +147,11 @@ STAGE_INPUTS: dict[str, list[str]] = {
         "nspl",
     ],
     "tree_cover": ["esa_worldcover", "nspl"],
+    "coastline": ["os_boundary_line", "te_seawater_line", "osni_ni_outline", "te_admin_areas"],
     "os_open_uprn": ["os_open_uprn", *LOW_BOUNDARIES],
     "night_lights": ["viirs_vnl", "nspl"],
     "climate": ["haduk_grid", "nspl", "met_eireann_temp_9120", "met_eireann_rr_9120"],
-    "noise": ["*_noise_*_lden", "daera_noise_r3", "nspl"],
+    "noise": ["*_noise_*_lden", "*_noise_*_lnight", "daera_noise_r3", "nspl"],
     "deprivation": [
         "iod_2025",
         "wimd_*",
@@ -258,6 +259,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         chargers,
         childcare,
         climate,
+        coastline,
         community,
         environment,
         geo,
@@ -352,6 +354,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "flood": environment.stage_flood,  # needs staged ea_flood_postcodes and voa_ctsop
         "noise": noise.stage_noise,  # needs staged nspl
         "tree_cover": landcover.stage_tree_cover,  # needs staged nspl
+        "coastline": coastline.stage_coastline,
         "night_lights": night_lights.stage_night_lights,  # manual source; needs staged nspl
         "climate": climate.stage_climate,  # manual source; needs staged nspl
         "ukcp_hot_days": climate.stage_ukcp_hot_days,  # needs staged geo_lsoa
