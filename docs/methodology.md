@@ -45,6 +45,17 @@ may be scored. The build's QA report lists scored indicators that correlate abov
   are straight-line in British National Grid metres. Access indices count places within
   a radius, weighting each by a Gaussian decay with distance and capping with
   `log(1 + count) / log(1 + cap)`, so the second café matters more than the twentieth.
+- **Everyday services within 15 minutes** (context) is the share of seven service types
+  (a GP practice, a pharmacy, a supermarket, a primary school, a post office, a park or
+  playground, and a stop with at least two weekday daytime departures an hour or a
+  station) that the typical home has within 1.2 km in a straight line, about a
+  15-minute walk: over the types, the share of the area's homes with one in reach,
+  summed, over the types the nation stages (Ireland stages no school list, so its homes
+  are measured over six). A walking network is planned to replace the radius.
+- **Distance to the coast** (context) is the straight-line kilometres from each home to
+  the nearest point of the mapped coastline (OS Boundary-Line's high water mark in Great
+  Britain, Tailte Éireann's seawater line in Ireland, the OSNI outline in Northern
+  Ireland with its land border dropped), densified to a vertex every 100 m.
 - **Saturation.** Access measures reach full marks at a typical suburb's level of
   provision rather than a city centre's (for example about six cafés and restaurants
   within 800m, three well-run pubs within 1.2km, a DfT connectivity score of 75), so
@@ -81,7 +92,9 @@ may be scored. The build's QA report lists scored indicators that correlate abov
   answer depends on whether ordinary streets were mapped: England's maps cover every road
   only inside the larger agglomerations and major roads elsewhere, while Wales's cover
   every road (39% of Welsh postcodes pass 55 dB against 30% of English ones; at 60 dB it
-  is 12% and 14%). Night-time noise (Lnight) is not yet included.
+  is 12% and 14%). **Night-time noise** is the same maps' Lnight metric (23:00–07:00),
+  reported as the share of homes at 50 dB or more, the Directive's night reporting
+  threshold, from the loudest mapped source at each home (context).
 - **Tree cover** is the share of land within about 500m of each home that satellite
   land cover (ESA WorldCover, 10m, 2021) classes as tree cover, averaged over the LSOA's
   postcodes. Water and unmapped cells are left out of the land total. A cell counts when
@@ -288,8 +301,9 @@ the indicator builders never know which nation a row came from.
 Wales (v0.3.0): most England & Wales sources already carried Wales (census, Price
 Paid, police.uk, FSA, VOA, DfT connectivity, claimant counts, ONS income, the ODS GP and
 dental lists, NaPTAN, Ofcom, Defra air quality, OS Open Greenspace). Welsh-only
-sources: WIMD 2025 for deprivation (its income and employment domains are rates of
-people affected, as in the IoD; the others are domain scores), the Welsh Government's
+sources: WIMD 2025 for deprivation (the income and employment rates come from the
+StatsWales indicator table behind the domains, since the published domain scores are
+transformed; the others are domain scores), the Welsh Government's
 maintained-schools list (no grades: schools count as present for choice and access),
 the examination results release for local-authority attainment, NRW's Flood Risk
 Assessment Wales (risk areas rather than postcode counts: an LSOA's homes at risk are

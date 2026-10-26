@@ -150,10 +150,12 @@ With a model key in `.env`, `make dev` uses the real model from `.env`.
 
 ## Planned
 
-- More open datasets: mobile coverage, private rents, jobs density, energy performance
-  certificates, night-time noise and everyday services within 15 minutes, then the
-  CDRC's Access to Healthy Assets & Hazards (behind a free login) as a cross-check
-- Walking-network travel times instead of straight-line distances
+- More open datasets: cycle infrastructure, street connectivity, river and bathing water
+  quality, storm overflows, protected nature, terrain and sealed surfaces (v0.7.0), then
+  private rents, jobs density, overcrowding, energy use and energy performance
+  certificates, mobile coverage (v0.7.1)
+- Walking-network travel times instead of straight-line distances (v0.8.x), built on the
+  OpenStreetMap ways table of v0.7.0
 
 ## Building the data
 

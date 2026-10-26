@@ -148,9 +148,9 @@ The same tools are available to Claude Desktop and other clients over
   estimated, because its police force publishes none.
 - **Judgement calls.** The weights, thresholds and choice of indicators are explained,
   not objective. Use the scores to explore, not as property, financial or legal advice.
-- **Not yet included:** night-time noise, groundwater flooding, and the single garden
-  trees and hedges that 10m satellite land cover cannot see (aircraft and industrial noise
-  are mapped only where a nation publishes them). Welsh
+- **Not yet included:** groundwater flooding, and the single garden trees and hedges
+  that 10m satellite land cover cannot see (aircraft and industrial noise are mapped only
+  where a nation publishes them). Welsh
   nurseries and pharmacies come from OpenStreetMap, and Welsh school quality from each
   council's exam results, because Wales publishes no open per-provider lists or grades.
   Scotland's deprivation index (SIMD 2020) is still on the 2011 Data Zones and is brought
