@@ -69,6 +69,10 @@ already had, and the November refresh: the data pack is rebuilt as **data-2026-1
 - A name under six letters no longer matches inside a long query; `/pois?near=England`
   is refused like `/areas/England`; a comparison dedupes its areas by text and by
   resolved code (#193).
+- Next.js 16.4.3: 16.4.0 carried two critical advisories (remote code execution through the
+  image optimiser with SVG files and through `use cache` functions returning typed arrays)
+  and a Server Actions denial of service. DOMPurify and zod patched with it; the
+  assistant UI's CopilotKit chain keeps 20 high advisories until its upgrade (#206).
 
 ### Fixed
 
@@ -79,6 +83,8 @@ already had, and the November refresh: the data pack is rebuilt as **data-2026-1
 - The OpenStreetMap POI table is staged before the tables that read it: Irish GP
   surgeries and the charger table were built from the previous run's POIs, and the
   planner's cascade and rehash walked the same order (#202).
+- The profile card's subtitle takes the urban/rural class from the catalogue in the
+  interface language; it still read the English field after #187.
 
 ## [0.6.2] - 2026-10-22
 

@@ -27,7 +27,7 @@
     "@copilotkit/runtime": "1.77.1",
     "hyparquet": "1.31.2",
     "maplibre-gl": "6.13.0",
-    "next": "16.4.0",
+    "next": "16.4.3",
     "next-intl": "^4.14.9",
     "pmtiles": "4.5.0",
     "react": "19.3.0",
@@ -35,7 +35,7 @@
     "react-markdown": "^10.1.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
-    "zod": "4.6.5"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
