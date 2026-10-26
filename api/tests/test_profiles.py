@@ -58,6 +58,68 @@ class TestRules:
         assert plain.rationale.startswith("Nothing in the description matched")
 
 
+class TestLanguages:
+    """#161: each language's words apply in its own interface, in their mutated forms;
+    a negator turns a plain word around within its clause; a rationale is cut at a
+    clause, never mid-phrase, and reads singular when one thing is named."""
+
+    def test_welsh_phrases_with_mutations(self, store):
+        p = profile_by_rules(store, "gweithio o gartref, dim plant, tafarndai da a thren", "cy")
+        assert p.indicator_weights["gigabit_broadband"] == 2  # working from home
+        assert p.theme_weights["education"] == 0  # no children
+        assert p.indicator_weights["well_run_pubs"] == 2  # tafarndai
+        assert p.indicator_weights["rail_service"] == 2  # "thren": trên after "a"
+
+    def test_gaelic_and_irish_phrases(self, store):
+        gd = profile_by_rules(store, "ag obair bhon taigh, gun chlann", "gd")
+        assert gd.indicator_weights["gigabit_broadband"] == 2 and gd.theme_weights["education"] == 0
+        ga = profile_by_rules(store, "ag obair ón mbaile, gan pháistí, torann", "ga")
+        assert ga.indicator_weights["gigabit_broadband"] == 2 and ga.theme_weights["education"] == 0
+        assert ga.indicator_weights["noise_exposure"] == 2
+        assert ga.rationale and not ga.rationale.startswith("Starts from")
+        # Eclipsed and lenited forms of a word list entry match too
+        assert (
+            profile_by_rules(store, "an-chóngarach don dtraein", "ga").indicator_weights[
+                "rail_service"
+            ]
+            == 2
+        )
+
+    def test_a_language_s_words_fire_only_in_its_interface(self, store):
+        # Welsh "ci" (a dog) must not read an English "CI pipeline" as a dog walker
+        en = profile_by_rules(store, "I run the CI pipeline for a living", "en")
+        assert "green_space_access" not in en.indicator_weights
+        cy = profile_by_rules(store, "mae ci gyda ni", "cy")
+        assert cy.indicator_weights["green_space_access"] == 2
+
+    def test_a_negator_turns_a_plain_word_around_within_its_clause(self, store):
+        p = profile_by_rules(store, "not bothered about schools, but safety matters", "en")
+        assert p.theme_weights["education"] == 0  # 1 - 1
+        assert p.theme_weights["safety"] == 2  # the negator stops at the comma
+        q = profile_by_rules(store, "no need for broadband", "en")
+        assert q.indicator_weights["gigabit_broadband"] == 0.5
+        assert "Broadband" not in q.name
+        assert profile_by_rules(store, "dim ots am ysgolion", "cy").theme_weights["education"] == 0
+
+    def test_singular_templates_and_clause_cuts(self, store):
+        one = profile_by_rules(store, "asthma", "en").rationale
+        assert "Environment & health counts more" in one or "counts more" in one
+        assert (
+            profile_by_rules(store, "safety and schools", "en").rationale.count("count more") == 1
+        )
+        assert profiles._cut(
+            "Starts from Balanced; safety counts more, and broadband weighs more", 50
+        ) == ("Starts from Balanced; safety counts more")
+        assert not profiles._cut("one two three and four five six", 20).endswith("and")
+        # A long Irish rationale names fewer measures rather than stopping mid-phrase
+        ga = profile_by_rules(
+            store,
+            "ag obair ón mbaile, torann, dochtúir, cógaslann, ollmhargadh, traein, leathanbhanda",
+            "ga",
+        ).rationale
+        assert len(ga) <= 200 and ga.endswith(".")
+
+
 class TestDraft:
     def test_a_draft_is_checked_against_the_catalogue(self, store):
         draft = ProfileDraft(

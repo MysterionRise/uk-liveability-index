@@ -53,6 +53,17 @@ MESSAGES: dict[str, dict[str, str]] = {
         "their themes.",
         "profile_rationale_plain": "Nothing in the description matched a theme or measure, so "
         "it starts from {preset}.",
+        # Singular forms, picked when one theme or one measure is named (#161)
+        "profile_rationale_one_theme": "Starts from {preset}; {themes} counts more, and "
+        "{indicators} weigh more within their themes.",
+        "profile_rationale_one_indicator": "Starts from {preset}; {themes} count more, and "
+        "{indicators} weighs more within its theme.",
+        "profile_rationale_one_theme_one_indicator": "Starts from {preset}; {themes} counts "
+        "more, and {indicators} weighs more within its theme.",
+        "profile_rationale_themes_one_theme": "Starts from {preset}; {themes} counts more.",
+        "profile_rationale_less_one_theme": "Starts from {preset}; {themes} counts less.",
+        "profile_rationale_indicators_one_indicator": "Starts from {preset}; {indicators} "
+        "weighs more within its theme.",
     },
     "cy": {
         "still_works": "Mae'r map, y pwysau a thudalennau'r ardaloedd yn dal i weithio.",
@@ -200,10 +211,17 @@ MESSAGES: dict[str, dict[str, str]] = {
 }
 
 
-def message(key: str, locale: str = "en", **values: str) -> str:
-    """A fixed assistant message in ``locale``, English where no translation exists."""
+def message(key: str, locale: str = "en", fallback: str | None = None, **values: str) -> str:
+    """A fixed assistant message in ``locale``, English where no translation exists; a
+    ``fallback`` key stands in where neither language has ``key`` (a singular form of a
+    template that only some languages need)."""
     texts = MESSAGES.get(locale) or MESSAGES["en"]
-    text = texts.get(key) or MESSAGES["en"][key]
+    # The language's own plain form beats the English singular one
+    text = texts.get(key) or (fallback and texts.get(fallback)) or MESSAGES["en"].get(key)
+    if text is None and fallback:
+        text = MESSAGES["en"][fallback]
+    if text is None:
+        raise KeyError(key)
     still = texts.get("still_works") or MESSAGES["en"]["still_works"]
     return text.format(still_works=still, **values)
 
