@@ -19,7 +19,7 @@ The pipeline downloads, stages and joins the open datasets below:
   population, area and map bounding box; `lix validate geo` checks it
 - helpers bring other geographies onto LSOAs: points, output areas, MSOA/local-authority values,
   1km grids (sampled at postcodes, so population-weighted) and distance-based access to places
-- `lix indicators` builds 97 indicators (44 scored across 9 themes) from
+- `lix indicators` builds 102 indicators (44 scored across 9 themes) from
   [`config/indicators.yaml`](../config/indicators.yaml); `lix score` turns them into theme and
   overall scores per LSOA for five persona presets ([`config/weights.yaml`](../config/weights.yaml)),
   plus a QA report. The method, including how Greater Manchester's missing crime data and

@@ -79,7 +79,7 @@ A full walkthrough video comes with each
 
 ## How the scores work
 
-Each neighbourhood gets up to 95 indicators. The 44 that count towards the score are
+Each neighbourhood gets up to 102 indicators. The 44 that count towards the score are
 turned into 0–100 scores, averaged within nine themes (safety, environment, health
 services, schools and childcare, transport, amenities, housing, community and climate), and
 the themes are weighted by what you choose. Measures that are the same everywhere

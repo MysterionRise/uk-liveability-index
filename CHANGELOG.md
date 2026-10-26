@@ -4,6 +4,73 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.6.3] - 2026-11-XX
+
+The QA minors that did not fit 0.6.1, three measures that fell out of inputs the build
+already had, and the November refresh: the data pack is rebuilt as **data-2026-11**
+(serve schema 5) with five new context indicators.
+
+### Added
+
+- **Night-time noise** (`night_noise`, context): the Lnight metric of every nation's
+  strategic noise maps, read at each home like the daytime ones, as the share of homes at
+  50 dB or more, the Directive's night reporting threshold. Wales's industrial Lden raster
+  joins `industrial_noise` and the noise exposure on the way (#86).
+- **Everyday services within 15 minutes** (`everyday_services`, context): the share of
+  seven service types (a GP practice, a pharmacy, a supermarket, a primary school, a post
+  office, a park or playground, frequent public transport) the typical home has within
+  1.2 km in a straight line, over the types the nation stages; with the distances to the
+  nearest library and post office, and a place on the card's key facts (#75).
+- **Distance to the coast** (`coast_distance`, context, km): OS Boundary-Line's high
+  water mark, Tailte Éireann's seawater line and the OSNI outline, densified to a vertex
+  every 100 m (#130).
+- Postcode districts and sectors ("LS6", "LS6 3") resolve in search to the
+  neighbourhood their mean point stands in, with the group's extent on the map (#193).
+- `lix stage --slug X --with-dependents` re-stages a table and every table that reads
+  it, in run order; `lix stage --rehash` brings existing sidecars under a new fingerprint
+  scheme without re-staging (#190).
+
+### Changed
+
+- **The refresh planner follows the read graph.** A staged table's fingerprint chains
+  its raw inputs' checksums, the fingerprints of the staged tables it reads and a hash of
+  its stager's source, so a table rebuilt for its code or its boundaries re-stages its
+  readers (the 0.6.1 build re-ran nspl's 31 readers by hand), while a hand re-stage from
+  the same inputs and code cascades nowhere; a corrected translation re-scores (#190,
+  #197).
+- **Welsh income and employment deprivation are rates again**, from StatsWales's
+  indicator table behind WIMD 2025's domains, in place of the within-Wales percentile
+  stopgap (#104).
+- **Irish areas that share a name are told apart.** Two Small Areas of a merged division
+  shared a tail ("Cong/Ross 001" twice): they carry the old division's digits ("069-001");
+  38 division names repeated within one council carry their code in search results. The
+  division codes stay as they were: every one of the 3,417 divisions sits in one county,
+  so the re-minting the issue proposed was not needed (#194).
+- **The Welsh, Gaelic and Irish interfaces stop leaking English**: the urban/rural class
+  comes through the catalogue by code (`urban_rural_label`), search takes a `locale` and
+  answers with localised councils and a worded settlement type (`place_type`), every POI
+  category has a title, the basemap's country, sea and street labels follow the
+  language where the tiles have it, dates print from the catalogue's month names, and the
+  "(SIMD)" labels read "(SIMD, NIMDM)" like the English (#187).
+- **The rules-based profile engine speaks each language on its own terms**: phrase lists
+  per language, the mutated forms of a phrase's first word, a negator that turns a plain
+  word around within its clause ("not bothered about schools"), singular templates, and
+  rationales that name fewer measures rather than being cut mid-phrase (#161).
+- The nightly source check reports a connection failure from the runner as "not
+  verified" after one retry (Pobal), compares the validator a server answers with (NISRA,
+  NRS and PHS answer 206 to a conditional range request), and takes a null version for
+  no new edition (#192, #196).
+- A name under six letters no longer matches inside a long query; `/pois?near=England`
+  is refused like `/areas/England`; a comparison dedupes its areas by text and by
+  resolved code (#193).
+
+### Fixed
+
+- Escape closes the welcome dialog; the About and methodology pages no longer download
+  the scores file; on a phone the legend starts folded; a print stylesheet; the Irish
+  chat placeholder fits its box; hyparquet reads the scores file's size from the
+  manifest (#188).
+
 ## [0.6.2] - 2026-10-22
 
 ### Fixed
@@ -595,6 +662,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.6.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.3
 [0.6.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.2
 [0.6.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.1
 [0.6.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.0
