@@ -529,7 +529,8 @@ async def _analyst_only(ctx: RunContext[Deps], tool_def: ToolDefinition) -> Tool
 @agent.tool(prepare=_analyst_only)
 @_recoverable
 def run_sql(ctx: RunContext[Deps], query: str) -> dict:
-    """Run one read-only SELECT (DuckDB SQL) over the index's tables; at most 5,000 rows.
+    """Run one read-only SELECT (DuckDB SQL) over the index's tables; at most 5,000 rows,
+    text cells cut at 1,000 characters.
 
     Tables: lsoa (every LSOA with raw__<indicator>, n__<indicator> 0–100 scores,
     q__<indicator> quality flags, theme__<theme>, overall, overall_pct (the headline, within

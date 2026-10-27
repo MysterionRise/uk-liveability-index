@@ -80,6 +80,12 @@ already had, and the November refresh: the data pack is rebuilt as **data-2026-1
   the scores file; on a phone the legend starts folded; a print stylesheet; the Irish
   chat placeholder fits its box; hyparquet reads the scores file's size from the
   manifest (#188).
+- An analyst query whose result was a gigabyte-long string (`repeat('x', 1e9)`) took the
+  API down: DuckDB's memory limit does not count a scalar, and the copies on the way to
+  JSON pushed the container past its cap, with no restart policy to bring it back. The
+  functions that build a value of any size are refused, text cells are cut at 1,000
+  characters in SQL before a value reaches Python, a reply carries at most 4 M characters,
+  the engine runs on two threads, and the api container restarts after a crash (#208).
 - The OpenStreetMap POI table is staged before the tables that read it: Irish GP
   surgeries and the charger table were built from the previous run's POIs, and the
   planner's cascade and rehash walked the same order (#202).

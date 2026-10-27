@@ -621,6 +621,35 @@ class TestQaCloseOut:
         wide = guard.run("select * from lsoa")
         assert wide.rows and len(wide.rows) * len(wide.columns) <= 200_000
 
+    def test_sql_cuts_wide_cells_and_refuses_string_builders(self, store, monkeypatch):
+        import lix_api.services.sql as sql
+        from lix_api.services.sql import MAX_CELL_CHARS, SqlError, SqlGuard
+
+        guard = SqlGuard(store)
+        # repeat('x', 1e9) once took the API down: DuckDB's memory limit misses a scalar
+        for q in (
+            "select repeat('x', 10)",
+            "select RPAD('x', 5, 'y')",
+            "select lpad(name, 3, '0') from places",
+        ):
+            with pytest.raises(SqlError, match=r"\w+\(\) is not allowed"):
+                guard.run(q)
+        # Text and nested cells are cut in SQL before any value reaches Python
+        q = (
+            "select string_agg(lsoa21cd, '') as s, [1, 2] as "
+            + '"a ""list"""'
+            + " from lsoa, range(200)"
+        )
+        long = guard.run(q)
+        assert long.columns == ["s", 'a "list"']
+        assert long.rows[0][0].endswith("…") and len(long.rows[0][0]) == MAX_CELL_CHARS + 1
+        assert long.rows[0][1] == "[1, 2]"
+        assert guard.run("select 'short' as s, 1.5::DOUBLE as f").rows == [["short", 1.5]]
+        # The reply's character cap stops the fetch and says so
+        monkeypatch.setattr(sql, "MAX_CHARS", 100)
+        capped = guard.run("select lsoa21cd from lsoa, range(10) order by 1")
+        assert capped.truncated and 11 <= len(capped.rows) <= 13
+
     def test_indicator_listing_matches_a_theme_leniently(self, store):
         from lix_api.services.catalogue import list_indicators
 

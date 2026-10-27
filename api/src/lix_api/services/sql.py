@@ -2,8 +2,13 @@
 
 Guards: a separate in-memory DuckDB reading the public tables as views over the store's
 own frames (no second copy), with file and network access disabled and configuration
-locked; exactly one SELECT statement; a row and a cell cap; a cursor per query so one
-long query holds nobody else up; and a timeout that interrupts long queries.
+locked; exactly one SELECT statement; a row, a cell, a character and a reply cap; a cursor
+per query so one long query holds nobody else up; and a timeout that interrupts long
+queries. DuckDB's memory limit does not count a scalar: ``repeat('x', 1e9)`` built its
+gigabyte (2.4 GB of process memory) and the copies on the way to JSON took the API
+container down (#208), so the functions that build a string of any size from a number
+are refused, text cells are cut in SQL before a value reaches Python, and the engine
+runs on two threads so a heavy query cannot starve the rest of the API.
 """
 
 import re
@@ -18,7 +23,13 @@ from lix_api.store import Store
 MAX_ROWS = 5000
 # rows × columns a reply may carry (a 22 MB "select * from lsoa" is nobody's answer)
 MAX_CELLS = 200_000
+# A text (or nested) cell is cut here, with an ellipsis; a reply carries at most this many
+# characters of text in all
+MAX_CELL_CHARS = 1_000
+MAX_CHARS = 4_000_000
 TIMEOUT_S = 10.0
+# repeat('x', 1000000000) is one gigabyte that the memory limit does not see (#208)
+STRING_BUILDERS = re.compile(r"\b(repeat|rpad|lpad)\s*\(", re.IGNORECASE)
 
 TABLES = {
     "lsoa": "Every LSOA in the build: geography (incl. nation), raw__/n__/q__ per indicator, "
@@ -59,6 +70,7 @@ class SqlGuard:
         for name, table in self._arrow.items():
             self.con.register(name, table)
         self.con.execute("SET memory_limit = '1GB'")
+        self.con.execute("SET threads = 2")
         self.con.execute("SET enable_external_access = false")
         self.con.execute("SET lock_configuration = true")
 
@@ -75,6 +87,9 @@ class SqlGuard:
         ):
             raise SqlError("Only SELECT queries are allowed")
 
+        if m := STRING_BUILDERS.search(sql):
+            raise SqlError(f"{m.group(1).lower()}() is not allowed: it builds a value of any size")
+
         body = sql.strip().rstrip(";")
         # On its own lines, so a trailing "-- comment" cannot swallow the closing bracket
         wrapped = f"SELECT * FROM (\n{body}\n) AS q LIMIT {max_rows + 1}"
@@ -86,9 +101,24 @@ class SqlGuard:
         timer = threading.Timer(timeout_s, cursor.interrupt)
         timer.start()
         try:
-            result = cursor.execute(wrapped)
+            # DESCRIBE plans without running: the column types, so that text and nested
+            # columns are cut in SQL and no oversized value is ever copied into Python
+            described = cursor.execute(f"DESCRIBE {wrapped}").fetchall()
+            projection = ", ".join(_cut_wide(name, type_) for name, type_, *_ in described)
+            result = cursor.execute(f"SELECT {projection} FROM (\n{wrapped}\n) AS w")
             columns = [d[0] for d in result.description]
-            rows = result.fetchall()
+            keep = min(max_rows, max(1, MAX_CELLS // max(1, len(columns))))
+            rows: list[list] = []
+            chars = 0
+            truncated = False
+            # Streamed in batches: a result that stops at the cap is never materialised whole
+            while not truncated and (batch := result.fetchmany(256)):
+                for row in batch:
+                    if len(rows) >= keep or chars >= MAX_CHARS:
+                        truncated = True
+                        break
+                    rows.append([_jsonable(v) for v in row])
+                    chars += sum(len(v) for v in rows[-1] if isinstance(v, str))
         except duckdb.InterruptException as e:
             raise SqlError(f"Query took longer than {timeout_s:g}s") from e
         except duckdb.Error as e:
@@ -96,13 +126,23 @@ class SqlGuard:
         finally:
             timer.cancel()
             cursor.close()
-        keep = min(max_rows, max(1, MAX_CELLS // max(1, len(columns))))
-        truncated = len(rows) > keep
-        return SqlResult(
-            columns=columns,
-            rows=[[_jsonable(v) for v in row] for row in rows[:keep]],
-            truncated=truncated,
-        )
+        return SqlResult(columns=columns, rows=rows, truncated=truncated)
+
+
+def _cut_wide(name: str, type_: str) -> str:
+    """The projection of one result column: text, blob and nested values as text cut at
+    MAX_CELL_CHARS (nested values reached the reply as their text form before too)."""
+    quoted = '"' + name.replace('"', '""') + '"'
+    wide = type_.endswith("]") or type_.startswith(
+        ("VARCHAR", "BLOB", "JSON", "BIT", "STRUCT", "MAP", "UNION")
+    )
+    if not wide:
+        return quoted
+    text = f"CAST({quoted} AS VARCHAR)"
+    return (
+        f"CASE WHEN length({text}) > {MAX_CELL_CHARS} THEN left({text}, {MAX_CELL_CHARS}) || '…' "
+        f"ELSE {text} END AS {quoted}"
+    )
 
 
 def _jsonable(v):
