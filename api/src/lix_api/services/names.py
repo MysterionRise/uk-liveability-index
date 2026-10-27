@@ -28,3 +28,23 @@ def english_if_different(row: dict, column: str, locale: str | None) -> str | No
     """The English name when the localised one differs from it, else None."""
     english = row.get(column)
     return english if localised(row, column, locale) != english else None
+
+
+def ruc_label(store, row: dict, locale: str | None) -> str | None:
+    """The row's urban/rural class in ``locale``: the catalogue's label for the nation's
+    code (config/i18n ``urban_rural``, carried by the manifest), else the English."""
+    code = base_locale(locale)
+    english = row.get("ruc21nm")
+    if code == "en":
+        return english
+    classes = ((store.manifest.get("i18n") or {}).get(code) or {}).get("urban_rural") or {}
+    label = (classes.get(row.get("nation")) or {}).get(str(row.get("ruc21cd")))
+    return label or english
+
+
+def council_name(store, name: str | None, locale: str | None) -> str | None:
+    """A council's name in ``locale`` where the areas table has that form."""
+    code = base_locale(locale)
+    if not name or code == "en":
+        return name
+    return (store.council_names.get(name) or {}).get(code) or name

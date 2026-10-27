@@ -141,7 +141,7 @@ def fetch_featureserver(
         "count"
     ]
 
-    polygons = access.geometry == "polygon"
+    polygons = access.geometry in ("polygon", "line")  # vector layers travel as GeoJSON
     params = {
         "where": "1=1",
         "outFields": ",".join(access.fields) if access.fields else "*",

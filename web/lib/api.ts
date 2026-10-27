@@ -64,7 +64,8 @@ export const fetchProfile = (
     indicator_weights: weightsParam(indicatorWeights),
   });
 
-export const searchPlaces = (q: string) => get<Place[]>("/search", { q, limit: "6" });
+/** `locale` picks the language of the names and councils in the results (#187). */
+export const searchPlaces = (q: string, locale?: string) => get<Place[]>("/search", { q, limit: "6", locale });
 
 export const compareAreas = (
   codes: string[],

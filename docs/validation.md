@@ -6,65 +6,70 @@ population-weighted, with the default (balanced) weights. Expectations are in
 [config/validation_places.yaml](../config/validation_places.yaml); regenerate this
 page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
-**121 of 121 checks pass** (81 of 81 anchors) across 53 places.
+**138 of 138 checks pass** (97 of 97 anchors) across 58 places.
 
 ## Scores
 
 | Place | Neighbourhood | Overall | Amenities | Climate | Community | Education | Environment | Health | Housing | Safety | Transport |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Morningside | Morningside West and Craighouse, City of Edinburgh | 70 | 74 | 55 | 87 | 86 | 86 | 100 | 29 | 57 | 50 |
-| Niddrie | Niddrie, City of Edinburgh | 52 | 52 | 62 | 7 | 59 | 80 | 100 | 32 | 20 | 56 |
-| Bearsden | Kilmardinny West, East Dunbartonshire | 68 | 57 | 33 | 83 | 86 | 85 | 96 | 28 | 74 | 49 |
-| Govan | Govan and Linthouse, Glasgow City | 55 | 70 | 41 | 7 | 48 | 77 | 100 | 52 | 11 | 80 |
-| Fort William | Fort William South, Highland | 50 | 64 | 14 | 45 | 23 | 79 | 81 | 46 | 50 | 26 |
-| Lerwick | Lerwick North, Shetland Islands | 54 | 52 | 20 | 53 | 53 | 67 | 95 | 50 | 48 | 31 |
-| St Andrews | St Andrews Central, Fife | 65 | 87 | 69 | 88 | 75 | 78 | 79 | 15 | 52 | 47 |
-| Pontcanna | Pontcanna, Cardiff | 72 | 83 | 78 | 80 | 96 | 81 | 87 | 29 | 33 | 86 |
-| Rhyl | Rhyl North, Denbighshire | 55 | 70 | 72 | 11 | 27 | 72 | 98 | 62 | 19 | 71 |
-| Merthyr Tydfil | Gelli-deg & Town, Merthyr Tydfil | 55 | 68 | 43 | 18 | 57 | 80 | 84 | 60 | 17 | 65 |
-| Abergavenny | Abergavenny South & Crucorney, Monmouthshire | 57 | 46 | 70 | 75 | 56 | 82 | 75 | 24 | 39 | 50 |
-| Penarth | Penarth, Vale of Glamorgan | 72 | 79 | 82 | 83 | 77 | 90 | 84 | 35 | 50 | 77 |
-| Blaenau Ffestiniog | Blaenau Ffestiniog & Trawsfynydd, Gwynedd | 46 | 32 | 24 | 47 | 33 | 68 | 51 | 60 | 52 | 40 |
-| Hampstead | Hampstead Town, Camden | 70 | 85 | 87 | 88 | 87 | 67 | 89 | 17 | 28 | 94 |
-| Shoreditch | Shoreditch, Hackney | 60 | 90 | 89 | 44 | 90 | 29 | 75 | 28 | 10 | 96 |
-| Whitechapel | Spitalfields, Tower Hamlets | 57 | 87 | 88 | 26 | 81 | 34 | 75 | 36 | 8 | 91 |
-| Kensington | Kensington Abingdon, Kensington and Chelsea | 68 | 84 | 92 | 91 | 96 | 49 | 76 | 18 | 23 | 93 |
-| Manchester | Castlefield & Deansgate, Manchester | 63 | 86 | 62 | 63 | 57 | 50 | 77 | 55 | 19 | 97 |
-| Salford | Weaste & Seedley, Salford | 54 | 45 | 64 | 21 | 55 | 64 | 85 | 54 | 30 | 75 |
-| Jesmond | South Jesmond & Sandyford, Newcastle upon Tyne | 69 | 83 | 73 | 70 | 70 | 78 | 89 | 46 | 43 | 75 |
-| Headingley | Headingley, Leeds | 66 | 83 | 65 | 62 | 60 | 78 | 89 | 49 | 30 | 81 |
-| Harrogate | Central Harrogate, North Yorkshire | 66 | 85 | 51 | 67 | 66 | 79 | 82 | 34 | 41 | 82 |
-| Winchester | Winchester East, Winchester | 68 | 74 | 83 | 42 | 79 | 84 | 94 | 41 | 46 | 78 |
-| St Albans | St Albans Central, St Albans | 70 | 83 | 84 | 73 | 93 | 74 | 81 | 30 | 28 | 92 |
-| Royal Sutton Coldfield | Sutton Coldfield South & Central, Birmingham | 68 | 69 | 74 | 62 | 81 | 74 | 85 | 44 | 42 | 80 |
-| Cambridge | Central & West Cambridge, Cambridge | 69 | 78 | 79 | 95 | 84 | 79 | 88 | 13 | 33 | 77 |
-| Chipping Campden | Willersey, Chipping Campden & Blockley, Cotswold | 53 | 25 | 76 | 78 | 45 | 73 | 60 | 29 | 59 | 42 |
-| Holsworthy | Holsworthy, Bradworthy & Welcombe, Torridge | 48 | 30 | 62 | 53 | 24 | 80 | 53 | 34 | 76 | 27 |
-| Sidmouth | Sidmouth Town, East Devon | 64 | 70 | 88 | 78 | 40 | 84 | 81 | 26 | 70 | 54 |
-| Jaywick Sands | Tendring 018A (Jaywick & St Osyth), Tendring | 45 | 37 | 99 | 0 | 29 | 58 | 63 | 67 | 20 | 55 |
-| Blackpool | North Shore, Blackpool | 53 | 75 | 68 | 5 | 29 | 74 | 86 | 60 | 7 | 81 |
-| Middlesbrough | Middlesbrough Central, Middlesbrough | 55 | 79 | 70 | 8 | 45 | 64 | 85 | 66 | 8 | 79 |
-| Burnley | Central Burnley & Daneshouse, Burnley | 51 | 48 | 37 | 8 | 41 | 78 | 73 | 60 | 32 | 75 |
-| Spalding | Spalding North, South Holland | 64 | 60 | 81 | 59 | 62 | 60 | 60 | 76 | 56 | 68 |
-| Wisbech | Wisbech South & Peckover, Fenland | 53 | 55 | 78 | 25 | 43 | 70 | 59 | 65 | 27 | 67 |
-| Milton Keynes | Central Milton Keynes & Newlands, Milton Keynes | 62 | 74 | 79 | 29 | 51 | 83 | 81 | 74 | 18 | 80 |
-| Clifton | Clifton East, Bristol, City of | 70 | 84 | 84 | 90 | 82 | 70 | 88 | 18 | 37 | 81 |
-| Bexhill-on-Sea | Bexhill Central, Rother | 60 | 83 | 96 | 25 | 57 | 69 | 66 | 51 | 31 | 80 |
-| Bognor Regis | Bognor Regis Central, Arun | 60 | 83 | 97 | 23 | 53 | 79 | 74 | 58 | 17 | 74 |
-| Penzance | Penzance Quay, Cornwall | 58 | 87 | 77 | 23 | 34 | 85 | 71 | 41 | 34 | 76 |
-| Hounslow | Hounslow High Street, Hounslow | 61 | 78 | 96 | 47 | 80 | 51 | 75 | 42 | 19 | 80 |
-| Upper Malone | Balmoral L, Belfast | 59 | 26 | 43 | 98 | – | 77 | 93 | 8 | 54 | 66 |
-| Shankill | Court K, Belfast | 57 | 71 | 48 | 5 | – | 59 | 100 | 69 | 8 | 90 |
-| Holywood | Holywood and Clandeboye H, Ards and North Down | 60 | 47 | 53 | 70 | – | 65 | 100 | 30 | 29 | 81 |
-| Enniskillen | Enniskillen E, Fermanagh and Omagh | 56 | 81 | 33 | 13 | – | 74 | 100 | 60 | 9 | 67 |
-| Creggan | The Moor D, Derry City and Strabane | 55 | 45 | 23 | 3 | – | 84 | 100 | 47 | 40 | 86 |
-| Portrush | Causeway B, Causeway Coast and Glens | 52 | 67 | 37 | 33 | – | 78 | 93 | 28 | 11 | 62 |
-| Ranelagh | Rathmines East D, Dublin City | 79 | 81 | 90 | 99 | – | 66 | 100 | – | 22 | 99 |
-| Ballymun | Ballymun D, Dublin City | 59 | 63 | 87 | 1 | – | 65 | 100 | – | 17 | 97 |
-| Clifden | Clifden, Galway County | 49 | 55 | 45 | 26 | – | 77 | 35 | – | 56 | 46 |
-| Kilkenny | Kilkenny No. 2 Urban, Kilkenny | 66 | 79 | 82 | 40 | – | 67 | 100 | – | 29 | 73 |
-| Dalkey | Dalkey-Bullock, Dún Laoghaire-Rathdown | 75 | 73 | 88 | 89 | – | 78 | 90 | – | 45 | 67 |
-| Letterkenny | Letterkenny Urban, Donegal | 58 | 77 | 53 | 19 | – | 73 | 100 | – | 29 | 48 |
+| Morningside | Morningside West and Craighouse, City of Edinburgh | 72 | 88 | 55 | 87 | 86 | 86 | 100 | 29 | 57 | 50 |
+| Niddrie | Niddrie, City of Edinburgh | 53 | 62 | 62 | 7 | 59 | 80 | 100 | 32 | 20 | 56 |
+| Bearsden | Kilmardinny West, East Dunbartonshire | 69 | 69 | 33 | 83 | 86 | 85 | 96 | 28 | 74 | 49 |
+| Govan | Govan and Linthouse, Glasgow City | 56 | 84 | 41 | 7 | 48 | 77 | 100 | 52 | 11 | 80 |
+| Fort William | Fort William South, Highland | 50 | 70 | 14 | 45 | 23 | 79 | 81 | 46 | 50 | 26 |
+| Lerwick | Lerwick North, Shetland Islands | 55 | 57 | 20 | 53 | 53 | 67 | 95 | 50 | 48 | 31 |
+| St Andrews | St Andrews Central, Fife | 66 | 93 | 69 | 88 | 75 | 78 | 79 | 15 | 52 | 47 |
+| Pontcanna | Pontcanna, Cardiff | 74 | 100 | 78 | 80 | 96 | 81 | 87 | 29 | 33 | 86 |
+| Rhyl | Rhyl North, Denbighshire | 56 | 80 | 72 | 11 | 27 | 72 | 98 | 62 | 19 | 71 |
+| Merthyr Tydfil | Gelli-deg & Town, Merthyr Tydfil | 56 | 72 | 43 | 18 | 57 | 80 | 84 | 60 | 17 | 65 |
+| Abergavenny | Abergavenny South & Crucorney, Monmouthshire | 57 | 48 | 70 | 75 | 56 | 82 | 75 | 24 | 39 | 50 |
+| Penarth | Penarth, Vale of Glamorgan | 74 | 91 | 82 | 83 | 77 | 90 | 84 | 35 | 50 | 77 |
+| Blaenau Ffestiniog | Blaenau Ffestiniog & Trawsfynydd, Gwynedd | 47 | 38 | 24 | 47 | 33 | 68 | 51 | 60 | 52 | 40 |
+| Hampstead | Hampstead Town, Camden | 72 | 99 | 87 | 88 | 87 | 67 | 89 | 17 | 28 | 94 |
+| Shoreditch | Shoreditch, Hackney | 61 | 100 | 89 | 44 | 90 | 29 | 76 | 28 | 10 | 96 |
+| Whitechapel | Spitalfields, Tower Hamlets | 58 | 100 | 88 | 26 | 81 | 34 | 75 | 36 | 8 | 91 |
+| Kensington | Kensington Abingdon, Kensington and Chelsea | 70 | 100 | 92 | 91 | 96 | 49 | 76 | 18 | 23 | 93 |
+| Manchester | Castlefield & Deansgate, Manchester | 65 | 100 | 62 | 63 | 57 | 50 | 82 | 55 | 19 | 97 |
+| Salford | Weaste & Seedley, Salford | 56 | 55 | 64 | 21 | 55 | 64 | 86 | 54 | 30 | 75 |
+| Jesmond | South Jesmond & Sandyford, Newcastle upon Tyne | 71 | 98 | 73 | 70 | 70 | 78 | 89 | 46 | 43 | 75 |
+| Headingley | Headingley, Leeds | 68 | 97 | 65 | 62 | 60 | 78 | 90 | 49 | 30 | 81 |
+| Harrogate | Central Harrogate, North Yorkshire | 68 | 93 | 51 | 67 | 66 | 79 | 90 | 34 | 41 | 82 |
+| Winchester | Winchester East, Winchester | 69 | 85 | 83 | 42 | 79 | 84 | 94 | 41 | 46 | 78 |
+| St Albans | St Albans Central, St Albans | 72 | 98 | 84 | 73 | 93 | 74 | 80 | 30 | 28 | 92 |
+| Royal Sutton Coldfield | Sutton Coldfield South & Central, Birmingham | 69 | 81 | 74 | 62 | 81 | 74 | 85 | 44 | 42 | 80 |
+| Cambridge | Central & West Cambridge, Cambridge | 70 | 90 | 79 | 95 | 84 | 79 | 87 | 13 | 33 | 77 |
+| Chipping Campden | Willersey, Chipping Campden & Blockley, Cotswold | 52 | 24 | 76 | 78 | 45 | 73 | 59 | 29 | 59 | 42 |
+| Holsworthy | Holsworthy, Bradworthy & Welcombe, Torridge | 48 | 30 | 62 | 53 | 24 | 80 | 52 | 34 | 76 | 27 |
+| Sidmouth | Sidmouth Town, East Devon | 64 | 71 | 88 | 78 | 40 | 84 | 81 | 26 | 70 | 54 |
+| Jaywick Sands | Tendring 018A (Jaywick & St Osyth), Tendring | 44 | 35 | 99 | 0 | 27 | 58 | 63 | 67 | 20 | 55 |
+| Blackpool | North Shore, Blackpool | 54 | 84 | 68 | 5 | 29 | 74 | 86 | 60 | 7 | 81 |
+| Middlesbrough | Middlesbrough Central, Middlesbrough | 56 | 84 | 70 | 8 | 45 | 64 | 85 | 66 | 8 | 79 |
+| Burnley | Central Burnley & Daneshouse, Burnley | 52 | 57 | 37 | 8 | 41 | 78 | 73 | 60 | 32 | 75 |
+| Spalding | Spalding North, South Holland | 65 | 70 | 81 | 59 | 62 | 60 | 60 | 76 | 56 | 68 |
+| Wisbech | Wisbech South & Peckover, Fenland | 54 | 67 | 78 | 25 | 43 | 70 | 59 | 65 | 27 | 67 |
+| Hounslow West | Heston Central & Lampton West, Hounslow | 61 | 69 | 95 | 49 | 88 | 50 | 74 | 34 | 31 | 75 |
+| Milton Keynes | Central Milton Keynes & Newlands, Milton Keynes | 64 | 85 | 79 | 29 | 50 | 83 | 81 | 74 | 18 | 80 |
+| Clifton | Clifton East, Bristol, City of | 71 | 100 | 84 | 90 | 82 | 70 | 88 | 18 | 37 | 81 |
+| Bexhill-on-Sea | Bexhill Central, Rother | 62 | 99 | 96 | 25 | 57 | 69 | 66 | 51 | 31 | 80 |
+| Bognor Regis | Bognor Regis Central, Arun | 62 | 93 | 97 | 23 | 53 | 79 | 77 | 58 | 17 | 74 |
+| Penzance | Penzance Quay, Cornwall | 58 | 92 | 77 | 23 | 34 | 85 | 71 | 41 | 34 | 76 |
+| Hounslow | Hounslow High Street, Hounslow | 63 | 90 | 96 | 47 | 80 | 51 | 75 | 42 | 19 | 80 |
+| Upper Malone | Balmoral L, Belfast | 60 | 33 | 43 | 98 | – | 77 | 93 | 8 | 54 | 66 |
+| Shankill | Court K, Belfast | 59 | 86 | 48 | 5 | – | 59 | 100 | 69 | 8 | 90 |
+| Holywood | Holywood and Clandeboye H, Ards and North Down | 61 | 58 | 53 | 70 | – | 65 | 100 | 30 | 29 | 81 |
+| Enniskillen | Enniskillen E, Fermanagh and Omagh | 57 | 85 | 33 | 13 | – | 74 | 100 | 60 | 9 | 67 |
+| Lurgan | Lurgan K, Armagh City, Banbridge and Craigavon | 58 | 63 | 49 | 18 | – | 64 | 97 | 79 | 7 | 85 |
+| Antrim | Antrim G, Antrim and Newtownabbey | 72 | 86 | 47 | 68 | – | 80 | 100 | 92 | 16 | 74 |
+| Cavan | Cavan Urban, Cavan | 63 | 92 | 65 | 2 | – | 84 | 100 | – | 31 | 65 |
+| Creggan | The Moor D, Derry City and Strabane | 57 | 55 | 23 | 3 | – | 84 | 100 | 47 | 40 | 86 |
+| Portrush | Causeway B, Causeway Coast and Glens | 53 | 71 | 37 | 33 | – | 78 | 93 | 28 | 11 | 62 |
+| Ranelagh | Rathmines East D, Dublin City | 82 | 100 | 90 | 99 | – | 66 | 100 | – | 22 | 99 |
+| Bettystown | St. Mary's, Meath | 67 | 40 | 87 | 78 | – | 70 | 72 | – | 74 | 57 |
+| Ballymun | Ballymun D, Dublin City | 62 | 81 | 87 | 1 | – | 65 | 100 | – | 17 | 97 |
+| Clifden | Clifden, Galway County | 50 | 65 | 45 | 26 | – | 77 | 35 | – | 56 | 46 |
+| Kilkenny | Kilkenny No. 2 Urban, Kilkenny | 69 | 98 | 82 | 40 | – | 67 | 100 | – | 29 | 73 |
+| Dalkey | Dalkey-Bullock, Dún Laoghaire-Rathdown | 77 | 89 | 88 | 89 | – | 78 | 90 | – | 45 | 67 |
+| Letterkenny | Letterkenny Urban, Donegal | 61 | 97 | 53 | 19 | – | 73 | 100 | – | 29 | 48 |
 
 ## Observations
 
@@ -81,7 +86,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Morningside** (Morningside West and Craighouse). Affluent south Edinburgh, cafés, Bruntsfield Links, good schools, expensive. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
-- ✅ amenities score ≥ 50: 73.7 ⚓
+- ✅ amenities score ≥ 50: 88.1 ⚓
 - ✅ community score ≥ 60: 86.9 ⚓
 - ✅ housing score ≤ 50: 29.5
 
@@ -113,29 +118,33 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ summer_warmth ≤ 15: 14.2 ⚓
 - ✅ station_distance ≥ 40,000: 50,000.0 ⚓
 - ✅ hospital_ae_distance ≤ 5,000: 963.3 ⚓
+- ✅ coast_distance ≤ 2: 0.3 ⚓
 - ✅ environment score ≥ 50: 67.4
 
 **St Andrews** (St Andrews Central). University town, cafés and pubs, a well-off population. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
-- ✅ amenities score ≥ 60: 86.7 ⚓
+- ✅ amenities score ≥ 60: 93.0 ⚓
 - ✅ community score ≥ 55: 87.8 ⚓
 
 **Pontcanna** (Pontcanna). Affluent inner Cardiff, cafés and parks, expensive. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
-- ✅ amenities score ≥ 80: 83.2 ⚓
+- ✅ amenities score ≥ 80: 99.9 ⚓
 - ✅ community score ≥ 60: 79.8 ⚓
 - ✅ housing score ≤ 45: 29.0
+- ✅ income_deprivation ≥ 0.02: 0.1 ⚓
+- ✅ income_deprivation ≤ 0.25: 0.1 ⚓
+- ✅ everyday_services ≥ 80: 100.0 ⚓
 
 **Rhyl** (Rhyl North). Seaside town with some of Wales's most deprived neighbourhoods; cheap homes. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
 - ✅ community score ≤ 25: 11.1 ⚓
 - ✅ housing score ≥ 50: 61.8 ⚓
 - ✅ flag broadcast_lad: council_tax, secondary_school_quality ⚓
-- ✅ flag not_available: access_deprivation, aircraft_noise, bus_access, care_homes, domestic_rates, gp_list_size, gp_quality, industrial_noise, leisure_facilities, life_expectancy, patients_per_gp, pobal_deprivation, primary_results, primary_school_quality, rainfall_total, recorded_crime, secondary_results, swimming_pool_distance ⚓
+- ✅ flag not_available: access_deprivation, aircraft_noise, bus_access, care_homes, domestic_rates, gp_list_size, gp_quality, leisure_facilities, life_expectancy, patients_per_gp, pobal_deprivation, primary_results, primary_school_quality, rainfall_total, recorded_crime, secondary_results, swimming_pool_distance ⚓
 
 **Merthyr Tydfil** (Gelli-deg & Town). Valleys town, high deprivation, cheap homes. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
-- ✅ community score ≤ 30: 18.1 ⚓
+- ✅ community score ≤ 30: 18.0 ⚓
 - ✅ housing score ≥ 50: 60.1
 
 **Abergavenny** (Abergavenny South & Crucorney). Prosperous market town. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
@@ -150,18 +159,18 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 **Blaenau Ffestiniog** (Blaenau Ffestiniog & Trawsfynydd). Remote slate town, cheap but with few amenities. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
 - ✅ housing score ≥ 50: 60.0 ⚓
-- ✅ amenities score ≤ 50: 32.1
+- ✅ amenities score ≤ 50: 37.6
 
 **Hampstead** (Hampstead Town). Affluent, expensive, well connected. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ housing score ≤ 30: 16.6 ⚓
 - ✅ transport score ≥ 75: 94.0 ⚓
-- ✅ overall score ≥ 55: 70.3
+- ✅ overall score ≥ 55: 72.0
 - ✅ tree_canopy ≥ 30: 55.5 ⚓
 
 **Shoreditch** (Shoreditch). Nightlife hub with high crime per resident and expensive homes. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ amenities score ≥ 80: 89.7 ⚓
+- ✅ amenities score ≥ 80: 100.0 ⚓
 - ✅ safety score ≤ 30: 9.9 ⚓
 - ✅ transport score ≥ 85: 96.4
 - ✅ noise_exposure ≥ 40: 60.0 ⚓
@@ -175,7 +184,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 **Kensington** (Kensington Abingdon). Among the most expensive places in England. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ housing score ≤ 25: 17.9 ⚓
-- ✅ amenities score ≥ 70: 83.6
+- ✅ amenities score ≥ 70: 100.0
 
 **Manchester** (Castlefield & Deansgate). City centre; Greater Manchester crime is estimated (no police.uk data). Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
@@ -190,22 +199,22 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Jesmond** (South Jesmond & Sandyford). Popular inner suburb with bars and restaurants. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ amenities score ≥ 70: 82.7
-- ✅ overall score ≥ 50: 69.3
+- ✅ amenities score ≥ 70: 98.2
+- ✅ overall score ≥ 50: 71.2
 
 **Headingley** (Headingley). Student suburb: lively, but high burglary and theft. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
-- ✅ amenities score ≥ 70: 82.7
+- ✅ amenities score ≥ 70: 97.2
 - ✅ safety score ≤ 45: 29.7
 
 **Harrogate** (Central Harrogate). Affluent spa town. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ overall score ≥ 55: 66.1 ⚓
+- ✅ overall score ≥ 55: 68.1 ⚓
 - ✅ community score ≥ 60: 66.7
 
 **Winchester** (Winchester East). Affluent cathedral city with strong schools. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ overall score ≥ 55: 68.1
+- ✅ overall score ≥ 55: 69.4
 - ✅ education score ≥ 55: 78.7
 
 **St Albans** (St Albans Central). London commuter city, expensive. Flags: broadcast_lad, broadcast_msoa, not_available.
@@ -216,7 +225,8 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 **Royal Sutton Coldfield** (Sutton Coldfield South & Central). Affluent suburb of Birmingham. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ community score ≥ 55: 62.2
-- ✅ overall score ≥ 50: 67.6
+- ✅ overall score ≥ 50: 68.9
+- ✅ coast_distance ≥ 70: 80.0 ⚓
 
 **Cambridge** (Central & West Cambridge). Expensive university city, cycling and rail. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
@@ -268,6 +278,13 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 **Wisbech** (Wisbech South & Peckover). Fenland town on the tidal Nene. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ flood_risk ≥ 10: 36.5
+- ✅ everyday_services ≤ 90: 87.1
+- ✅ night_noise ≤ 15: 10.0 ⚓
+
+**Hounslow West** (Heston Central & Lampton West). Under the final approach to Heathrow's northern runway, with the A4 and M4 beside it: aircraft by day, aircraft and road at night. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
+
+- ✅ aircraft_noise ≥ 50: 98.0 ⚓
+- ✅ night_noise ≥ 30: 91.4 ⚓
 
 **Milton Keynes** (Central Milton Keynes & Newlands). New town: almost no homes from before 1919; grid roads kept away from homes. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
@@ -276,7 +293,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Clifton** (Clifton East). Affluent inner suburb of Bristol, expensive, lots nearby. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ amenities score ≥ 70: 83.5
+- ✅ amenities score ≥ 70: 100.0
 - ✅ housing score ≤ 40: 17.8
 
 **Bexhill-on-Sea** (Bexhill Central). Older seaside town. Flags: broadcast_lad, broadcast_msoa, not_available.
@@ -312,10 +329,23 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≥ 60: 70.4 ⚓
 - ✅ station_distance ≤ 2,000: 371.7 ⚓
 
-**Enniskillen** (Enniskillen E). Lakeland county town with the South West Acute Hospital and no railway. Flags: broadcast_lad, broadcast_msoa, not_available.
+**Enniskillen** (Enniskillen E). Lakeland county town with the South West Acute Hospital and no railway; Lough Erne is no coast. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ hospital_ae_distance ≤ 5,000: 2,336.9 ⚓
 - ✅ station_distance ≥ 40,000: 50,000.0 ⚓
+- ✅ coast_distance ≥ 30: 39.9 ⚓
+
+**Lurgan** (Lurgan K). On Lough Neagh's southern shore, 30 km from the sea: the lough is a hole in the outline, and no coast. Flags: broadcast_lad, broadcast_msoa, not_available.
+
+- ✅ coast_distance ≥ 25: 30.8 ⚓
+
+**Antrim** (Antrim G). Lough Neagh's north-eastern corner, 20 km from Belfast Lough. Flags: broadcast_lad, broadcast_msoa, not_available.
+
+- ✅ coast_distance ≥ 15: 20.9 ⚓
+
+**Cavan** (Cavan Urban). Landlocked border county town among the Erne loughs: the border through the water is no coast. Flags: not_available.
+
+- ✅ coast_distance ≥ 45: 61.3 ⚓
 
 **Creggan** (The Moor D). Large estate above Derry's Bogside, long among the most deprived areas. Flags: broadcast_lad, broadcast_msoa, not_available.
 
@@ -324,13 +354,20 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 **Portrush** (Causeway B). North coast resort: clean air, the sea, a station. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ no2 ≤ 10: 2.9 ⚓
-- ✅ station_distance ≤ 2,000: 441.8
+- ✅ station_distance ≤ 2,000: 439.8
 
 **Ranelagh** (Rathmines East D). Dublin 6's affluent Victorian suburb: a Luas stop, buses, everything on foot. Flags: not_available.
 
 - ✅ community score ≥ 80: 99.1 ⚓
 - ✅ station_distance ≤ 1,000: 239.1 ⚓
-- ✅ gp_distance ≤ 500: 162.9
+- ✅ gp_distance ≤ 500: 168.1
+- ✅ leisure ≥ 0.2: 1.0 ⚓
+- ✅ everyday_services ≥ 90: 100.0 ⚓
+
+**Bettystown** (St. Mary's). A commuter coast north of Dublin whose Garda station stopped reporting in 2025: its crime must come from a neighbouring station, not read as zero (#143). Flags: not_available.
+
+- ✅ crime_violence ≥ 0.5: 2.4 ⚓
+- ✅ safety score ≤ 97: 73.6 ⚓
 
 **Ballymun** (Ballymun D). North Dublin's regenerated tower-block estate, long among the most deprived areas. Flags: not_available.
 
@@ -340,7 +377,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 **Clifden** (Clifden). Connemara's market town at the edge of the island: no railway, Galway's A&E 80 km away. Flags: not_available.
 
 - ✅ hospital_ae_distance ≥ 40,000: 50,000.0 ⚓
-- ✅ station_distance ≥ 40,000: 48,331.2 ⚓
+- ✅ station_distance ≥ 40,000: 48,364.5 ⚓
 - ✅ rainfall_total ≥ 1,200: 1,463.9
 
 **Kilkenny** (Kilkenny No. 2 Urban). Medieval city with its station and St Luke's General Hospital. Flags: not_available.

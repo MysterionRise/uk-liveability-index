@@ -3,7 +3,7 @@
 import polars as pl
 
 from lix_api.models import AreaProfile, IndicatorValue, Point, ThemeScore
-from lix_api.services.names import english_if_different, localised
+from lix_api.services.names import base_locale, english_if_different, localised, ruc_label
 from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
@@ -73,7 +73,8 @@ def with_substitutes(store: Store, row: dict, values: list[IndicatorValue]) -> l
 
 KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_exposure",
              "flood_risk", "tree_canopy", "sunshine", "gp_distance", "station_distance",
-             "gigabit_broadband", "well_run_pubs", "households_with_children"]  # fmt: skip
+             "everyday_services", "gigabit_broadband", "well_run_pubs",
+             "households_with_children"]  # fmt: skip
 
 # The flags an area can carry, worded in agent.messages (four languages)
 FLAG_CODES = ("imputed", "low_n", "broadcast_lad", "not_available", "theme_gap")
@@ -83,7 +84,7 @@ def flag_texts(store: Store, codes: set[str], nation: str, locale: str | None) -
     """The flags' texts in the interface language; the theme-gap one names the themes."""
     from lix_api.agent.messages import message
 
-    lang = (locale or "en").split("-")[0]
+    lang = base_locale(locale)
     labels = ((store.manifest.get("i18n") or {}).get(lang) or {}).get("themes") or {}
     gaps = [
         (labels.get(t) or {}).get("label") or store.themes[t].label
@@ -101,7 +102,7 @@ def flag_texts(store: Store, codes: set[str], nation: str, locale: str | None) -
 
 def nation_name_in(store: Store, nation: str, locale: str | None) -> str:
     """The nation's name in the interface language where the pack carries it."""
-    lang = (locale or "en").split("-")[0]
+    lang = base_locale(locale)
     names = (store.geography["nations"].get(nation) or {}).get("names") or {}
     return names.get(lang) or store.nation_names.get(nation, nation)
 
@@ -206,6 +207,7 @@ def area_profile(
         nation=row["nation"],
         nation_name=nation_name_in(store, row["nation"], locale),
         urban_rural=row["ruc21nm"],
+        urban_rural_label=ruc_label(store, row, locale),
         population=row["population"],
         overall=_round(scores.get("overall")),
         overall_percentile=_pct(pct),

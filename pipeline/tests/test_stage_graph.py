@@ -49,6 +49,19 @@ def test_every_declared_read_is_a_stager(all_stagers):
     assert not unknown
 
 
+def test_stagers_run_after_the_tables_they_read(all_stagers):
+    """stagers() is the run order, so a reader must come after each table it reads:
+    the planner's one-pass cascade and the rehash walk the same order (#202)."""
+    order = list(all_stagers)
+    early = [
+        f"{slug} (position {order.index(slug)}) reads {table} (position {order.index(table)})"
+        for slug in order
+        for table in STAGE_READS.get(slug, [])
+        if order.index(table) > order.index(slug)
+    ]
+    assert not early, "\n".join(early)
+
+
 def test_raw_inputs_close_over_staged_reads(registry):
     # flood reads the staged UPRN table, whose stager reads the raw boundaries
     inputs = g.raw_inputs("flood", registry)
@@ -119,3 +132,20 @@ def test_sidecar_round_trip_and_stale_reason(tmp_path: Path):
     new_lock = {**LOCK, "b": {"fetched": {"sha256": "b2"}}}
     digest2, parts2 = g.fingerprint(["a", "b"], new_lock)
     assert g.stale_reason(path, digest2, parts2) == "inputs changed: b"
+
+
+def test_a_module_constant_is_part_of_the_code_hash(monkeypatch):
+    """The noise stager reads its file patterns from NOISE_SOURCES: a corrected pattern
+    must re-stage the table (the v0.6.3 release pass fixed one and nothing cascaded)."""
+    from lix_pipeline.stage import graph, noise
+
+    graph._code_hash.cache_clear()
+    before = graph.stager_code_hash("noise")
+    monkeypatch.setattr(noise, "NIGHT_DB", noise.NIGHT_DB + 1)
+    graph._code_hash.cache_clear()
+    after = graph.stager_code_hash("noise")
+    graph._code_hash.cache_clear()
+    assert before != after
+    assert graph._stable_repr({"a": frozenset({"y", "x"}), "b": (1, 2.5, None)}) == (
+        "{'a': {'x', 'y'}, 'b': [1, 2.5, None]}"
+    )

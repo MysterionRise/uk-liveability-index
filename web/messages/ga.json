@@ -63,7 +63,7 @@
     "shortlistCount": "Gearrliosta ({count})",
     "panels": "Painéil",
     "analystTitle": "Mód anailísí: dáiltí, forluí táscairí agus SQL",
-    "chatPlaceholder": "Fiafraigh faoi chomharsanacht…",
+    "chatPlaceholder": "Fiafraigh faoi cheantar…",
     "chatWelcome": "Conas is féidir liom cabhrú leat inniu?",
     "chatDisclaimer": "Is féidir le IS botúin a dhéanamh. Deimhnigh eolas tábhachtach.",
     "send": "Seol",
@@ -103,7 +103,17 @@
       "postcode": "Postchód",
       "place": "Áit",
       "region": "Réigiún",
-      "nation": "Náisiún"
+      "nation": "Náisiún",
+      "postcode_district": "Ceantar postchóid",
+      "postcode_sector": "Earnáil postchóid"
+    },
+    "types": {
+      "city": "Cathair",
+      "town": "Baile",
+      "village": "Sráidbhaile",
+      "hamlet": "Gráig",
+      "suburb": "Ceantar bruachbhailteach",
+      "other": "Lonnaíocht"
     }
   },
   "BuildInfo": {
@@ -253,14 +263,47 @@
     "betterThanUrbanRural": "Níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla"
   },
   "Poi": {
+    "phases": {
+      "primary": "Bunscoil",
+      "secondary": "Meánscoil",
+      "16_plus": "16 bliana agus os a chionn",
+      "special": "Speisialta",
+      "all_through": "Gach aois",
+      "middle_deemed_primary": "Meánach (bunscoil)",
+      "middle_deemed_secondary": "Meánach (meánscoil)"
+    },
     "titles": {
-      "well_run_pub": "Tithe tábhairne dea-reáchtáilte",
-      "pub": "Tithe tábhairne",
+      "arts_centre": "Ionaid ealaíon",
+      "bakery": "Bácúis",
+      "bar": "Beáir",
+      "butcher": "Búistéirí",
+      "cafe": "Caifí",
+      "cinema": "Pictiúrlanna",
+      "community_centre": "Ionaid phobail",
+      "convenience_store": "Siopaí áise",
+      "dentist": "Fiaclóirí",
+      "ev_charging": "Pointí luchtaithe feithiclí leictreacha",
+      "fast_food": "Siopaí mearbhia",
       "gp": "Cleachtais dochtúirí teaghlaigh",
-      "primary_school": "Bunscoileanna",
-      "secondary_school": "Meánscoileanna",
+      "greengrocer": "Siopaí glasraí",
+      "gym": "Giomnáisiaim",
+      "library": "Leabharlanna",
+      "market": "Margaí",
+      "museum": "Músaeim agus dánlanna",
       "nursery": "Naíonraí",
-      "supermarket": "Ollmhargaí"
+      "other_school": "Scoileanna eile",
+      "park": "Páirceanna",
+      "pharmacy": "Cógaslanna",
+      "playground": "Clóis súgartha",
+      "post_office": "Oifigí poist",
+      "primary_school": "Bunscoileanna",
+      "pub": "Tithe tábhairne",
+      "restaurant": "Bialanna",
+      "secondary_school": "Meánscoileanna",
+      "sports_centre": "Ionaid spóirt",
+      "supermarket": "Ollmhargaí",
+      "theatre": "Amharclanna",
+      "well_run_pub": "Tithe tábhairne dea-reáchtáilte"
     },
     "near": "{title} in aice le {place}",
     "found": "{count, plural, one {# aimsithe} two {# aimsithe} few {# aimsithe} many {# aimsithe} other {# aimsithe}}",
@@ -339,5 +382,21 @@
     "aria": "Maitrís comhghaolaithe na dtáscairí scóráilte",
     "legendHint": "Grúpálann boscaí gach téama",
     "pair": "{a} × {b}: ρ {rho}"
+  },
+  "Dates": {
+    "months": [
+      "Eanáir",
+      "Feabhra",
+      "Márta",
+      "Aibreán",
+      "Bealtaine",
+      "Meitheamh",
+      "Iúil",
+      "Lúnasa",
+      "Meán Fómhair",
+      "Deireadh Fómhair",
+      "Samhain",
+      "Nollaig"
+    ]
   }
 }

@@ -25,8 +25,11 @@ def compare_areas(
     indicator_weights: dict[str, float] | None = None,
 ) -> Comparison:
     """``locale`` names the areas in the interface language where the pack has it."""
+    # The same area twice, in another case or by another reference, is one area (#193):
+    # the text is deduped here, the resolved code below
+    refs = list({r.strip().lower(): r.strip() for r in refs if r.strip()}.values())
     if not 2 <= len(refs) <= 5:
-        raise ValueError("Compare between 2 and 5 areas")
+        raise ValueError("Compare between 2 and 5 different areas")
     name, themes, multipliers = resolve_weights(store, preset, theme_weights, indicator_weights)
     scored = pl.concat(
         [store.base_features, scores_for(store, themes, multipliers).drop("lsoa21cd")],
@@ -44,6 +47,7 @@ def compare_areas(
             dict[str, tuple[str | None, float | None]],
         ]
     ] = []
+    seen: set[tuple[str, str]] = set()
     for ref in refs:
         place = (search_place(store, ref, limit=1) or [None])[0]
         if place and place.kind in ("msoa", "lad"):
@@ -72,6 +76,9 @@ def compare_areas(
                 else f"{localised(r, 'lsoa21nm', locale)} ({localised(r, 'msoa_name', locale)})"
             )
             level = "lsoa"
+        if (level, code) in seen:  # the same area under another reference
+            continue
+        seen.add((level, code))
         w = rows["population"].cast(pl.Float64)
 
         def wmean(col: str) -> float | None:
@@ -93,6 +100,9 @@ def compare_areas(
             percentile(wmean("overall_pct")) if level == "lsoa" else None,
             {t: wmean(f"theme__{t}") for t in store.themes}, shown,
         ))  # fmt: skip
+
+    if len(picked) < 2:
+        raise ValueError("Compare between 2 and 5 different areas")
 
     # One row per indicator any area shows: the usual one, and a substitute beside it
     # when another area's nation lacks the usual one

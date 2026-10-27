@@ -118,12 +118,26 @@ def _stage(args: argparse.Namespace) -> int:
         raise SystemExit(f"Unknown stager: {args.slug!r}. Available: {list(available)}")
 
     registry, nations = load_registry(), list(active_nations())
+    if args.rehash:
+        from lix_pipeline.fetch.lock import read_lock
+
+        done = graph.rehash_sidecars(list(available), registry, nations, read_lock())
+        logger.info(f"Rewrote {len(done)} sidecar(s) under the current fingerprint scheme")
+        return 0
+    if args.with_dependents and not args.slug:
+        raise SystemExit("--with-dependents needs --slug")
+    slugs = [args.slug] if args.slug else list(available)
+    if args.with_dependents:
+        readers = graph.dependents(args.slug, list(available))
+        logger.info(f"[{args.slug}] Re-staging its {len(readers)} reader(s) too: {readers}")
+        slugs += readers
     failed = []
-    for slug in [args.slug] if args.slug else list(available):
-        if args.all and not graph.has_inputs(slug, registry, nations):
+    for slug in slugs:
+        optional = args.all or slug != args.slug
+        if optional and not graph.has_inputs(slug, registry, nations):
             logger.info(f"[{slug}] Inputs not fetched — skipping")
             continue
-        if args.all and not graph.covers(slug, registry, nations):
+        if optional and not graph.covers(slug, registry, nations):
             logger.info(f"[{slug}] Its sources cover none of the active nations — skipping")
             continue
         try:
@@ -228,7 +242,12 @@ def _refresh(args: argparse.Namespace) -> int:
     from lix_pipeline.refresh.run import RefreshFailed, refresh
 
     try:
-        refresh(dry_run=args.dry_run, force=args.force, skip_fetch=args.skip_fetch)
+        refresh(
+            dry_run=args.dry_run,
+            force=args.force,
+            skip_fetch=args.skip_fetch,
+            keep_going=args.keep_going,
+        )
     except RefreshFailed as e:
         logger.error(str(e))
         return 1
@@ -321,6 +340,17 @@ def main(argv: list[str] | None = None) -> None:
     which = stage.add_mutually_exclusive_group(required=True)
     which.add_argument("--slug", help="One stager")
     which.add_argument("--all", action="store_true", help="Every stager whose inputs are fetched")
+    which.add_argument(
+        "--rehash",
+        action="store_true",
+        help="Rewrite every sidecar's fingerprint under the current scheme without "
+        "re-staging (after a planner upgrade)",
+    )
+    stage.add_argument(
+        "--with-dependents",
+        action="store_true",
+        help="With --slug: also re-stage every table that reads it, in run order",
+    )
     stage.set_defaults(func=_stage)
 
     validate = sub.add_parser("validate", help="Check staged and serve outputs")
@@ -358,6 +388,12 @@ def main(argv: list[str] | None = None) -> None:
     refresh.add_argument("--force", action="store_true", help="Rebuild every stage")
     refresh.add_argument(
         "--skip-fetch", action="store_true", help="Neither resolve nor fetch; rebuild from data/raw"
+    )
+    refresh.add_argument(
+        "--keep-going",
+        action="store_true",
+        help="Build from the locked editions of sources that fail to resolve or fetch "
+        "(a publisher's maintenance window)",
     )
     refresh.set_defaults(func=_refresh)
 

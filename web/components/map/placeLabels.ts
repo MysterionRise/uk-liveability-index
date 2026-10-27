@@ -46,22 +46,33 @@ function ink(mode: Mode, tone: Tone): string {
   return tone === "primary" ? c.textPrimary : tone === "secondary" ? c.textSecondary : c.textMuted;
 }
 
-/** Hides the basemap's place labels; countries and nations stay while zoomed right out. */
-export function hideBasemapPlaces(map: maplibregl.Map): void {
+/**
+ * Hides the basemap's place labels; countries and nations stay while zoomed right out.
+ * The labels the basemap keeps (countries, seas, lakes, rivers, streets) read in the
+ * interface language where the tiles carry it (#187).
+ */
+export function hideBasemapPlaces(map: maplibregl.Map, locale: string): void {
+  const name = nameField(locale) as never;
   for (const layer of map.getStyle().layers ?? []) {
+    if (layer.type !== "symbol" || layer.id.startsWith(LABEL_PREFIX)) continue;
     const sourceLayer = (layer as { "source-layer"?: string })["source-layer"];
-    if (layer.type !== "symbol" || sourceLayer !== "place" || layer.id.startsWith(LABEL_PREFIX)) continue;
-    if (/country|state|continent/.test(layer.id)) {
-      map.setLayerZoomRange(layer.id, layer.minzoom ?? 0, Math.min(layer.maxzoom ?? 24, 6.5));
-    } else {
-      map.setLayoutProperty(layer.id, "visibility", "none");
+    if (sourceLayer === "place") {
+      if (/country|state|continent/.test(layer.id)) {
+        map.setLayerZoomRange(layer.id, layer.minzoom ?? 0, Math.min(layer.maxzoom ?? 24, 6.5));
+        map.setLayoutProperty(layer.id, "text-field", name);
+      } else {
+        map.setLayoutProperty(layer.id, "visibility", "none");
+      }
+      continue;
     }
+    const field = map.getLayoutProperty(layer.id, "text-field");
+    if (field && JSON.stringify(field).includes("name")) map.setLayoutProperty(layer.id, "text-field", name);
   }
 }
 
 /** Adds our place labels above everything else, or recolours them for the theme. */
 export function placeLabels(map: maplibregl.Map, mode: Mode, locale: string): void {
-  hideBasemapPlaces(map);
+  hideBasemapPlaces(map, locale);
   if (!map.getSource(SOURCE)) return;
   for (const tier of TIERS) {
     const id = LABEL_PREFIX + tier.id;

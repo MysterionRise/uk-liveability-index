@@ -151,7 +151,17 @@ def resolve_weights(
     unknown = set(themes) - set(store.themes)
     if unknown:
         raise ValueError(f"Unknown themes {sorted(unknown)}; themes are {sorted(store.themes)}")
-    multipliers = {**base.indicators, **(indicator_weights or {})}
+    given: dict[str, float] = {}
+    for key, mult in (indicator_weights or {}).items():
+        ind = match_indicator(store, key)
+        if ind is None:
+            raise ValueError(f"Unknown indicator {key!r}; the ids are listed at /api/v1/indicators")
+        if ind not in scored_ids(store):
+            raise ValueError(
+                f"{ind} is a context measure, not a scored indicator: it has no weight"
+            )
+        given[ind] = mult
+    multipliers = {**base.indicators, **given}
     if theme_weights or indicator_weights:
         name = f"{name} (adjusted)"
     return name, themes, multipliers

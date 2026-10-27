@@ -17,7 +17,17 @@ IndicatorWeightMap = dict[str, Weight]
 Multiplier = Annotated[float, Field(ge=0.25, le=3, allow_inf_nan=False)]
 ProfileEngine = Literal["model", "rules"]
 EngineReason = Literal["free_model", "no_key", "budget", "model_error"]
-PlaceKind = Literal["postcode", "place", "lsoa", "msoa", "lad", "region", "nation"]
+PlaceKind = Literal[
+    "postcode",
+    "postcode_district",
+    "postcode_sector",
+    "place",
+    "lsoa",
+    "msoa",
+    "lad",
+    "region",
+    "nation",
+]
 
 
 class Point(BaseModel):
@@ -34,6 +44,10 @@ class Place(BaseModel):
         None, description="The English name when `name` is another language's"
     )
     detail: str | None = Field(None, description="Disambiguation, e.g. the local authority")
+    place_type: str | None = Field(
+        None,
+        description="A place's settlement type as the gazetteer words it (City, Town, Village…)",
+    )
     code: str | None = None
     lsoa21cd: str | None = None
     centre: Point | None = None
@@ -105,6 +119,9 @@ class AreaProfile(BaseModel):
     nation: str = Field(description="Nation code: E, W, S, N or I (Ireland)")
     nation_name: str
     urban_rural: str
+    urban_rural_label: str | None = Field(
+        None, description="The urban/rural class in the requested locale (English when none)"
+    )
     population: int
     overall: float | None
     overall_percentile: float | None
@@ -327,15 +344,15 @@ class ProfileDraft(BaseModel):
     catalogue afterwards (ids, bounds, lengths), never trusted as is."""
 
     preset: str = Field(description="The closest base preset: one of the preset ids listed")
+    # Both maps are required, so the output schema asks for them: with a default an
+    # economical model omitted them and described changes it had not made
     theme_weights: dict[str, float] = Field(
-        default_factory=dict,
         description="Overrides 0–3 on the base preset, only for the themes the description "
-        "changes (2 means twice as important as 1; 0 ignores a theme)",
+        "changes (2 means twice as important as 1; 0 ignores a theme); {} for none",
     )
     indicator_weights: dict[str, float] = Field(
-        default_factory=dict,
         description="Multipliers 0.25–3 on single scored indicators the description singles "
-        "out (2 means twice as important within its theme)",
+        "out (2 means twice as important within its theme); {} for none",
     )
     name: str = Field(description="A short name for this profile, at most 40 characters")
     rationale: str = Field(

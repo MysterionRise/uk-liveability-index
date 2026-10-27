@@ -46,7 +46,7 @@ refresh-plan:
 	uv run $(ENV_FILE) lix refresh --dry-run
 
 refresh:
-	uv run $(ENV_FILE) lix refresh
+	uv run $(ENV_FILE) lix refresh $(REFRESH_FLAGS)
 	uv run lix docs
 	uv run lix qa places
 	$(MAKE) data-pack

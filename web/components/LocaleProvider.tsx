@@ -25,12 +25,20 @@ import { hashLocale } from "@/lib/urlState";
 const listeners = new Set<() => void>();
 const notify = () => listeners.forEach((l) => l());
 
+// The language the page is in once a link's language was applied or the person chose
+// one: the page keeps rewriting the hash with the current language, so reading the hash
+// on every render would pin the first choice (a second switch did nothing before)
+let chosen: Locale | null = null;
+
 function readLocale(): Locale {
+  if (chosen) return chosen;
   try {
     // A shared link opens in the language it was made in (for this page only: the
     // browser's own choice is not overwritten)
     const fromLink = hashLocale(window.location.hash);
-    return detectLocale(fromLink ?? localStorage.getItem(LOCALE_KEY), navigator.languages ?? [navigator.language]);
+    const locale = detectLocale(fromLink ?? localStorage.getItem(LOCALE_KEY), navigator.languages ?? [navigator.language]);
+    if (fromLink) chosen = locale;
+    return locale;
   } catch {
     return DEFAULT_LOCALE;
   }
@@ -62,6 +70,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   }, [locale]);
 
   const setLocale = useCallback((next: Locale) => {
+    chosen = next;
     try {
       if (next === DEFAULT_LOCALE) localStorage.removeItem(LOCALE_KEY);
       else localStorage.setItem(LOCALE_KEY, next);

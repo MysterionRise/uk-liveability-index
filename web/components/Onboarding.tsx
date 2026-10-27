@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { useData, useLiveability } from "@/components/AppData";
 import { usePanel } from "@/components/PanelContext";
@@ -55,6 +55,15 @@ export function Onboarding() {
   const coverageIn = useCoverageIn();
   const labels = useLabels();
   const welcomed = useWelcomed();
+  // Escape closes the dialog, as a dialog should (#188)
+  useEffect(() => {
+    if (welcomed) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && dismiss();
+    window.addEventListener("keydown", onKey);
+    // A dialog takes the focus when it opens: the first persona, not the page behind
+    document.querySelector<HTMLElement>('[data-testid="onboarding"] button')?.focus();
+    return () => window.removeEventListener("keydown", onKey);
+  }, [welcomed]);
   if (welcomed) return null;
   const presets = PERSONAS.filter((p) => !manifest || manifest.presets[p]);
 
@@ -62,6 +71,7 @@ export function Onboarding() {
     <div
       className="absolute left-3 top-3 z-20 w-[min(22rem,calc(100%-1.5rem))] rounded-lg border border-[var(--border)] bg-[var(--surface-1)] p-4 shadow-lg"
       role="dialog"
+      aria-modal="true"
       aria-labelledby="welcome-title"
       data-testid="onboarding"
     >

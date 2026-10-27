@@ -34,6 +34,8 @@ const LAYERS = [
 
 // Until the manifest arrives: the UK
 const UK: [number, number, number, number] = [-8.7, 49.8, 1.8, 60.9];
+// The lowest zoom the council tiles are cut at (pipeline serve/tiles.py)
+const MIN_ZOOM = 4;
 
 let protocolAdded = false;
 
@@ -263,6 +265,9 @@ export function LiveabilityMap() {
       container: container.current,
       style: basemap(darkRef.current),
       bounds: manifestRef.current ? activeBbox(manifestRef.current) : UK,
+      // The council tiles start at zoom 4: below it the map is a blank basemap, which is
+      // where fitting the whole build into a phone's map landed
+      minZoom: MIN_ZOOM,
       attributionControl: false, // added below, with the manifest's boundary credits
     });
     styleDark.current = darkRef.current;

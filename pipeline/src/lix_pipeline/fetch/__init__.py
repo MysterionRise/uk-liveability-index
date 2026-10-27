@@ -7,9 +7,12 @@ fetch(slug)    →  data/raw/{slug}/   (lock["fetched"]: sha256, size, when)
 import fnmatch
 import hashlib
 import json
+import time
 from datetime import date, datetime, timedelta, timezone
+from email.message import Message
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlsplit
 
 import requests
 
@@ -42,6 +45,19 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _attachment_name(resp: requests.Response) -> str | None:
+    """The file name a Content-Disposition header states (RFC 6266), else None. Where a
+    server states no validator the name is the edition: the DfE statistics API names its
+    data-set version in it ("<id>_v1.0.1.csv"), and every other such source names its
+    file the same way each time (#203)."""
+    header = resp.headers.get("Content-Disposition")
+    if not header:
+        return None
+    message = Message()
+    message["Content-Disposition"] = header
+    return message.get_filename() or None
 
 
 def _probe(url: str, session: requests.Session, timeout_s: int = 60) -> requests.Response:
@@ -96,7 +112,9 @@ def resolve(slug: str, spec: DatasetSpec, session: requests.Session) -> dict:
             # Dated URLs are their own version; otherwise trust the server's validators
             "version": url
             if access.date_format
-            else head.headers.get("Last-Modified") or head.headers.get("ETag"),
+            else head.headers.get("Last-Modified")
+            or head.headers.get("ETag")
+            or _attachment_name(head),
         }
     elif access.type == "arcgis_item":
         resolved = arcgis.resolve_item(access, session)
@@ -419,12 +437,14 @@ PLAIN_FILE_TYPES = ("http", "html_link", "govuk_attachment", "ckan")
 
 def _reachable(
     url: str, session: requests.Session, validators: dict | None = None
-) -> tuple[int, int | None]:
-    """The status of the lightest request that proves the file is there, and the file's
-    size when the server states it. With ``validators`` (the lockfile's ETag or
-    Last-Modified) the request is conditional, so an unchanged file answers 304."""
+) -> tuple[int, int | None, dict[str, str | None]]:
+    """The status of the lightest request that proves the file is there, the file's size
+    when the server states it, and the validators (ETag, Last-Modified) it answered with.
+    With ``validators`` (the lockfile's) the request is conditional, so an unchanged file
+    answers 304; a server that ignores conditional headers on a Range request (NISRA,
+    NRS, PHS) answers 206 with the same validators, which the caller compares."""
     if url.startswith("s3://"):
-        return overture.probe(url, session), None
+        return overture.probe(url, session), None, {}
     headers = {"Range": "bytes=0-0"}
     if validators and validators.get("etag"):
         headers["If-None-Match"] = validators["etag"]
@@ -436,9 +456,70 @@ def _reachable(
     content_range = resp.headers.get("Content-Range", "")
     if "/" in content_range and content_range.rsplit("/", 1)[1].isdigit():
         size = int(content_range.rsplit("/", 1)[1])
-    elif resp.status_code == 200 and (resp.headers.get("Content-Length") or "").isdigit():
+    elif (
+        resp.status_code == 200
+        and (resp.headers.get("Content-Length") or "").isdigit()
+        and (resp.headers.get("Content-Encoding") or "identity").lower() == "identity"
+    ):
+        # A compressed transfer's length is the wire size, not the file's: the DfE
+        # statistics API gzips every CSV (#203)
         size = int(resp.headers["Content-Length"])
-    return resp.status_code, size
+    answered = {
+        "etag": resp.headers.get("ETag"),
+        "last_modified": resp.headers.get("Last-Modified"),
+    }
+    return resp.status_code, size, answered
+
+
+def _same_validator(ours: dict | None, theirs: dict[str, str | None]) -> bool:
+    """The server's validator matches the lockfile's (ETags compared weak or strong)."""
+    if not ours:
+        return False
+    for key in ("etag", "last_modified"):
+        mine, its = ours.get(key), theirs.get(key)
+        if mine and its:
+            strip = lambda v: v.strip().removeprefix("W/").strip('"')  # noqa: E731
+            return strip(mine) == strip(its)
+    return False
+
+
+# A probe that could not reach the host at all is retried once; a second miss is a
+# warning (the runner's network, not the file: Pobal dropped GitHub's addresses with a
+# connect timeout, #192), where a 404 or a changed file stays a failure
+PROBE_RETRY_S = 5.0
+
+
+def _transient(e: Exception) -> bool:
+    """A connect timeout or a refused, reset or dropped connection: the network between
+    the runner and the publisher. A host name that no longer resolves or a certificate
+    that fails is the publisher gone, and stays a failure."""
+    if getattr(e, "response", None) is not None or isinstance(e, requests.exceptions.SSLError):
+        return False
+    text = str(e)
+    return not any(
+        s in text for s in ("NameResolutionError", "Name or service not known", "nodename nor")
+    )
+
+
+def _with_retry(fn, url: str):
+    try:
+        return fn()
+    except (requests.ConnectTimeout, requests.ConnectionError) as e:
+        if not _transient(e):
+            raise
+        time.sleep(PROBE_RETRY_S)
+        try:
+            return fn()
+        except (requests.ConnectTimeout, requests.ConnectionError) as again:
+            if not _transient(again):
+                raise
+            raise _Unreached(url, again) from again
+
+
+class _Unreached(Exception):
+    def __init__(self, url: str, cause: Exception):
+        host = urlsplit(url).netloc or url
+        super().__init__(f"not verified: could not connect to {host} ({cause})")
 
 
 def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dict:
@@ -477,15 +558,25 @@ def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dic
         session = keyed.keyed_session(spec.access, session, key)
 
     try:
-        resolved = resolve(slug, spec, session)
+        resolved = _with_retry(
+            lambda: resolve(slug, spec, session), getattr(spec.access, "url", "") or slug
+        )
     except requests.HTTPError as e:
         if e.response is not None and e.response.status_code == 403:
             return done("warn", f"not verified: 403 from {e.response.url}")
         return done("fail", f"resolve failed: {e}")
+    except _Unreached as e:
+        return done("warn", str(e))
     except Exception as e:  # report every failure, keep checking the rest
         return done("fail", f"resolve failed: {e}")
     out["version"] = resolved.get("version")
-    new_version = bool(locked) and locked.get("version") != resolved["version"]
+    # A server that states no edition this time (no Last-Modified on today's answer) is
+    # not a new edition: the validator and size checks below decide (#196)
+    new_version = (
+        bool(locked)
+        and resolved.get("version") is not None
+        and locked.get("version") != resolved["version"]
+    )
     if spec.access.type == "curated":
         return done("ok", "curated list" + (" (edited)" if new_version else ""), new_version)
     if resolved["url"] is None:
@@ -496,7 +587,11 @@ def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dic
     )
     validators = {k: fetched.get(k) for k in ("etag", "last_modified")} if plain else None
     try:
-        status, size = _reachable(resolved["url"], session, validators)
+        status, size, answered = _with_retry(
+            lambda: _reachable(resolved["url"], session, validators), resolved["url"]
+        )
+    except _Unreached as e:
+        return done("warn", str(e))
     except requests.RequestException as e:
         return done("fail", f"unreachable: {e}")
     if status == 403:
@@ -510,8 +605,12 @@ def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dic
     if new_version:
         return done("ok", f"new upstream version ({version})", True)
     if plain and validators and any(validators.values()):
-        # The server has a validator and did not answer 304: the file changed
-        return done("ok", f"new upstream version: file changed ({version})", True)
+        if _same_validator(validators, answered):
+            # The server ignored the conditional headers but states the same validator
+            return done("ok", f"unchanged ({version})")
+        if any(answered.values()):
+            return done("ok", f"new upstream version: file changed ({version})", True)
+        # No validator in today's answer: fall through to the size comparison
     if plain and size is not None and fetched.get("bytes") and not fetched.get("files"):
         if size != fetched["bytes"]:
             return done(

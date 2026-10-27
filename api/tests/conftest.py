@@ -154,6 +154,8 @@ def build_serve_dir(path) -> None:
             "area_counts": {"E": 7, "W": 2, "I": 3},
         },
         "quality_levels": list(QUALITY_LEVELS),
+        # One translated catalogue section, enough for the locale paths (#187)
+        "i18n": {"cy": {"urban_rural": {"W": {"UN1": "Trefol: yn nes at dref neu ddinas fawr"}}}},
         "scored_indicators": [i.id for i in catalogue.scored()],
         "indicators": [{**i.model_dump(), "coverage": indicator_coverage(i, registry)}
                        for i in catalogue.indicators],
@@ -207,9 +209,11 @@ def build_serve_dir(path) -> None:
         ("region", "rgn_cd", "rgn_nm", pl.col("rgn_cd") != pl.col("ctry_cd")),
         ("nation", "ctry_cd", "nation_name", pl.lit(True)),
     ):
+        # Councils carry their Welsh name, as the pack's areas table does
+        forms = [pl.col("lad_nm_cy").first().alias("name_cy")] if level == "lad" else []
         areas.append(
             df.filter(keep).group_by(code_col).agg(
-                pl.col(name_col).first().alias("name"), pl.col("lad_nm").first(),
+                pl.col(name_col).first().alias("name"), pl.col("lad_nm").first(), *forms,
                 pl.col("nation").first(),
                 pl.col("population").sum(), pl.len().alias("lsoas"),
                 pl.col("bbox_w").min(), pl.col("bbox_s").min(),
@@ -217,7 +221,7 @@ def build_serve_dir(path) -> None:
             ).rename({code_col: "code"}).with_columns(pl.lit(level).alias("level"))
         )  # fmt: skip
     counties = pl.DataFrame({"code": list(COUNTIES), "county": list(COUNTIES.values())})
-    pl.concat(areas, how="vertical_relaxed").join(counties, on="code", how="left").write_parquet(
+    pl.concat(areas, how="diagonal_relaxed").join(counties, on="code", how="left").write_parquet(
         path / "areas.parquet"
     )
     df = df.drop("nation_name")

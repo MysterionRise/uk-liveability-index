@@ -103,7 +103,17 @@
       "postcode": "Cod post",
       "place": "Lle",
       "region": "Rhanbarth",
-      "nation": "Cenedl"
+      "nation": "Cenedl",
+      "postcode_district": "Ardal cod post",
+      "postcode_sector": "Sector cod post"
+    },
+    "types": {
+      "city": "Dinas",
+      "town": "Tref",
+      "village": "Pentref",
+      "hamlet": "Pentrefan",
+      "suburb": "Ardal faestrefol",
+      "other": "Anheddiad"
     }
   },
   "BuildInfo": {
@@ -253,14 +263,47 @@
     "betterThanUrbanRural": "Yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg"
   },
   "Poi": {
+    "phases": {
+      "primary": "Cynradd",
+      "secondary": "Uwchradd",
+      "16_plus": "16 oed a throsodd",
+      "special": "Arbennig",
+      "all_through": "Pob oed",
+      "middle_deemed_primary": "Canol (cynradd)",
+      "middle_deemed_secondary": "Canol (uwchradd)"
+    },
     "titles": {
-      "well_run_pub": "Tafarndai da",
-      "pub": "Tafarndai",
+      "arts_centre": "Canolfannau celfyddydau",
+      "bakery": "Becws",
+      "bar": "Bariau",
+      "butcher": "Cigyddion",
+      "cafe": "Caffis",
+      "cinema": "Sinemâu",
+      "community_centre": "Canolfannau cymunedol",
+      "convenience_store": "Siopau cyfleus",
+      "dentist": "Deintyddion",
+      "ev_charging": "Pwyntiau gwefru cerbydau trydan",
+      "fast_food": "Siopau tecawê",
       "gp": "Practisau meddyg teulu",
-      "primary_school": "Ysgolion cynradd",
-      "secondary_school": "Ysgolion uwchradd",
+      "greengrocer": "Siopau llysiau",
+      "gym": "Campfeydd",
+      "library": "Llyfrgelloedd",
+      "market": "Marchnadoedd",
+      "museum": "Amgueddfeydd ac orielau",
       "nursery": "Meithrinfeydd",
-      "supermarket": "Archfarchnadoedd"
+      "other_school": "Ysgolion eraill",
+      "park": "Parciau",
+      "pharmacy": "Fferyllfeydd",
+      "playground": "Meysydd chwarae",
+      "post_office": "Swyddfeydd post",
+      "primary_school": "Ysgolion cynradd",
+      "pub": "Tafarndai",
+      "restaurant": "Bwytai",
+      "secondary_school": "Ysgolion uwchradd",
+      "sports_centre": "Canolfannau chwaraeon",
+      "supermarket": "Archfarchnadoedd",
+      "theatre": "Theatrau",
+      "well_run_pub": "Tafarndai da"
     },
     "near": "{title} ger {place}",
     "found": "{count, plural, zero {# wedi'u canfod} one {# wedi'i ganfod} two {# wedi'u canfod} few {# wedi'u canfod} many {# wedi'u canfod} other {# wedi'u canfod}}",
@@ -339,5 +382,21 @@
     "aria": "Matrics cydberthynas y dangosyddion a sgoriwyd",
     "legendHint": "Mae'r blychau'n grwpio pob thema",
     "pair": "{a} × {b}: ρ {rho}"
+  },
+  "Dates": {
+    "months": [
+      "Ionawr",
+      "Chwefror",
+      "Mawrth",
+      "Ebrill",
+      "Mai",
+      "Mehefin",
+      "Gorffennaf",
+      "Awst",
+      "Medi",
+      "Hydref",
+      "Tachwedd",
+      "Rhagfyr"
+    ]
   }
 }

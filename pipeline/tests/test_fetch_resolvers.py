@@ -645,7 +645,7 @@ class TestCheckLink:
         assert overture.probe("s3://b/release/2099-01-01.0/x/*", session) == 404
         assert fetch_mod._reachable(
             "s3://b/release/2026-09-23.1/theme=places/type=place/*", session
-        ) == (200, None)
+        ) == (200, None, {})
 
     def test_conditional_probe_tells_unchanged_from_changed(self, repo, httpserver):
         httpserver.expect_request("/f.csv", method="HEAD").respond_with_data(

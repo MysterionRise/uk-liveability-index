@@ -19,26 +19,28 @@ The pipeline downloads, stages and joins the open datasets below:
   population, area and map bounding box; `lix validate geo` checks it
 - helpers bring other geographies onto LSOAs: points, output areas, MSOA/local-authority values,
   1km grids (sampled at postcodes, so population-weighted) and distance-based access to places
-- `lix indicators` builds 97 indicators (44 scored across 9 themes) from
+- `lix indicators` builds 102 indicators (44 scored across 9 themes) from
   [`config/indicators.yaml`](../config/indicators.yaml); `lix score` turns them into theme and
   overall scores per LSOA for five persona presets ([`config/weights.yaml`](../config/weights.yaml)),
   plus a QA report. The method, including how Greater Manchester's missing crime data and
   Ofsted's framework changes are handled, is in [docs/methodology.md](methodology.md)
 - CI runs ruff and pytest on every push and PR to `master` (tests never touch the network);
-  a nightly job checks every source is still reachable (a 403 is reported as "not
-  verified" rather than failed: some publishers block cloud addresses such as the runners')
+  a nightly job checks every source is still reachable and whether a newer edition is
+  out (the edition is the server's `Last-Modified`, else its `ETag`, else the file name
+  it states; a 403 is reported as "not verified" rather than failed: some publishers
+  block cloud addresses such as the runners')
 
 Datasets ingested so far (full list with licences: [docs/data-sources.md](data-sources.md)):
 
 | Theme | Sources |
 |-------|---------|
-| Geography | NSPL postcode lookup, LSOA/MSOA/local authority boundaries, population-weighted centroids, OA and 2011→2021 lookups, rural–urban class, House of Commons Library MSOA names, OS Open Names; Scotland: Data Zone and Intermediate Zone 2022 boundaries and centroids, the Data Zone lookup, NRS output-area and small-area population estimates, the SIMD postcode lookup (the 2011→2022 crosswalk), Gaelic council names (Wikidata); Northern Ireland: NISRA's Super Data Zones, Data Zones and population estimates, OSNI boundaries, Logainm place names (keyed); Ireland: CSO Small Areas and Electoral Divisions, Tailte Éireann councils and building footprints (home points), the Census 2022 SAPS, OpenStreetMap places |
+| Geography | NSPL postcode lookup, LSOA/MSOA/local authority boundaries, population-weighted centroids, OA and 2011→2021 lookups, rural–urban class, House of Commons Library MSOA names, OS Open Names; Scotland: Data Zone and Intermediate Zone 2022 boundaries and centroids, the Data Zone lookup, NRS output-area and small-area population estimates, the SIMD postcode lookup (the 2011→2022 crosswalk), Gaelic council names (Wikidata); Northern Ireland: NISRA's Super Data Zones, Data Zones and population estimates, OSNI boundaries, Logainm place names (keyed); Ireland: CSO Small Areas and Electoral Divisions, Tailte Éireann councils and building footprints (home points), the Census 2022 SAPS, OpenStreetMap places; the coastline: OS Boundary-Line's high water mark, Tailte Éireann's high water mark, the OSNI outline |
 | Climate | Met Office HadUK-Grid 1991–2020 averages (sunshine, rain days, summer and winter temperatures, frost, wind, snow) and UKCP18 hot days; Met Éireann's 1991–2020 grids in Ireland |
 | Northern Ireland and Ireland | NIMDM 2017, PSNI crime, LPS prices and rates, BSO lists, DE schools, Translink timetables, DAERA noise; Pobal HP 2022, CSO Garda crime, EEA air quality, EPA noise and radon, Transport for Ireland GTFS, ComReg gigabit coverage, ESB and Open Charge Map chargers (keyed), NIAH listed buildings |
 | Community | English Indices of Deprivation 2025, WIMD 2025, SIMD 2020v2; Census 2021 and Scotland's Census 2022 (population, density, age, households, health, accommodation, cars, tenure, commuting, qualifications); Nomis claimant count (monthly); OHID life expectancy by MSOA |
 | Housing | HM Land Registry Price Paid (LSOA medians) and Registers of Scotland small-area prices; ONS small-area income; council tax by billing authority (MHCLG, the Welsh and Scottish Governments); VOA housing stock by council tax band and build period, NRS dwellings by band |
 | Safety | police.uk street crime, 36 months (Greater Manchester Police publishes none; flagged); the SIMD crime domain in Scotland; DfT road collisions (STATS19, 5 years) |
-| Environment | Defra modelled NO₂ and PM2.5 (1km, population-weighted to LSOAs); OS Open Greenspace; Environment Agency flood risk by postcode (rivers, sea and surface water), NRW's risk areas in Wales and SEPA's flood maps in Scotland; Defra, Welsh Government and Scottish (SEPA-hosted) strategic noise maps; ESA WorldCover tree cover; VIIRS night-time lights (manual download) |
+| Environment | Defra modelled NO₂ and PM2.5 (1km, population-weighted to LSOAs); OS Open Greenspace; Environment Agency flood risk by postcode (rivers, sea and surface water), NRW's risk areas in Wales and SEPA's flood maps in Scotland; Defra, Welsh Government and Scottish (SEPA-hosted) strategic noise maps (Lden and Lnight), DAERA's and the EPA's contours; ESA WorldCover tree cover; VIIRS night-time lights (manual download) |
 | Health | NHS GP practices, patients registered by LSOA (real catchments), GP workforce; CQC ratings of GP practices and care homes; NHS dental practices; NHSBSA community pharmacies; Public Health Scotland's GP, dispenser and dental lists; a curated list of emergency departments (PHS and OpenStreetMap) |
 | Education | Get Information About Schools and the Welsh and Scottish school lists; Ofsted inspections blended across the 2024 and 2025 framework changes; Ofsted nurseries and pre-schools, the Care Inspectorate's day care of children; DfE key stage 2 and 4 results, Welsh authority results, Scottish leaver tariffs |
 | Transport | DfT Transport Connectivity Metric (the SIMD access domain in Scotland); NaPTAN stations and ORR station usage; Bus Open Data Service timetables (bus frequency); Ofcom broadband coverage |
@@ -95,7 +97,10 @@ make demo-record    # re-record them after changing data or prompts
 the storyline against a running demo and saves a screenshot per step. `make gif` records the
 README's GIFs and the release's walkthrough video the same way (needs ffmpeg), and
 `make tiktok` the vertical, TikTok-style clip of the phone layout
-([web/scripts/tiktok.mjs](../web/scripts/tiktok.mjs)).
+([web/scripts/tiktok.mjs](../web/scripts/tiktok.mjs)). The browser suite runs against the
+stack the same way (`LIX_E2E_STACK=docker npx playwright test`) once the web image is built
+with `LIX_EXPOSE_MAP=1 make up BUILD=1`, which exposes the map to the tests; without it every
+map test times out. `LIX_SMOKE=1` adds the smoke spec the release workflow runs.
 
 ## Docker
 
@@ -127,7 +132,7 @@ checks any serve directory (CI runs the browser tests on the demo data).
 
 - a MapLibre map of every neighbourhood in the UK and Ireland from static PMTiles,
   coloured by percentile; weights are recomputed in the browser, so moving a slider
-  recolours all 62,833 areas in about 100 ms
+  recolours all 62,833 areas in under 200 ms
 - an assistant chat ([CopilotKit](https://copilotkit.ai) over AG-UI) whose tool calls render as
   components: ranked lists, area profiles, side-by-side comparisons, nearby places, score
   explanations and SQL results. The assistant and the page share state, so it can move the map,
@@ -150,10 +155,12 @@ With a model key in `.env`, `make dev` uses the real model from `.env`.
 
 ## Planned
 
-- More open datasets: mobile coverage, private rents, jobs density, energy performance
-  certificates, night-time noise and everyday services within 15 minutes, then the
-  CDRC's Access to Healthy Assets & Hazards (behind a free login) as a cross-check
-- Walking-network travel times instead of straight-line distances
+- More open datasets: cycle infrastructure, street connectivity, river and bathing water
+  quality, storm overflows, protected nature, terrain and sealed surfaces (v0.7.0), then
+  private rents, jobs density, overcrowding, energy use and energy performance
+  certificates, mobile coverage (v0.7.1)
+- Walking-network travel times instead of straight-line distances (v0.8.x), built on the
+  OpenStreetMap ways table of v0.7.0
 
 ## Building the data
 
@@ -203,9 +210,20 @@ files and the tiles record the lockfile checksums of the raw sources they were b
 (`data/staged/<slug>.meta.json`, `data/indicators/long.meta.json`, `data/serve/.meta.json`,
 `data/serve/tiles/.meta.json`), so a run killed half way resumes, a second run after a
 complete one finds nothing to do, and a new NSPL re-stages everything that reads
-postcodes. A source that fails to resolve or fetch stops the run before anything is
-rebuilt: a publisher that moved or reshaped a file is a registry fix, not something to
-build around. The run's plan, timings and changed sources go to `data/logs/refresh-*.json`.
+postcodes. A staged table's fingerprint also covers the fingerprints of the staged tables
+it reads and the source of its own stager (with the stage-package functions it calls), so
+a table rebuilt for its code or its boundaries re-stages its readers too, while a table
+re-staged by hand from the same inputs and code changes nothing downstream. A helper
+outside the stage package (`geo/*.py`) is left out of that hash on purpose: after fixing
+one, `lix stage --slug <table> --with-dependents` re-stages the table and its readers in
+run order, or `lix refresh --force` rebuilds everything. After a change to the fingerprint
+scheme itself, `lix stage --rehash` rewrites the sidecars without re-staging. A source
+that fails to resolve or fetch stops the run before anything is rebuilt: a publisher that
+moved or reshaped a file is a registry fix, not something to build around. A publisher's
+maintenance window is the other case: `lix refresh --keep-going` (`make refresh
+REFRESH_FLAGS=--keep-going`) builds from the editions the lock names for the sources it
+could not reach and lists them at the end. The run's plan, timings and changed sources
+go to `data/logs/refresh-*.json`.
 
 After a refresh: read `data/serve/qa.md` (the correlation report, the stale list and the
 anchor review), fix any anchor the data has genuinely moved past, add a `period:` to the

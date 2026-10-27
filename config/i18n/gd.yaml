@@ -31,6 +31,7 @@ units:
   pct_pupils: "% de sgoilearan"
   pct_working_age: "% de dhaoine aois 16–64"
   metres: meatairean
+  km: km
   per_1000_year: "gach 1,000 luchd-còmhnaidh sa bhliadhna"
   score: sgòr
   score_100: "sgòr 0–100"
@@ -101,10 +102,12 @@ indicators:
   play_spaces: {label: Raointean-cluiche faisg air làimh, description: "Dorsan a-steach gu raointean-cluiche poblach taobh a-staigh 800m de dhachaighean, air an cuideamachadh a rèir astair (ann an Èirinn a Tuath agus ann an Èirinn, raointean-cluiche OpenStreetMap)."}
   flood_risk: {label: Dachaighean ann an cunnart tuil, description: "Cuid de dhachaighean ann an cunnart àrd no meadhanach tuil bho aibhnichean, bhon mhuir no bho uisge-uachdair (co-dhiù 1% de sheans sa bhliadhna)."}
   flood_rivers_sea: {label: Dachaighean ann an cunnart bho aibhnichean no bhon mhuir, description: "Cuid de dhachaighean ann an cunnart àrd no meadhanach tuil bho aibhnichean no bhon mhuir a-mhàin (co-dhiù 1% de sheans sa bhliadhna)."}
-  noise_exposure: {label: Dachaighean ann am fuaim còmhdhail no gnìomhachais, description: "Cuid de dhachaighean far a bheil fuaim mapaichte a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche (rathaidean agus rèile ann an Sasainn agus sa Chuimrigh; gach tùs mapaichte ann an Alba)."}
+  noise_exposure: {label: Dachaighean ann am fuaim còmhdhail no gnìomhachais, description: "Cuid de dhachaighean far a bheil fuaim mapaichte a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche (rathaidean, rèile agus itealain ann an Sasainn; rathaidean, rèile agus gnìomhachas sa Chuimrigh; gach tùs mapaichte ann an Alba, Èirinn a Tuath agus Èirinn)."}
   aircraft_noise: {label: Dachaighean ann am fuaim itealain, description: "Cuid de na dachaighean far a bheil fuaim itealain a' cuibheasachadh 55 dB Lden no barrachd, timcheall nan sia puirt-adhair deug a tha air am mapadh ann an Sasainn."}
-  industrial_noise: {label: Dachaighean ann am fuaim gnìomhachais, description: "Cuid de na dachaighean far a bheil fuaim gnìomhachais a' cuibheasachadh 55 dB Lden no barrachd, ann an còig bailtean mapaichte na h-Alba."}
+  industrial_noise: {label: Dachaighean ann am fuaim gnìomhachais, description: "Cuid de na dachaighean far a bheil fuaim gnìomhachais a' cuibheasachadh 55 dB Lden no barrachd, timcheall làraichean mapaichte na Cuimrigh, ann an còig bailtean mapaichte na h-Alba, ann an dà bhaile-mòr Èirinn a Tuath agus timcheall làraichean mapaichte Èirinn."}
+  night_noise: {label: Dachaighean ann am fuaim na h-oidhche, description: "Cuid de na dachaighean far a bheil fuaim mhapaichte a' cuibheasachadh 50 dB Lnight no barrachd eadar 23:00 agus 07:00, an ìre aig a bheil an Stiùireadh Fuaim Àrainneachdail a' cunntadh dhaoine mar fhosgailte dhi air an oidhche."}
   road_rail_noise: {label: Dachaighean ann am fuaim rathaid no rèile, description: "Cuid de dhachaighean far a bheil fuaim rathaid no rèile a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche, bho na mapaichean fuaim ro-innleachdail."}
+  coast_distance: {label: Astar chun a' chladaich, description: "Astar bho dhachaighean chun a' chladaich as fhaisge, ann an cilemeatairean (comharra àrd-làin ann am Breatainn Mhòr agus Èirinn, iomall-crìche Èirinn a Tuath)."}
   tree_canopy: {label: Còmhdach chraobhan timcheall dhachaighean, description: "Cuid den fhearann taobh a-staigh 500m de dhachaighean a tha còmhdach-fearainn saideil a' seòrsachadh mar chòmhdach chraobhan (ESA WorldCover, 10m)."}
   light_pollution: {label: Solas na h-oidhche, description: "Deàrrsadh oidhche cuibheasach taobh a-staigh 1km de dhachaighean, bho cho-mheasgachadh bliadhnail saideil VIIRS (nW/cm²/sr)."}
   iod_outdoors: {label: Àrainneachd-còmhnaidh a-muigh IoD 2025, description: "Càileachd èadhair agus tubaistean trafaig rathaid (fo-raon IoD 2025)."}
@@ -126,7 +129,7 @@ indicators:
   connectivity_public_transport: {label: Ceangalachd còmhdhail phoblaich, description: "Sgòr ceangalachd DfT airson còmhdhail phoblaich gu gach ceann-uidhe."}
   connectivity_walking: {label: Coiseachdachd, description: "Sgòr ceangalachd DfT airson coiseachd gu gach ceann-uidhe."}
   connectivity_cycling: {label: Ceangalachd baidhsagail, description: "Sgòr ceangalachd DfT airson baidhsagal gu gach ceann-uidhe."}
-  access_deprivation: {label: Ruigsinneachd sheirbheisean (SIMD), description: "Raon ruigsinneachd cruinn-eòlasach Clàr-amais Ioma-bhochdainn na h-Alba 2020 (ùineachan dràibhidh agus còmhdhail phoblaich gu dotairean-teaghlaich, sgoiltean, bùthan, oifisean-puist agus stèiseanan peatrail), air an toirt gu sònaichean dàta 2022."}
+  access_deprivation: {label: "Ruigsinneachd sheirbheisean (SIMD, NIMDM)", description: "Raon ruigsinneachd cruinn-eòlasach Clàr-amais Ioma-bhochdainn na h-Alba 2020 (ùineachan dràibhidh agus còmhdhail phoblaich gu dotairean-teaghlaich, sgoiltean, bùthan, oifisean-puist agus stèiseanan peatrail), air an toirt gu sònaichean dàta 2022."}
   station_distance: {label: Astar chun an stèisein as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun an stad rèile, metro no trama as fhaisge."}
   rail_service: {label: Seirbheis rèile faisg air làimh, description: "Inntrigidhean agus fàgail stèisein bliadhnail (ORR) taobh a-staigh 2km de dhachaighean, air an cuideamachadh a rèir astair agus a' sàsachadh, gus am bi stèisean trang faisg air làimh a' cunntadh barrachd na stad beag."}
   bus_frequency: {label: Tricead bhusaichean, description: "Busaichean san uair (làithean-seachdain, 07:00–19:00) aig an stad as trainge taobh a-staigh 400m de dhachaighean."}
@@ -136,6 +139,9 @@ indicators:
   well_run_pubs: {label: Taighean-seinnse air an deagh ruith faisg air làimh, description: "Taighean-seinnse taobh a-staigh coiseachd 15 mionaidean le rangachadh slàinteachas bìdh de 4 no 5 bho na trì bliadhna a dh'fhalbh, air an cuideamachadh a rèir astair."}
   food_and_drink: {label: Cafaidhean agus taighean-bìdh, description: "Cafaidhean agus taighean-bìdh taobh a-staigh 800m, air an cuideamachadh a rèir astair."}
   supermarket_distance: {label: Astar chun a' mhòr-bhùtha as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun a' mhòr-bhùtha as fhaisge."}
+  everyday_services: {label: Seirbheisean làitheil taobh a-staigh 15 mionaidean, description: "Cuid de na seachd seòrsaichean seirbheis làitheil (dotair teaghlaich, bùth-chungaidhean, mòr-bhùth, bun-sgoil, oifis a' phuist, pàirc no raon-cluiche, agus còmhdhail phoblach thric) a tha aig an dachaigh àbhaisteach taobh a-staigh 1.2 km, mu 15 mionaidean de choiseachd ann an loidhne dhìreach."}
+  library_distance: {label: Astar gu leabharlann, description: "Astar cuibheasach ann an loidhne dhìreach bho dhachaighean chun an leabharlainn phoblaich as fhaisge (OpenStreetMap)."}
+  post_office_distance: {label: Astar gu oifis a' phuist, description: "Astar cuibheasach ann an loidhne dhìreach bho dhachaighean gu oifis a' phuist as fhaisge (OpenStreetMap)."}
   shops: {label: Bùthan faisg air làimh, description: "Bùthan de gach seòrsa taobh a-staigh 800m, air an cuideamachadh a rèir astair."}
   leisure: {label: Goireasan spòrs agus fallaineachd, description: "Ionadan spòrs, taighean-spòrs agus amaran-snàimh fosgailte don phoball taobh a-staigh 2km, air an cuideamachadh a rèir astair (OpenStreetMap)."}
   leisure_facilities: {label: Goireasan spòrs (Active Places), description: "Tallachan spòrs, taighean-spòrs, amaran, stiùidiothan, cùirtean agus raointean fosgailte don phoball taobh a-staigh 2km ann an clàr Active Places Sport England, air an cuideamachadh a rèir astair."}
@@ -184,3 +190,39 @@ indicators:
   radon_potential: {label: Dachaighean ann an sgìre radon àrd, description: "An cuid de dhachaighean ann an ceàrnagan griod far a bheil dùil gum bi còrr is 10% de dhachaighean os cionn ìre gnìomha radon (atlas comharrachaidh BGS is UKHSA; mapa radon an EPA ann an Èirinn)."}
   ev_charging: {label: Puingean cosgais poblach faisg air làimh, description: "Làraichean cosgais charbadan dealain poblach taobh a-staigh 1.5km de dhachaighean, sa chumantas (OpenStreetMap, ESB air eilean na h-Èireann, Open Charge Map)."}
   listed_buildings: {label: Togalaichean clàraichte faisg air làimh, description: "Togalaichean clàraichte taobh a-staigh 1km de dhachaighean, gach km² (Historic England, Cadw, Àrainneachd Eachdraidheil Alba agus Roinn nan Coimhearsnachdan; ann an Èirinn, an Clàr Nàiseanta de Dhualchas Ailtireachd aig ìre roinneil no nas àirde)."}
+
+# The urban/rural class of each nation's classification, by its code (the pack's
+# ruc21cd): the card's subtitle and the hover (#187)
+urban_rural:
+  E:
+    "RLF1": "Dùthchail nas motha: nas fhaide bho bhaile mòr"
+    "RLN1": "Dùthchail nas motha: nas fhaisge air baile mòr"
+    "RSF1": "Dùthchail nas lugha: nas fhaide bho bhaile mòr"
+    "RSN1": "Dùthchail nas lugha: nas fhaisge air baile mòr"
+    "UF1": "Bailteil: nas fhaide bho bhaile mòr"
+    "UN1": "Bailteil: nas fhaisge air baile mòr"
+  W:
+    "RLF1": "Dùthchail nas motha: nas fhaide bho bhaile mòr"
+    "RLN1": "Dùthchail nas motha: nas fhaisge air baile mòr"
+    "RSF1": "Dùthchail nas lugha: nas fhaide bho bhaile mòr"
+    "RSN1": "Dùthchail nas lugha: nas fhaisge air baile mòr"
+    "UF1": "Bailteil: nas fhaide bho bhaile mòr"
+    "UN1": "Bailteil: nas fhaisge air baile mòr"
+  S:
+    "1": "Sgìrean bailteil mòra"
+    "2": "Sgìrean bailteil eile"
+    "3": "Bailtean beaga so-ruigsinn"
+    "4": "Bailtean beaga iomallach"
+    "5": "Dùthchail so-ruigsinn"
+    "6": "Dùthchail iomallach"
+  N:
+    "Urban": "Bailteil"
+    "Rural": "Dùthchail"
+    "Mixed": "Measgaichte"
+  I:
+    "1": "Cathraichean"
+    "2": "Bailtean saideil"
+    "3": "Bailtean neo-eisimeileach"
+    "4": "Sgìrean dùthchail le buaidh bhailteil àrd"
+    "5": "Sgìrean dùthchail le buaidh bhailteil mheadhanach"
+    "6": "Sgìrean fìor dhùthchail no iomallach"

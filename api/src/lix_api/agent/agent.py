@@ -300,7 +300,8 @@ def rank_areas(
         limit: how many to return (max 20)
         sort_by: "overall" (the weighted score) or one measure: "theme:<id>" (e.g.
             "theme:safety") or "indicator:<id>" (e.g. "indicator:noise_exposure" for the
-            quietest areas, "indicator:house_price" for the cheapest); the map is then
+            quietest areas by day, "indicator:night_noise" for quiet at night,
+            "indicator:house_price" for the cheapest); the map is then
             coloured by that measure and the weights are left alone
         direction: "best" (highest scores first) or "worst" (lowest first: the most
             polluted, the furthest from a hospital)
@@ -427,6 +428,8 @@ async def set_profile(ctx: RunContext[Deps], description: str) -> ToolReturn:
             refine an existing profile, pass the earlier description plus what changed
     """
     store, s = get_store(), ctx.deps.state
+    # The endpoint's cap: the engines' cost grows faster than the text
+    description = description.strip()[: profiles.DESCRIPTION_MAX]
     profile = await profiles.profile_from_description(store, description, locale=s.locale)
     s.preset = profile.preset
     s.theme_weights = dict(profile.theme_weights)
@@ -529,7 +532,8 @@ async def _analyst_only(ctx: RunContext[Deps], tool_def: ToolDefinition) -> Tool
 @agent.tool(prepare=_analyst_only)
 @_recoverable
 def run_sql(ctx: RunContext[Deps], query: str) -> dict:
-    """Run one read-only SELECT (DuckDB SQL) over the index's tables; at most 5,000 rows.
+    """Run one read-only SELECT (DuckDB SQL) over the index's tables; at most 5,000 rows,
+    text cells cut at 1,000 characters.
 
     Tables: lsoa (every LSOA with raw__<indicator>, n__<indicator> 0–100 scores,
     q__<indicator> quality flags, theme__<theme>, overall, overall_pct (the headline, within

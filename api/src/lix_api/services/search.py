@@ -5,11 +5,17 @@ import re
 import polars as pl
 from rapidfuzz import fuzz, process
 
+from lix_api.agent.messages import message
 from lix_api.models import Place, Point
+from lix_api.services.names import base_locale, council_name
 from lix_api.services.text import fold
 from lix_api.store import Store, to_bng
 
 POSTCODE = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$")
+# A district ("LS6", "EC1A") is the outward code; a sector ("LS6 3") adds the inward
+# code's digit. Both are read from the postcode table, so only districts that exist match
+POSTCODE_DISTRICT = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?$")
+POSTCODE_SECTOR = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?\d$")
 # Any ONS GSS code (nation letter + entity type + 6 digits), or one minted for Ireland in
 # the same shape; whether it names an LSOA or an area in this build is decided by looking
 # it up
@@ -27,8 +33,13 @@ MAX_SCOPES = 3
 # score 100 against "Leeds" and "Ynys Môn"
 MIN_SIMILARITY = 88
 # A name shorter than this matches only the query that equals it: WRatio scores two-
-# and three-letter names ("Ae", "Ely") against anything that contains their letters
+# and three-letter names ("Ae", "Ely") against anything that contains their letters; and
+# a query shorter than it matches only the name that equals it ("UK" is no neighbourhood)
 MIN_FUZZY_LETTERS = 4
+# A leading article is no part of a short name: "Y Rhyl" is Rhyl, "An t-Òban" is Oban
+ARTICLE = re.compile(r"^(?:yr|y|an t|an|am|na h|na)[\s-]+")
+# The words of "Rye East Sussex" tried as "Rye, East Sussex" when the whole finds nothing
+MAX_SPLIT_WORDS = 3
 
 KIND_PRIORITY = {"nation": 7, "lad": 6, "region": 5, "City": 5, "Town": 4, "msoa": 3,
                  "Suburban Area": 3, "Village": 2, "Other Settlement": 1, "Hamlet": 0}  # fmt: skip
@@ -42,6 +53,66 @@ def _bbox(row: dict) -> tuple[float, float, float, float] | None:
     if row.get("bbox_w") is None:
         return None
     return (row["bbox_w"], row["bbox_s"], row["bbox_e"], row["bbox_n"])
+
+
+def postcode_groups(postcodes: pl.DataFrame) -> dict[str, dict[str, dict]]:
+    """``{"district": {"LS6": {...}}, "sector": {"LS63": {...}}}`` from the postcode table:
+    each group's postcode count, mean point, bounding box and the area of the postcode
+    nearest its mean point (so a district resolves to a real neighbourhood inside it)."""
+    length = pl.col("postcode_norm").str.len_chars()
+    pc = postcodes.with_columns(
+        pl.col("postcode_norm").str.slice(0, length - 3).alias("district"),
+        pl.col("postcode_norm").str.slice(0, length - 2).alias("sector"),
+    )
+    out: dict[str, dict[str, dict]] = {}
+    for kind in ("district", "sector"):
+        # The postcode nearest the group's mean point names the area the group stands in
+        off = (pl.col("lat") - pl.col("lat").mean().over(kind)) ** 2 + (
+            pl.col("lon") - pl.col("lon").mean().over(kind)
+        ) ** 2
+        groups = (
+            pc.with_columns(off.alias("_off"))
+            .group_by(kind)
+            .agg(
+                pl.len().alias("count"),
+                pl.col("lat").mean().alias("lat"),
+                pl.col("lon").mean().alias("lon"),
+                pl.col("lon").min().alias("bbox_w"),
+                pl.col("lat").min().alias("bbox_s"),
+                pl.col("lon").max().alias("bbox_e"),
+                pl.col("lat").max().alias("bbox_n"),
+                pl.col("lsoa21cd").sort_by("_off").first().alias("lsoa21cd"),
+            )
+        )
+        out[kind] = {row[kind]: row for row in groups.iter_rows(named=True)}
+    return out
+
+
+def _group_place(kind: str, code: str, shown: str, row: dict, locale: str | None) -> Place:
+    return Place(
+        kind=f"postcode_{kind}", name=shown, code=code, lsoa21cd=row["lsoa21cd"],
+        detail=message("postcodes_count", base_locale(locale), n=f"{row['count']:,}"),
+        centre=Point(lat=row["lat"], lon=row["lon"]),
+        bbox=(row["bbox_w"], row["bbox_s"], row["bbox_e"], row["bbox_n"]),
+    )  # fmt: skip
+
+
+def lookup_postcode_group(store: Store, text: str, locale: str | None = None) -> Place | None:
+    """A postcode district ("LS6") or sector ("LS6 3", "ls63") as the pack's postcodes
+    know it; a sector is tried first when the text is written with its space."""
+    norm = normalise_postcode(text)
+    spaced = " " in text.strip()
+    tries = ("sector", "district") if spaced else ("district", "sector")
+    for kind in tries:
+        pattern = POSTCODE_SECTOR if kind == "sector" else POSTCODE_DISTRICT
+        if not pattern.match(norm):
+            continue
+        row = store.postcode_groups[kind].get(norm)
+        if row is None:
+            continue
+        shown = f"{norm[:-1]} {norm[-1]}" if kind == "sector" else norm
+        return _group_place(kind, norm, shown, row, locale)
+    return None
 
 
 def lookup_postcode(store: Store, text: str) -> Place | None:
@@ -73,10 +144,10 @@ def lookup_code(store: Store, text: str) -> Place | None:
     if hit.is_empty():
         return None
     row = hit.row(0, named=True)
-    return _area_place(row)
+    return _area_place(row, store=store)
 
 
-def lookup_nation(store: Store, text: str) -> Place | None:
+def lookup_nation(store: Store, text: str, locale: str | None = None) -> Place | None:
     """A nation by its name in any language the pack knows ("Scotland", "Alba", "Yr
     Alban"): an exact match only, never a fuzzy one, so "Stirling, Scotland" is never
     read as Scotland."""
@@ -88,20 +159,48 @@ def lookup_nation(store: Store, text: str) -> Place | None:
         return None
     row = hit.row(0, named=True)
     shown = text.strip() if fold(text) != fold(row["name"]) else row["name"]
-    return _area_place(row, shown)
+    return _area_place(row, shown, store, locale)
 
 
-def _area_place(row: dict, name: str | None = None) -> Place:
+def repeated_area_names(areas: pl.DataFrame) -> set[tuple[str, str, str]]:
+    """(level, folded name, council) of every area whose name another area of the same
+    level and council also carries: Ireland has 39 division names repeated within one
+    council ("Kilmeadan" twice in Waterford), so the council alone cannot tell them
+    apart in a result list (#194)."""
+    if "lad_nm" not in areas.columns:
+        return set()
+    dup = (
+        areas.filter(pl.col("level").is_in(["lsoa", "msoa"]))
+        .group_by("level", "name", "lad_nm")
+        .len()
+        .filter(pl.col("len") > 1)
+    )
+    return {
+        (level, fold(name), lad)
+        for level, name, lad in dup.select("level", "name", "lad_nm").iter_rows()
+    }
+
+
+def _area_place(
+    row: dict, name: str | None = None, store: Store | None = None, locale: str | None = None
+) -> Place:
     bbox = _bbox(row)
     centre = Point(lat=(bbox[1] + bbox[3]) / 2, lon=(bbox[0] + bbox[2]) / 2) if bbox else None
-    detail = row["lad_nm"] if row["level"] == "msoa" else None
+    council = council_name(store, row.get("lad_nm"), locale) if store else row.get("lad_nm")
+    detail = council if row["level"] == "msoa" else None
+    if (
+        store is not None
+        and (row["level"], fold(row["name"]), row.get("lad_nm")) in store.repeated_areas
+    ):
+        # A name shared within the council: the code tells the areas apart
+        detail = f"{council} ({row['code']})"
     shown = name or row["name"]
     return Place(kind=row["level"], name=shown, code=row["code"], detail=detail,
                  centre=centre, bbox=bbox,
                  name_en=row["name"] if shown != row["name"] else None)  # fmt: skip
 
 
-def lookup_area_name(store: Store, text: str) -> Place | None:
+def lookup_area_name(store: Store, text: str, locale: str | None = None) -> Place | None:
     """An area whose name, as the pack spells it, is the whole query ("Bristol, City of",
     "Kingston upon Hull, City of"): an exact folded match, so the comma inside the name
     is never read as a scope. The highest level wins when several share a name."""
@@ -117,17 +216,29 @@ def lookup_area_name(store: Store, text: str) -> Place | None:
     if not rows:
         return None
     row = max(rows, key=lambda r: KIND_PRIORITY.get(r["level"], 0))
-    return _area_place(row)
+    return _area_place(row, store=store, locale=locale)
 
 
-def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
+def _candidates(
+    store: Store, query: str, limit: int = 40, locale: str | None = None
+) -> list[Place]:
     """Fuzzy matches for free text over places and areas (nations excepted), best first;
     one row per code, the best-scoring form of its name shown."""
     candidates: list[tuple[float, Place]] = []
     folded = fold(query)
+    bare = ARTICLE.sub("", folded)
 
     def too_short(matched: str) -> bool:
-        return len(matched) < MIN_FUZZY_LETTERS and fold(matched) != folded
+        """A short name matches only the query that is it, or nearly: WRatio finds "Cath"
+        and "Lairg" inside "Cathair Phort Láirge", so names under six letters must also
+        score as a whole against the whole query (#193); and a short query matches only
+        the name that is it, since "UK" is inside "Carluke" and "x" inside "Bexley"."""
+        name = ARTICLE.sub("", fold(matched))
+        if name == bare:
+            return False
+        if len(name) < MIN_FUZZY_LETTERS or len(bare) < MIN_FUZZY_LETTERS:
+            return True
+        return len(name) < 6 and fuzz.ratio(bare, name) < MIN_SIMILARITY
 
     n_places = store.places.height
     for _, score, idx in process.extract(
@@ -142,7 +253,9 @@ def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
             continue
         place = Place(
             kind="place", name=matched, code=row["place_id"], lsoa21cd=row["lsoa21cd"],
-            detail=f"{row['place_type']}, {row['local_authority']}",
+            # The settlement type is a key the page words; the council in its language
+            place_type=row["place_type"],
+            detail=council_name(store, row["local_authority"], locale),
             centre=Point(lat=row["lat"], lon=row["lon"]),
             name_en=row["name"] if matched != row["name"] else None,
         )  # fmt: skip
@@ -159,7 +272,9 @@ def _candidates(store: Store, query: str, limit: int = 40) -> list[Place]:
         matched = row[store.area_name_columns[idx // n_areas]]
         if too_short(matched):
             continue
-        candidates.append((score + KIND_PRIORITY.get(row["level"], 0), _area_place(row, matched)))
+        candidates.append(
+            (score + KIND_PRIORITY.get(row["level"], 0), _area_place(row, matched, store, locale))
+        )
 
     candidates.sort(key=lambda c: c[0], reverse=True)
     seen, out = set(), []
@@ -178,14 +293,22 @@ def nation_of(place: Place) -> str | None:
     return code[0] if code else None
 
 
-def _council_of(place: Place) -> str | None:
-    """The folded council name a result sits in, where the result says."""
+def _council_of(store: Store, place: Place) -> str | None:
+    """The folded council name a result sits in: as the result says, or for a postcode,
+    a district, a sector or an LSOA, the council of the LSOA it stands in."""
     if place.kind == "lad":
         return fold(place.name_en or place.name)
     if place.kind == "msoa" and place.detail:
+        return fold(place.detail.split(" (")[0])
+    if place.kind == "place" and place.detail:
         return fold(place.detail)
-    if place.kind == "place" and place.detail and ", " in place.detail:
-        return fold(place.detail.rsplit(", ", 1)[1])
+    if place.lsoa21cd and place.kind in (
+        "postcode",
+        "postcode_district",
+        "postcode_sector",
+        "lsoa",
+    ):
+        return fold(store.features.row(store.lsoa_index[place.lsoa21cd], named=True)["lad_nm"])
     return None
 
 
@@ -231,7 +354,11 @@ def _within_scopes(
             continue
         recognised = True
         names = {fold(name) for code in codes for name in _council_names(store, code)}
-        keep = [p for p in keep if (p.kind == "lad" and p.code in codes) or _council_of(p) in names]
+        keep = [
+            p
+            for p in keep
+            if (p.kind == "lad" and p.code in codes) or _council_of(store, p) in names
+        ]
     return keep, recognised
 
 
@@ -245,12 +372,16 @@ def _council_names(store: Store, code: str) -> list[str]:
     return [row[c] for c in store.area_name_columns if row.get(c)]
 
 
-def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
+def search_place(
+    store: Store, query: str, limit: int = 8, locale: str | None = None
+) -> list[Place]:
     """Rank candidate places for free text, best first.
 
     A postcode, an area code or a nation's name is exact. "Place, Scope" (one or more
     scopes after commas) searches the place and keeps the results inside the scope: a
-    nation or a council, in any language the pack knows.
+    nation or a council, in any language the pack knows; an exact reference before the
+    comma ("LS6, Leeds") is kept when the scope agrees. "Rye East Sussex" without the
+    comma is tried as "Rye, East Sussex" when the whole finds nothing.
     """
     query = query.strip()
     if not query:
@@ -259,18 +390,57 @@ def search_place(store: Store, query: str, limit: int = 8) -> list[Place]:
         raise ValueError(f"A place reference is at most {MAX_QUERY} characters")
     for exact in (
         lookup_postcode(store, query),
+        lookup_postcode_group(store, query, locale),
         lookup_code(store, query),
-        lookup_nation(store, query),
-        lookup_area_name(store, query),
+        lookup_nation(store, query, locale),
+        lookup_area_name(store, query, locale),
     ):
         if exact:
             return [exact]
     parts = [p.strip() for p in query.split(",") if p.strip()]
     if len(parts) >= 2:
-        scoped, recognised = _within_scopes(store, _candidates(store, parts[0]), parts[1:])
+        exact = next(
+            (
+                e
+                for e in (
+                    lookup_postcode(store, parts[0]),
+                    lookup_postcode_group(store, parts[0], locale),
+                    lookup_code(store, parts[0]),
+                )
+                if e
+            ),
+            None,
+        )
+        if exact:
+            scoped, recognised = _within_scopes(store, [exact], parts[1:])
+            if scoped or recognised:
+                return scoped
+        scoped, recognised = _within_scopes(
+            store, _candidates(store, parts[0], locale=locale), parts[1:]
+        )
         if scoped or recognised:
             return scoped[:limit]
-    return _candidates(store, query)[:limit]
+    found = _candidates(store, query, locale=locale)
+    words = query.split()
+    if not found and len(parts) == 1 and len(words) > 1:
+        for i in range(1, min(len(words), MAX_SPLIT_WORDS + 1)):
+            scoped, _ = _within_scopes(
+                store,
+                _candidates(store, " ".join(words[:i]), locale=locale),
+                [" ".join(words[i:])],
+            )
+            if scoped:
+                return scoped[:limit]
+    return found[:limit]
+
+
+def _reject_wide(place: Place) -> None:
+    """A nation or a region is no neighbourhood and no point: say so."""
+    if place.kind in ("nation", "region"):
+        raise LookupError(
+            f"{place.name} is a {place.kind}, not an area: name a place, a postcode or a "
+            "council, or rank within it"
+        )
 
 
 def resolve_point(store: Store, ref: str) -> tuple[Point, str]:
@@ -279,6 +449,7 @@ def resolve_point(store: Store, ref: str) -> tuple[Point, str]:
     if not places or places[0].centre is None:
         raise LookupError(f"Couldn't find a place called {ref!r}")
     place = places[0]
+    _reject_wide(place)
     return place.centre, place.name if not place.detail else f"{place.name} ({place.detail})"
 
 
@@ -293,12 +464,7 @@ def resolve_lsoa(store: Store, ref: str) -> str:
     if not places:
         raise LookupError(f"Couldn't find an area for {ref!r}")
     top = places[0]
-    if top.kind in ("nation", "region"):
-        # The middle of a nation is not a neighbourhood: a profile needs a place
-        raise LookupError(
-            f"{top.name} is a {top.kind}, not an area: name a place, a postcode or a "
-            "council, or rank within it"
-        )
+    _reject_wide(top)  # the middle of a nation is not a neighbourhood
     if top.lsoa21cd:
         return top.lsoa21cd
     namesake = next(

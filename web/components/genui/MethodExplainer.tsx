@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Card, Muted, ValueWithUnit, formatValue, useQualityNote } from "@/components/ui";
@@ -8,20 +8,18 @@ import type { Explanation } from "@/lib/contracts.gen";
 import { BCP47, type Locale } from "@/lib/i18n";
 import { useLabels, usePresetLabel } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
-import { formatPeriod } from "@/lib/period";
+import { useMonths } from "@/lib/dates";
+import { formatDay, formatPeriod } from "@/lib/period";
 
 export function MethodExplainer({ explanation }: { explanation: Explanation }) {
   const t = useTranslations("Explainer");
+  const months = useMonths();
   const tw = useTranslations("Weights");
   const locale = useLocale();
-  const format = useFormatter();
   const qualityNote = useQualityNote();
   const labels = useLabels();
   const presetName = usePresetLabel();
-  const formatDate = (iso: string) => {
-    const d = new Date(iso);
-    return Number.isNaN(d.getTime()) ? iso : format.dateTime(d, { day: "numeric", month: "short", year: "numeric" });
-  };
+  const formatDate = (iso: string) => formatDay(iso, BCP47[locale as Locale] ?? "en-GB", months);
   const [open, setOpen] = useState<string | null>(explanation.contributions.length === 1 ? explanation.contributions[0].theme : null);
   const maxContribution = Math.max(...explanation.contributions.map((c) => c.contribution ?? 0), 1);
 
@@ -80,7 +78,7 @@ export function MethodExplainer({ explanation }: { explanation: Explanation }) {
             <li key={s.id} title={s.attribution}>
               {s.title}
               {s.period ? (
-                <> · {formatPeriod(s.period, BCP47[locale as Locale] ?? "en-GB")}</>
+                <> · {formatPeriod(s.period, BCP47[locale as Locale] ?? "en-GB", months)}</>
               ) : (
                 s.fetched_at && <> · {t("dataAsOf", { date: formatDate(s.fetched_at) })}</>
               )}

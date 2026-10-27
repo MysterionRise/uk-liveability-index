@@ -138,6 +138,10 @@ export type Score1 = number | null;
 export type Theme1 = string;
 export type Themes = ThemeScore[];
 export type UrbanRural = string;
+/**
+ * The urban/rural class in the requested locale (English when none)
+ */
+export type UrbanRuralLabel = string | null;
 export type Weaknesses = IndicatorValue[];
 export type Code = string;
 export type Level = "lsoa" | "msoa" | "lad" | "region" | "nation";
@@ -282,7 +286,8 @@ export type Code2 = string | null;
  * Disambiguation, e.g. the local authority
  */
 export type Detail1 = string | null;
-export type Kind1 = "postcode" | "place" | "lsoa" | "msoa" | "lad" | "region" | "nation";
+export type Kind1 =
+  "postcode" | "postcode_district" | "postcode_sector" | "place" | "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type Lsoa21Cd2 = string | null;
 /**
  * The form that matched (Welsh or Gaelic when the query was)
@@ -292,6 +297,10 @@ export type Name5 = string;
  * The English name when `name` is another language's
  */
 export type NameEn = string | null;
+/**
+ * A place's settlement type as the gazetteer words it (City, Town, Village…)
+ */
+export type PlaceType = string | null;
 export type Category1 = string;
 export type OriginLabel = string;
 export type Pois1 = Poi[];
@@ -416,6 +425,7 @@ export interface AreaProfile {
   strengths: Strengths;
   themes: Themes;
   urban_rural: UrbanRural;
+  urban_rural_label?: UrbanRuralLabel;
   weaknesses: Weaknesses;
 }
 /**
@@ -676,6 +686,7 @@ export interface Place {
   lsoa21cd?: Lsoa21Cd2;
   name: Name5;
   name_en?: NameEn;
+  place_type?: PlaceType;
 }
 /**
  * This interface was referenced by `Schemas`'s JSON-Schema

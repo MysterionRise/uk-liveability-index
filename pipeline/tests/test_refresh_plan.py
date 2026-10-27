@@ -65,7 +65,7 @@ class TestStageSteps:
         todo, _ = p.stage_steps(lock, registry, ["E"], order)
         assert [(s.name, s.reason) for s in todo] == [("population", "never built")]
 
-        digest, parts = graph.fingerprint(graph.inputs_for("population", registry, ["E"]), lock)
+        digest, parts = graph.stage_fingerprint("population", registry, ["E"], lock)
         graph.write_sidecar(graph.sidecar_path("population"), "population", digest, parts)
         todo, _ = p.stage_steps(lock, registry, ["E"], order)
         assert todo == []
@@ -82,7 +82,7 @@ class TestStageSteps:
     def test_a_table_built_for_other_nations_is_stale(self, registry, data):
         lock = {"pop_lsoa_mye": {"fetched": {"sha256": "p1"}}}
         _raw(data, "pop_lsoa_mye")
-        digest, parts = graph.fingerprint(graph.inputs_for("population", registry, ["E"]), lock)
+        digest, parts = graph.stage_fingerprint("population", registry, ["E"], lock)
         # England and Wales share the population file, so widening from E to E,W changes
         # no input, only the nation set
         graph.write_sidecar(
@@ -101,13 +101,82 @@ class TestStageSteps:
         _raw(data, *inputs)
         lock = {s: {"fetched": {"sha256": f"{s}-1"}} for s in inputs}
         for slug in ("os_open_uprn", "flood"):
-            digest, parts = graph.fingerprint(graph.inputs_for(slug, registry, ["E", "W"]), lock)
+            digest, parts = graph.stage_fingerprint(slug, registry, ["E", "W"], lock)
             graph.write_sidecar(graph.sidecar_path(slug), slug, digest, parts)
         assert p.stage_steps(lock, registry, ["E", "W"], ["os_open_uprn", "flood"])[0] == []
 
         lock["os_open_uprn"] = {"fetched": {"sha256": "uprn-2"}}
         todo, _ = p.stage_steps(lock, registry, ["E", "W"], ["os_open_uprn", "flood"])
         assert [s.name for s in todo] == ["os_open_uprn", "flood"]
+
+    def test_a_restaged_table_cascades_to_its_readers(self, registry, data, monkeypatch):
+        """#190: a table re-staged for its code, not its raw file, re-stages the stagers
+        that read it (homes reads nspl; geo_lsoa reads both), while the same table
+        re-staged by hand from the same inputs and code cascades nowhere."""
+        monkeypatch.setattr(graph, "stager_code_hash", lambda slug: f"code-{slug}")
+        order = ["nspl", "homes", "geo_lsoa"]
+        inputs = {s for slug in order for s in graph.raw_inputs(slug, registry)}
+        _raw(data, *inputs)
+        lock = {s: {"fetched": {"sha256": f"{s}-1"}} for s in inputs}
+        for slug in order:
+            graph.record_staged(slug, registry, ["E"], lock)
+        assert p.stage_steps(lock, registry, ["E"], order)[0] == []
+
+        graph.record_staged("nspl", registry, ["E"], lock)  # by hand, nothing changed
+        assert p.stage_steps(lock, registry, ["E"], order)[0] == []
+
+        monkeypatch.setattr(
+            graph, "stager_code_hash", lambda slug: "code-2" if slug == "nspl" else f"code-{slug}"
+        )
+        todo, _ = p.stage_steps(lock, registry, ["E"], order)
+        assert [(s.name, s.reason) for s in todo] == [
+            ("nspl", "code changed"),
+            ("homes", "inputs restaged: nspl"),
+            ("geo_lsoa", "inputs restaged: nspl, homes"),
+        ]
+        # Re-staged by hand under the new code: its sidecar moved, so its readers see it
+        graph.record_staged("nspl", registry, ["E"], lock)
+        todo, _ = p.stage_steps(lock, registry, ["E"], order)
+        assert [(s.name, s.reason) for s in todo] == [
+            ("homes", "staged inputs changed: nspl"),
+            ("geo_lsoa", "staged inputs changed: nspl"),
+        ]
+
+    def test_dependents_follow_the_read_graph_in_run_order(self):
+        from lix_pipeline.stage import stagers
+
+        order = list(stagers())
+        deps = graph.dependents("nspl", order)
+        assert {"homes", "geo_lsoa", "flood", "deprivation", "schools", "noise"} <= set(deps)
+        assert "nspl" not in deps and "iod_2025" not in deps
+        assert deps == [s for s in order if s in set(deps)]
+        assert graph.dependents("night_lights", order) == []
+
+    def test_rehash_brings_old_sidecars_under_the_current_scheme(self, registry, data, monkeypatch):
+        monkeypatch.setattr(graph, "stager_code_hash", lambda slug: "c")
+        inputs = graph.raw_inputs("homes", registry)
+        _raw(data, *inputs)
+        lock = {s: {"fetched": {"sha256": "1"}} for s in inputs}
+        for slug in ("nspl", "homes"):  # sidecars of the old scheme: raw checksums only
+            digest, parts = graph.fingerprint(graph.inputs_for(slug, registry, ["E"]), lock)
+            graph.write_sidecar(
+                graph.sidecar_path(slug), slug, digest, parts, nations=["E"], rows=3
+            )
+        todo, _ = p.stage_steps(lock, registry, ["E"], ["nspl", "homes"])
+        assert [s.reason for s in todo] == [
+            "code changed",
+            "staged inputs changed: nspl; code changed",
+        ]
+        assert graph.rehash_sidecars(["nspl", "homes"], registry, ["E"], lock) == ["nspl", "homes"]
+        assert p.stage_steps(lock, registry, ["E"], ["nspl", "homes"])[0] == []
+        assert graph.read_sidecar(graph.sidecar_path("homes"))["rows"] == 3
+
+    def test_the_code_hash_follows_the_stager_and_what_it_calls(self):
+        """Every stager hashes; the hash is stable within a process and differs between
+        stagers that share no code."""
+        assert graph.stager_code_hash("nspl") == graph.stager_code_hash("nspl")
+        assert graph.stager_code_hash("nspl") != graph.stager_code_hash("homes")
+        assert graph.stager_code_hash("no_such_stager") == "missing"
 
 
 class TestIndicatorsServeTiles:
@@ -162,7 +231,7 @@ class TestIndicatorsServeTiles:
 
     def test_serve_and_tiles_steps(self, data, tmp_path):
         root = tmp_path / "repo"
-        (root / "config").mkdir(parents=True)
+        (root / "config" / "i18n").mkdir(parents=True)
         for name in p.SERVE_CONFIG:
             (root / "config" / name).write_text(f"{name}: 1\n")
         (data / "indicators").mkdir()
@@ -174,6 +243,11 @@ class TestIndicatorsServeTiles:
         assert p.serve_step(root=root) is None
         (root / "config" / "weights.yaml").write_text("weights: 2\n")
         assert p.serve_step(root=root).reason == "inputs changed: config/weights.yaml"
+        # A corrected translation re-scores too: the catalogues ride the manifest (#197)
+        digest, parts = p.serve_fingerprint(root)
+        graph.write_sidecar(p.serve_sidecar(), "serve", digest, parts)
+        (root / "config" / "i18n" / "cy.yaml").write_text("themes: {}\n")
+        assert p.serve_step(root=root).reason == "inputs changed: config/i18n/cy.yaml"
 
         lock = {s: {"fetched": {"sha256": "b"}} for s in p.tile_inputs()}
         assert p.tiles_step(lock, ["E"]).reason == "never built"
@@ -181,6 +255,11 @@ class TestIndicatorsServeTiles:
         graph.write_sidecar(p.tiles_sidecar(), "tiles", digest, parts)
         assert p.tiles_step(lock, ["E"]) is None
         assert p.tiles_step(lock, ["E", "W"]).reason == "inputs changed: nations"
+        # The hover names come from geo_lsoa: a rename re-cuts the tiles (#194's names
+        # shipped in a pack whose tiles still said "Cong/Ross 001")
+        (data / "staged").mkdir(exist_ok=True)
+        graph.write_sidecar(graph.sidecar_path("geo_lsoa"), "geo_lsoa", "renamed", {})
+        assert p.tiles_step(lock, ["E"]).reason == "staged inputs changed: geo_lsoa"
 
 
 def test_plan_renders_and_knows_when_it_is_empty(registry, data):

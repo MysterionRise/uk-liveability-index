@@ -4,6 +4,157 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.6.3] - 2026-10-27
+
+The QA minors that did not fit 0.6.1, three measures that fell out of inputs the build
+already had, and a full refresh of every source: the data pack is rebuilt as
+**data-2026-10.7** (serve schema 5) with five new context indicators.
+
+### Added
+
+- **Night-time noise** (`night_noise`, context): the Lnight metric of every nation's
+  strategic noise maps, read at each home like the daytime ones, as the share of homes at
+  50 dB or more, the Directive's night reporting threshold. Wales's industrial Lden raster
+  joins `industrial_noise` and the noise exposure on the way (#86).
+- **Everyday services within 15 minutes** (`everyday_services`, context): the share of
+  seven service types (a GP practice, a pharmacy, a supermarket, a primary school, a post
+  office, a park or playground, frequent public transport) the typical home has within
+  1.2 km in a straight line, over the types the nation stages; with the distances to the
+  nearest library and post office, and a place on the card's key facts (#75).
+- **Distance to the coast** (`coast_distance`, context, km): OS Boundary-Line's high
+  water mark, Tailte Éireann's high water mark and the OSNI outline, densified to a vertex
+  every 100 m (#130).
+- Postcode districts and sectors ("LS6", "LS6 3") resolve in search to the
+  neighbourhood their mean point stands in, with the group's extent on the map (#193).
+- `lix stage --slug X --with-dependents` re-stages a table and every table that reads
+  it, in run order; `lix stage --rehash` brings existing sidecars under a new fingerprint
+  scheme without re-staging (#190).
+- `lix refresh --keep-going` builds around a publisher's maintenance window: a source
+  that cannot be resolved or fetched keeps the edition the lock names and the run lists
+  it at the end; a source whose resolve failed is no longer fetched from its old entry
+  (#204, UK-AIR on the night of the November refresh).
+
+### Changed
+
+- **The refresh planner follows the read graph.** A staged table's fingerprint chains
+  its raw inputs' checksums, the fingerprints of the staged tables it reads and a hash of
+  its stager's source, so a table rebuilt for its code or its boundaries re-stages its
+  readers (the 0.6.1 build re-ran nspl's 31 readers by hand), while a hand re-stage from
+  the same inputs and code cascades nowhere; a corrected translation re-scores (#190,
+  #197).
+- **Welsh income and employment deprivation are rates again**, from StatsWales's
+  indicator table behind WIMD 2025's domains, in place of the within-Wales percentile
+  stopgap (#104).
+- **Irish areas that share a name are told apart.** Two Small Areas of a merged division
+  shared a tail ("Cong/Ross 001" twice): they carry the old division's digits ("069-001");
+  39 division names repeated within one council carry their code in search results. The
+  division codes stay as they were: every one of the 3,417 divisions sits in one county,
+  so the re-minting the issue proposed was not needed (#194).
+- **The Welsh, Gaelic and Irish interfaces stop leaking English**: the urban/rural class
+  comes through the catalogue by code (`urban_rural_label`), search takes a `locale` and
+  answers with localised councils and a worded settlement type (`place_type`), every POI
+  category has a title, the basemap's country, sea and street labels follow the
+  language where the tiles have it, dates print from the catalogue's month names, and the
+  "(SIMD)" labels read "(SIMD, NIMDM)" like the English (#187).
+- **The rules-based profile engine speaks each language on its own terms**: phrase lists
+  per language, the mutated forms of a phrase's first word, a negator that turns a plain
+  word around within its clause ("not bothered about schools"), singular templates, and
+  rationales that name fewer measures rather than being cut mid-phrase (#161).
+- The nightly source check reports a connection failure from the runner as "not
+  verified" after one retry (Pobal), compares the validator a server answers with (NISRA,
+  NRS and PHS answer 206 to a conditional range request), takes a null version for no
+  new edition, and reads the edition from the file name a server states where it gives
+  no validator: the DfE statistics API gzips every CSV, so its size told nothing and the
+  check flagged the key stage files every night (#192, #196, #203).
+- A name under six letters no longer matches inside a long query; `/pois?near=England`
+  is refused like `/areas/England`; a comparison dedupes its areas by text and by
+  resolved code (#193).
+- Next.js 16.4.3: 16.4.0 carried two critical advisories (remote code execution through the
+  image optimiser with SVG files and through `use cache` functions returning typed arrays)
+  and a Server Actions denial of service. DOMPurify and zod patched with it; the
+  assistant UI's CopilotKit chain keeps 20 high advisories until its upgrade (#206).
+
+### Fixed
+
+- Escape closes the welcome dialog; the About and methodology pages no longer download
+  the scores file; on a phone the legend starts folded; a print stylesheet; the Irish
+  chat placeholder fits its box; hyparquet reads the scores file's size from the
+  manifest (#188).
+- **Found by the release pass** (six testers over the candidate, 27 October): Northern
+  Ireland's coastline counted the shores of Lough Neagh and the Fermanagh loughs as coast
+  (the OSNI outline holds the one as a hole and the others on its outer ring), so Lurgan
+  read 2 km from the sea and Cavan town 15; the stager keeps outer rings only, drops the
+  lake basin and a kilometre of the border, and four anchors watch it (Lurgan, Antrim,
+  Enniskillen, Cavan). Irish everyday-services values were capped at six of seven: homes
+  near the border reach Northern Irish schools, which made a school list for Ireland; a
+  type now counts for a nation when more than half of its areas have one within 50 km.
+  The map tiles still carried the Irish area names from before #194 (the tiles'
+  fingerprint now follows the names). Belfast International's Lden contours were never
+  read (the file pattern lacked its suffix). The six EPA Lden sources were not planner
+  inputs of the noise table. A host name that no longer resolves or a certificate that
+  fails is a failure in the nightly check, not a warning.
+- One- and two-letter references resolved to an arbitrary area ("UK" was a neighbourhood
+  in Carluke): a query under four letters matches only the name that is it. "Y Rhyl" and
+  "Y Barri" find their towns (a leading article is no part of a short name); "LS6, Leeds"
+  and "E01011440, Leeds" keep the exact reference when the scope agrees; "Rye East Sussex"
+  without the comma is tried as "Rye, East Sussex". The postcode count on a district or
+  sector result is worded in the interface language; a locale in capitals is one locale.
+- The 16 KB body cap on the REST API applied to the declared length only, so a chunked
+  request carried 4 MB past it: the bytes are counted as they arrive. A thousand brackets
+  in a weights query string ended in a 500 (RecursionError), now a 400. An indicator
+  multiplier under an unknown id or a context measure was silently ignored while the
+  answer said "(adjusted)": now a 400 naming the problem, with ids, labels and everyday
+  words matched as the assistant's path already did.
+- A shortlist saved in the browser never showed after a load of the production build (the
+  tab had no count, the panel said "No saved areas yet", the stored list was intact): the
+  mount effect that merges it ran before the effects that record the first frame and hand it
+  to the assistant, whose snapshot then replaced the page state; development hid it because
+  StrictMode runs mount effects twice. The merge now runs last, and the browser suite is run
+  against the production image as well (#217).
+- The rules-based profile engine turned "I hate noise", "no crime" and "no flooding" the
+  wrong way (the weight went down): a negator now reads by what it touches, so aversion
+  to a problem raises its weight and aversion to an asset ("no pubs") or indifference
+  ("schools don't matter", which is read after the word too) lowers it; a conjunction
+  ends a negator's reach ("no pubs but good schools"); Gaelic and Irish "no" (or) is not
+  the English "no"; Gaelic and Irish "air" (on) is not the English air; Welsh "chi" and
+  "gwn" are not a dog; a profile name never cuts a label mid-word; the rationale no longer
+  says a lowered measure "weighs more" and ends on a full sentence in Gaelic; one measure
+  reads singular in Welsh, Gaelic and Irish too; "tawelwch", "ysgol", "ciúnas", "scoil",
+  "sgoil", "sàmhchair", "gan carr", "remote" and "hybrid" are known; a zero-width mark
+  inside a word no longer splits it; the phrase table is built once per language. The
+  model engine (Opus 5.5) answered with a rationale and empty weight maps three times in
+  three: both maps are required of the model, and an empty draft takes the rules
+  engine's reading of the same description.
+- The interface could not be switched to a second language once a link's language or a
+  first choice had been applied (the hash kept the first). On a phone the first map view
+  was a blank basemap: the fit landed below the council tiles' lowest zoom, now the map's
+  floor. A link pasted into an open tab opens the area's profile and moves the map, as a
+  fresh load does. The not-found page no longer downloads the scores file; the printed
+  page leaves the blank map and its legend out; the welcome dialog takes the focus and
+  says it is modal; the legend's fold is a button on phones only; a place card no longer
+  repeats a brand that is the name, and a school's phase is worded in the interface
+  language; the About page no longer shows the generated files' HTML comment.
+- Catalogue and docs: the Welsh, Gaelic and Irish descriptions of the coast measure named
+  the 1:1m map's line, the noise descriptions lacked Wales's industry and the other
+  nations; the coast caveat says the line follows tidal rivers (Norwich, Gloucester and
+  Wisbech read under 2 km) and that loughs are not coast; the library and post office
+  caveats name the 50 km search cap; the everyday-services caveat says Irish homes are
+  every building; six data.gov.ie landing pages had a plural slug; the everyday-services
+  and night-noise source lists were incomplete; Logainm is in the manifest's sources;
+  the Ireland observation is back on the validation page; stale counts in the README and
+  the demo script.
+- An analyst query whose result was a gigabyte-long string (`repeat('x', 1e9)`) took the
+  API down: DuckDB's memory limit does not count a scalar, and the copies on the way to
+  JSON pushed the container past its cap, with no restart policy to bring it back. The
+  functions that build a value of any size are refused, text cells are cut at 1,000
+  characters in SQL before a value reaches Python, a reply carries at most 4 M characters,
+  the engine runs on two threads, and the api container restarts after a crash (#208).
+- The OpenStreetMap POI table is staged before the tables that read it: Irish GP
+  surgeries and the charger table were built from the previous run's POIs, and the
+  planner's cascade and rehash walked the same order (#202).
+- The profile card's subtitle takes the urban/rural class from the catalogue in the
+  interface language; it still read the English field after #187.
+
 ## [0.6.2] - 2026-10-22
 
 ### Fixed
@@ -595,6 +746,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.6.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.3
 [0.6.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.2
 [0.6.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.1
 [0.6.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.0

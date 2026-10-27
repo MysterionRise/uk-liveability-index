@@ -3,7 +3,9 @@
 Each phase records its sidecars as it goes, so a run killed half way resumes where it
 stopped and a second run after a complete one finds nothing to do. A source that fails
 to resolve or fetch stops the run before anything is rebuilt: a publisher that moved or
-reshaped a file should be looked at, not built around.
+reshaped a file should be looked at, not built around. ``keep_going`` is for the other
+case, a publisher's maintenance window: the run builds from the editions the lock names
+and lists the sources that kept them (#204).
 """
 
 import json
@@ -46,7 +48,9 @@ def current_plan(force: bool = False) -> RefreshPlan:
     )
 
 
-def refresh(dry_run: bool = False, force: bool = False, skip_fetch: bool = False) -> dict:
+def refresh(
+    dry_run: bool = False, force: bool = False, skip_fetch: bool = False, keep_going: bool = False
+) -> dict:
     """Bring data/ up to date. Returns the run log (also written to data/logs/)."""
     started = time.monotonic()
     catalogue, registry = load_indicators(), load_registry()
@@ -55,6 +59,7 @@ def refresh(dry_run: bool = False, force: bool = False, skip_fetch: bool = False
         "started_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "nations": nations,
         "dry_run": dry_run,
+        "keep_going": keep_going,
         "phases": {},
         "changed_sources": [],
         "failures": [],
@@ -69,6 +74,7 @@ def refresh(dry_run: bool = False, force: bool = False, skip_fetch: bool = False
     # 1. Resolve: which edition of each source exists upstream now
     t0 = time.monotonic()
     new_editions = []
+    unresolved: set[str] = set()
     if not skip_fetch:
         before = read_lock()
         for slug in slugs:
@@ -78,6 +84,7 @@ def refresh(dry_run: bool = False, force: bool = False, skip_fetch: bool = False
                 resolved = resolve_and_lock(slug, registry[slug], session)
             except Exception as e:  # keep going, report at the end
                 log["failures"].append({"phase": "resolve", "slug": slug, "error": str(e)})
+                unresolved.add(slug)
                 continue
             old = before.get(slug, {}).get("resolved", {}).get("version")
             if old != resolved.get("version"):
@@ -97,6 +104,8 @@ def refresh(dry_run: bool = False, force: bool = False, skip_fetch: bool = False
     t0 = time.monotonic()
     if not skip_fetch:
         for slug in slugs:
+            if slug in unresolved:
+                continue  # its edition is unknown tonight: the raw file and the lock entry stand
             try:
                 result = fetch(slug, session=session, registry=registry, revalidate=True)
             except ManualDownloadRequired as e:
@@ -110,9 +119,15 @@ def refresh(dry_run: bool = False, force: bool = False, skip_fetch: bool = False
                 log["changed_sources"].append(slug)
     phase("fetch", t0, changed=list(log["changed_sources"]))
     if log["failures"]:
-        _finish(log, started)
         names = sorted({f["slug"] for f in log["failures"]})
-        raise RefreshFailed(f"{len(names)} source(s) failed to resolve or fetch: {names}")
+        if not keep_going:
+            _finish(log, started)
+            raise RefreshFailed(f"{len(names)} source(s) failed to resolve or fetch: {names}")
+        # A publisher's maintenance window should not block the monthly rebuild: these
+        # sources keep the editions the lock names, which their staged tables were built
+        # from, and the run says so at the end (#204)
+        log["kept"] = names
+        logger.warning(f"{len(names)} source(s) keep their locked editions: {names}")
 
     # The lock now holds the checksums the rest of the run is fingerprinted against
     lock = read_lock()
@@ -191,6 +206,11 @@ def refresh(dry_run: bool = False, force: bool = False, skip_fetch: bool = False
     if problems:
         log["failures"].append({"phase": "validate", "problems": problems})
 
+    if log.get("kept"):
+        logger.warning(
+            f"Built around {len(log['kept'])} source(s) that kept their locked editions: "
+            f"{log['kept']}; see the refresh log"
+        )
     _finish(log, started)
     if problems:
         raise RefreshFailed(f"validation failed: {sorted(problems)}")

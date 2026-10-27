@@ -80,14 +80,19 @@ def nearest(
     column: str | None = None,
     values: list | None = None,
     beyond_cap: float | None = None,
+    max_nearest_m: float | None = None,
+    scale: float = 1.0,
 ) -> pl.DataFrame:
-    """Mean distance from homes to the nearest point of a staged table (metres).
+    """Mean distance from homes to the nearest point of a staged table (metres, or
+    ``scale`` times that: 0.001 for kilometres).
 
-    Homes with nothing within the search cap (50 km) have no distance; ``beyond_cap``
-    gives an area with no measurable distance that value instead (an island with no
-    emergency department within reach is 50 km from one, not unknown)."""
-    access = ctx.access(_points(ctx, slug, column, values), radius_m=1)
-    out = access.select("lsoa21cd", pl.col("nearest_m").alias("value"))
+    Homes with nothing within the search cap (50 km, or ``max_nearest_m``) have no
+    distance; ``beyond_cap`` gives an area with no measurable distance that value instead
+    (an island with no emergency department within reach is 50 km from one, not
+    unknown)."""
+    kwargs = {"max_nearest_m": max_nearest_m} if max_nearest_m is not None else {}
+    access = ctx.access(_points(ctx, slug, column, values), radius_m=1, **kwargs)
+    out = access.select("lsoa21cd", (pl.col("nearest_m") * scale).alias("value"))
     if beyond_cap is not None:
         out = out.with_columns(pl.col("value").fill_null(beyond_cap))
     return out

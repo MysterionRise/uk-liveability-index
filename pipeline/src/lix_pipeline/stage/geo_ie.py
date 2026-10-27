@@ -180,6 +180,19 @@ def tidy_small_areas(sa: pl.DataFrame, councils: pl.DataFrame) -> pl.DataFrame:
             .alias("msoa_name_ga"),
             pl.col("SA_PUB2022").map_elements(area_suffix, return_dtype=pl.Utf8).alias("_suffix"),
         )
+        .with_columns(
+            # A merged division ("Cong/Ross") keeps the ids of the divisions it was made
+            # from, so two of its Small Areas can share a tail ("067069001", "067193001"):
+            # those carry the old division's last three digits too ("069-001", "193-001")
+            pl.when(pl.len().over("ED_ID_STR", "_suffix") > 1)
+            .then(
+                pl.concat_str(
+                    [pl.col("SA_PUB2022").str.slice(3, 3), pl.col("_suffix")], separator="-"
+                )
+            )
+            .otherwise(pl.col("_suffix"))
+            .alias("_suffix")
+        )
         .join(council, on="COUNTY_CODE", how="left")
         .with_columns(
             pl.concat_str([pl.col("msoa_name"), pl.col("_suffix")], separator=" ").alias(

@@ -101,6 +101,32 @@ def test_tidy_small_areas_mints_codes_names_areas_and_folds_counties():
     assert out["lad_nm_ga"][2] == "Tiobraid Árann"
 
 
+def test_small_areas_of_a_merged_division_get_distinct_names():
+    """Cong/Ross (067069) holds Small Areas 067069001 and 067193001, whose tails both read
+    "001": the old divisions' digits tell them apart (#194)."""
+    sa = pl.DataFrame(
+        {
+            "SA_PUB2022": ["067069001", "067193001", "067069002"],
+            "SA_GUID_2022": ["g1", "g2", "g3"],
+            "ED_ID_STR": ["067069", "067069", "067069"],
+            "ED_ENGLISH": ["CONG/ROSS"] * 3,
+            "ED_GAEILGE": ["CONGA/ROS"] * 3,
+            "COUNTY_CODE": ["01"] * 3,
+            "COUNTY_ENGLISH": ["CARLOW"] * 3,
+            "CSO_LEA": ["TULLOW"] * 3,
+            "SA_URBAN_AREA_NAME": [None] * 3,
+        }
+    )
+    out = geo_ie.tidy_small_areas(sa, _councils()).sort("source_code")
+    assert out["lsoa21nm"].to_list() == [
+        "Cong/Ross 069-001", "Cong/Ross 002", "Cong/Ross 193-001"
+    ]  # fmt: skip
+    assert out["lsoa21nm_ga"].to_list() == [
+        "Conga/Ros 069-001", "Conga/Ros 002", "Conga/Ros 193-001"
+    ]  # fmt: skip
+    assert out["msoa21cd"].n_unique() == 1
+
+
 def test_tidy_small_areas_refuses_a_county_the_list_lacks():
     sa = pl.DataFrame(
         {

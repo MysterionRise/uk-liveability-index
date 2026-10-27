@@ -103,7 +103,17 @@
       "postcode": "Còd-puist",
       "place": "Àite",
       "region": "Roinn",
-      "nation": "Nàisean"
+      "nation": "Nàisean",
+      "postcode_district": "Sgìre còd-puist",
+      "postcode_sector": "Roinn còd-puist"
+    },
+    "types": {
+      "city": "Baile-mòr",
+      "town": "Baile",
+      "village": "Baile beag",
+      "hamlet": "Clachan",
+      "suburb": "Sgìre fho-bhailteil",
+      "other": "Tuineachadh"
     }
   },
   "BuildInfo": {
@@ -253,14 +263,47 @@
     "betterThanUrbanRural": "Nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach"
   },
   "Poi": {
+    "phases": {
+      "primary": "Bun-sgoil",
+      "secondary": "Àrd-sgoil",
+      "16_plus": "16 agus os a chionn",
+      "special": "Sònraichte",
+      "all_through": "Gach aois",
+      "middle_deemed_primary": "Meadhan (bun-sgoil)",
+      "middle_deemed_secondary": "Meadhan (àrd-sgoil)"
+    },
     "titles": {
-      "well_run_pub": "Taighean-seinnse air an deagh ruith",
-      "pub": "Taighean-seinnse",
+      "arts_centre": "Ionadan ealain",
+      "bakery": "Taighean-fuine",
+      "bar": "Bàraichean",
+      "butcher": "Bùidsearan",
+      "cafe": "Cafaidhean",
+      "cinema": "Taighean-dhealbh",
+      "community_centre": "Ionadan coimhearsnachd",
+      "convenience_store": "Bùthan goireasach",
+      "dentist": "Fiaclairean",
+      "ev_charging": "Puingean cosgais dealain",
+      "fast_food": "Bùthan bìdh luath",
       "gp": "Cleachdaidhean dhotairean-teaghlaich",
-      "primary_school": "Bun-sgoiltean",
-      "secondary_school": "Àrd-sgoiltean",
+      "greengrocer": "Bùthan glasraich",
+      "gym": "Taighean-spòrs",
+      "library": "Leabharlannan",
+      "market": "Margaidhean",
+      "museum": "Taighean-tasgaidh agus gailearaidhean",
       "nursery": "Sgoiltean-àraich",
-      "supermarket": "Mòr-bhùthan"
+      "other_school": "Sgoiltean eile",
+      "park": "Pàircean",
+      "pharmacy": "Bùthan-chungaidhean",
+      "playground": "Raointean-cluiche",
+      "post_office": "Oifisean a' phuist",
+      "primary_school": "Bun-sgoiltean",
+      "pub": "Taighean-seinnse",
+      "restaurant": "Taighean-bìdh",
+      "secondary_school": "Àrd-sgoiltean",
+      "sports_centre": "Ionadan spòrs",
+      "supermarket": "Mòr-bhùthan",
+      "theatre": "Taighean-cluiche",
+      "well_run_pub": "Taighean-seinnse air an deagh ruith"
     },
     "near": "{title} faisg air {place}",
     "found": "{count, plural, one {# air lorg} two {# air lorg} few {# air lorg} other {# air lorg}}",
@@ -339,5 +382,21 @@
     "aria": "Matrags co-dhàimh thaisbeanairean le sgòr",
     "legendHint": "Tha bogsaichean a' buidhneachadh gach cuspair",
     "pair": "{a} × {b}: ρ {rho}"
+  },
+  "Dates": {
+    "months": [
+      "Faoilleach",
+      "Gearran",
+      "Màrt",
+      "Giblean",
+      "Cèitean",
+      "Ògmhios",
+      "Iuchar",
+      "Lùnastal",
+      "Sultain",
+      "Dàmhair",
+      "Samhain",
+      "Dùbhlachd"
+    ]
   }
 }

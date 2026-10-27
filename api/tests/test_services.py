@@ -1,5 +1,6 @@
 """Tests for the API services on the synthetic store."""
 
+import polars as pl
 import pytest
 
 from lix_api.services import areas, compare, explain, pois, ranking, search
@@ -19,7 +20,8 @@ class TestSearch:
     def test_city_beats_village_and_lad_first(self, store):
         results = search.search_place(store, "Leeds")
         assert results[0].kind == "lad"
-        assert [r.detail for r in results if r.kind == "place"][0] == "City, Leeds"
+        city = [r for r in results if r.kind == "place"][0]
+        assert (city.place_type, city.detail) == ("City", "Leeds")
 
     def test_typo_and_nonsense(self, store):
         assert search.search_place(store, "Headingly")[0].name == "Headingley"
@@ -31,7 +33,8 @@ class TestSearch:
         assert search.search_place(store, "ynys mon")[0].name == "Ynys Môn"
         # A query in the other language matches the alternative name and shows it
         caerdydd = search.search_place(store, "CAERDYDD")[0]
-        assert (caerdydd.name, caerdydd.lsoa21cd) == ("Caerdydd", "W01001880")
+        # The council's Welsh name matches whole, so the council comes first, as "leeds" does
+        assert (caerdydd.name, caerdydd.kind, caerdydd.name_en) == ("Caerdydd", "lad", "Cardiff")
 
     def test_a_place_qualified_by_a_county_or_region_is_found_in_every_council(self, store):
         """ "Ranelagh, Dublin" sits in Dublin City and "Dalkey, Dublin" in Dún
@@ -618,9 +621,113 @@ class TestQaCloseOut:
         wide = guard.run("select * from lsoa")
         assert wide.rows and len(wide.rows) * len(wide.columns) <= 200_000
 
+    def test_sql_cuts_wide_cells_and_refuses_string_builders(self, store, monkeypatch):
+        import lix_api.services.sql as sql
+        from lix_api.services.sql import MAX_CELL_CHARS, SqlError, SqlGuard
+
+        guard = SqlGuard(store)
+        # repeat('x', 1e9) once took the API down: DuckDB's memory limit misses a scalar
+        for q in (
+            "select repeat('x', 10)",
+            "select RPAD('x', 5, 'y')",
+            "select lpad(name, 3, '0') from places",
+        ):
+            with pytest.raises(SqlError, match=r"\w+\(\) is not allowed"):
+                guard.run(q)
+        # Text and nested cells are cut in SQL before any value reaches Python
+        q = (
+            "select string_agg(lsoa21cd, '') as s, [1, 2] as "
+            + '"a ""list"""'
+            + " from lsoa, range(200)"
+        )
+        long = guard.run(q)
+        assert long.columns == ["s", 'a "list"']
+        assert long.rows[0][0].endswith("…") and len(long.rows[0][0]) == MAX_CELL_CHARS + 1
+        assert long.rows[0][1] == "[1, 2]"
+        assert guard.run("select 'short' as s, 1.5::DOUBLE as f").rows == [["short", 1.5]]
+        # The reply's character cap stops the fetch and says so
+        monkeypatch.setattr(sql, "MAX_CHARS", 100)
+        capped = guard.run("select lsoa21cd from lsoa, range(10) order by 1")
+        assert capped.truncated and 11 <= len(capped.rows) <= 13
+
     def test_indicator_listing_matches_a_theme_leniently(self, store):
         from lix_api.services.catalogue import list_indicators
 
         assert {i.theme for i in list_indicators(store, "Schools", detail=False)} == {"education"}
         with pytest.raises(LookupError):
             list_indicators(store, "vibes", detail=False)
+
+
+class TestRepeatedAreaNames:
+    def test_a_name_repeated_within_a_council_shows_its_code(self):
+        """Waterford has two Kilmeadan divisions (#194): the council alone cannot tell
+        them apart, so their results carry the code; a name repeated across councils
+        does not need it."""
+        from types import SimpleNamespace
+
+        kilmeadan, newtown = ["Kilmeadan"] * 2, ["Newtown"] * 2
+        areas = pl.DataFrame(
+            {
+                "level": ["msoa"] * 4 + ["lsoa"] * 2,
+                "name": kilmeadan + newtown + ["Kilmeadan 001"] * 2,
+                "lad_nm": ["Waterford", "Waterford", "Carlow", "Wexford", "Waterford", "Waterford"],
+                "code": [f"I0200000{i}" for i in range(1, 5)] + ["I01000001", "I01000002"],
+                "bbox_w": [-7.2] * 6, "bbox_s": [52.2] * 6,
+                "bbox_e": [-7.1] * 6, "bbox_n": [52.3] * 6,
+            }
+        )  # fmt: skip
+        repeated = search.repeated_area_names(areas)
+        assert repeated == {
+            ("msoa", "kilmeadan", "Waterford"),
+            ("lsoa", "kilmeadan 001", "Waterford"),
+        }
+        store = SimpleNamespace(repeated_areas=repeated)
+        rows = [areas.row(i, named=True) for i in range(4)]
+        assert search._area_place(rows[0], store=store).detail == "Waterford (I02000001)"
+        assert search._area_place(rows[1], store=store).detail == "Waterford (I02000002)"
+        assert search._area_place(rows[2], store=store).detail == "Carlow"
+        # The council scope still reads through the suffix
+        assert search._council_of(store, search._area_place(rows[0], store=store)) == "waterford"
+
+
+class TestSearchRemainder:
+    """#193: postcode districts and sectors, short names inside long queries, a nation as
+    a point, the same area twice in a comparison."""
+
+    def test_a_district_or_sector_resolves_to_a_neighbourhood_inside_it(self, store):
+        (district,) = search.search_place(store, "ls6")
+        assert (district.kind, district.name, district.lsoa21cd) == (
+            "postcode_district",
+            "LS6",
+            "E01000001",
+        )
+        assert district.detail == "1 postcodes" and district.bbox is not None
+        (sector,) = search.search_place(store, "LS6 3")
+        assert (sector.kind, sector.name, sector.code) == ("postcode_sector", "LS6 3", "LS63")
+        assert search.search_place(store, "ZZ9") == []  # no such district in the pack
+        assert search.resolve_lsoa(store, "LS7") == "E01000003"
+
+    def test_a_short_name_does_not_match_inside_a_long_query(self, store):
+        # "Leeds" (five letters) scores against anything that contains it; a whole phrase
+        # is not Leeds
+        assert "Leeds" not in [
+            p.name for p in search.search_place(store, "Cathair Phort Láirge Leeds")
+        ]
+        assert search.search_place(store, "leeds")[0].name == "Leeds"
+        assert search.search_place(store, "Leds")[0].name == "Leeds"  # a typo still finds it
+
+    def test_a_nation_is_no_point(self, store):
+        with pytest.raises(LookupError, match="not an area"):
+            search.resolve_point(store, "England")
+        with pytest.raises(LookupError, match="not an area"):
+            pois.nearest_pois(store, "pub", "Ireland")
+
+    def test_compare_dedupes_its_inputs(self, store):
+        c = compare.compare_areas(store, ["LS6 3HN", "ls6 3hn", "Brighton and Hove", " LS6 3HN "])
+        assert len(c.areas) == 2
+        # The same area by another reference (its code) is one area too
+        assert len(compare.compare_areas(store, ["LS6 3HN", "E01000001", "BN2 9QA"]).areas) == 2
+        with pytest.raises(ValueError, match="different"):
+            compare.compare_areas(store, ["LS6 3HN", "ls6 3hn"])
+        with pytest.raises(ValueError, match="different"):
+            compare.compare_areas(store, ["LS6 3HN", "E01000001"])

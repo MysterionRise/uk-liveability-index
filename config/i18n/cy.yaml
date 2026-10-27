@@ -30,6 +30,7 @@ units:
   pct_pupils: "% o ddisgyblion"
   pct_working_age: "% o rai 16–64 oed"
   metres: metrau
+  km: km
   per_1000_year: "fesul 1,000 o drigolion y flwyddyn"
   score: sgôr
   score_100: "sgôr 0–100"
@@ -64,10 +65,11 @@ flags:
 
 indicators:
   recorded_crime: {label: Troseddau a gofnodwyd (SIMD), description: "Troseddau a gofnodwyd fesul 1,000 o drigolion y flwyddyn ym Mynegai Amddifadedd Lluosog yr Alban 2020, wedi'u trosglwyddo i barthau data 2022."}
-  access_deprivation: {label: Mynediad at wasanaethau (SIMD), description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol), wedi'i ddwyn i barthau data 2022."}
-  noise_exposure: {label: Cartrefi mewn sŵn trafnidiaeth neu ddiwydiant, description: "Cyfran y cartrefi lle mae'r sŵn a fapiwyd yn cyfartalu 60 dB Lden neu fwy (ffyrdd a rheilffyrdd yng Nghymru a Lloegr; pob ffynhonnell a fapiwyd yn yr Alban)."}
+  access_deprivation: {label: "Mynediad at wasanaethau (SIMD, NIMDM)", description: "Parth mynediad daearyddol Mynegai Amddifadedd Lluosog yr Alban 2020 (amseroedd gyrru a thrafnidiaeth gyhoeddus i feddygon teulu, ysgolion, siopau, swyddfeydd post a gorsafoedd petrol), wedi'i ddwyn i barthau data 2022."}
+  noise_exposure: {label: Cartrefi mewn sŵn trafnidiaeth neu ddiwydiant, description: "Cyfran y cartrefi lle mae'r sŵn a fapiwyd yn cyfartalu 60 dB Lden neu fwy (ffyrdd, rheilffyrdd ac awyrennau yn Lloegr; ffyrdd, rheilffyrdd a diwydiant yng Nghymru; pob ffynhonnell a fapiwyd yn yr Alban, Gogledd Iwerddon ac Iwerddon)."}
   aircraft_noise: {label: Cartrefi mewn sŵn awyrennau, description: "Cyfran y cartrefi lle mae sŵn awyrennau'n cyfartalu 55 dB Lden neu fwy, o amgylch yr un ar bymtheg o feysydd awyr a fapiwyd yn Lloegr, Maes Awyr Dinas Belfast, a Dulyn, Corc a Shannon."}
-  industrial_noise: {label: Cartrefi mewn sŵn diwydiannol, description: "Cyfran y cartrefi lle mae sŵn diwydiannol yn cyfartalu 55 dB Lden neu fwy, ym mhum dinas fapiedig yr Alban."}
+  industrial_noise: {label: Cartrefi mewn sŵn diwydiannol, description: "Cyfran y cartrefi lle mae sŵn diwydiannol yn cyfartalu 55 dB Lden neu fwy, o amgylch safleoedd mapiedig Cymru, ym mhum dinas fapiedig yr Alban, yn nwy ardal drefol Gogledd Iwerddon ac o amgylch safleoedd mapiedig Iwerddon."}
+  night_noise: {label: Cartrefi mewn sŵn yn y nos, description: "Cyfran y cartrefi lle mae sŵn wedi'i fapio yn cyfartalu 50 dB Lnight neu fwy rhwng 23:00 a 07:00, y lefel y mae'r Gyfarwyddeb Sŵn Amgylcheddol yn cyfrif pobl fel rhai agored iddi yn y nos."}
   rail_service: {label: Gwasanaeth rheilffordd gerllaw, description: "Mynediadau ac allanfeydd blynyddol gorsafoedd (ORR) o fewn 2km i gartrefi, wedi'u pwysoli yn ôl pellter, fel bod gorsaf brysur gerllaw yn cyfrif mwy nag arhosfan."}
   hospital_ae_distance: {label: Pellter i'r adran achosion brys agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r adran achosion brys agosaf dan arweiniad ymgynghorydd."}
   hospital_distance: {label: Pellter i ofal brys agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r adran achosion brys neu'r uned mân anafiadau agosaf."}
@@ -86,6 +88,7 @@ indicators:
   flood_risk: {label: Cartrefi mewn perygl o lifogydd, description: "Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd, y môr neu ddŵr wyneb (siawns o 1% y flwyddyn o leiaf)."}
   flood_rivers_sea: {label: Cartrefi mewn perygl o afonydd neu'r môr, description: Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd neu'r môr yn unig (siawns o 1% y flwyddyn o leiaf).}
   road_rail_noise: {label: Cartrefi mewn sŵn ffyrdd neu reilffyrdd, description: "Cyfran y cartrefi lle mae sŵn ffyrdd neu reilffyrdd yn cyfartalu 60 dB Lden neu fwy dros y dydd, yr hwyr a'r nos, o'r mapiau sŵn strategol."}
+  coast_distance: {label: Pellter i'r arfordir, description: "Pellter o gartrefi i'r arfordir agosaf, mewn cilometrau (y marc penllanw ym Mhrydain Fawr ac Iwerddon, amlinell Gogledd Iwerddon)."}
   tree_canopy: {label: Gorchudd coed o amgylch cartrefi, description: "Cyfran y tir o fewn 500m i gartrefi y mae gorchudd tir lloeren yn ei ddosbarthu fel gorchudd coed (ESA WorldCover, 10m)."}
   light_pollution: {label: Golau yn y nos, description: "Disgleirdeb cyfartalog yn y nos o fewn 1km i gartrefi, o gyfansawdd blynyddol lloeren VIIRS (nW/cm²/sr)."}
   iod_outdoors: {label: Amgylchedd byw awyr agored IoD 2025, description: Ansawdd aer a damweiniau traffig ffordd (is-barth IoD 2025).}
@@ -113,6 +116,9 @@ indicators:
   well_run_pubs: {label: Tafarndai da gerllaw, description: "Tafarndai o fewn 15 munud o gerdded sydd â sgôr hylendid bwyd o 4 neu 5 o'r tair blynedd diwethaf, wedi'u pwysoli yn ôl pellter, gyda bonws bach am gwrw go iawn, bwyd neu seddi awyr agored."}
   food_and_drink: {label: Caffis a bwytai, description: "Caffis a bwytai o fewn 800m, wedi'u pwysoli yn ôl pellter."}
   supermarket_distance: {label: Pellter i'r archfarchnad agosaf, description: Pellter cyfartalog mewn llinell syth o gartrefi i'r archfarchnad agosaf.}
+  everyday_services: {label: Gwasanaethau bob dydd o fewn 15 munud, description: "Cyfran y saith math o wasanaeth bob dydd (practis meddyg teulu, fferyllfa, archfarchnad, ysgol gynradd, swyddfa bost, parc neu faes chwarae, a thrafnidiaeth gyhoeddus aml) sydd gan y cartref nodweddiadol o fewn 1.2 km, tua 15 munud o gerdded mewn llinell syth."}
+  library_distance: {label: Pellter i lyfrgell, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r llyfrgell gyhoeddus agosaf (OpenStreetMap)."}
+  post_office_distance: {label: Pellter i swyddfa bost, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r swyddfa bost agosaf (OpenStreetMap)."}
   shops: {label: Siopau gerllaw, description: "Siopau o bob math o fewn 800m, wedi'u pwysoli yn ôl pellter."}
   leisure: {label: Cyfleusterau chwaraeon a ffitrwydd, description: "Canolfannau chwaraeon, campfeydd a phyllau nofio sy'n agored i'r cyhoedd o fewn 2km, wedi'u pwysoli yn ôl pellter (OpenStreetMap)."}
   swimming_pool_distance: {label: Pellter i'r pwll cyhoeddus agosaf, description: Pellter cyfartalog mewn llinell syth o gartrefi i'r pwll nofio agosaf sy'n agored i'r cyhoedd.}
@@ -184,3 +190,39 @@ levels:
     low: {one: ardal fach, other: ardaloedd bach}
     mid: {one: rhaniad etholiadol, other: rhaniadau etholiadol}
     upper: {one: cyngor, other: cynghorau}
+
+# The urban/rural class of each nation's classification, by its code (the pack's
+# ruc21cd): the card's subtitle and the hover (#187)
+urban_rural:
+  E:
+    "RLF1": "Gwledig mwy: ymhellach o dref neu ddinas fawr"
+    "RLN1": "Gwledig mwy: yn nes at dref neu ddinas fawr"
+    "RSF1": "Gwledig llai: ymhellach o dref neu ddinas fawr"
+    "RSN1": "Gwledig llai: yn nes at dref neu ddinas fawr"
+    "UF1": "Trefol: ymhellach o dref neu ddinas fawr"
+    "UN1": "Trefol: yn nes at dref neu ddinas fawr"
+  W:
+    "RLF1": "Gwledig mwy: ymhellach o dref neu ddinas fawr"
+    "RLN1": "Gwledig mwy: yn nes at dref neu ddinas fawr"
+    "RSF1": "Gwledig llai: ymhellach o dref neu ddinas fawr"
+    "RSN1": "Gwledig llai: yn nes at dref neu ddinas fawr"
+    "UF1": "Trefol: ymhellach o dref neu ddinas fawr"
+    "UN1": "Trefol: yn nes at dref neu ddinas fawr"
+  S:
+    "1": "Ardaloedd trefol mawr"
+    "2": "Ardaloedd trefol eraill"
+    "3": "Trefi bach hygyrch"
+    "4": "Trefi bach anghysbell"
+    "5": "Gwledig hygyrch"
+    "6": "Gwledig anghysbell"
+  N:
+    "Urban": "Trefol"
+    "Rural": "Gwledig"
+    "Mixed": "Cymysg"
+  I:
+    "1": "Dinasoedd"
+    "2": "Trefi trefol lloeren"
+    "3": "Trefi trefol annibynnol"
+    "4": "Ardaloedd gwledig â dylanwad trefol uchel"
+    "5": "Ardaloedd gwledig â dylanwad trefol cymedrol"
+    "6": "Ardaloedd gwledig iawn neu anghysbell"

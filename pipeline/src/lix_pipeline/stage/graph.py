@@ -93,11 +93,10 @@ def _referenced_functions(fn: Callable, tree: ast.AST) -> list[Callable]:
     return out
 
 
-def derived_reads(stager: Callable) -> tuple[set[str], set[str]]:
-    """(staged tables, raw datasets) a stager reads, found by scanning its source and
-    the source of every stage-package function it names, recursively."""
-    staged: set[str] = set()
-    raw: set[str] = set()
+def _stage_functions(stager: Callable) -> list[tuple[Callable, str]]:
+    """The stager and every stage-package function it names, recursively, each with its
+    source: the code a staged table is built by."""
+    out: list[tuple[Callable, str]] = []
     seen: set[Callable] = set()
     todo = [_unwrap(stager)]
     while todo:
@@ -110,10 +109,20 @@ def derived_reads(stager: Callable) -> tuple[set[str], set[str]]:
         except (OSError, TypeError):
             continue
         source = inspect.cleandoc(source) if source[:1].isspace() else source
+        out.append((fn, source))
+        todo.extend(_referenced_functions(fn, ast.parse(source)))
+    return out
+
+
+def derived_reads(stager: Callable) -> tuple[set[str], set[str]]:
+    """(staged tables, raw datasets) a stager reads, found by scanning its source and
+    the source of every stage-package function it names, recursively."""
+    staged: set[str] = set()
+    raw: set[str] = set()
+    for _fn, source in _stage_functions(stager):
         staged |= set(STAGED_READ.findall(source))
         raw |= set(RAW_READ.findall(source))
-        tree = ast.parse(source)
-        for node in ast.walk(tree):
+        for node in ast.walk(ast.parse(source)):
             if isinstance(node, ast.Call):
                 name = (
                     node.func.id
@@ -126,8 +135,74 @@ def derived_reads(stager: Callable) -> tuple[set[str], set[str]]:
                     staged.add(HELPER_STAGED[name])
                 if name in HELPER_RAW:
                     raw.update(HELPER_RAW[name])
-        todo.extend(_referenced_functions(fn, tree))
     return staged, raw
+
+
+@functools.lru_cache(maxsize=1)
+def _stager_table() -> dict[str, Callable]:
+    from lix_pipeline.stage import stagers
+
+    return stagers()
+
+
+def _stable_repr(value) -> str | None:
+    """A module constant as text, the same in every process: dicts in their order, sets
+    sorted, nested values alike; None for anything that is not plain data."""
+    if value is None or isinstance(value, (bool, int, float, str, bytes)):
+        return repr(value)
+    if isinstance(value, (list, tuple)):
+        parts = [_stable_repr(v) for v in value]
+        return None if None in parts else f"[{', '.join(parts)}]"
+    if isinstance(value, (set, frozenset)):
+        parts = [_stable_repr(v) for v in value]
+        return None if None in parts else f"{{{', '.join(sorted(parts))}}}"
+    if isinstance(value, dict):
+        parts = [(_stable_repr(k), _stable_repr(v)) for k, v in value.items()]
+        if any(k is None or v is None for k, v in parts):
+            return None
+        return "{" + ", ".join(f"{k}: {v}" for k, v in parts) + "}"
+    return None
+
+
+def _constants_named(fn: Callable, source: str) -> list[tuple[str, str]]:
+    """The module-level constants (plain data: NOISE_SOURCES, BORDER_M, the contour
+    bands) that ``fn``'s body names, with their values as text: a table built under
+    other constants is built by other code."""
+    out = []
+    names = {n.id for n in ast.walk(ast.parse(source)) if isinstance(n, ast.Name)}
+    for name in sorted(names):
+        if not name.isupper() or name not in fn.__globals__:
+            continue
+        text = _stable_repr(fn.__globals__[name])
+        if text is not None:
+            out.append((f"{fn.__module__}.{name}", text))
+    return out
+
+
+@functools.lru_cache(maxsize=None)
+def _code_hash(slug: str) -> str:
+    fn = _stager_table().get(slug)
+    if fn is None:
+        return "missing"
+    h = hashlib.sha256()
+    for f, source in sorted(
+        _stage_functions(fn), key=lambda x: (x[0].__module__, x[0].__qualname__)
+    ):
+        h.update(f"{f.__module__}.{f.__qualname__}\n{source}\n".encode())
+        for name, text in _constants_named(f, source):
+            h.update(f"{name} = {text}\n".encode())
+    return h.hexdigest()
+
+
+def stager_code_hash(slug: str) -> str:
+    """A digest of the stager's source, of every stage-package function it calls and of
+    the module constants those name (a file pattern or a band table is code too: the
+    Belfast International pattern fix did not cascade until it was), so a table built
+    by older code reads as stale (#190). Helpers outside the stage package (geo/*.py)
+    are left out on purpose: a fix there would re-stage every table for hours, and
+    ``lix stage --slug X --with-dependents`` or ``lix refresh --force`` is the
+    developer's call."""
+    return _code_hash(slug)
 
 
 def expand_inputs(patterns: Iterable[str], registry: dict) -> list[str]:
@@ -225,6 +300,42 @@ def fingerprint(inputs: Iterable[str], lock: dict) -> tuple[str, dict[str, str |
     return digest, parts
 
 
+def stage_fingerprint(
+    slug: str, registry: dict, nations: Iterable[str], lock: dict
+) -> tuple[str, dict[str, str | None]]:
+    """A stager's digest: the lockfile checksums of its raw inputs (``fingerprint``), the
+    sidecar fingerprint of each staged table it reads directly, and the hash of its code.
+    A table re-staged upstream, or a stager rewritten, cascades through its readers; a
+    table re-staged by hand from the same inputs and code yields the same digest and
+    cascades nowhere."""
+    from lix_pipeline.stage import STAGE_READS
+
+    _, parts = fingerprint(inputs_for(slug, registry, nations), lock)
+    for table in STAGE_READS.get(slug, []):
+        parts[f"staged:{table}"] = read_sidecar(sidecar_path(table)).get("fingerprint") or "missing"
+    parts["code"] = stager_code_hash(slug)
+    digest = hashlib.sha256(
+        "\n".join(f"{k} {v or 'missing'}" for k, v in sorted(parts.items())).encode()
+    ).hexdigest()
+    return digest, parts
+
+
+def dependents(slug: str, order: Iterable[str]) -> list[str]:
+    """Every stager that reads ``slug``'s table, directly or through another staged
+    table, in run order."""
+    from lix_pipeline.stage import STAGE_READS
+
+    out: set[str] = set()
+    todo = [slug]
+    while todo:
+        s = todo.pop()
+        for reader, reads in STAGE_READS.items():
+            if s in reads and reader not in out:
+                out.add(reader)
+                todo.append(reader)
+    return [s for s in order if s in out]
+
+
 def sidecar_path(slug: str) -> Path:
     return data_dir("staged") / f"{slug}.meta.json"
 
@@ -261,10 +372,31 @@ def record_staged(
 
         lock = read_lock()
     nations = list(nations)
-    digest, parts = fingerprint(inputs_for(slug, registry, nations), lock)
+    digest, parts = stage_fingerprint(slug, registry, nations, lock)
     table = data_dir("staged") / f"{slug}.parquet"
     rows = pl.scan_parquet(table).select(pl.len()).collect().item() if table.exists() else None
     return write_sidecar(sidecar_path(slug), slug, digest, parts, nations=nations, rows=rows)
+
+
+def rehash_sidecars(
+    order: Iterable[str], registry: dict, nations: Iterable[str], lock: dict
+) -> list[str]:
+    """Rewrite every existing sidecar's fingerprint under the current scheme without
+    re-staging, for a planner upgrade: the tables on disk are taken as built by the
+    current code from the inputs the lockfile names. In run order, so a reader sees its
+    inputs' new fingerprints. Returns the slugs rewritten."""
+    nations = list(nations)
+    done = []
+    for slug in order:
+        path = sidecar_path(slug)
+        meta = read_sidecar(path)
+        if not meta:
+            continue
+        digest, parts = stage_fingerprint(slug, registry, nations, lock)
+        extra = {k: v for k, v in meta.items() if k not in ("name", "fingerprint", "inputs")}
+        write_sidecar(path, slug, digest, parts, **extra)
+        done.append(slug)
+    return done
 
 
 def stale_reason(path: Path, digest: str, parts: dict[str, str | None]) -> str | None:
@@ -276,4 +408,15 @@ def stale_reason(path: Path, digest: str, parts: dict[str, str | None]) -> str |
         return None
     before = meta.get("inputs") or {}
     changed = sorted(s for s, c in parts.items() if before.get(s) != c)
-    return f"inputs changed: {', '.join(changed[:4])}" + (" …" if len(changed) > 4 else "")
+    raw = [s for s in changed if s != "code" and not s.startswith("staged:")]
+    staged = [s[len("staged:") :] for s in changed if s.startswith("staged:")]
+    reasons = []
+    if raw:
+        reasons.append(f"inputs changed: {', '.join(raw[:4])}" + (" …" if len(raw) > 4 else ""))
+    if staged:
+        reasons.append(
+            f"staged inputs changed: {', '.join(staged[:4])}" + (" …" if len(staged) > 4 else "")
+        )
+    if "code" in changed:
+        reasons.append("code changed")
+    return "; ".join(reasons) or "fingerprint changed"

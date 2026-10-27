@@ -207,7 +207,9 @@ export async function loadScores(manifest: Manifest): Promise<ScoreData> {
 }
 
 async function readScores(manifest: Manifest, url: string): Promise<ScoreData> {
-  const file = await asyncBufferFromUrl({ url });
+  // The manifest knows the file's size, so hyparquet need not ask with a HEAD (#188)
+  const byteLength = manifest.files?.["scores.parquet"]?.bytes;
+  const file = await asyncBufferFromUrl(byteLength ? { url, byteLength } : { url });
   const rows = (await parquetReadObjects({ file })) as Record<
     string,
     unknown

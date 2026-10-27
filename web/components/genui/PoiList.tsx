@@ -6,25 +6,32 @@ import { useLiveability } from "@/components/AppData";
 import { Card, Muted, formatValue } from "@/components/ui";
 import type { PoiResult } from "@/lib/contracts.gen";
 
-const TITLED = ["well_run_pub", "pub", "gp", "primary_school", "secondary_school", "nursery", "supermarket"] as const;
-
 export function PoiList({ result }: { result: PoiResult }) {
   const { update } = useLiveability();
   const t = useTranslations("Poi");
   const locale = useLocale();
-  const title = (TITLED as readonly string[]).includes(result.category)
-    ? t(`titles.${result.category as (typeof TITLED)[number]}`)
+  // Every category the pack serves has a title in the catalogue; a new one reads as its id
+  const title = t.has(`titles.${result.category}`)
+    ? t(`titles.${result.category}` as never)
     : result.category.replaceAll("_", " ");
   const sources = [...new Set(result.pois.map((p) => `${p.source} (${p.licence})`))];
 
-  function detailLine(category: string, d: Record<string, unknown>): string {
+  // A school's phase is an English key in the data; the catalogue words it
+  function phase(d: Record<string, unknown>): string {
+    if (typeof d.phase !== "string") return "";
+    const key = `phases.${d.phase.toLowerCase().replace(/[^a-z0-9]+/g, "_")}` as never;
+    return t.has(key) ? ` · ${t(key)}` : "";
+  }
+
+  function detailLine(category: string, d: Record<string, unknown>, name: string | null): string {
     if (category.includes("pub") && d.rating != null) {
       return `${t("hygiene", { rating: String(d.rating) })}${d.real_ale === "yes" ? ` · ${t("realAle")}` : ""}`;
     }
     if (category.includes("school") && typeof d.quality === "number") {
-      return `${t("inspection", { score: (d.quality * 100).toFixed(0) })}${d.phase ? ` · ${d.phase}` : ""}`;
+      return `${t("inspection", { score: (d.quality * 100).toFixed(0) })}${phase(d)}`;
     }
-    if (typeof d.brand === "string") return d.brand;
+    // The brand, when it is not the name again ("Boots / Boots")
+    if (typeof d.brand === "string" && d.brand !== name) return d.brand;
     return "";
   }
 
@@ -45,7 +52,7 @@ export function PoiList({ result }: { result: PoiResult }) {
             >
               <span className="min-w-0">
                 <span className="block truncate font-medium">{p.name ?? t("unnamed")}</span>
-                <span className="block truncate text-xs text-[var(--text-secondary)]">{detailLine(result.category, p.detail ?? {})}</span>
+                <span className="block truncate text-xs text-[var(--text-secondary)]">{detailLine(result.category, p.detail ?? {}, p.name ?? null)}</span>
               </span>
               <span className="shrink-0 text-xs tabular-nums text-[var(--text-secondary)]">{formatValue(p.distance_m, "metres", locale)}</span>
             </button>

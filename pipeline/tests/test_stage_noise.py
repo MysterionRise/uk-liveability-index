@@ -95,8 +95,72 @@ class TestNoiseAtHomes:
         assert out["share_any_60"] == 0.5  # the loud road home and the 63 dB aircraft home
         assert out["share_road_rail_60"] == 0.25  # aircraft left out
 
+    def test_night_shares_follow_the_night_maps(self, tmp_path):
+        """Night-time exposure counts from 50 dB Lnight (the Directive's reporting
+        threshold at night) over the loudest kind; without night maps the columns are
+        null, not zero (#86)."""
+        road = _tile(tmp_path / "road.tif", 0, 40, [[70, 70, 0, 0]] * 4)
+        road_night = _tile(tmp_path / "road_n.tif", 0, 40, [[52, 48, 0, 0]] * 4)
+        rail_night = _tile(tmp_path / "rail_n.tif", 0, 40, [[0, 0, 56, 0]] * 4)
+        homes = pl.DataFrame(
+            {
+                "lsoa21cd": ["E01"] * 4,
+                "east1m": [5.0, 15.0, 25.0, 35.0],
+                "north1m": [20.0] * 4,
+            }
+        )
+        out = noise_at_homes(
+            homes, {"road": [road]}, night_layers={"road": [road_night], "rail": [rail_night]}
+        ).row(0, named=True)
+        assert out["share_any_night_50"] == 0.5 and out["share_any_night_55"] == 0.25
+        assert out["mean_night_db"] == (52 + 48 + 56 + 0) / 4
+        assert out["share_any_60"] == 0.5  # the day-time shares are untouched
+        quiet = noise_at_homes(homes, {"road": [road]}).row(0, named=True)
+        assert quiet["share_any_night_50"] is None and quiet["mean_night_db"] is None
+
     def test_without_surface_layers_the_road_rail_share_is_null(self, tmp_path):
         every = _tile(tmp_path / "all.tif", 0, 40, [[70, 0, 0, 0]] * 4)
         homes = pl.DataFrame({"lsoa21cd": ["S01"], "east1m": [5.0], "north1m": [20.0]})
         out = noise_at_homes(homes, {"all": [every]}).row(0, named=True)
         assert out["share_all_60"] == 1.0 and out["share_road_rail_60"] is None
+
+
+class TestContourBands:
+    def test_daera_gridcodes_give_the_band_floor_down_to_the_night_maps_lowest(self, tmp_path):
+        """DAERA's gridcode is the top of a 5 dB band; the night maps add 49 (45–49.9 dB),
+        which stopped the November 2026 refresh when it was unknown."""
+        import geopandas as gpd
+        from shapely.geometry import box
+
+        from lix_pipeline.stage.noise import contour_db_at_points
+
+        polys = gpd.GeoDataFrame(
+            {"gridcode": [49, 54, 1000]},
+            geometry=[box(0, 0, 10, 10), box(20, 0, 30, 10), box(40, 0, 50, 10)],
+            crs="EPSG:27700",
+        )
+        path = tmp_path / "R3_con_lngt.gpkg"
+        polys.to_file(path, driver="GPKG")
+        got = contour_db_at_points([path], np.array([5.0, 25.0, 45.0, 65.0]), np.array([5.0] * 4))
+        assert got[:3].tolist() == [45.0, 50.0, 75.0] and np.isnan(got[3])
+
+
+def test_every_noise_source_is_an_input_the_planner_knows():
+    """A new edition of any grid or contour file re-stages the table: the EPA's Lden
+    slugs carry no metric suffix and were missed by the glob (v0.6.3 release pass)."""
+    from lix_core.config import load_registry
+    from lix_pipeline.stage import graph
+    from lix_pipeline.stage.noise import NOISE_SOURCES
+
+    def slugs(node):
+        if isinstance(node, str):
+            yield node
+        elif isinstance(node, dict):
+            for v in node.values():
+                yield from slugs(v)
+        else:
+            for v in node:
+                yield from slugs(v)
+
+    known = set(graph.raw_inputs("noise", load_registry()))
+    assert set(slugs(NOISE_SOURCES)) <= known

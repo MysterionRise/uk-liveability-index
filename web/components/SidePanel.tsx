@@ -4,7 +4,7 @@ import { CopilotChat, useConfigureSuggestions } from "@copilotkit/react-core/v2"
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 
-import { useLiveability } from "@/components/AppData";
+import { LINK_ARRIVED, useLiveability } from "@/components/AppData";
 import { useLocaleChoice } from "@/components/LocaleProvider";
 import { type Tab, usePanel } from "@/components/PanelContext";
 import { AnalystPanel } from "@/components/panels/AnalystPanel";
@@ -44,6 +44,14 @@ export function SidePanel() {
     seenSelected.current = selected;
     if (selected && (first || tab !== "assistant")) setTab("area");
   }, [selected, tab, setTab]);
+  // A link pasted into the open tab is an arrival too, whatever tab was open
+  useEffect(() => {
+    const onArrival = (e: Event) => {
+      if ((e as CustomEvent<string | null>).detail) setTab("area");
+    };
+    window.addEventListener(LINK_ARRIVED, onArrival);
+    return () => window.removeEventListener(LINK_ARRIVED, onArrival);
+  }, [setTab]);
 
   const tabs: [Tab, string][] = [
     ["assistant", t("tabs.assistant")],
@@ -54,7 +62,10 @@ export function SidePanel() {
   ];
 
   return (
-    <aside className="flex h-full min-h-0 flex-col border-l border-[var(--border)] bg-[var(--surface-1)]">
+    <aside
+      className="flex h-full min-h-0 flex-col border-l border-[var(--border)] bg-[var(--surface-1)]"
+      data-testid="side-panel"
+    >
       <div className="flex shrink-0 flex-wrap items-center gap-1 border-b border-[var(--border)] px-2">
         <div
           className="flex flex-wrap items-center gap-1"

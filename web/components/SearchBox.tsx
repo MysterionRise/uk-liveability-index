@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { useLiveability } from "@/components/AppData";
@@ -11,8 +11,17 @@ import { useCoverageIn } from "@/lib/copy";
 import { nationOf, useLevelWords } from "@/lib/levels";
 
 // Kinds with a word of their own; an area tier takes its nation's word (lib/levels)
-const KINDS = ["postcode", "place", "region", "nation"] as const;
+const KINDS = ["postcode", "postcode_district", "postcode_sector", "place", "region", "nation"] as const;
 const TIERS = ["lsoa", "msoa", "lad"];
+// The gazetteer's settlement types → the words the catalogue has for them
+const TYPE_KEYS: Record<string, "city" | "town" | "village" | "hamlet" | "suburb" | "other"> = {
+  City: "city",
+  Town: "town",
+  Village: "village",
+  Hamlet: "hamlet",
+  "Suburban Area": "suburb",
+  "Other Settlement": "other",
+};
 
 function capitalise(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1);
@@ -21,6 +30,7 @@ function capitalise(word: string): string {
 /** Postcode or place search: opens an area's profile without going through the chat. */
 export function SearchBox() {
   const t = useTranslations("Search");
+  const locale = useLocale();
   const coverageIn = useCoverageIn();
   const level = useLevelWords();
   const { update } = useLiveability();
@@ -42,7 +52,7 @@ export function SearchBox() {
     if (q.length < 2) return;
     latest.current = q;
     const timer = setTimeout(() => {
-      searchPlaces(q)
+      searchPlaces(q, locale)
         .then((places) => {
           if (latest.current !== q) return; // a newer query is on its way
           setFound({ query: q, places });
@@ -53,7 +63,14 @@ export function SearchBox() {
         .catch(() => latest.current === q && setError(t("unavailable")));
     }, 200);
     return () => clearTimeout(timer);
-  }, [query, t]);
+  }, [query, t, locale]);
+
+  // "City, Leeds": the settlement type in the interface language, then the council
+  function detailOf(place: Place): string {
+    const type = place.place_type ? t(`types.${TYPE_KEYS[place.place_type] ?? "other"}`) : null;
+    const detail = [type, place.detail].filter(Boolean).join(", ");
+    return detail ? ` · ${detail}` : "";
+  }
 
   function choose(place: Place) {
     const box = place.bbox
@@ -149,7 +166,7 @@ export function SearchBox() {
                     ? t(`kinds.${p.kind as (typeof KINDS)[number]}`)
                     : p.kind}
                 {p.name_en ? ` · ${p.name_en}` : ""}
-                {p.detail ? ` · ${p.detail}` : ""}
+                {detailOf(p)}
               </span>
             </li>
           ))}

@@ -33,6 +33,8 @@ def to_bng(lon: float, lat: float) -> tuple[float, float]:
 class Store:
     serve_dir: Path = field(default_factory=lambda: data_dir("serve"))
     score_cache: dict = field(default_factory=dict, repr=False)
+    # The rules engine's phrase table per locale (services.profiles), built on first use
+    profile_tables: dict = field(default_factory=dict, repr=False)
 
     @cached_property
     def manifest(self) -> dict:
@@ -216,6 +218,34 @@ class Store:
         for column in self.place_name_columns:
             out += [fold(n) if n else "" for n in self.places[column].to_list()]
         return out
+
+    @cached_property
+    def postcode_groups(self) -> dict[str, dict[str, dict]]:
+        """Postcode districts ("LS6") and sectors ("LS6 3") derived from the postcode
+        table: each with its postcode count, the mean point, the bounding box and the
+        area its mean point's nearest postcode sits in (#193). Ireland has no open
+        postcodes, so the groups are the UK's."""
+        from lix_api.services.search import postcode_groups
+
+        return postcode_groups(self.postcodes)
+
+    @cached_property
+    def council_names(self) -> dict[str, dict[str, str]]:
+        """Each council's English name → its Welsh, Gaelic and Irish forms where the areas
+        table has them, for search results' detail lines."""
+        lads = self.areas.filter(pl.col("level") == "lad")
+        forms = [c for c in ("name_cy", "name_gd", "name_ga") if c in lads.columns]
+        out: dict[str, dict[str, str]] = {}
+        for row in lads.select("name", *forms).iter_rows(named=True):
+            out[row["name"]] = {c[-2:]: row[c] for c in forms if row.get(c)}
+        return out
+
+    @cached_property
+    def repeated_areas(self) -> set[tuple[str, str, str]]:
+        """Areas whose name repeats within their council (search shows their code)."""
+        from lix_api.services.search import repeated_area_names
+
+        return repeated_area_names(self.areas)
 
     @cached_property
     def area_name_columns(self) -> list[str]:

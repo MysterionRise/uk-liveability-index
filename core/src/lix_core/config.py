@@ -99,7 +99,7 @@ class ArcgisItemAccess(_Strict):
     layer: int = 0
     # featureserver only: fields to keep, and the CRS for geometry (27700 = British National Grid)
     fields: list[str] | None = None
-    geometry: Literal["none", "point", "polygon"] = "none"
+    geometry: Literal["none", "point", "line", "polygon"] = "none"
     out_sr: int = 27700
 
 
@@ -112,7 +112,7 @@ class ArcgisLayerAccess(_Strict):
     type: Literal["arcgis_layer"]
     url: str
     fields: list[str] | None = None
-    geometry: Literal["none", "point", "polygon"] = "none"
+    geometry: Literal["none", "point", "line", "polygon"] = "none"
     out_sr: int = 27700
 
 
@@ -375,6 +375,7 @@ UNIT_CODES: dict[str, str] = {
     "% of pupils": "pct_pupils",
     "% of 16–64s": "pct_working_age",
     "metres": "metres",
+    "km": "km",
     "per 1,000 residents a year": "per_1000_year",
     "score": "score",
     "score 0–100": "score_100",
@@ -757,7 +758,7 @@ def boundary_slugs(level: str = "low", nations: tuple[str, ...] | None = None) -
 # Data-label catalogues (config/i18n/<locale>.yaml)
 # ---------------------------------------------------------------------------------------
 
-CATALOGUE_SECTIONS = ("themes", "presets", "units", "flags", "indicators", "levels")
+CATALOGUE_SECTIONS = ("themes", "presets", "units", "flags", "indicators", "levels", "urban_rural")
 
 
 def load_label_catalogues() -> dict[str, dict]:
@@ -791,6 +792,11 @@ def catalogue_gaps(
             entry = ((labels.get("levels") or {}).get(code) or {}).get(level) or {}
             if not (entry.get("one") and entry.get("other")):
                 gaps.append(f"levels.{code}.{level}")
+        # The urban/rural classes of the nation's classification, by code (#187)
+        classes = (labels.get("urban_rural") or {}).get(code) or {}
+        for ruc_code in nation.ruc_map or {}:
+            if not classes.get(str(ruc_code)):
+                gaps.append(f"urban_rural.{code}.{ruc_code}")
     for theme in catalogue.themes:
         if theme not in (labels.get("themes") or {}):
             gaps.append(f"themes.{theme}")

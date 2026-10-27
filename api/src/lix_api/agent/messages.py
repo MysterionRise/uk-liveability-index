@@ -14,6 +14,7 @@ LANGUAGE_NAMES = {
 
 MESSAGES: dict[str, dict[str, str]] = {
     "en": {
+        "postcodes_count": "{n} postcodes",
         "still_works": "The map, weights and area pages still work.",
         "budget": "The assistant has used today's budget, so it's resting until tomorrow "
         "(midnight UTC). {still_works}",
@@ -53,8 +54,25 @@ MESSAGES: dict[str, dict[str, str]] = {
         "their themes.",
         "profile_rationale_plain": "Nothing in the description matched a theme or measure, so "
         "it starts from {preset}.",
+        # Singular forms, picked when one theme or one measure is named (#161)
+        "profile_rationale_one_theme": "Starts from {preset}; {themes} counts more, and "
+        "{indicators} weigh more within their themes.",
+        "profile_rationale_one_indicator": "Starts from {preset}; {themes} count more, and "
+        "{indicators} weighs more within its theme.",
+        "profile_rationale_one_theme_one_indicator": "Starts from {preset}; {themes} counts "
+        "more, and {indicators} weighs more within its theme.",
+        "profile_rationale_themes_one_theme": "Starts from {preset}; {themes} counts more.",
+        "profile_rationale_less_one_theme": "Starts from {preset}; {themes} counts less.",
+        "profile_rationale_indicators_one_indicator": "Starts from {preset}; {indicators} "
+        "weighs more within its theme.",
+        # Only measures turned down
+        "profile_rationale_indicators_less": "Starts from {preset}; {indicators} weigh less "
+        "within their themes.",
+        "profile_rationale_indicators_less_one_indicator": "Starts from {preset}; "
+        "{indicators} weighs less within its theme.",
     },
     "cy": {
+        "postcodes_count": "{n} cod post",
         "still_works": "Mae'r map, y pwysau a thudalennau'r ardaloedd yn dal i weithio.",
         "budget": "Mae'r cynorthwyydd wedi defnyddio cyllideb heddiw, felly mae'n gorffwys tan "
         "yfory (hanner nos UTC). {still_works}",
@@ -96,10 +114,20 @@ MESSAGES: dict[str, dict[str, str]] = {
         "profile_rationale_less": "Yn dechrau o {preset}; mae {themes} yn cyfrif llai.",
         "profile_rationale_indicators": "Yn dechrau o {preset}; mae {indicators} yn pwyso mwy o "
         "fewn eu themâu.",
+        "profile_rationale_indicators_less": "Yn dechrau o {preset}; mae {indicators} yn pwyso "
+        "llai o fewn eu themâu.",
+        # One measure: its own theme
+        "profile_rationale_one_indicator": "Yn dechrau o {preset}; mae {themes} yn cyfrif mwy, "
+        "ac mae {indicators} yn pwyso mwy o fewn ei thema.",
+        "profile_rationale_indicators_one_indicator": "Yn dechrau o {preset}; mae {indicators} "
+        "yn pwyso mwy o fewn ei thema.",
+        "profile_rationale_indicators_less_one_indicator": "Yn dechrau o {preset}; mae "
+        "{indicators} yn pwyso llai o fewn ei thema.",
         "profile_rationale_plain": "Nid oedd dim yn y disgrifiad yn cyfateb i thema na mesur, "
         "felly mae'n dechrau o {preset}.",
     },
     "gd": {
+        "postcodes_count": "{n} còd-puist",
         "still_works": "Tha am mapa, na cuideaman agus duilleagan nan sgìrean ag obair fhathast.",
         "budget": "Chleachd an cuidiche buidseat an latha an-diugh, mar sin tha e a' gabhail fois "
         "gu màireach (meadhan-oidhche UTC). {still_works}",
@@ -146,10 +174,20 @@ MESSAGES: dict[str, dict[str, str]] = {
         "lugha.",
         "profile_rationale_indicators": "A' tòiseachadh bho {preset}; tha {indicators} nas "
         "truime am broinn an cuspairean.",
+        "profile_rationale_indicators_less": "A' tòiseachadh bho {preset}; tha {indicators} nas "
+        "aotruime am broinn an cuspairean.",
+        # One measure: its own theme
+        "profile_rationale_one_indicator": "A' tòiseachadh bho {preset}; tha {themes} a' "
+        "cunntadh barrachd, agus tha {indicators} nas truime am broinn a chuspair.",
+        "profile_rationale_indicators_one_indicator": "A' tòiseachadh bho {preset}; tha "
+        "{indicators} nas truime am broinn a chuspair.",
+        "profile_rationale_indicators_less_one_indicator": "A' tòiseachadh bho {preset}; tha "
+        "{indicators} nas aotruime am broinn a chuspair.",
         "profile_rationale_plain": "Cha do mhaids dad san tuairisgeul cuspair no tomhas, mar sin "
         "tha e a' tòiseachadh bho {preset}.",
     },
     "ga": {
+        "postcodes_count": "{n} postchód",
         "still_works": "Oibríonn an léarscáil, na hualaí agus leathanaigh na gceantar i gcónaí.",
         "budget": "D'úsáid an cúntóir buiséad an lae inniu, mar sin tá sé ag glacadh sosa go dtí "
         "amárach (meán oíche UTC). {still_works}",
@@ -194,16 +232,32 @@ MESSAGES: dict[str, dict[str, str]] = {
         "profile_rationale_less": "Ag tosú ó {preset}; comhaireann {themes} níos lú.",
         "profile_rationale_indicators": "Ag tosú ó {preset}; tá níos mó meáchain ag "
         "{indicators} laistigh dá dtéamaí.",
+        "profile_rationale_indicators_less": "Ag tosú ó {preset}; tá níos lú meáchain ag "
+        "{indicators} laistigh dá dtéamaí.",
+        # One measure: its own theme
+        "profile_rationale_one_indicator": "Ag tosú ó {preset}; comhaireann {themes} níos mó, "
+        "agus tá níos mó meáchain ag {indicators} laistigh dá théama.",
+        "profile_rationale_indicators_one_indicator": "Ag tosú ó {preset}; tá níos mó meáchain "
+        "ag {indicators} laistigh dá théama.",
+        "profile_rationale_indicators_less_one_indicator": "Ag tosú ó {preset}; tá níos lú "
+        "meáchain ag {indicators} laistigh dá théama.",
         "profile_rationale_plain": "Níor mheaitseáil aon rud sa chur síos téama ná tomhas, mar "
         "sin tosaíonn sé ó {preset}.",
     },
 }
 
 
-def message(key: str, locale: str = "en", **values: str) -> str:
-    """A fixed assistant message in ``locale``, English where no translation exists."""
+def message(key: str, locale: str = "en", fallback: str | None = None, **values: str) -> str:
+    """A fixed assistant message in ``locale``, English where no translation exists; a
+    ``fallback`` key stands in where neither language has ``key`` (a singular form of a
+    template that only some languages need)."""
     texts = MESSAGES.get(locale) or MESSAGES["en"]
-    text = texts.get(key) or MESSAGES["en"][key]
+    # The language's own plain form beats the English singular one
+    text = texts.get(key) or (fallback and texts.get(fallback)) or MESSAGES["en"].get(key)
+    if text is None and fallback:
+        text = MESSAGES["en"][fallback]
+    if text is None:
+        raise KeyError(key)
     still = texts.get("still_works") or MESSAGES["en"]["still_works"]
     return text.format(still_works=still, **values)
 

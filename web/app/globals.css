@@ -218,3 +218,24 @@ input[type="checkbox"] {
 :root.dark .maplibregl-ctrl button .maplibregl-ctrl-icon {
   filter: invert(1) hue-rotate(180deg);
 }
+
+/* Printing (#188): the map (WebGL prints as a blank), its controls and legend, the
+   search box and the chat input are screen things; the side panel's cards print at
+   full width */
+@media print {
+  .maplibregl-map,
+  .maplibregl-ctrl,
+  [data-testid="legend"],
+  [data-testid="search"],
+  [data-testid="onboarding"],
+  .copilotKitInput,
+  .copilotKitInputContainer {
+    display: none !important;
+  }
+  [data-testid="side-panel"] {
+    width: 100% !important;
+    max-width: none !important;
+    position: static !important;
+    border: 0 !important;
+  }
+}

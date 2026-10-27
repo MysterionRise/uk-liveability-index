@@ -9,7 +9,7 @@
 
 services:
   api:
-    image: ghcr.io/mysterionrise/uk-liveability-index-api:${LIX_VERSION:-0.6.2}
+    image: ghcr.io/mysterionrise/uk-liveability-index-api:${LIX_VERSION:-0.6.3}
     build: { context: ., dockerfile: docker/api.Dockerfile }
     # Values come from the shell or ./.env (see .env.example); unset ones stay empty
     environment:
@@ -31,11 +31,13 @@ services:
       - ${LIX_SERVE_DIR:-./data/serve}:/data/serve:ro
       - ./data/logs:/data/logs
     # The pack in memory, the score cache and the SQL views: about 2 GiB in use; a cap so
-    # a laptop running the demo never swaps (#179)
+    # a laptop running the demo never swaps (#179); a crash (an analyst query past the cap,
+    # #208) is a 30-second blip, not an outage
     mem_limit: ${LIX_API_MEMORY:-3g}
+    restart: on-failure
 
   web:
-    image: ghcr.io/mysterionrise/uk-liveability-index-web:${LIX_VERSION:-0.6.2}
+    image: ghcr.io/mysterionrise/uk-liveability-index-web:${LIX_VERSION:-0.6.3}
     build:
       context: .
       dockerfile: docker/web.Dockerfile

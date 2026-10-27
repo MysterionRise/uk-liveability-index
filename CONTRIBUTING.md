@@ -16,7 +16,7 @@ make dev             # API on :8000 and front end on :3000
 ```
 
 `make dev` uses the scripted assistant (`LIX_MODEL=test`) unless `.env` has a model key.
-For a smaller dataset, `LIX_DATA_DIR=fixtures/demo make dev` runs on Leeds and Brighton.
+For a smaller dataset, `LIX_DATA_DIR=fixtures/demo make dev` runs on Leeds, Brighton, Cardiff, Edinburgh, Belfast and Dublin.
 How the parts fit together is in [docs/development.md](docs/development.md).
 
 ## Checks
