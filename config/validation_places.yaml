@@ -353,7 +353,7 @@ places:
     why: Fenland town on the tidal Nene
     checks:
       - {indicator: flood_risk, op: ge, value: 10}
-      - {indicator: everyday_services, op: le, value: 90}  # a market town's spread-out edges (87 in data-2026-11)
+      - {indicator: everyday_services, op: le, value: 90}  # a market town's spread-out edges (87 in data-2026-10.7)
       - {indicator: night_noise, op: le, value: 15, anchor: true}  # no major road or railway through it
 
   # ------------------------------------------------------------------ other types

@@ -4,11 +4,11 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [0.6.3] - 2026-10-26
+## [0.6.3] - 2026-10-27
 
 The QA minors that did not fit 0.6.1, three measures that fell out of inputs the build
-already had, and the November refresh: the data pack is rebuilt as **data-2026-11**
-(serve schema 5) with five new context indicators.
+already had, and a full refresh of every source: the data pack is rebuilt as
+**data-2026-10.7** (serve schema 5) with five new context indicators.
 
 ### Added
 
