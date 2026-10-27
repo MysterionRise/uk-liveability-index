@@ -132,3 +132,20 @@ def test_sidecar_round_trip_and_stale_reason(tmp_path: Path):
     new_lock = {**LOCK, "b": {"fetched": {"sha256": "b2"}}}
     digest2, parts2 = g.fingerprint(["a", "b"], new_lock)
     assert g.stale_reason(path, digest2, parts2) == "inputs changed: b"
+
+
+def test_a_module_constant_is_part_of_the_code_hash(monkeypatch):
+    """The noise stager reads its file patterns from NOISE_SOURCES: a corrected pattern
+    must re-stage the table (the v0.6.3 release pass fixed one and nothing cascaded)."""
+    from lix_pipeline.stage import graph, noise
+
+    graph._code_hash.cache_clear()
+    before = graph.stager_code_hash("noise")
+    monkeypatch.setattr(noise, "NIGHT_DB", noise.NIGHT_DB + 1)
+    graph._code_hash.cache_clear()
+    after = graph.stager_code_hash("noise")
+    graph._code_hash.cache_clear()
+    assert before != after
+    assert graph._stable_repr({"a": frozenset({"y", "x"}), "b": (1, 2.5, None)}) == (
+        "{'a': {'x', 'y'}, 'b': [1, 2.5, None]}"
+    )

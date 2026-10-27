@@ -145,6 +145,40 @@ def _stager_table() -> dict[str, Callable]:
     return stagers()
 
 
+def _stable_repr(value) -> str | None:
+    """A module constant as text, the same in every process: dicts in their order, sets
+    sorted, nested values alike; None for anything that is not plain data."""
+    if value is None or isinstance(value, (bool, int, float, str, bytes)):
+        return repr(value)
+    if isinstance(value, (list, tuple)):
+        parts = [_stable_repr(v) for v in value]
+        return None if None in parts else f"[{', '.join(parts)}]"
+    if isinstance(value, (set, frozenset)):
+        parts = [_stable_repr(v) for v in value]
+        return None if None in parts else f"{{{', '.join(sorted(parts))}}}"
+    if isinstance(value, dict):
+        parts = [(_stable_repr(k), _stable_repr(v)) for k, v in value.items()]
+        if any(k is None or v is None for k, v in parts):
+            return None
+        return "{" + ", ".join(f"{k}: {v}" for k, v in parts) + "}"
+    return None
+
+
+def _constants_named(fn: Callable, source: str) -> list[tuple[str, str]]:
+    """The module-level constants (plain data: NOISE_SOURCES, BORDER_M, the contour
+    bands) that ``fn``'s body names, with their values as text: a table built under
+    other constants is built by other code."""
+    out = []
+    names = {n.id for n in ast.walk(ast.parse(source)) if isinstance(n, ast.Name)}
+    for name in sorted(names):
+        if not name.isupper() or name not in fn.__globals__:
+            continue
+        text = _stable_repr(fn.__globals__[name])
+        if text is not None:
+            out.append((f"{fn.__module__}.{name}", text))
+    return out
+
+
 @functools.lru_cache(maxsize=None)
 def _code_hash(slug: str) -> str:
     fn = _stager_table().get(slug)
@@ -155,14 +189,18 @@ def _code_hash(slug: str) -> str:
         _stage_functions(fn), key=lambda x: (x[0].__module__, x[0].__qualname__)
     ):
         h.update(f"{f.__module__}.{f.__qualname__}\n{source}\n".encode())
+        for name, text in _constants_named(f, source):
+            h.update(f"{name} = {text}\n".encode())
     return h.hexdigest()
 
 
 def stager_code_hash(slug: str) -> str:
-    """A digest of the stager's source and of every stage-package function it calls, so
-    a table built by older code reads as stale (#190). Helpers outside the stage package
-    (geo/*.py) are left out on purpose: a fix there would re-stage every table for hours,
-    and ``lix stage --slug X --with-dependents`` or ``lix refresh --force`` is the
+    """A digest of the stager's source, of every stage-package function it calls and of
+    the module constants those name (a file pattern or a band table is code too: the
+    Belfast International pattern fix did not cascade until it was), so a table built
+    by older code reads as stale (#190). Helpers outside the stage package (geo/*.py)
+    are left out on purpose: a fix there would re-stage every table for hours, and
+    ``lix stage --slug X --with-dependents`` or ``lix refresh --force`` is the
     developer's call."""
     return _code_hash(slug)
 
