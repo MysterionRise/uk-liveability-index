@@ -25,6 +25,9 @@ IRISH_LENITED = tuple("bcdfgmpst")
 IRISH_ECLIPSED = {"b": "mb", "c": "gc", "d": "nd", "f": "bhf", "g": "ng", "p": "bp", "t": "dt"}
 # Scottish Gaelic: lenition only
 GAELIC_LENITED = tuple("bcdfgmpst")
+# Mutated forms that are everyday words of their own: Welsh "chi" (you) and "gwn" (I
+# know) are not a dog, "Dai" and "Thai" are not houses, "mharc" is a mark
+COLLIDING_FORMS = {"cy": frozenset({"chi", "gwn", "dai", "thai", "mharc", "nhai"})}
 
 
 def _first_word_forms(word: str, locale: str) -> set[str]:
@@ -57,4 +60,5 @@ def variants(phrase: str, locale: str) -> set[str]:
     first, _, rest = phrase.partition(" ")
     # Welsh "ll" and "rh" count as one letter: try the longer initial first
     forms = _first_word_forms(first, locale)
-    return {f"{form} {rest}".strip() for form in forms}
+    colliding = COLLIDING_FORMS.get(locale, frozenset())
+    return {f"{form} {rest}".strip() for form in forms if form == first or form not in colliding}

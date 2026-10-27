@@ -33,6 +33,8 @@ def to_bng(lon: float, lat: float) -> tuple[float, float]:
 class Store:
     serve_dir: Path = field(default_factory=lambda: data_dir("serve"))
     score_cache: dict = field(default_factory=dict, repr=False)
+    # The rules engine's phrase table per locale (services.profiles), built on first use
+    profile_tables: dict = field(default_factory=dict, repr=False)
 
     @cached_property
     def manifest(self) -> dict:

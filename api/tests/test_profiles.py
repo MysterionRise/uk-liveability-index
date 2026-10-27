@@ -198,3 +198,141 @@ def test_match_indicator_knows_everyday_words(store):
     assert match_indicator(store, "Sunshine") == "sunshine"
     assert match_indicator(store, "vibes") is None
     assert profiles.scored_ids(store) >= {"sunshine", "gigabit_broadband"}
+
+
+class TestNegationPolarity:
+    """The v0.6.3 release pass: a negator's meaning depends on what it touches. Aversion
+    to a problem ("hate noise", "no crime") raises its weight; aversion to an asset ("no
+    pubs") and indifference ("schools don't matter") lower it; a conjunction ends the
+    negator's reach; a language's "or" is not the English "no"."""
+
+    @pytest.mark.parametrize(
+        ("description", "locale", "indicator", "multiplier"),
+        [
+            ("I hate noise", "en", "noise_exposure", 2),
+            ("I want no noise", "en", "noise_exposure", 2),
+            ("somewhere without flooding", "en", "flood_risk", 2),
+            ("I don't mind noise", "en", "noise_exposure", 0.5),
+            ("noise doesn't matter to me", "en", "noise_exposure", 0.5),
+            ("I don't need it quiet", "en", "noise_exposure", 0.5),
+            ("no need for broadband", "en", "gigabit_broadband", 0.5),
+            ("dw i'n casáu sŵn", "cy", "noise_exposure", 2),
+            ("gan torann", "ga", "noise_exposure", 2),
+            ("gun fhuaim", "gd", "noise_exposure", 2),
+        ],
+    )
+    def test_aversion_and_indifference(self, store, description, locale, indicator, multiplier):
+        assert (
+            profile_by_rules(store, description, locale).indicator_weights[indicator] == multiplier
+        )
+
+    def test_a_problem_theme_word_under_aversion_counts_more(self, store):
+        assert (
+            profile_by_rules(store, "I want somewhere with no crime", "en").theme_weights["safety"]
+            == 2
+        )
+        assert (
+            profile_by_rules(store, "avoid areas with high crime", "en").theme_weights["safety"]
+            == 2
+        )
+        assert profile_by_rules(store, "dim trosedd", "cy").theme_weights["safety"] == 2
+        assert (
+            profile_by_rules(store, "schools are not important", "en").theme_weights["education"]
+            == 0
+        )
+        assert (
+            profile_by_rules(store, "I am indifferent to schools", "en").theme_weights["education"]
+            == 0
+        )
+
+    def test_a_conjunction_ends_the_negator(self, store):
+        p = profile_by_rules(store, "No pubs but good schools", "en")
+        assert p.theme_weights["education"] == 2 and p.indicator_weights["well_run_pubs"] == 0.5
+        assert (
+            profile_by_rules(store, "I have no car and good schools matter", "en").theme_weights[
+                "education"
+            ]
+            == 2
+        )
+        assert (
+            profile_by_rules(store, "dim tafarndai ond ysgolion da", "cy").theme_weights[
+                "education"
+            ]
+            == 2
+        )
+
+    def test_or_is_not_no(self, store):
+        assert profile_by_rules(store, "pobal nó scoileanna", "ga").theme_weights["education"] == 2
+        assert profile_by_rules(store, "grian no sgoiltean", "gd").theme_weights["education"] == 2
+
+    def test_english_words_of_another_language_and_colliding_mutations(self, store):
+        # Gaelic and Irish "air" is "on", not the English air; Welsh "chi" is you, not a dog
+        assert not profile_by_rules(store, "tha gaol agam air a' ghrian", "gd").theme_weights.get(
+            "environment"
+        )
+        assert (
+            "green_space_access"
+            not in profile_by_rules(store, "diolch yn fawr i chi", "cy").indicator_weights
+        )
+        assert (
+            "green_space_access"
+            not in profile_by_rules(store, "gwn i ddim", "cy").indicator_weights
+        )
+        assert profile_by_rules(store, "tawelwch", "cy").indicator_weights["noise_exposure"] == 2
+        assert profile_by_rules(store, "ciúnas", "ga").indicator_weights["noise_exposure"] == 2
+
+    def test_a_word_counts_once_however_many_lists_name_it(self, store):
+        assert (
+            profile_by_rules(store, "school", "en").theme_weights["education"]
+            == profile_by_rules(store, "schools", "en").theme_weights["education"]
+        )
+        assert profile_by_rules(store, "diogelwch", "cy").theme_weights["safety"] == 2
+
+    def test_zero_width_marks_inside_a_word(self, store):
+        assert profile_by_rules(store, "sch​ools", "en").theme_weights["education"] == 2
+
+
+class TestNamesAndRationales:
+    def test_a_name_never_cuts_a_label(self, store):
+        labels = profiles._labels(store, "en")
+        everything = [("indicator", i) for i in store.indicators]
+        for preset in store.presets:
+            name = profiles._name(labels, preset, everything)
+            assert len(name) <= 40
+            for part in name.split(" · ")[1:]:
+                assert part in labels["indicators"].values(), part
+
+    def test_lowered_measures_do_not_weigh_more(self, store):
+        p = profile_by_rules(store, "I work from home", "en")
+        assert p.indicator_weights["rail_service"] == 0.5
+        assert "Rail service" not in p.rationale and "weigh" in p.rationale
+        # "fibre" names the measure alone ("broadband" is the transport theme as well)
+        only_down = profile_by_rules(store, "I don't care about fibre", "en").rationale
+        assert "weighs less within its theme" in only_down
+
+    def test_a_long_gaelic_rationale_ends_on_a_sentence(self, store):
+        for text in ("buthan agus cinema", "buthan, theatre"):
+            r = profile_by_rules(store, text, "gd").rationale
+            assert len(r) <= 200 and r.endswith("."), r
+
+    def test_the_phrase_table_is_built_once(self, store):
+        store.profile_tables.clear()
+        profile_by_rules(store, "schools", "en")
+        table = store.profile_tables["en"]
+        profile_by_rules(store, "pubs", "en")
+        assert store.profile_tables["en"] is table
+
+
+def test_a_draft_without_weights_takes_the_rules_reading(store):
+    """Opus 5.5 described changes and left both maps empty (three calls in three): the
+    rules engine's reading of the description stands in, with its own sentence."""
+    draft = ProfileDraft(
+        preset="family", theme_weights={}, indicator_weights={},
+        name="Quiet family life", rationale="Noise and schools raised for the children.",
+    )  # fmt: skip
+    p = _from_draft(store, draft, "en", "model", description="I hate noise and schools matter")
+    assert p.theme_weights["education"] >= 2 and p.indicator_weights["noise_exposure"] == 2
+    assert p.name == "Quiet family life" and "raised" not in p.rationale
+    # Nothing in the rules either: the preset stands, with the plain sentence
+    q = _from_draft(store, draft, "en", "model", description="lorem ipsum")
+    assert q.preset == "family" and not q.theme_weights and "Nothing" in q.rationale
