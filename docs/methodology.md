@@ -86,8 +86,8 @@ may be scored. The build's QA report lists scored indicators that correlate abov
   contours in Ireland) at every home: a home counts as exposed when the loudest mapped
   source (road, rail, aircraft or industry, whichever the nation maps) is 60 dB Lden or
   more, a busy road's level. Road and rail exposure, aircraft noise (England's sixteen
-  mapped airports, Belfast City, Dublin, Cork and Shannon) and industrial noise (Scotland's
-  five cities, Northern Ireland's two agglomerations, Ireland's) are shown as context on
+  mapped airports, Belfast City, Dublin, Cork and Shannon) and industrial noise (Wales's mapped
+  sites, Scotland's five cities, Northern Ireland's two agglomerations, Ireland's) are shown as context on
   their own. The Directive counts people as exposed from 55 dB, but at that level the
   answer depends on whether ordinary streets were mapped: England's maps cover every road
   only inside the larger agglomerations and major roads elsewhere, while Wales's cover
