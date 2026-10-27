@@ -5,8 +5,9 @@ import re
 import polars as pl
 from rapidfuzz import fuzz, process
 
+from lix_api.agent.messages import message
 from lix_api.models import Place, Point
-from lix_api.services.names import council_name
+from lix_api.services.names import base_locale, council_name
 from lix_api.services.text import fold
 from lix_api.store import Store, to_bng
 
@@ -32,8 +33,13 @@ MAX_SCOPES = 3
 # score 100 against "Leeds" and "Ynys Môn"
 MIN_SIMILARITY = 88
 # A name shorter than this matches only the query that equals it: WRatio scores two-
-# and three-letter names ("Ae", "Ely") against anything that contains their letters
+# and three-letter names ("Ae", "Ely") against anything that contains their letters; and
+# a query shorter than it matches only the name that equals it ("UK" is no neighbourhood)
 MIN_FUZZY_LETTERS = 4
+# A leading article is no part of a short name: "Y Rhyl" is Rhyl, "An t-Òban" is Oban
+ARTICLE = re.compile(r"^(?:yr|y|an t|an|am|na h|na)[\s-]+")
+# The words of "Rye East Sussex" tried as "Rye, East Sussex" when the whole finds nothing
+MAX_SPLIT_WORDS = 3
 
 KIND_PRIORITY = {"nation": 7, "lad": 6, "region": 5, "City": 5, "Town": 4, "msoa": 3,
                  "Suburban Area": 3, "Village": 2, "Other Settlement": 1, "Hamlet": 0}  # fmt: skip
@@ -82,16 +88,16 @@ def postcode_groups(postcodes: pl.DataFrame) -> dict[str, dict[str, dict]]:
     return out
 
 
-def _group_place(kind: str, code: str, shown: str, row: dict) -> Place:
+def _group_place(kind: str, code: str, shown: str, row: dict, locale: str | None) -> Place:
     return Place(
         kind=f"postcode_{kind}", name=shown, code=code, lsoa21cd=row["lsoa21cd"],
-        detail=f"{row['count']:,} postcodes",
+        detail=message("postcodes_count", base_locale(locale), n=f"{row['count']:,}"),
         centre=Point(lat=row["lat"], lon=row["lon"]),
         bbox=(row["bbox_w"], row["bbox_s"], row["bbox_e"], row["bbox_n"]),
     )  # fmt: skip
 
 
-def lookup_postcode_group(store: Store, text: str) -> Place | None:
+def lookup_postcode_group(store: Store, text: str, locale: str | None = None) -> Place | None:
     """A postcode district ("LS6") or sector ("LS6 3", "ls63") as the pack's postcodes
     know it; a sector is tried first when the text is written with its space."""
     norm = normalise_postcode(text)
@@ -105,7 +111,7 @@ def lookup_postcode_group(store: Store, text: str) -> Place | None:
         if row is None:
             continue
         shown = f"{norm[:-1]} {norm[-1]}" if kind == "sector" else norm
-        return _group_place(kind, norm, shown, row)
+        return _group_place(kind, norm, shown, row, locale)
     return None
 
 
@@ -158,7 +164,7 @@ def lookup_nation(store: Store, text: str, locale: str | None = None) -> Place |
 
 def repeated_area_names(areas: pl.DataFrame) -> set[tuple[str, str, str]]:
     """(level, folded name, council) of every area whose name another area of the same
-    level and council also carries: Ireland has 38 division names repeated within one
+    level and council also carries: Ireland has 39 division names repeated within one
     council ("Kilmeadan" twice in Waterford), so the council alone cannot tell them
     apart in a result list (#194)."""
     if "lad_nm" not in areas.columns:
@@ -220,15 +226,19 @@ def _candidates(
     one row per code, the best-scoring form of its name shown."""
     candidates: list[tuple[float, Place]] = []
     folded = fold(query)
+    bare = ARTICLE.sub("", folded)
 
     def too_short(matched: str) -> bool:
         """A short name matches only the query that is it, or nearly: WRatio finds "Cath"
         and "Lairg" inside "Cathair Phort Láirge", so names under six letters must also
-        score as a whole against the whole query (#193)."""
-        name = fold(matched)
-        if len(matched) < MIN_FUZZY_LETTERS and name != folded:
+        score as a whole against the whole query (#193); and a short query matches only
+        the name that is it, since "UK" is inside "Carluke" and "x" inside "Bexley"."""
+        name = ARTICLE.sub("", fold(matched))
+        if name == bare:
+            return False
+        if len(name) < MIN_FUZZY_LETTERS or len(bare) < MIN_FUZZY_LETTERS:
             return True
-        return len(matched) < 6 and name != folded and fuzz.ratio(folded, name) < MIN_SIMILARITY
+        return len(name) < 6 and fuzz.ratio(bare, name) < MIN_SIMILARITY
 
     n_places = store.places.height
     for _, score, idx in process.extract(
@@ -283,14 +293,22 @@ def nation_of(place: Place) -> str | None:
     return code[0] if code else None
 
 
-def _council_of(place: Place) -> str | None:
-    """The folded council name a result sits in, where the result says."""
+def _council_of(store: Store, place: Place) -> str | None:
+    """The folded council name a result sits in: as the result says, or for a postcode,
+    a district, a sector or an LSOA, the council of the LSOA it stands in."""
     if place.kind == "lad":
         return fold(place.name_en or place.name)
     if place.kind == "msoa" and place.detail:
         return fold(place.detail.split(" (")[0])
     if place.kind == "place" and place.detail:
         return fold(place.detail)
+    if place.lsoa21cd and place.kind in (
+        "postcode",
+        "postcode_district",
+        "postcode_sector",
+        "lsoa",
+    ):
+        return fold(store.features.row(store.lsoa_index[place.lsoa21cd], named=True)["lad_nm"])
     return None
 
 
@@ -336,7 +354,11 @@ def _within_scopes(
             continue
         recognised = True
         names = {fold(name) for code in codes for name in _council_names(store, code)}
-        keep = [p for p in keep if (p.kind == "lad" and p.code in codes) or _council_of(p) in names]
+        keep = [
+            p
+            for p in keep
+            if (p.kind == "lad" and p.code in codes) or _council_of(store, p) in names
+        ]
     return keep, recognised
 
 
@@ -357,7 +379,9 @@ def search_place(
 
     A postcode, an area code or a nation's name is exact. "Place, Scope" (one or more
     scopes after commas) searches the place and keeps the results inside the scope: a
-    nation or a council, in any language the pack knows.
+    nation or a council, in any language the pack knows; an exact reference before the
+    comma ("LS6, Leeds") is kept when the scope agrees. "Rye East Sussex" without the
+    comma is tried as "Rye, East Sussex" when the whole finds nothing.
     """
     query = query.strip()
     if not query:
@@ -366,7 +390,7 @@ def search_place(
         raise ValueError(f"A place reference is at most {MAX_QUERY} characters")
     for exact in (
         lookup_postcode(store, query),
-        lookup_postcode_group(store, query),
+        lookup_postcode_group(store, query, locale),
         lookup_code(store, query),
         lookup_nation(store, query, locale),
         lookup_area_name(store, query, locale),
@@ -375,12 +399,39 @@ def search_place(
             return [exact]
     parts = [p.strip() for p in query.split(",") if p.strip()]
     if len(parts) >= 2:
+        exact = next(
+            (
+                e
+                for e in (
+                    lookup_postcode(store, parts[0]),
+                    lookup_postcode_group(store, parts[0], locale),
+                    lookup_code(store, parts[0]),
+                )
+                if e
+            ),
+            None,
+        )
+        if exact:
+            scoped, recognised = _within_scopes(store, [exact], parts[1:])
+            if scoped or recognised:
+                return scoped
         scoped, recognised = _within_scopes(
             store, _candidates(store, parts[0], locale=locale), parts[1:]
         )
         if scoped or recognised:
             return scoped[:limit]
-    return _candidates(store, query, locale=locale)[:limit]
+    found = _candidates(store, query, locale=locale)
+    words = query.split()
+    if not found and len(parts) == 1 and len(words) > 1:
+        for i in range(1, min(len(words), MAX_SPLIT_WORDS + 1)):
+            scoped, _ = _within_scopes(
+                store,
+                _candidates(store, " ".join(words[:i]), locale=locale),
+                [" ".join(words[i:])],
+            )
+            if scoped:
+                return scoped[:limit]
+    return found[:limit]
 
 
 def _reject_wide(place: Place) -> None:

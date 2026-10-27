@@ -3,7 +3,7 @@
 import polars as pl
 
 from lix_api.models import AreaProfile, IndicatorValue, Point, ThemeScore
-from lix_api.services.names import english_if_different, localised, ruc_label
+from lix_api.services.names import base_locale, english_if_different, localised, ruc_label
 from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
 from lix_api.services.search import resolve_lsoa
 from lix_api.store import Store
@@ -84,7 +84,7 @@ def flag_texts(store: Store, codes: set[str], nation: str, locale: str | None) -
     """The flags' texts in the interface language; the theme-gap one names the themes."""
     from lix_api.agent.messages import message
 
-    lang = (locale or "en").split("-")[0]
+    lang = base_locale(locale)
     labels = ((store.manifest.get("i18n") or {}).get(lang) or {}).get("themes") or {}
     gaps = [
         (labels.get(t) or {}).get("label") or store.themes[t].label
@@ -102,7 +102,7 @@ def flag_texts(store: Store, codes: set[str], nation: str, locale: str | None) -
 
 def nation_name_in(store: Store, nation: str, locale: str | None) -> str:
     """The nation's name in the interface language where the pack carries it."""
-    lang = (locale or "en").split("-")[0]
+    lang = base_locale(locale)
     names = (store.geography["nations"].get(nation) or {}).get("names") or {}
     return names.get(lang) or store.nation_names.get(nation, nation)
 

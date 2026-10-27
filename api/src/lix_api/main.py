@@ -66,6 +66,8 @@ async def lifespan(app: FastAPI):
 MAX_REF = 200
 MAX_BODY_BYTES = 16_384
 MAX_AGENT_BODY_BYTES = 8 * 1024 * 1024
+# A weights map in a query string: a few ids and numbers, never a thousand brackets
+MAX_WEIGHTS_CHARS = 2_000
 
 app = FastAPI(
     title="UK Liveability Index API",
@@ -86,15 +88,42 @@ app.add_middleware(
 )
 
 
-@app.middleware("http")
-async def limit_body(request: Request, call_next):
-    """A request body larger than any legitimate one is refused before it is read: a REST
-    call carries a few hundred bytes, the assistant's a conversation."""
-    length = request.headers.get("content-length")
-    limit = MAX_BODY_BYTES if request.url.path.startswith("/api/v1/") else MAX_AGENT_BODY_BYTES
-    if length and length.isdigit() and int(length) > limit:
-        return JSONResponse({"detail": f"Request body over {limit:,} bytes"}, status_code=413)
-    return await call_next(request)
+class BodyLimit:
+    """A request body larger than any legitimate one is refused: a REST call carries a
+    few hundred bytes, the assistant's a conversation. A declared length over the limit
+    is refused before the body is read; the bytes are counted as they arrive too, since a
+    chunked request declares no length (the v0.6.3 release pass sent 4 MB that way)."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        limit = MAX_BODY_BYTES if scope["path"].startswith("/api/v1/") else MAX_AGENT_BODY_BYTES
+        detail = f"Request body over {limit:,} bytes"
+        declared = next((v for k, v in scope["headers"] if k == b"content-length"), b"")
+        if declared.isdigit() and int(declared) > limit:
+            await JSONResponse({"detail": detail}, status_code=413)(scope, receive, send)
+            return
+        received = 0
+
+        async def counted():
+            nonlocal received
+            event = await receive()
+            if event["type"] == "http.request":
+                received += len(event.get("body", b""))
+                if received > limit:
+                    # Raised where the body is read, inside the app, so the usual
+                    # handler answers it
+                    raise HTTPException(status_code=413, detail=detail)
+            return event
+
+        await self.app(scope, counted, send)
+
+
+app.add_middleware(BodyLimit)
 
 
 @app.exception_handler(LookupError)
@@ -167,9 +196,11 @@ def _weights_json(name: str, raw: str | None) -> dict[str, float] | None:
     body form (finite numbers from 0 to 3, keyed by id or label)."""
     if not raw:
         return None
+    if len(raw) > MAX_WEIGHTS_CHARS:
+        raise ValueError(f"{name} is at most {MAX_WEIGHTS_CHARS:,} characters")
     try:
         parsed = json.loads(raw)
-    except ValueError as e:
+    except (ValueError, RecursionError) as e:  # a thousand brackets end in RecursionError
         raise ValueError(f"{name} must be a JSON object of numbers: {e}") from e
     try:
         return _WEIGHTS[name].validate_python(parsed)

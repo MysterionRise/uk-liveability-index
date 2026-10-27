@@ -687,7 +687,7 @@ class TestRepeatedAreaNames:
         assert search._area_place(rows[1], store=store).detail == "Waterford (I02000002)"
         assert search._area_place(rows[2], store=store).detail == "Carlow"
         # The council scope still reads through the suffix
-        assert search._council_of(search._area_place(rows[0], store=store)) == "waterford"
+        assert search._council_of(store, search._area_place(rows[0], store=store)) == "waterford"
 
 
 class TestSearchRemainder:
