@@ -111,20 +111,6 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
   const pushedTo = useRef<unknown>(null);
   const { scores } = useData();
 
-  // The shortlist this browser keeps joins the state right after mount (not in the first
-  // render, which must match the server's), merged with anything already there
-  useEffect(() => {
-    const saved = readShortlist();
-    if (!saved.length) return;
-    const s = latest.current;
-    const codes = new Set(s.shortlist.map((i) => i.code));
-    const next = { ...s, shortlist: [...saved.filter((i) => !codes.has(i.code)), ...s.shortlist] };
-    latest.current = next;
-    setState(next);
-    agent.setState(next);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // A shared link names an area but no view: take the recipient there once the data is
   // in (the hash never carries the map's position)
   const flownTo = useRef<string | null>(null);
@@ -211,6 +197,26 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
     pushedTo.current = agent;
     agent.setState(latest.current);
   }, [agent]);
+
+  // The shortlist this browser keeps joins the state right after mount (not in the first
+  // render, which must match the server's), merged with anything already there. Declared
+  // after the two effects above on purpose: effects run in declaration order, and on the
+  // first frame the state effect records that frame in `latest` and the agent effect hands
+  // it to the assistant. Run before them, this merge was undone by both (the assistant's
+  // snapshot, without the list, replaced the page state in the next render), so a saved
+  // list never showed in the production build; development hid it, because StrictMode
+  // runs mount effects twice and the second pass skips the hand-over (#217).
+  useEffect(() => {
+    const saved = readShortlist();
+    if (!saved.length) return;
+    const s = latest.current;
+    const codes = new Set(s.shortlist.map((i) => i.code));
+    const next = { ...s, shortlist: [...saved.filter((i) => !codes.has(i.code)), ...s.shortlist] };
+    latest.current = next;
+    setState(next);
+    agent.setState(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const update = useCallback(
     (fn: (s: LiveabilityState) => LiveabilityState) => {

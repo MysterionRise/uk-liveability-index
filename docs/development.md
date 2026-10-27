@@ -97,7 +97,10 @@ make demo-record    # re-record them after changing data or prompts
 the storyline against a running demo and saves a screenshot per step. `make gif` records the
 README's GIFs and the release's walkthrough video the same way (needs ffmpeg), and
 `make tiktok` the vertical, TikTok-style clip of the phone layout
-([web/scripts/tiktok.mjs](../web/scripts/tiktok.mjs)).
+([web/scripts/tiktok.mjs](../web/scripts/tiktok.mjs)). The browser suite runs against the
+stack the same way (`LIX_E2E_STACK=docker npx playwright test`) once the web image is built
+with `LIX_EXPOSE_MAP=1 make up BUILD=1`, which exposes the map to the tests; without it every
+map test times out. `LIX_SMOKE=1` adds the smoke spec the release workflow runs.
 
 ## Docker
 

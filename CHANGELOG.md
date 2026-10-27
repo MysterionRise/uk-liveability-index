@@ -105,6 +105,12 @@ already had, and the November refresh: the data pack is rebuilt as **data-2026-1
   multiplier under an unknown id or a context measure was silently ignored while the
   answer said "(adjusted)": now a 400 naming the problem, with ids, labels and everyday
   words matched as the assistant's path already did.
+- A shortlist saved in the browser never showed after a load of the production build (the
+  tab had no count, the panel said "No saved areas yet", the stored list was intact): the
+  mount effect that merges it ran before the effects that record the first frame and hand it
+  to the assistant, whose snapshot then replaced the page state; development hid it because
+  StrictMode runs mount effects twice. The merge now runs last, and the browser suite is run
+  against the production image as well (#217).
 - The rules-based profile engine turned "I hate noise", "no crime" and "no flooding" the
   wrong way (the weight went down): a negator now reads by what it touches, so aversion
   to a problem raises its weight and aversion to an asset ("no pubs") or indifference
