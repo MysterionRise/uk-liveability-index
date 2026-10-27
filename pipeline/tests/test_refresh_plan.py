@@ -255,6 +255,11 @@ class TestIndicatorsServeTiles:
         graph.write_sidecar(p.tiles_sidecar(), "tiles", digest, parts)
         assert p.tiles_step(lock, ["E"]) is None
         assert p.tiles_step(lock, ["E", "W"]).reason == "inputs changed: nations"
+        # The hover names come from geo_lsoa: a rename re-cuts the tiles (#194's names
+        # shipped in a pack whose tiles still said "Cong/Ross 001")
+        (data / "staged").mkdir(exist_ok=True)
+        graph.write_sidecar(graph.sidecar_path("geo_lsoa"), "geo_lsoa", "renamed", {})
+        assert p.tiles_step(lock, ["E"]).reason == "staged inputs changed: geo_lsoa"
 
 
 def test_plan_renders_and_knows_when_it_is_empty(registry, data):

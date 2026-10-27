@@ -75,7 +75,7 @@ CONTOUR_FILES: dict[str, dict[str, dict[str, list[str]]]] = {
             "all": ["**/R3_con_lden.shp"],
             "road": ["**/R3_agg_road_lden.shp", "**/R3_mroad_lden.shp"],
             "rail": ["**/R3_agg_rail_lden.shp", "**/R3_mrail_lden.shp"],
-            "air": ["**/R3_bca_lden.shp", "**/R3_bia_lden.shp"],
+            "air": ["**/R3_bca_lden.shp", "**/R3_bia_lden_all.shp"],
             "industry": ["**/R3_agg_ind_lden.shp"],
         },
         "lnight": {

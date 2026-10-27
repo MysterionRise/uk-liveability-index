@@ -52,7 +52,7 @@ def osm_nearest(
     return out
 
 
-# A service type counts as staged for a nation when some home there has one this close
+# A service type counts as staged for a nation when most of its areas have one this close
 STAGED_WITHIN_M = 50_000.0
 
 
@@ -79,8 +79,11 @@ def service_mix(ctx, radius_m: float, services: list[dict]) -> pl.DataFrame:
     (0–100): over the types, the share of the area's homes with any of that type in
     reach, summed, over the number of types the nation has data for (Ireland stages no
     schools, so its homes are measured over the other types). A type is "staged" for a
-    nation when some home there has one within 50 km; a type nobody has
-    in reach still counts against the homes, and the log names the types left out (#75)."""
+    nation when more than half of its areas have one within 50 km: Irish homes near the
+    border reach Northern Irish schools, which does not make a school list for Ireland
+    (the v0.6.3 release pass found every Irish area capped at six of seven). A staged
+    type nobody has in reach still counts against the homes, and the log names the
+    types left out (#75)."""
     from lix_core.codes import nation_of
 
     shares = []
@@ -101,10 +104,13 @@ def service_mix(ctx, radius_m: float, services: list[dict]) -> pl.DataFrame:
         wide = wide.join(frame, on="lsoa21cd", how="full", coalesce=True)
     columns = [f"s{i}" for i in range(len(services))]
     wide = wide.with_columns(nation_of("lsoa21cd").alias("nation"))
-    # A type with no point within the search cap of any home in the nation is not
+    # A type within the search cap of no more than half the nation's areas is not
     # measured there
     staged = wide.group_by("nation").agg(
-        *[pl.col(f"near{i}").fill_null(False).any().alias(c) for i, c in enumerate(columns)]
+        *[
+            (pl.col(f"near{i}").fill_null(False).mean() > 0.5).alias(c)
+            for i, c in enumerate(columns)
+        ]
     )
     for row in staged.iter_rows(named=True):
         missing = [services[int(c[1:])].get("name", c) for c in columns if not row[c]]
@@ -115,7 +121,10 @@ def service_mix(ctx, radius_m: float, services: list[dict]) -> pl.DataFrame:
     )
     return wide.join(counted, on="nation", how="left").select(
         "lsoa21cd",
-        (
+        pl.when(pl.col("n_types") > 0)
+        .then(
             pl.sum_horizontal([pl.col(c).fill_null(0) for c in columns]) / pl.col("n_types") * 100
-        ).alias("value"),
+        )
+        .otherwise(None)
+        .alias("value"),
     )

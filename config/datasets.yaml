@@ -2816,7 +2816,7 @@ epa_noise_road_agg:
     sort_by: Name
     srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
   format: geojson
-  landing_page: https://data.gov.ie/dataset/noise-round-4-road-agglomerations-lden
+  landing_page: https://data.gov.ie/dataset/noise-round-4-road-agglomeration-lden
   description: Lden noise contour bands from road traffic in the Dublin, Cork, Limerick, Galway and Waterford agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
   licence: CC-BY-4.0
   attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
@@ -2854,7 +2854,7 @@ epa_noise_rail_agg:
     sort_by: Name
     srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
   format: geojson
-  landing_page: https://data.gov.ie/dataset/noise-round-4-rail-agglomerations-lden
+  landing_page: https://data.gov.ie/dataset/noise-round-4-rail-agglomeration-lden
   description: Lden noise contour bands from railways and Luas lines inside the agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
   licence: CC-BY-4.0
   attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
@@ -2911,7 +2911,7 @@ epa_noise_industry_agg:
     sort_by: Name
     srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
   format: geojson
-  landing_page: https://data.gov.ie/dataset/noise-round-4-industry-agglomerations-lden
+  landing_page: https://data.gov.ie/dataset/noise-round-4-industry-agglomeration-lden
   description: Lden noise contour bands from industrial sites inside the agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
   licence: CC-BY-4.0
   attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
@@ -2947,7 +2947,7 @@ epa_noise_road_agg_lnight:
     sort_by: Name
     srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
   format: geojson
-  landing_page: https://data.gov.ie/dataset/noise-round-4-road-agglomerations-lnight
+  landing_page: https://data.gov.ie/dataset/noise-round-4-road-agglomeration-lnight
   description: Night-time (Lnight, 23:00–07:00) noise contour bands from road traffic in the Dublin, Cork, Limerick, Galway and Waterford agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
   licence: CC-BY-4.0
   attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
@@ -2985,7 +2985,7 @@ epa_noise_rail_agg_lnight:
     sort_by: Name
     srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
   format: geojson
-  landing_page: https://data.gov.ie/dataset/noise-round-4-rail-agglomerations-lnight
+  landing_page: https://data.gov.ie/dataset/noise-round-4-rail-agglomeration-lnight
   description: Night-time (Lnight, 23:00–07:00) noise contour bands from railways in the agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
   licence: CC-BY-4.0
   attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."
@@ -3042,7 +3042,7 @@ epa_noise_industry_agg_lnight:
     sort_by: Name
     srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
   format: geojson
-  landing_page: https://data.gov.ie/dataset/noise-round-4-industry-agglomerations-lnight
+  landing_page: https://data.gov.ie/dataset/noise-round-4-industry-agglomeration-lnight
   description: Night-time (Lnight, 23:00–07:00) noise contour bands from licensed industrial sites in the agglomerations, modelled for 2021 under the Environmental Noise Directive's fourth round (CNOSSOS-EU).
   licence: CC-BY-4.0
   attribution: "Environmental Protection Agency, strategic noise maps round 4, licensed under CC BY 4.0."

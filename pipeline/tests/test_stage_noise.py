@@ -143,3 +143,24 @@ class TestContourBands:
         polys.to_file(path, driver="GPKG")
         got = contour_db_at_points([path], np.array([5.0, 25.0, 45.0, 65.0]), np.array([5.0] * 4))
         assert got[:3].tolist() == [45.0, 50.0, 75.0] and np.isnan(got[3])
+
+
+def test_every_noise_source_is_an_input_the_planner_knows():
+    """A new edition of any grid or contour file re-stages the table: the EPA's Lden
+    slugs carry no metric suffix and were missed by the glob (v0.6.3 release pass)."""
+    from lix_core.config import load_registry
+    from lix_pipeline.stage import graph
+    from lix_pipeline.stage.noise import NOISE_SOURCES
+
+    def slugs(node):
+        if isinstance(node, str):
+            yield node
+        elif isinstance(node, dict):
+            for v in node.values():
+                yield from slugs(v)
+        else:
+            for v in node:
+                yield from slugs(v)
+
+    known = set(graph.raw_inputs("noise", load_registry()))
+    assert set(slugs(NOISE_SOURCES)) <= known

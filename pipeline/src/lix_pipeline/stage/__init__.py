@@ -151,7 +151,8 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "os_open_uprn": ["os_open_uprn", *LOW_BOUNDARIES],
     "night_lights": ["viirs_vnl", "nspl"],
     "climate": ["haduk_grid", "nspl", "met_eireann_temp_9120", "met_eireann_rr_9120"],
-    "noise": ["*_noise_*_lden", "*_noise_*_lnight", "daera_noise_r3", "nspl"],
+    # The EPA's Lden slugs carry no metric suffix (epa_noise_road_agg)
+    "noise": ["*_noise_*_lden", "*_noise_*_lnight", "epa_noise_*", "daera_noise_r3", "nspl"],
     "deprivation": [
         "iod_2025",
         "wimd_*",
@@ -232,7 +233,12 @@ STAGE_READS: dict[str, list[str]] = {
 # names and the boundaries the tiles are cut from. The manifest credits them alongside
 # the indicators' sources.
 BACKBONE_INPUTS: list[str] = sorted(
-    set(STAGE_INPUTS["geo_lsoa"]) | set(STAGE_INPUTS["places"]) | set(boundary_slugs("mid"))
+    set(STAGE_INPUTS["geo_lsoa"])
+    | set(STAGE_INPUTS["places"])
+    | set(boundary_slugs("mid"))
+    # Logainm names Northern Ireland's places in Irish at serve time (CC BY 4.0): the
+    # manifest's source list is the product's attribution
+    | {"logainm"}
 )
 
 

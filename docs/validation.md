@@ -6,7 +6,7 @@ population-weighted, with the default (balanced) weights. Expectations are in
 [config/validation_places.yaml](../config/validation_places.yaml); regenerate this
 page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
-**133 of 133 checks pass** (92 of 92 anchors) across 55 places.
+**138 of 138 checks pass** (97 of 97 anchors) across 58 places.
 
 ## Scores
 
@@ -58,6 +58,9 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 | Shankill | Court K, Belfast | 59 | 86 | 48 | 5 | – | 59 | 100 | 69 | 8 | 90 |
 | Holywood | Holywood and Clandeboye H, Ards and North Down | 61 | 58 | 53 | 70 | – | 65 | 100 | 30 | 29 | 81 |
 | Enniskillen | Enniskillen E, Fermanagh and Omagh | 57 | 85 | 33 | 13 | – | 74 | 100 | 60 | 9 | 67 |
+| Lurgan | Lurgan K, Armagh City, Banbridge and Craigavon | 58 | 63 | 49 | 18 | – | 64 | 97 | 79 | 7 | 85 |
+| Antrim | Antrim G, Antrim and Newtownabbey | 72 | 86 | 47 | 68 | – | 80 | 100 | 92 | 16 | 74 |
+| Cavan | Cavan Urban, Cavan | 63 | 92 | 65 | 2 | – | 84 | 100 | – | 31 | 65 |
 | Creggan | The Moor D, Derry City and Strabane | 57 | 55 | 23 | 3 | – | 84 | 100 | 47 | 40 | 86 |
 | Portrush | Causeway B, Causeway Coast and Glens | 53 | 71 | 37 | 33 | – | 78 | 93 | 28 | 11 | 62 |
 | Ranelagh | Rathmines East D, Dublin City | 82 | 100 | 90 | 99 | – | 66 | 100 | – | 22 | 99 |
@@ -71,6 +74,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 ## Observations
 
 - **Tree cover against Forest Research's canopy survey (v0.3.2).** The LSOA values, averaged over the postcodes of each English urban ward whose code still matches, correlate with Forest Research's point-sampled ward canopy cover at r = 0.72 (Spearman 0.70, 1,444 wards). The level is about twice theirs (mean 30% against 16%), as a 10m cell counts as tree cover when trees dominate it, so the thresholds (5% poor, 40% good) are on this scale and the indicator says "tree cover", not canopy.
+- **Ireland joins the index (v0.6.0).** The 18,919 Small Areas are scored on the shared sources where they exist (air from the EEA's European maps, OpenStreetMap, climate from Met Éireann) and within Ireland for Pobal deprivation, Garda crime and ComReg broadband. Schools and housing are declared gaps and homes are building footprints rather than postcodes, so the Irish anchors test community, access and safety: Clifden reads 50 km from an A&E (the search cap) and Letterkenny's nearest station is Derry's. Its headline percentile compares within Ireland (v0.6.1), and Bettystown checks that a Garda station that stopped reporting borrows a neighbour's counts rather than reading as crime-free.
 - **Northern Ireland joins the index (v0.5.0).** The 850 Super Data Zones are scored on the same indicators where the data are the same (air, broadband, OpenStreetMap, climate) and within Northern Ireland for crime, the NIMDM 2017 deprivation measure, the ward house prices and domestic rates. Schools are a declared gap (no grades or results are published) and flood risk is not available (the maps are licensed), so the Northern Irish anchors test prices, deprivation, air and access rather than schools or flooding.
 - **Scotland joins the index (v0.4.0).** The 7,392 Data Zones are scored on the shared sources where they exist and within Scotland for SIMD deprivation, its crime domain (standing in for the four police.uk measures), Registers of Scotland prices and council tax; a secondary's quality is its leavers' tariff within Scotland and primaries count as present but ungraded, so safety keeps 52% of its weight and schools 67%.
 - **Wales joins the index (v0.3.0).** Welsh neighbourhoods are scored on the same indicators where the data are the same (distances, air, broadband, OpenStreetMap) and within Wales where they are not (crime, WIMD deprivation, prices, council tax). Theme scores are not built from identical parts in both nations: health in Wales lacks GP capacity and ratings (the Welsh median is higher), and education in Wales rests on each council's exam results and OpenStreetMap nurseries (the Welsh median is lower). Welsh users should read the within-nation percentiles; the gaps are listed in each profile as "not available in Wales".
@@ -325,10 +329,23 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≥ 60: 70.4 ⚓
 - ✅ station_distance ≤ 2,000: 371.7 ⚓
 
-**Enniskillen** (Enniskillen E). Lakeland county town with the South West Acute Hospital and no railway. Flags: broadcast_lad, broadcast_msoa, not_available.
+**Enniskillen** (Enniskillen E). Lakeland county town with the South West Acute Hospital and no railway; Lough Erne is no coast. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ hospital_ae_distance ≤ 5,000: 2,336.9 ⚓
 - ✅ station_distance ≥ 40,000: 50,000.0 ⚓
+- ✅ coast_distance ≥ 30: 39.9 ⚓
+
+**Lurgan** (Lurgan K). On Lough Neagh's southern shore, 30 km from the sea: the lough is a hole in the outline, and no coast. Flags: broadcast_lad, broadcast_msoa, not_available.
+
+- ✅ coast_distance ≥ 25: 30.8 ⚓
+
+**Antrim** (Antrim G). Lough Neagh's north-eastern corner, 20 km from Belfast Lough. Flags: broadcast_lad, broadcast_msoa, not_available.
+
+- ✅ coast_distance ≥ 15: 20.9 ⚓
+
+**Cavan** (Cavan Urban). Landlocked border county town among the Erne loughs: the border through the water is no coast. Flags: not_available.
+
+- ✅ coast_distance ≥ 45: 61.3 ⚓
 
 **Creggan** (The Moor D). Large estate above Derry's Bogside, long among the most deprived areas. Flags: broadcast_lad, broadcast_msoa, not_available.
 
@@ -345,6 +362,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ station_distance ≤ 1,000: 239.1 ⚓
 - ✅ gp_distance ≤ 500: 168.1
 - ✅ leisure ≥ 0.2: 1.0 ⚓
+- ✅ everyday_services ≥ 90: 100.0 ⚓
 
 **Bettystown** (St. Mary's). A commuter coast north of Dublin whose Garda station stopped reporting in 2025: its crime must come from a neighbouring station, not read as zero (#143). Flags: not_available.
 

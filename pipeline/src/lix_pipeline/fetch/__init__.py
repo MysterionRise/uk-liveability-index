@@ -489,17 +489,29 @@ def _same_validator(ours: dict | None, theirs: dict[str, str | None]) -> bool:
 PROBE_RETRY_S = 5.0
 
 
+def _transient(e: Exception) -> bool:
+    """A connect timeout or a refused, reset or dropped connection: the network between
+    the runner and the publisher. A host name that no longer resolves or a certificate
+    that fails is the publisher gone, and stays a failure."""
+    if getattr(e, "response", None) is not None or isinstance(e, requests.exceptions.SSLError):
+        return False
+    text = str(e)
+    return not any(
+        s in text for s in ("NameResolutionError", "Name or service not known", "nodename nor")
+    )
+
+
 def _with_retry(fn, url: str):
     try:
         return fn()
     except (requests.ConnectTimeout, requests.ConnectionError) as e:
-        if getattr(e, "response", None) is not None:
+        if not _transient(e):
             raise
         time.sleep(PROBE_RETRY_S)
         try:
             return fn()
         except (requests.ConnectTimeout, requests.ConnectionError) as again:
-            if getattr(again, "response", None) is not None:
+            if not _transient(again):
                 raise
             raise _Unreached(url, again) from again
 

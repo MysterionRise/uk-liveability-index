@@ -22,6 +22,15 @@ observations:
     (5% poor, 40% good) are on this scale and the indicator says "tree cover", not
     canopy.
   - >-
+    **Ireland joins the index (v0.6.0).** The 18,919 Small Areas are scored on the shared
+    sources where they exist (air from the EEA's European maps, OpenStreetMap, climate from
+    Met Éireann) and within Ireland for Pobal deprivation, Garda crime and ComReg broadband.
+    Schools and housing are declared gaps and homes are building footprints rather than
+    postcodes, so the Irish anchors test community, access and safety: Clifden reads 50 km
+    from an A&E (the search cap) and Letterkenny's nearest station is Derry's. Its headline
+    percentile compares within Ireland (v0.6.1), and Bettystown checks that a Garda station
+    that stopped reporting borrows a neighbour's counts rather than reading as crime-free.
+  - >-
     **Northern Ireland joins the index (v0.5.0).** The 850 Super Data Zones are scored on
     the same indicators where the data are the same (air, broadband, OpenStreetMap,
     climate) and within Northern Ireland for crime, the NIMDM 2017 deprivation measure,
@@ -423,10 +432,29 @@ places:
 
   - name: Enniskillen
     local_authority: Fermanagh and Omagh
-    why: "Lakeland county town with the South West Acute Hospital and no railway"
+    why: "Lakeland county town with the South West Acute Hospital and no railway; Lough Erne is no coast"
     checks:
       - {indicator: hospital_ae_distance, op: le, value: 5000, anchor: true}
       - {indicator: station_distance, op: ge, value: 40000, anchor: true}
+      - {indicator: coast_distance, op: ge, value: 30, anchor: true}  # Donegal Bay is 40 km away (#130)
+
+  - name: Lurgan
+    local_authority: Armagh City, Banbridge and Craigavon
+    why: "On Lough Neagh's southern shore, 30 km from the sea: the lough is a hole in the outline, and no coast"
+    checks:
+      - {indicator: coast_distance, op: ge, value: 25, anchor: true}  # Belfast Lough and Carlingford Lough
+
+  - name: Antrim
+    local_authority: Antrim and Newtownabbey
+    why: "Lough Neagh's north-eastern corner, 20 km from Belfast Lough"
+    checks:
+      - {indicator: coast_distance, op: ge, value: 15, anchor: true}
+
+  - name: Cavan
+    local_authority: Cavan
+    why: "Landlocked border county town among the Erne loughs: the border through the water is no coast"
+    checks:
+      - {indicator: coast_distance, op: ge, value: 45, anchor: true}  # Dundalk Bay, 60 km
 
   - name: Creggan
     local_authority: Derry City and Strabane
@@ -452,6 +480,7 @@ places:
       - {indicator: station_distance, op: le, value: 1000, anchor: true}
       - {indicator: gp_distance, op: le, value: 500}
       - {indicator: leisure, op: ge, value: 0.2, anchor: true}
+      - {indicator: everyday_services, op: ge, value: 90, anchor: true}  # every type Ireland stages within 1.2 km (#75)
 
   - name: Bettystown
     local_authority: Meath

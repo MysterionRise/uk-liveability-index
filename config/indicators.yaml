@@ -342,7 +342,7 @@ indicators:
     unit: "% of homes"
     direction: lower_better
     coverage: [E, W, S, N, I]
-    sources: [defra_noise_road_lnight, defra_noise_rail_lnight, defra_noise_air_lnight, wg_noise_road_lnight, wg_noise_rail_lnight, wg_noise_industry_lnight, sepa_noise_all_lnight, daera_noise_r3, nspl, epa_noise_road_agg_lnight, epa_noise_road_nat_lnight, epa_noise_rail_agg_lnight, epa_noise_rail_nat_lnight, epa_noise_air_nat_lnight, epa_noise_industry_agg_lnight, te_buildings]
+    sources: [defra_noise_road_lnight, defra_noise_rail_lnight, defra_noise_air_lnight, wg_noise_road_lnight, wg_noise_rail_lnight, wg_noise_industry_lnight, sepa_noise_all_lnight, sepa_noise_industry_lnight, daera_noise_r3, nspl, epa_noise_road_agg_lnight, epa_noise_road_nat_lnight, epa_noise_rail_agg_lnight, epa_noise_rail_nat_lnight, epa_noise_air_nat_lnight, epa_noise_industry_agg_lnight, te_buildings]
     builder: environment:percent
     params: {slug: noise, column: share_any_night_50}
     normalise: threshold
@@ -363,7 +363,7 @@ indicators:
     builder: common:nearest
     params: {slug: coastline, max_nearest_m: 200000, scale: 0.001}
     role: context
-    caveats: Straight-line distance to the nearest point of the mapped coastline, which runs up estuaries and sea loughs as far as the high water mark goes; a measure of nearness to the sea, not of beach access.
+    caveats: Straight-line distance to the nearest point of the mapped coastline, which runs up estuaries, sea loughs and tidal rivers as far as the high water mark goes (Norwich, Gloucester and Wisbech read under 2 km); a measure of nearness to tidal water, not of beach access. Lakes and inland loughs are not coast.
 
   - id: tree_canopy
     theme: environment
@@ -860,7 +860,7 @@ indicators:
     unit: "%"
     direction: higher_better
     coverage: [E, W, S, N, I]
-    sources: [ods_gp, phs_gp_practices, bso_gp_list_sizes, nhsbsa_pharmacies, phs_pharmacies, bso_dispensing, osm_england, osm_wales, osm_scotland, osm_ireland, gias, wg_schools, sg_school_roll, de_schools_primary, de_schools_post_primary, de_schools_special, nspl, os_greenspace, bods_gtfs, bods_gtfs_wales, naptan, nta_gtfs, translink_rail_txc, nspl, te_buildings]
+    sources: [ods_gp, phs_gp_practices, bso_gp_list_sizes, nhsbsa_pharmacies, phs_pharmacies, bso_dispensing, osm_england, osm_wales, osm_scotland, osm_ireland, gias, wg_schools, sg_school_roll, de_schools_primary, de_schools_post_primary, de_schools_special, os_greenspace, bods_gtfs, bods_gtfs_wales, bods_gtfs_scotland, naptan, nta_gtfs, translink_rail_txc, translink_metro_txc, translink_ulsterbus_txc, nspl, te_buildings]
     builder: amenities:service_mix
     params:
       radius_m: 1200
@@ -879,7 +879,7 @@ indicators:
             - {slug: bods_gtfs, column: per_hour, min: 2}
             - {slug: naptan, column: mode, values: [rail, metro_tram]}
     role: context
-    caveats: Straight-line reach, not walking time, so a river or a railway between home and shop is not seen (a walking network is planned). Frequent transport means a stop with at least two weekday daytime departures an hour or a railway, metro or tram station. Ireland stages no school list, so its homes are measured over the other six types.
+    caveats: Straight-line reach, not walking time, so a river or a railway between home and shop is not seen (a walking network is planned). Frequent transport means a stop with at least two weekday daytime departures an hour or a railway, metro or tram station. Ireland stages no school list, so its homes are measured over the other six types. Irish homes are every building rather than postcode points, so dispersed rural Ireland reads lower than rural Britain.
 
   - id: library_distance
     theme: amenities
@@ -892,7 +892,7 @@ indicators:
     builder: amenities:osm_nearest
     params: {values: [library], beyond_cap: 20000}
     role: context
-    caveats: Libraries as OpenStreetMap maps them; a council's list may be fuller.
+    caveats: Libraries as OpenStreetMap maps them; a council's list may be fuller. An area whose homes have none within 50 km, the search cap, reads 50 km.
 
   - id: post_office_distance
     theme: amenities
@@ -905,7 +905,7 @@ indicators:
     builder: amenities:osm_nearest
     params: {values: [post_office], beyond_cap: 20000}
     role: context
-    caveats: Post offices as OpenStreetMap maps them, counters inside shops included where mapped.
+    caveats: Post offices as OpenStreetMap maps them, counters inside shops included where mapped. An area whose homes have none within 50 km, the search cap, reads 50 km.
 
   - id: shops
     theme: amenities

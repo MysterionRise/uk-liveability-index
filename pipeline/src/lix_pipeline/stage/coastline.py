@@ -1,10 +1,12 @@
 """The coastline as points, for the distance from homes to the sea (#130).
 
 Great Britain's coast is OS Boundary-Line's high water mark, Ireland's Tailte Éireann's
-high water mark (National Water Marks), Northern Ireland's the OSNI outline with its land border
-dropped (an outline runs along the border with Ireland, which is no coast). Each line is
-densified to a vertex every 100 m, so the nearest vertex is within 50 m of the true
-distance, well inside the kilometre the indicator shows.
+high water mark (National Water Marks), Northern Ireland's the OSNI outline with its land
+border and its loughs dropped: an outline runs along the border with Ireland, which is no
+coast, and holds Lough Neagh as a hole and the Fermanagh lakes on its outer ring, whose
+shores are no coast either (the v0.6.3 release pass found Lurgan 2 km "from the sea").
+Each line is densified to a vertex every 100 m, so the nearest vertex is within 50 m of
+the true distance, well inside the kilometre the indicator shows.
 """
 
 import geopandas as gpd
@@ -20,19 +22,35 @@ from lix_core.paths import data_dir, raw_file
 logger = setup_logging("stage.coastline")
 
 SPACING_M = 100.0
-# Vertices this close to the neighbouring state's land are its border, not the sea
-BORDER_M = 250.0
+# Vertices this close to the neighbouring state's land are its border, not the sea: the
+# border runs through rivers and loughs, where the outline sits up to a kilometre from
+# the neighbour's generalised polygons
+BORDER_M = 1000.0
+# Inland water on an outline's outer ring, as a box of (west, south, east, north) in
+# longitude and latitude: the OSNI outline opens to the border through the Fermanagh lake
+# basin (Lower and Upper Lough Erne, Lough MacNean, Lough Melvin), and no sea coast of
+# Northern Ireland lies in this box (Carlingford Lough is east of it, Lough Foyle north)
+INLAND_WATER_LONLAT = {"osni_ni_outline": (-8.25, 54.0, -7.15, 54.62)}
+
+
+def _outer_rings(g):
+    """A polygon's exterior ring; a hole is a lake, and a lake's shore is no coast."""
+    if g.geom_type == "Polygon":
+        return g.exterior
+    if g.geom_type == "MultiPolygon":
+        return shapely.MultiLineString([p.exterior for p in g.geoms])
+    return g
 
 
 def coast_points(
     lines: gpd.GeoDataFrame, source: str, spacing_m: float = SPACING_M
 ) -> pl.DataFrame:
     """A vertex at most ``spacing_m`` apart along every line (polygons contribute their
-    rings), in the working CRS."""
+    outer rings, not their holes), in the working CRS."""
     geoms = lines.geometry
     if lines.crs is not None and lines.crs.to_epsg() != working_crs():
         geoms = geoms.to_crs(working_crs())
-    rings = geoms.apply(lambda g: g.boundary if g.geom_type in ("Polygon", "MultiPolygon") else g)
+    rings = geoms.apply(_outer_rings)
     dense = shapely.segmentize(np.asarray(rings.values, dtype=object), spacing_m)
     xy = shapely.get_coordinates(dense)
     return pl.DataFrame({"x": xy[:, 0], "y": xy[:, 1], "source": source}).unique(
@@ -56,6 +74,22 @@ def drop_land_border(
     keep = np.ones(points.height, dtype=bool)
     keep[np.unique(hit)] = False
     return points.filter(pl.Series(keep))
+
+
+def drop_inland_water(
+    points: pl.DataFrame, box_lonlat: tuple[float, float, float, float]
+) -> pl.DataFrame:
+    """The vertices inside the box (west, south, east, north; degrees) dropped: a lake
+    basin on an outline's outer ring."""
+    from pyproj import Transformer
+
+    if points.is_empty():
+        return points
+    to_lonlat = Transformer.from_crs(working_crs(), 4326, always_xy=True)
+    lon, lat = to_lonlat.transform(points["x"].to_numpy(), points["y"].to_numpy())
+    west, south, east, north = box_lonlat
+    inside = (lon >= west) & (lon <= east) & (lat >= south) & (lat <= north)
+    return points.filter(pl.Series(~inside))
 
 
 def _gb_high_water() -> gpd.GeoDataFrame:
@@ -96,6 +130,9 @@ def stage_coastline() -> pl.LazyFrame:
             logger.info(f"Northern Ireland: {before - outline.height:,} border vertices dropped")
         else:
             logger.warning("te_admin_areas not fetched: the Irish land border counts as coast")
+        before = outline.height
+        outline = drop_inland_water(outline, INLAND_WATER_LONLAT["osni_ni_outline"])
+        logger.info(f"Northern Ireland: {before - outline.height:,} lake-basin vertices dropped")
         frames.append(outline)
     if not frames:
         raise ValueError("stage_coastline: no active nation has a coastline source")

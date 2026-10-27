@@ -129,3 +129,28 @@ def test_a_compressed_transfer_is_versioned_by_its_file_name(httpserver, monkeyp
     out = check_source("plain", _spec(httpserver.url_for("/a.csv")), requests.Session())
     assert out["version"] == "abc_v1.0.2.csv"
     assert out["changed"] and out["note"].startswith("new upstream version")
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        requests.ConnectionError(
+            "HTTPSConnectionPool(host='gone.example', port=443): Max retries exceeded "
+            "(Caused by NameResolutionError(...))"
+        ),
+        requests.exceptions.SSLError("certificate verify failed: certificate has expired"),
+    ],
+)
+def test_a_vanished_host_or_a_failed_certificate_stays_a_failure(monkeypatch, lock, error):
+    """A host name that no longer resolves or a certificate that fails is the publisher
+    gone, not the runner's network: no retry, and a failure like a 404."""
+    calls = []
+
+    def gone(slug, spec, session):
+        calls.append(slug)
+        raise error
+
+    monkeypatch.setattr(fetch_mod, "resolve", gone)
+    monkeypatch.setattr(fetch_mod, "PROBE_RETRY_S", 0)
+    out = check_source("plain", _spec("https://gone.example/a.csv"), requests.Session())
+    assert out["status"] == "fail" and calls == ["plain"]

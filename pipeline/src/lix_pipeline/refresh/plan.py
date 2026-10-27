@@ -279,17 +279,26 @@ def tiles_sidecar() -> Path:
 
 
 def tiles_step(lock: dict, nations: Iterable[str], force: bool = False) -> Step | None:
-    digest, parts = graph.fingerprint(tile_inputs(), lock)
-    parts = {**parts, "nations": ",".join(nations)}
-    digest = hashlib.sha256((digest + parts["nations"]).encode()).hexdigest()
+    digest, parts = tiles_fingerprint(lock, nations)
     reason = "forced" if force else graph.stale_reason(tiles_sidecar(), digest, parts)
     return Step("tiles", reason) if reason else None
 
 
 def tiles_fingerprint(lock: dict, nations: Iterable[str]) -> tuple[str, dict]:
+    """The boundary files, the nations, and the names: the tiles carry each area's name
+    for the hover, read from the scored features, whose names come from the geo_lsoa
+    table (the #194 renames shipped in a pack whose tiles still said "Cong/Ross 001")."""
     digest, parts = graph.fingerprint(tile_inputs(), lock)
-    parts = {**parts, "nations": ",".join(nations)}
-    return hashlib.sha256((digest + parts["nations"]).encode()).hexdigest(), parts
+    parts = {
+        **parts,
+        "nations": ",".join(nations),
+        "staged:geo_lsoa": graph.read_sidecar(graph.sidecar_path("geo_lsoa")).get("fingerprint")
+        or "missing",
+    }
+    digest = hashlib.sha256(
+        "\n".join(f"{k} {v or 'missing'}" for k, v in sorted(parts.items())).encode()
+    ).hexdigest()
+    return digest, parts
 
 
 def make_plan(

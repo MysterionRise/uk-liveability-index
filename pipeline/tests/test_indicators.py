@@ -501,3 +501,34 @@ class TestServiceMix:
         # types staged there
         assert out["lsoa21cd"].to_list() == ["E01000001", "E01000002", "I01000001"]
         assert out["value"].to_list() == pytest.approx([75.0, 25.0, 200 / 3])
+
+    def test_a_type_reached_across_the_border_is_not_staged_for_the_nation(self):
+        """Irish homes near the border have a Northern Irish school within 50 km; that
+        makes no school list for Ireland, so its areas are still measured over the
+        other types (the v0.6.3 release pass found every Irish area capped at 6 of 7)."""
+        from lix_pipeline.indicators.amenities import service_mix
+
+        ctx = self._ctx()
+        # Two more Irish areas, 20 and 40 km from the first one's GP, shop and stop
+        ctx.origins = pl.concat([
+            ctx.origins,
+            pl.DataFrame({
+                "postcode": ["E", "F"], "lsoa21cd": ["I01000002", "I01000003"],
+                "east1m": [120_000, 100_000], "north1m": [300_000, 340_000],
+            }),
+        ])  # fmt: skip
+        # A school across the border: 40 km from the first Irish home, further from the rest
+        ctx.tables["schools"] = pl.concat([
+            ctx.tables["schools"],
+            pl.DataFrame({"phase": ["Primary"], "x": [60_000.0], "y": [300_000.0]}),
+        ])  # fmt: skip
+        services = [
+            {"name": "GP", "slug": "ods_gp"},
+            {"name": "supermarket", "slug": "osm_pois", "key": "shop", "values": ["supermarket"]},
+            {"name": "school", "slug": "schools", "column": "phase", "values": ["Primary"]},
+            {"name": "transport", "any": [{"slug": "bods_gtfs", "column": "per_hour", "min": 2}]},
+        ]
+        out = service_mix(ctx, radius_m=1000, services=services).sort("lsoa21cd")
+        irish = out.filter(pl.col("lsoa21cd").str.starts_with("I"))["value"].to_list()
+        # One Irish area in three reaches a school: not staged there, three types count
+        assert irish == pytest.approx([200 / 3, 0.0, 0.0])
