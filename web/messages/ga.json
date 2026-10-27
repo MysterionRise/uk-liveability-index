@@ -263,6 +263,15 @@
     "betterThanUrbanRural": "Níos fearr ná {pct, number}% de cheantair uirbeacha/tuaithe comhchosúla"
   },
   "Poi": {
+    "phases": {
+      "primary": "Bunscoil",
+      "secondary": "Meánscoil",
+      "16_plus": "16 bliana agus os a chionn",
+      "special": "Speisialta",
+      "all_through": "Gach aois",
+      "middle_deemed_primary": "Meánach (bunscoil)",
+      "middle_deemed_secondary": "Meánach (meánscoil)"
+    },
     "titles": {
       "arts_centre": "Ionaid ealaíon",
       "bakery": "Bácúis",
@@ -277,7 +286,7 @@
       "fast_food": "Siopaí mearbhia",
       "gp": "Cleachtais dochtúirí teaghlaigh",
       "greengrocer": "Siopaí glasraí",
-      "gym": "Giomnáisiamaí",
+      "gym": "Giomnáisiaim",
       "library": "Leabharlanna",
       "market": "Margaí",
       "museum": "Músaeim agus dánlanna",

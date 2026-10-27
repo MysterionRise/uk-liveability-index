@@ -263,6 +263,15 @@
     "betterThanUrbanRural": "Nas fheàrr na {pct, number}% de sgìrean bailteil/dùthchail coltach"
   },
   "Poi": {
+    "phases": {
+      "primary": "Bun-sgoil",
+      "secondary": "Àrd-sgoil",
+      "16_plus": "16 agus os a chionn",
+      "special": "Sònraichte",
+      "all_through": "Gach aois",
+      "middle_deemed_primary": "Meadhan (bun-sgoil)",
+      "middle_deemed_secondary": "Meadhan (àrd-sgoil)"
+    },
     "titles": {
       "arts_centre": "Ionadan ealain",
       "bakery": "Taighean-fuine",
@@ -273,7 +282,7 @@
       "community_centre": "Ionadan coimhearsnachd",
       "convenience_store": "Bùthan goireasach",
       "dentist": "Fiaclairean",
-      "ev_charging": "Puingean teairrdsidh dealain",
+      "ev_charging": "Puingean cosgais dealain",
       "fast_food": "Bùthan bìdh luath",
       "gp": "Cleachdaidhean dhotairean-teaghlaich",
       "greengrocer": "Bùthan glasraich",

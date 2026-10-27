@@ -4,7 +4,7 @@ import { CopilotChat, useConfigureSuggestions } from "@copilotkit/react-core/v2"
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 
-import { useLiveability } from "@/components/AppData";
+import { LINK_ARRIVED, useLiveability } from "@/components/AppData";
 import { useLocaleChoice } from "@/components/LocaleProvider";
 import { type Tab, usePanel } from "@/components/PanelContext";
 import { AnalystPanel } from "@/components/panels/AnalystPanel";
@@ -44,6 +44,14 @@ export function SidePanel() {
     seenSelected.current = selected;
     if (selected && (first || tab !== "assistant")) setTab("area");
   }, [selected, tab, setTab]);
+  // A link pasted into the open tab is an arrival too, whatever tab was open
+  useEffect(() => {
+    const onArrival = (e: Event) => {
+      if ((e as CustomEvent<string | null>).detail) setTab("area");
+    };
+    window.addEventListener(LINK_ARRIVED, onArrival);
+    return () => window.removeEventListener(LINK_ARRIVED, onArrival);
+  }, [setTab]);
 
   const tabs: [Tab, string][] = [
     ["assistant", t("tabs.assistant")],

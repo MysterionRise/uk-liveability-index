@@ -16,19 +16,22 @@ export function MapLegend({ label, against, dark }: { label: string; against: st
       className="absolute bottom-20 left-3 z-10 w-56 rounded-lg border sm:bottom-8 sm:w-[17rem] border-[var(--border)] bg-[var(--surface-1)] p-3 text-xs shadow-sm"
       data-testid="legend"
     >
+      {/* The fold is a phone thing: on a wider screen the title is plain text, so no
+          button announces a fold that is not there */}
       <button
         type="button"
-        className="flex w-full items-center justify-between text-left font-medium text-[var(--text-primary)] sm:pointer-events-none"
+        className="flex w-full items-center justify-between text-left font-medium text-[var(--text-primary)] sm:hidden"
         aria-expanded={open}
         aria-controls="legend-body"
         onClick={() => setOpen((v) => !v)}
         data-testid="legend-toggle"
       >
         <span>{label}</span>
-        <span aria-hidden="true" className="ml-2 text-[var(--text-muted)] sm:hidden">
+        <span aria-hidden="true" className="ml-2 text-[var(--text-muted)]">
           {open ? "–" : "+"}
         </span>
       </button>
+      <div className="hidden font-medium text-[var(--text-primary)] sm:block">{label}</div>
       <div id="legend-body" className={open ? "block" : "hidden sm:block"} data-testid="legend-body">
       <div className="mb-2 text-[var(--text-muted)]">{against}</div>
       <div className="h-2.5 rounded-sm" style={{ background: gradientCss(dark) }} />

@@ -219,19 +219,18 @@ input[type="checkbox"] {
   filter: invert(1) hue-rotate(180deg);
 }
 
-/* Printing (#188): the map's controls, the legend's fold, the search box and the chat
-   input are screen things; the side panel's cards print at full width */
+/* Printing (#188): the map (WebGL prints as a blank), its controls and legend, the
+   search box and the chat input are screen things; the side panel's cards print at
+   full width */
 @media print {
+  .maplibregl-map,
   .maplibregl-ctrl,
+  [data-testid="legend"],
   [data-testid="search"],
   [data-testid="onboarding"],
-  [data-testid="legend-toggle"] span[aria-hidden],
   .copilotKitInput,
   .copilotKitInputContainer {
     display: none !important;
-  }
-  [data-testid="legend-body"] {
-    display: block !important;
   }
   [data-testid="side-panel"] {
     width: 100% !important;

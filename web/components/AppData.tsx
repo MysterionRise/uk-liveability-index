@@ -45,14 +45,17 @@ interface DataContext {
 
 const Ctx = createContext<DataContext>({ manifest: null, scores: null, error: null });
 
-// Pages of text need the manifest (the build date, the sources) but not the scores
-// file, the largest download of the site (#188)
-const DOCS_ROUTES = /^\/(about|methodology)(\/|$)/;
+/** Fired when a link pasted into an open tab was followed; detail is the selected area. */
+export const LINK_ARRIVED = "lix:link-arrived";
+
+// Only the map page needs the scores file, the largest download of the site: pages of
+// text (and the not-found page) need the manifest alone (#188)
+const MAP_ROUTE = /^\/?$/;
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const [value, setValue] = useState<DataContext>({ manifest: null, scores: null, error: null });
   const pathname = usePathname();
-  const docsOnly = DOCS_ROUTES.test(pathname ?? "");
+  const docsOnly = !MAP_ROUTE.test(pathname ?? "/");
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -122,10 +125,39 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // A shared link names an area but no view: take the recipient there once the data is
+  // in (the hash never carries the map's position)
+  const flownTo = useRef<string | null>(null);
+  const flyToSelected = useCallback(() => {
+    const code = latest.current.map.selected;
+    if (!scores || !code || latest.current.map.bbox || flownTo.current === code) return;
+    flownTo.current = code;
+    if (!scores.index.has(code)) return;
+    searchPlaces(code)
+      .then((places) => {
+        const hit = places.find((p) => p.code === code || p.lsoa21cd === code) ?? places[0];
+        const bbox =
+          bboxOf(hit?.bbox) ??
+          (hit?.centre
+            ? ([hit.centre.lon - 0.02, hit.centre.lat - 0.012, hit.centre.lon + 0.02, hit.centre.lat + 0.012] as const)
+            : null);
+        if (!bbox || latest.current.map.selected !== code) return;
+        const next = { ...latest.current, map: { ...latest.current.map, bbox: [...bbox] as [number, number, number, number] } };
+        latest.current = next;
+        setState(next);
+        agent.setState(next);
+      })
+      .catch(() => {});
+  }, [scores, agent]);
+  useEffect(() => {
+    flyToSelected();
+  }, [flyToSelected]);
+
   // A link pasted into an open tab changes only the hash: follow it (our own writes use
   // replaceState, which fires no hashchange). The link replaces the shareable state, as
   // a fresh load would, and keeps what is this browser's own (shortlist, mode, language);
-  // the assistant is told, so its next answer starts from the view the user sees
+  // the assistant is told, so its next answer starts from the view the user sees, the
+  // map goes to the area it names and the side panel opens its profile
   useEffect(() => {
     const onHash = () => {
       const hash = readHash();
@@ -141,39 +173,13 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
       latest.current = next;
       setState(next);
       agent.setState(next);
+      flownTo.current = null;
+      flyToSelected();
+      window.dispatchEvent(new CustomEvent(LINK_ARRIVED, { detail: next.map.selected }));
     };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
-  }, [agent]);
-
-  // A shared link names an area but no view: take the recipient there once the data is
-  // in (the hash never carries the map's position)
-  const flownTo = useRef<string | null>(null);
-  useEffect(() => {
-    const code = latest.current.map.selected;
-    if (!scores || !code || latest.current.map.bbox || flownTo.current === code) return;
-    flownTo.current = code;
-    if (!scores.index.has(code)) return;
-    let cancelled = false;
-    searchPlaces(code)
-      .then((places) => {
-        const hit = places.find((p) => p.code === code || p.lsoa21cd === code) ?? places[0];
-        const bbox =
-          bboxOf(hit?.bbox) ??
-          (hit?.centre
-            ? ([hit.centre.lon - 0.02, hit.centre.lat - 0.012, hit.centre.lon + 0.02, hit.centre.lat + 0.012] as const)
-            : null);
-        if (cancelled || !bbox) return;
-        const next = { ...latest.current, map: { ...latest.current.map, bbox: [...bbox] as [number, number, number, number] } };
-        latest.current = next;
-        setState(next);
-        agent.setState(next);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [scores, agent]);
+  }, [agent, flyToSelected]);
 
   // Snapshots from the agent replace the page state (adjusted during render, not in an effect)
   const [seenAgentState, setSeenAgentState] = useState<unknown>(agent.state);

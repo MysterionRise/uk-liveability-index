@@ -263,6 +263,15 @@
     "betterThanUrbanRural": "Better than {pct, number}% of similar urban/rural areas"
   },
   "Poi": {
+    "phases": {
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "16_plus": "16 plus",
+      "special": "Special",
+      "all_through": "All-through",
+      "middle_deemed_primary": "Middle (deemed primary)",
+      "middle_deemed_secondary": "Middle (deemed secondary)"
+    },
     "titles": {
       "arts_centre": "Arts centres",
       "bakery": "Bakeries",

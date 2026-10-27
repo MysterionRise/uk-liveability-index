@@ -60,6 +60,8 @@ export function Onboarding() {
     if (welcomed) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && dismiss();
     window.addEventListener("keydown", onKey);
+    // A dialog takes the focus when it opens: the first persona, not the page behind
+    document.querySelector<HTMLElement>('[data-testid="onboarding"] button')?.focus();
     return () => window.removeEventListener("keydown", onKey);
   }, [welcomed]);
   if (welcomed) return null;
@@ -69,6 +71,7 @@ export function Onboarding() {
     <div
       className="absolute left-3 top-3 z-20 w-[min(22rem,calc(100%-1.5rem))] rounded-lg border border-[var(--border)] bg-[var(--surface-1)] p-4 shadow-lg"
       role="dialog"
+      aria-modal="true"
       aria-labelledby="welcome-title"
       data-testid="onboarding"
     >

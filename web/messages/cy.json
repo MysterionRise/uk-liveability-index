@@ -263,6 +263,15 @@
     "betterThanUrbanRural": "Yn well na {pct, number}% o ardaloedd trefol/gwledig tebyg"
   },
   "Poi": {
+    "phases": {
+      "primary": "Cynradd",
+      "secondary": "Uwchradd",
+      "16_plus": "16 oed a throsodd",
+      "special": "Arbennig",
+      "all_through": "Pob oed",
+      "middle_deemed_primary": "Canol (cynradd)",
+      "middle_deemed_secondary": "Canol (uwchradd)"
+    },
     "titles": {
       "arts_centre": "Canolfannau celfyddydau",
       "bakery": "Becws",

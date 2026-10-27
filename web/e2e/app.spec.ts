@@ -567,7 +567,9 @@ test("printing hides the map chrome and keeps the cards", async ({ page }) => {
   await mapReady(page);
   await page.emulateMedia({ media: "print" });
   await expect(page.getByTestId("search")).toBeHidden();
-  await expect(page.getByTestId("legend-body")).toBeVisible();
+  // The map prints as a blank (WebGL), so it and its legend are left out
+  await expect(page.getByTestId("legend")).toBeHidden();
+  await expect(page.getByTestId("side-panel")).toBeVisible();
   await page.emulateMedia({ media: "screen" });
 });
 
