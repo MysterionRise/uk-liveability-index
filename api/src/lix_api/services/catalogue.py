@@ -4,11 +4,33 @@ from lix_api.models import IndicatorBrief, IndicatorInfo
 from lix_api.store import Store
 
 
+def _in_locale(store: Store, locale: str | None):
+    """The catalogue texts of ``locale`` (config/i18n through the manifest): label,
+    description and caveats per indicator, and the unit by its code; English where a
+    draft has none."""
+    from lix_api.services.names import base_locale
+
+    lang = base_locale(locale)
+    cat = ((store.manifest.get("i18n") or {}).get(lang) or {}) if lang != "en" else {}
+    entries, units = cat.get("indicators") or {}, cat.get("units") or {}
+
+    def text(i, field: str):
+        return (entries.get(i.id) or {}).get(field) or getattr(i, field)
+
+    def unit(i):
+        return units.get(i.unit_code) or i.unit
+
+    return text, unit
+
+
 def list_indicators(
-    store: Store, theme: str | None = None, detail: bool = True
+    store: Store, theme: str | None = None, detail: bool = True, locale: str | None = None
 ) -> list[IndicatorInfo] | list[IndicatorBrief]:
     """Every indicator (or one theme's): the full card, or without ``detail`` the name
-    card alone (id, label, theme, unit, role, coverage), a tenth of the size."""
+    card alone (id, label, theme, unit, role, coverage), a tenth of the size; labels,
+    descriptions, caveats and units in ``locale`` where its catalogue has them, so the
+    assistant quotes the drafted wording rather than translating the English (v0.7.0)."""
+    text, unit = _in_locale(store, locale)
     if theme is not None:
         from lix_api.services.scoring import match_theme
 
@@ -21,8 +43,8 @@ def list_indicators(
             IndicatorBrief(
                 id=i.id,
                 theme=i.theme,
-                label=i.label,
-                unit=i.unit,
+                label=text(i, "label"),
+                unit=unit(i),
                 role=i.role,
                 coverage=i.coverage or [],
             )  # fmt: skip
@@ -33,9 +55,9 @@ def list_indicators(
         IndicatorInfo(
             id=i.id,
             theme=i.theme,
-            label=i.label,
-            description=i.description,
-            unit=i.unit,
+            label=text(i, "label"),
+            description=text(i, "description"),
+            unit=unit(i),
             direction=i.direction,
             role=i.role,
             normalise=i.normalise,
@@ -43,7 +65,7 @@ def list_indicators(
             unit_code=i.unit_code,
             benchmark=i.benchmark,
             coverage=i.coverage or [],
-            caveats=i.caveats,
+            caveats=text(i, "caveats") if i.caveats else None,
             sources=i.sources,
         )  # fmt: skip
         for i in store.indicators.values()

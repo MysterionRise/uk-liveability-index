@@ -522,7 +522,9 @@ def list_indicators(
         detail: True adds descriptions, caveats and sources (a long reply; ask only when
             a caveat or source matters to the answer)
     """
-    return catalogue.list_indicators(get_store(), theme, detail=detail)
+    return catalogue.list_indicators(
+        get_store(), theme, detail=detail, locale=ctx.deps.state.locale
+    )
 
 
 async def _analyst_only(ctx: RunContext[Deps], tool_def: ToolDefinition) -> ToolDefinition | None:

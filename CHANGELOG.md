@@ -67,6 +67,12 @@ sources in use). Every new source is an anonymous download.
   of the theme bars and dots, and sets the cards close; the welcome dialog keeps the
   focus while open and gives it back when closed; the search box points
   `aria-controls` at its list only while the list exists (#216).
+- Found by the release pass: a neighbourhood list ranked by one measure was ordered by
+  the averaged score but showed the averaged value, so "the most protected land" put
+  148 ha fourth; it is ordered by the value shown now (a within-nation measure keeps the
+  score). An England-only context measure ranked elsewhere said "it has no values"; it
+  says where it is built. The assistant's indicator catalogue answers in the interface
+  language, so its caveats are the drafted ones rather than its own translations.
 - The nightly source check rewrote the newest open issue labelled `data-refresh`, which on
   27 and 28 October was a planner bug report (#205), not the "Data refresh due" report.
   It now matches the report by its title as well (#218).

@@ -384,6 +384,29 @@ class TestRankingScopesAndSorts:
             )
             assert len(out.results) <= 2, ident
 
+    def test_a_one_measure_list_is_ordered_by_the_figure_it_shows(self, store):
+        """A neighbourhood's score and value are each averaged over its small areas, so
+        ordering by the score put the area with the most protected land fourth (v0.7.0
+        release pass); the shown value orders the list now."""
+        from lix_api.services.ranking import rank_areas
+
+        for ident, direction in [("tree_canopy", "best"), ("noise_exposure", "worst")]:
+            out = rank_areas(
+                store, within="Leeds", level="msoa", limit=8,
+                sort_by=f"indicator:{ident}", direction=direction,
+            )  # fmt: skip
+            shown = [r.sort_value for r in out.results if r.sort_value is not None]
+            assert len(shown) >= 2, ident
+            assert shown == sorted(shown, reverse=True), (ident, shown)
+
+    def test_an_england_only_context_measure_says_where_it_is_built(self, store):
+        from lix_api.services.ranking import rank_areas
+
+        if "storm_overflow_spills" not in store.indicators:
+            pytest.skip("the test pack predates the measure")
+        with pytest.raises(ValueError, match="built for England"):
+            rank_areas(store, within="Cardiff", sort_by="indicator:storm_overflow_spills")
+
     def test_rank_in_another_language_names_areas_in_it(self, store):
         from lix_api.services.ranking import rank_areas
 
@@ -780,3 +803,21 @@ def test_names_a_council_repeats_carry_their_code():
         distinct_name(S, "lsoa", "Tóchar 001", "Wicklow", "I01013732", "Togher 001")
         == "Tóchar 001 (I01013732)"
     )
+
+
+def test_the_assistants_catalogue_speaks_the_interface_language(store, monkeypatch):
+    """The assistant translated English caveats itself under cy/gd/ga, in terms that
+    differed from the drafted catalogues (v0.7.0 release pass)."""
+    from lix_api.services.catalogue import list_indicators
+
+    some = next(i for i in store.indicators.values() if i.caveats)
+    welsh = {"label": "Label Cymraeg", "description": "Disgrifiad", "caveats": "Cafeat"}
+    i18n = {**(store.manifest.get("i18n") or {}), "cy": {"indicators": {some.id: welsh}}}
+    monkeypatch.setitem(store.manifest, "i18n", i18n)
+    cy = {i.id: i for i in list_indicators(store, detail=True, locale="cy")}
+    assert (cy[some.id].label, cy[some.id].description, cy[some.id].caveats) == (
+        "Label Cymraeg", "Disgrifiad", "Cafeat",
+    )  # fmt: skip
+    other = next(i for i in store.indicators.values() if i.id != some.id)
+    assert cy[other.id].label == other.label  # no draft: the English
+    assert {b.id for b in list_indicators(store, detail=False, locale="cy")} == set(cy)
