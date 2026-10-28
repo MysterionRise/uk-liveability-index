@@ -22,7 +22,7 @@ make down           # stop
 
 | # | Do | You'll see | Say |
 |---|---|---|---|
-| 1 | Open the page | Every neighbourhood in the UK and Ireland coloured by its percentile across the build; the welcome card | "62,833 neighbourhoods, about 185 open datasets: police, NHS, Ofsted, Land Registry, air quality, flood risk, noise, tree cover, broadband, bus timetables, pubs." |
+| 1 | Open the page | Every neighbourhood in the UK and Ireland coloured by its percentile across the build; the welcome card | "62,833 neighbourhoods, about 224 open datasets: police, NHS, Ofsted, Land Registry, air quality, flood risk, noise, tree cover, broadband, bus timetables, pubs." |
 | 2 | Click **Family with children** | The map recolours instantly | "Weights are a judgement, so they're yours to change. Scoring every area takes a tenth of a second in the browser." |
 | 3 | **Weights** tab: drag *Safety* to 3 | The map recolours as you drag | "No server round trip: the scores are recomputed on the page." |
 | 4 | **Assistant**: *We have two young kids and a budget of £350k. Where should we look around Leeds?* | Sliders move to the family preset, a ranked list, outlined areas on the map; "close call" tags | "The assistant uses the same tools and data as the page. It never makes numbers up: every figure comes from a tool. 'Close call' means a slightly different weighting could swap that area out." |
@@ -34,7 +34,7 @@ make down           # stop
 | 10 | *What are the best areas to live in Dublin?* | Dublin's Small Areas ranked and outlined; the card says "better than N% of Ireland" and shows schools and housing as limited data | "Ireland joined in v0.6.0 as the second country: its areas compare within Ireland, because it scores on fewer themes than the UK nations" |
 | 11 | Search **Hebden Bridge** (top bar) | Flood risk listed as a weak spot | "Data people care about but rarely see together: 24% of homes here are at real flood risk." |
 | 12 | Tick **Analyst**, open the **Analyst** tab | Distribution chart, indicator overlap heatmap, SQL console | "The same data for analysts: read-only SQL over every LSOA, exports with attribution." |
-| 13 | Click **How scores work** → **Validation** | The method, the face-validity review of 59 places, the assistant evals | "We test it: 139 face-validity checks across 59 places, 58 assistant eval cases, run on three models." |
+| 13 | Click **How scores work** → **Validation** | The method, the face-validity review of 58 places, the assistant evals | "We test it: 168 face-validity checks across 58 places, 58 assistant eval cases, run on three models." |
 
 Optional extras (also recorded): *Tell me about Hebden Bridge*, *What are the best
 areas in York for retirees?*, *Which areas of Birmingham have the fewest immigrants?*

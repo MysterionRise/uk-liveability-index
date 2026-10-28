@@ -4,7 +4,14 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.7.0] - 2026-10-28
+
+Active travel, water and climate: ten new context measures across the five territories
+on three shared helpers (an OpenStreetMap highway pass ready for the walking network of
+v0.8.x, a 50 m British National Grid raster grid, nearest-value and sum-within access
+measures), the release pass's remaining fixes, and a full refresh of every source in the
+data release `make data-release` cuts with it (serve schema 5, 112 indicators, about 224
+sources in use). Every new source is an anonymous download.
 
 ### Added
 

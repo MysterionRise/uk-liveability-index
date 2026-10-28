@@ -9,7 +9,7 @@
 
 services:
   api:
-    image: ghcr.io/mysterionrise/uk-liveability-index-api:${LIX_VERSION:-0.6.3}
+    image: ghcr.io/mysterionrise/uk-liveability-index-api:${LIX_VERSION:-0.7.0}
     build: { context: ., dockerfile: docker/api.Dockerfile }
     # Values come from the shell or ./.env (see .env.example); unset ones stay empty
     environment:
@@ -37,7 +37,7 @@ services:
     restart: on-failure
 
   web:
-    image: ghcr.io/mysterionrise/uk-liveability-index-web:${LIX_VERSION:-0.6.3}
+    image: ghcr.io/mysterionrise/uk-liveability-index-web:${LIX_VERSION:-0.7.0}
     build:
       context: .
       dockerfile: docker/web.Dockerfile
