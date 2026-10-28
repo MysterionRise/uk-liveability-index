@@ -134,6 +134,8 @@ def fetch_featureserver(
     """
     layer = _json(session, layer_url, {})
     page_size = int(layer.get("maxRecordCount") or 1000)
+    if getattr(access, "page_size", None):
+        page_size = min(page_size, access.page_size)
     oid_field = layer.get("objectIdField") or next(
         f["name"] for f in layer["fields"] if f["type"] == "esriFieldTypeOID"
     )

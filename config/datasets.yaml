@@ -3404,3 +3404,500 @@ eea_aq_pm10:
     url: "https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5/download?path=%2Feea_r_3035_1_km_aq-interpolated-pm10_p_2023_v01_r00&files=pm10_avg_23.tif"
   landing_page: https://sdi.eea.europa.eu/datashare/s/sptXqwkQr5g7Bp5?path=%2Feea_r_3035_1_km_aq-interpolated-pm10_p_2023_v01_r00
   description: Annual mean particles (PM10), µg/m³, on the EEA's 1 km grid of Europe (EPSG:3035); Ireland's background air quality.
+
+# ------------------------------------------------- protected nature (v0.7.0, #84)
+# Statutory designations in each territory, merged into one footprint by
+# stage/protected_areas.py (overlapping sites count once) and measured as hectares within
+# about 2 km of homes. The UK set: SSSI (ASSI in Northern Ireland), national and local
+# nature reserves, SAC and SPA; Northern Ireland publishes no national LNR layer. Ireland:
+# SAC, SPA and NHA (the 1995 proposed NHAs are not statutory and are left out).
+
+x-pa-ne: &pa_ne
+  coverage: [E]
+  theme: environment
+  format: gpkg
+  landing_page: https://naturalengland-defra.opendata.arcgis.com/
+  licence: OGL-3.0
+  attribution: "© Natural England copyright. Contains Ordnance Survey data © Crown copyright and database right."
+  cadence: monthly
+
+pa_ne_sssi:
+  <<: *pa_ne
+  title: Sites of Special Scientific Interest (England)
+  access: {type: arcgis_layer, url: "https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/SSSI_England/FeatureServer/0", fields: [REF_CODE, NAME], geometry: polygon}
+  description: Boundaries of England's Sites of Special Scientific Interest (4,100 units), from Natural England.
+  size_hint: 4,128 polygons
+
+pa_ne_nnr:
+  <<: *pa_ne
+  title: National Nature Reserves (England)
+  access: {type: arcgis_layer, url: "https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/National_Nature_Reserves_England/FeatureServer/0", fields: [REF_CODE, NAME], geometry: polygon}
+  description: Boundaries of England's National Nature Reserves, from Natural England.
+  size_hint: 225 polygons
+
+pa_ne_lnr:
+  <<: *pa_ne
+  title: Local Nature Reserves (England)
+  access: {type: arcgis_layer, url: "https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Local_Nature_Reserves_England/FeatureServer/0", fields: [REF_CODE, NAME], geometry: polygon}
+  description: Boundaries of England's Local Nature Reserves, declared by councils, from Natural England.
+  size_hint: 1,728 polygons
+
+pa_ne_sac:
+  <<: *pa_ne
+  title: Special Areas of Conservation (England)
+  access: {type: arcgis_layer, url: "https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Special_Areas_of_Conservation_England/FeatureServer/0", fields: [SAC_CODE, SAC_NAME], geometry: polygon}
+  description: Boundaries of England's Special Areas of Conservation (habitats sites), from Natural England.
+  size_hint: 1,911 polygons
+
+pa_ne_spa:
+  <<: *pa_ne
+  title: Special Protection Areas (England)
+  access: {type: arcgis_layer, url: "https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Special_Protection_Areas_England/FeatureServer/0", fields: [SPA_CODE, SPA_NAME], geometry: polygon}
+  description: Boundaries of England's Special Protection Areas (birds sites), from Natural England.
+  size_hint: 1,079 polygons
+
+x-pa-nrw: &pa_nrw
+  coverage: [W]
+  theme: environment
+  format: gpkg
+  landing_page: https://datamap.gov.wales/
+  licence: OGL-3.0
+  attribution: "Contains Natural Resources Wales information © Natural Resources Wales and Database Right. All rights Reserved. Contains Ordnance Survey Data. Ordnance Survey Licence number AC0000849444. Crown Copyright and Database Right."
+  cadence: adhoc
+
+pa_nrw_sssi:
+  <<: *pa_nrw
+  title: Sites of Special Scientific Interest (Wales)
+  access: {type: wfs, url: "https://datamap.gov.wales/geoserver/ows", typename: "inspire-nrw:NRW_SSSI", sort_by: sssi_id}
+  description: Boundaries of Wales's Sites of Special Scientific Interest, from Natural Resources Wales.
+  size_hint: 1,088 polygons
+
+pa_nrw_nnr:
+  <<: *pa_nrw
+  title: National Nature Reserves (Wales)
+  access: {type: wfs, url: "https://datamap.gov.wales/geoserver/ows", typename: "inspire-nrw:NRW_NNR", sort_by: NNR_Code}
+  description: Boundaries of Wales's National Nature Reserves, from Natural Resources Wales.
+  size_hint: 76 polygons
+
+pa_nrw_lnr:
+  <<: *pa_nrw
+  title: Local Nature Reserves (Wales)
+  access: {type: wfs, url: "https://datamap.gov.wales/geoserver/ows", typename: "inspire-nrw:NRW_LNR", sort_by: objectid}
+  description: Boundaries of Wales's Local Nature Reserves, from Natural Resources Wales.
+  size_hint: 97 polygons
+
+pa_nrw_sac:
+  <<: *pa_nrw
+  title: Special Areas of Conservation (Wales)
+  access: {type: wfs, url: "https://datamap.gov.wales/geoserver/ows", typename: "inspire-nrw:NRW_SAC", sort_by: Site_code}
+  description: Boundaries of Wales's Special Areas of Conservation, from Natural Resources Wales.
+  size_hint: 102 polygons
+
+pa_nrw_spa:
+  <<: *pa_nrw
+  title: Special Protection Areas (Wales)
+  access: {type: wfs, url: "https://datamap.gov.wales/geoserver/ows", typename: "inspire-nrw:NRW_SPA", sort_by: SPA_code}
+  description: Boundaries of Wales's Special Protection Areas, from Natural Resources Wales.
+  size_hint: 24 polygons
+
+pa_naturescot:
+  coverage: [S]
+  title: Protected areas of Scotland (NatureScot)
+  theme: environment
+  access:
+    type: http
+    url: "https://gis-downloads.nature.scot/{tile}_SCOTLAND_GPKG_27700.zip"
+    tiles: [SSSI, NNR, LNR, SAC, SPA]
+  format: zip
+  landing_page: https://opendata.nature.scot/
+  description: Boundaries of Scotland's Sites of Special Scientific Interest, National and Local Nature Reserves, Special Areas of Conservation and Special Protection Areas, one GeoPackage per designation.
+  licence: OGL-3.0
+  attribution: "Contains SNH information licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  size_hint: 69MB in 5 zips
+  notes: The data.gov.uk copy says "No Licence Provided"; spatialdata.gov.scot's record (2026-02-02) gives OGL v3.0, which governs.
+
+x-pa-daera: &pa_daera
+  coverage: [N]
+  theme: environment
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj"]
+  licence: OGL-3.0
+  attribution: "Contains information from the Department of Agriculture, Environment and Rural Affairs (Northern Ireland Environment Agency), licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  notes: DAERA's terms ask for written permission before maps of the data are published while pointing to OGL v3.0 (OpenDataNI tags it uk-ogl); only hectares derived from it are published, never the boundaries.
+
+pa_daera_assi:
+  <<: *pa_daera
+  title: Areas of Special Scientific Interest (Northern Ireland)
+  access: {type: html_link, page: https://www.daera-ni.gov.uk/publications/assi-digital-datasets, steps: [{pattern: 'href="([^"]*ASSI%20-%20British%20National%20Grid[^"]*\.zip)"'}]}
+  landing_page: https://www.daera-ni.gov.uk/publications/assi-digital-datasets
+  description: Boundaries of Northern Ireland's Areas of Special Scientific Interest (the counterpart of SSSIs), British National Grid edition.
+  size_hint: 6MB
+
+pa_daera_nnr:
+  <<: *pa_daera
+  title: National Nature Reserves (Northern Ireland)
+  access: {type: html_link, page: https://www.daera-ni.gov.uk/publications/national-nature-reserves-digital-datasets, steps: [{pattern: 'href="([^"]*National%20Nature%20Reserves%20-%20British%20National%20Grid[^"]*\.zip)"'}]}
+  landing_page: https://www.daera-ni.gov.uk/publications/national-nature-reserves-digital-datasets
+  description: Boundaries of Northern Ireland's National Nature Reserves, British National Grid edition.
+  size_hint: 0.4MB
+
+pa_daera_sac:
+  <<: *pa_daera
+  title: Special Areas of Conservation (Northern Ireland)
+  access: {type: html_link, page: https://www.daera-ni.gov.uk/publications/special-areas-conservation-digital-datasets, steps: [{pattern: 'href="([^"]*Special%20Areas%20of%20Conservation%20-%20British%20National%20Grid[^"]*\.zip)"'}]}
+  landing_page: https://www.daera-ni.gov.uk/publications/special-areas-conservation-digital-datasets
+  description: Boundaries of Northern Ireland's Special Areas of Conservation, British National Grid edition.
+  size_hint: 2MB
+
+pa_daera_spa:
+  <<: *pa_daera
+  title: Special Protection Areas (Northern Ireland)
+  access: {type: html_link, page: https://www.daera-ni.gov.uk/publications/special-protection-areas-digital-datasets, steps: [{pattern: 'href="([^"]*Special%20Protected%20Areas%20-%20British%20National%20Grid[^"]*\.zip)"'}]}
+  landing_page: https://www.daera-ni.gov.uk/publications/special-protection-areas-digital-datasets
+  description: Boundaries of Northern Ireland's Special Protection Areas, British National Grid edition.
+  size_hint: 1MB
+
+x-pa-npws: &pa_npws
+  coverage: [I]
+  theme: environment
+  format: zip
+  extract: ["*.shp", "*.shx", "*.dbf", "*.prj", "*.cpg"]
+  landing_page: https://www.npws.ie/maps-and-data/designated-site-data/download-boundary-data
+  licence: CC-BY-4.0
+  attribution: "National Parks and Wildlife Service, Department of Housing, Local Government and Heritage, designated site boundaries, licensed under CC BY 4.0."
+  cadence: adhoc
+  notes: The file names carry the release month (SAC_ITM_2026_01.zip), so the download page is searched for the newest; data.gov.ie lists the NPWS boundaries under CC BY 4.0.
+
+pa_npws_sac:
+  <<: *pa_npws
+  title: Special Areas of Conservation (Ireland, NPWS)
+  access: {type: html_link, page: https://www.npws.ie/maps-and-data/designated-site-data/download-boundary-data, steps: [{pattern: 'href="([^"]*/SAC_ITM_\d{4}_\d{2}[^"]*\.zip)"', order: desc}]}
+  description: Boundaries of Ireland's Special Areas of Conservation, in Irish Transverse Mercator (offshore parts in WGS84).
+  size_hint: 35MB
+
+pa_npws_spa:
+  <<: *pa_npws
+  title: Special Protection Areas (Ireland, NPWS)
+  access: {type: html_link, page: https://www.npws.ie/maps-and-data/designated-site-data/download-boundary-data, steps: [{pattern: 'href="([^"]*/SPA_ITM_\d{4}_\d{2}[^"]*\.zip)"', order: desc}]}
+  description: Boundaries of Ireland's Special Protection Areas for birds, in Irish Transverse Mercator.
+  size_hint: 11MB
+
+pa_npws_nha:
+  <<: *pa_npws
+  title: Natural Heritage Areas (Ireland, NPWS)
+  access: {type: html_link, page: https://www.npws.ie/maps-and-data/designated-site-data/download-boundary-data, steps: [{pattern: 'href="([^"]*/NHA_ITM_\d{4}_\d{2}[^"]*\.zip)"', order: desc}]}
+  description: Boundaries of Ireland's Natural Heritage Areas (statutory under the Wildlife (Amendment) Act 2000), in Irish Transverse Mercator.
+  size_hint: 1.4MB
+
+# ---------------------------------------------------------- terrain (v0.7.0, #128)
+# Slope and height around homes: OS Terrain 50 for Great Britain and OSNI's 50 m DTM for
+# Northern Ireland (both terrain models, 50 m), Copernicus GLO-30 for Ireland (a 30 m
+# surface model: buildings and trees raise it; Tailte Éireann's DTM is not open).
+
+os_terrain_50:
+  coverage: [E, W, S]
+  title: OS Terrain 50, height grid of Great Britain
+  theme: environment
+  access:
+    type: http
+    url: "https://api.os.uk/downloads/v1/products/Terrain50/downloads?area=GB&format=ASCII+Grid+and+GML+%28Grid%29&redirect"
+  format: zip
+  extract: ["data/*/*.zip"]  # one zip per 10 km tile, read through /vsizip/
+  landing_page: https://www.ordnancesurvey.co.uk/products/os-terrain-50
+  description: Ordnance Survey's terrain model of Great Britain, heights on a 50m grid in 10km tiles (ASCII grid).
+  licence: OGL-3.0
+  attribution: "Contains OS data © Crown copyright and database right 2026, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 160MB
+  notes: Published every July; the outer zip holds one zip per tile, which the fetcher unpacks and the stager reads in place.
+
+osni_dtm_50m:
+  coverage: [N]
+  title: OSNI Open Data 50m digital terrain model
+  theme: environment
+  access:
+    type: ckan
+    api: https://admin.opendatani.gov.uk/api/3/action
+    package: osni-open-data-50m-dtm
+    resource_regex: "osni_opendata_50m_dtm\\.zip$"
+  format: zip
+  extract: ["*.csv"]
+  landing_page: https://admin.opendatani.gov.uk/dataset/osni-open-data-50m-dtm
+  description: Heights of Northern Ireland on a 50m grid, as X, Y, Z points in the Irish Grid (Land & Property Services).
+  licence: OGL-3.0
+  attribution: "Contains public sector information licensed under the Open Government Licence v3.0, © Crown copyright, Land & Property Services (Ordnance Survey of Northern Ireland)."
+  cadence: static
+  size_hint: 37MB (130MB of CSV)
+
+copernicus_dem_glo30:
+  coverage: [I]
+  title: Copernicus DEM GLO-30 (surface model), Ireland
+  theme: environment
+  access:
+    type: http
+    url: "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_{tile}_00_DEM/Copernicus_DSM_COG_10_{tile}_00_DEM.tif"
+    # 1° tiles named by their south-west corner; three all-sea tiles do not exist
+    tiles: [N51_00_W006, N51_00_W008, N51_00_W009, N51_00_W010, N51_00_W011,
+            N52_00_W006, N52_00_W007, N52_00_W008, N52_00_W009, N52_00_W010, N52_00_W011,
+            N53_00_W006, N53_00_W007, N53_00_W008, N53_00_W009, N53_00_W010, N53_00_W011,
+            N54_00_W006, N54_00_W007, N54_00_W008, N54_00_W009, N54_00_W010, N54_00_W011,
+            N55_00_W006, N55_00_W007, N55_00_W008, N55_00_W009]
+  format: tif
+  landing_page: https://registry.opendata.aws/copernicus-dem/
+  description: The Copernicus 30m digital surface model (heights of the ground with buildings and trees on it), 2021 release, in 1° cloud-optimised GeoTIFF tiles.
+  licence: Copernicus-DEM
+  attribution: "Produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved."
+  cadence: static
+  period: "2021"
+  size_hint: 384MB in 27 tiles
+  notes: Free for any use under the Copernicus DEM licence, which requires the notice above on derived products and disclaims liability (the data is provided as is, without warranty); not OGL or CC BY, so it is its own licence id.
+
+# ------------------------------------------------ storm overflows (v0.7.0, #83)
+ea_edm_annual:
+  coverage: [E]
+  title: Event Duration Monitoring, storm overflow annual returns (Environment Agency)
+  theme: environment
+  access:
+    type: ckan
+    api: https://ckan.publishing.service.gov.uk/api/3/action
+    package: event-duration-monitoring-storm-overflows-annual-returns
+    resource_regex: "EDM_\\d{4}_Storm_Overflow_Annual_Return\\.zip"
+  format: zip
+  extract: ["*all water and sewerage companies*.xlsx"]
+  landing_page: https://www.data.gov.uk/dataset/19f6064d-7356-466f-844e-d20ea10ae9fd/event-duration-monitoring-storm-overflows-annual-returns
+  description: Every storm overflow of England's water and sewerage companies with its outlet's grid reference, the total duration and the counted number of its spills in the year, and the share of the year its monitor worked.
+  licence: OGL-3.0
+  attribution: "© Environment Agency copyright and/or database right. Event Duration Monitoring storm overflow annual returns, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 6MB
+  notes: Published every March for the previous year. Wales's overflows are reported to Natural Resources Wales and are not in these files; Scotland publishes only the overflows SEPA asks to be reported, and Northern Ireland and Ireland publish none (see the issue for later coverage).
+
+# ------------------------------------------------- bathing waters (v0.7.0, #79)
+# The designated bathing waters of each territory with the class of their latest season
+# (Excellent, Good, Sufficient, Poor under the revised Bathing Water Directive).
+
+ea_bathing_waters:
+  coverage: [E]
+  title: Bathing waters monitoring locations and classifications (Environment Agency)
+  theme: environment
+  access:
+    type: ckan
+    api: https://ckan.publishing.service.gov.uk/api/3/action
+    package: bathing-waters-monitoring-locations
+    resource_regex: "Bathing_Waters_Monitoring_Locations\\.gpkg\\.zip"
+  format: zip
+  extract: ["*.gpkg"]
+  landing_page: https://environment.data.gov.uk/bwq/
+  description: England's designated bathing waters at their sampling points, with each year's classification and the latest (class), and whether the site is still designated.
+  licence: OGL-3.0
+  attribution: "© Environment Agency copyright and/or database right. Bathing water data licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 0.3MB
+
+nrw_bathing_waters:
+  coverage: [W]
+  title: Designated bathing water quality (Natural Resources Wales)
+  theme: environment
+  access: {type: wfs, url: "https://datamap.gov.wales/geoserver/ows", typename: "geonode:nrw_bathing_waters", sort_by: bathing_water_id}
+  format: gpkg
+  landing_page: https://datamap.gov.wales/layers/geonode:nrw_bathing_waters
+  description: Wales's designated bathing waters with their latest classification, in English and Welsh.
+  licence: OGL-3.0
+  attribution: "Contains Natural Resources Wales information © Natural Resources Wales and Database Right. All rights Reserved."
+  cadence: annual
+  size_hint: 112 points
+
+sepa_bathing_waters:
+  coverage: [S]
+  title: Bathing waters, points with classification (SEPA)
+  theme: environment
+  access:
+    type: http
+    url: https://map.sepa.org.uk/atom/Data/SEPA_BATHING_WATER_POINTS_BNG_shp.zip
+  format: zip
+  extract: ["*.gdb/*"]
+  landing_page: https://bathingwaters.sepa.org.uk/classifications/
+  description: Scotland's designated bathing waters as points, with the year and description of their current classification (a file geodatabase despite the file name).
+  licence: OGL-3.0
+  attribution: "© Scottish Environment Protection Agency, licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 0.1MB
+
+daera_bathing_waters:
+  coverage: [N]
+  title: Bathing water areas (DAERA)
+  theme: environment
+  access: {type: arcgis_layer, url: "https://services-eu1.arcgis.com/kswen6BYexuc1SUk/arcgis/rest/services/BathingWatersDirectiveProtectedAreas/FeatureServer/0", fields: [Name, PA_CD], geometry: polygon}
+  format: gpkg
+  landing_page: https://admin.opendatani.gov.uk/dataset/bathing-water-areas2
+  description: Northern Ireland's 33 identified bathing waters as areas; their classes come from the curated table beside it.
+  licence: OGL-3.0
+  attribution: "Land and Property Services, Department of Finance; Environment, Marine and Fisheries Group, DAERA. Licensed under the Open Government Licence v3.0."
+  cadence: annual
+  size_hint: 33 polygons
+
+bathing_water_classes_ni:
+  coverage: [N]
+  title: Northern Ireland bathing water classifications (curated from DAERA)
+  theme: environment
+  access: {type: curated, path: config/data/bathing_water_classes_ni.csv}
+  format: csv
+  landing_page: https://www.daera-ni.gov.uk/news/muir-announces-results-northern-irelands-bathing-waters
+  description: The class of each of Northern Ireland's 33 bathing waters for the latest season, transcribed from DAERA's announcement and keyed by the area layer's names (DAERA publishes no machine-readable list).
+  licence: OGL-3.0
+  attribution: "Bathing water classifications from the Department of Agriculture, Environment and Rural Affairs, licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  size_hint: 4KB
+  notes: Re-transcribe after each November announcement; every row names its source and the date it was checked.
+
+epa_bathing_waters:
+  coverage: [I]
+  title: Bathing water quality (EPA Ireland)
+  theme: environment
+  access:
+    type: wfs
+    url: https://gis.epa.ie/geoserver/wfs
+    typename: EPA:BathingWaterQuality
+    sort_by: BWID
+    srs: EPSG:4326  # the EPA's GeoServer writes GeoJSON only, so WGS84 and reprojected on read
+  format: geojson
+  landing_page: https://www.beaches.ie/
+  description: Ireland's identified bathing waters with their current classification and its year.
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, bathing water quality, licensed under CC BY 4.0."
+  cadence: annual
+  size_hint: 150 points
+
+# ------------------------------------- river and lake status (v0.7.0, #82)
+# Water Framework Directive status of rivers and lakes, High … Bad. The measure differs:
+# ecological status in England, Wales, Northern Ireland and Ireland, overall status in
+# Scotland (SEPA's open layer carries no other), and the cycles differ (below).
+
+x-ea-wfd: &ea_wfd
+  coverage: [E]
+  theme: environment
+  format: zip
+  extract: ["*.gpkg"]
+  landing_page: https://environment.data.gov.uk/catchment-planning/
+  licence: OGL-3.0
+  attribution: "© Environment Agency copyright and/or database right. Contains Ordnance Survey data © Crown copyright and database right. Licensed under the Open Government Licence v3.0."
+  cadence: annual
+  notes: The package names carry the classification year (Cycle 4, 2025); point the entry at the next year's package when it is published.
+
+ea_wfd_rivers:
+  <<: *ea_wfd
+  title: River, canal and surface water transfer water bodies, Cycle 4 classification 2025 (simplified)
+  access: {type: ckan, api: https://ckan.publishing.service.gov.uk/api/3/action, package: wfd-river-canal-and-swt-water-bodies-cycle-4-classification-2025-simplified, resource_regex: "Simplified\\.gpkg\\.zip"}
+  description: England's river and canal water bodies as simplified lines, with their 2025 ecological, chemical and overall classes.
+  size_hint: 6MB
+
+ea_wfd_lakes:
+  <<: *ea_wfd
+  title: Lake water bodies, Cycle 4 classification 2025
+  access: {type: ckan, api: https://ckan.publishing.service.gov.uk/api/3/action, package: wfd-lake-water-bodies-cycle-4-classification-2025, resource_regex: "\\.gpkg\\.zip"}
+  description: England's lake water bodies as polygons, with their 2025 classes.
+  size_hint: 1.4MB
+
+x-nrw-wfd: &nrw_wfd
+  coverage: [W]
+  theme: environment
+  format: gpkg
+  landing_page: https://datamap.gov.wales/layergroups/geonode:nrw_wfd_c3_2024_interim
+  licence: OGL-3.0
+  attribution: "Contains Natural Resources Wales information © Natural Resources Wales and Database Right. All rights Reserved. Contains Ordnance Survey Data. Ordnance Survey Licence number AC0000849444. Crown Copyright and Database Right."
+  cadence: annual
+
+nrw_wfd_rivers:
+  <<: *nrw_wfd
+  title: Water Framework Directive Cycle 3 interim classification 2024, rivers (Wales)
+  access: {type: wfs, url: "https://datamap.gov.wales/geoserver/ows", typename: "geonode:nrw_wfd_c3_2024_interim_rivers", sort_by: wbid}
+  description: Wales's river water bodies as lines, with their 2024 interim ecological and overall classes.
+  size_hint: 2,616 lines
+
+nrw_wfd_lakes:
+  <<: *nrw_wfd
+  title: Water Framework Directive Cycle 3 interim classification 2024, lakes (Wales)
+  access: {type: wfs, url: "https://datamap.gov.wales/geoserver/ows", typename: "geonode:nrw_wfd_c3_2024_interim_lakes", sort_by: wbid}
+  description: Wales's lake water bodies as polygons, with their 2024 interim classes.
+  size_hint: 115 polygons
+
+x-sepa-wfd: &sepa_wfd
+  coverage: [S]
+  theme: environment
+  format: gpkg
+  landing_page: https://www.sepa.org.uk/data-visualisation/water-classification-hub/
+  licence: OGL-3.0
+  attribution: "© Scottish Environment Protection Agency. Contains OS data © Crown copyright and database right. Licensed under the Open Government Licence v3.0."
+  cadence: annual
+
+sepa_wfd_rivers:
+  <<: *sepa_wfd
+  title: River water bodies and their overall classification (SEPA)
+  access: {type: arcgis_layer, url: "https://map.sepa.org.uk/server/rest/services/Open/Hydrography/MapServer/4", fields: [water_body_id, overall_classification, classification_year], geometry: line, page_size: 250}
+  description: Scotland's river water bodies as lines, with their overall classification (2024).
+  size_hint: 2,410 lines
+
+sepa_wfd_lochs:
+  <<: *sepa_wfd
+  title: Loch water bodies and their overall classification (SEPA)
+  access: {type: arcgis_layer, url: "https://map.sepa.org.uk/server/rest/services/Open/Hydrography/MapServer/3", fields: [water_body_id, overall_classification, classification_year], geometry: polygon}
+  description: Scotland's loch water bodies as polygons, with their overall classification (2024).
+  size_hint: 334 polygons
+
+x-daera-wfd: &daera_wfd
+  coverage: [N]
+  theme: environment
+  landing_page: https://www.daera-ni.gov.uk/articles/river-basin-management-plans
+  licence: OGL-3.0
+  attribution: "Contains information from the Department of Agriculture, Environment and Rural Affairs (Northern Ireland Environment Agency), licensed under the Open Government Licence v3.0."
+  cadence: adhoc
+  notes: The 2018 interim classification is the newest open per-water-body status; DAERA published the 2024 classification as a report only.
+
+daera_wfd_status_2018:
+  <<: *daera_wfd
+  title: Surface water body status 2018 (Northern Ireland)
+  access: {type: arcgis_layer, url: "https://services-eu1.arcgis.com/kswen6BYexuc1SUk/arcgis/rest/services/Surface_Water_Body_2018_Status/FeatureServer/0", fields: [localId, spZoneType, F2018_statu], geometry: none}
+  format: parquet
+  description: The 2018 ecological status of Northern Ireland's river, lake, transitional and coastal water bodies, by water-body code (MEP, PEP and GEP are moderate, poor and good ecological potential).
+  size_hint: 496 rows
+
+daera_river_segments:
+  <<: *daera_wfd
+  title: River segments joined to river water bodies (Northern Ireland)
+  access: {type: arcgis_layer, url: "https://services-eu1.arcgis.com/kswen6BYexuc1SUk/arcgis/rest/services/RiverSegmentsRiverWaterBodiesJoin/FeatureServer/0", fields: [RWB_CD, NAME], geometry: line}
+  format: gpkg
+  description: Northern Ireland's river network as lines, each carrying the code of its river water body.
+  size_hint: 4,651 lines
+
+daera_lake_water_bodies:
+  <<: *daera_wfd
+  title: Lake water bodies 2016 (Northern Ireland)
+  access: {type: arcgis_layer, url: "https://services-eu1.arcgis.com/kswen6BYexuc1SUk/arcgis/rest/services/Lake_Water_Bodies_2016/FeatureServer/0", fields: [localId, namespace], geometry: polygon}
+  format: gpkg
+  description: Northern Ireland's lake water bodies as polygons, by water-body code.
+  size_hint: 21 polygons
+
+x-epa-wfd: &epa_wfd
+  coverage: [I]
+  theme: environment
+  format: geojson
+  landing_page: https://www.catchments.ie/
+  licence: CC-BY-4.0
+  attribution: "Environmental Protection Agency, Water Framework Directive status 2019–2024, licensed under CC BY 4.0."
+  cadence: adhoc
+
+epa_wfd_rivers:
+  <<: *epa_wfd
+  title: River water body status, latest (EPA Ireland)
+  access: {type: wfs, url: "https://gis.epa.ie/geoserver/wfs", typename: "EPA:RWB_WFD_LatestStatus", sort_by: European_Code, srs: "EPSG:4326"}
+  description: Ireland's river water bodies as lines with their latest ecological status (2019–2024).
+  size_hint: 3,208 lines
+
+epa_wfd_lakes:
+  <<: *epa_wfd
+  title: Lake water body status, latest (EPA Ireland)
+  access: {type: wfs, url: "https://gis.epa.ie/geoserver/wfs", typename: "EPA:LWB_WFD_LatestStatus", sort_by: European_Code, srs: "EPSG:4326"}
+  description: Ireland's lake water bodies as polygons with their latest ecological status (2019–2024).
+  size_hint: 812 polygons

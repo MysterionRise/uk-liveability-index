@@ -34,7 +34,9 @@ def test_real_registry_is_valid():
 
 
 def test_every_dataset_has_open_licence_and_attribution():
-    open_licences = ("OGL", "ODbL", "CC-BY", "CC0", "CDLA", "Apache", "OPL")
+    # Copernicus-DEM: GLO-30's licence allows any use, commercial included, and
+    # redistribution, on condition of its notice and disclaimer (v0.7.0, #128)
+    open_licences = ("OGL", "ODbL", "CC-BY", "CC0", "CDLA", "Apache", "OPL", "Copernicus-DEM")
     for slug, spec in load_registry().items():
         assert spec.licence.startswith(open_licences), f"{slug}: {spec.licence}"
         assert spec.attribution.strip(), slug

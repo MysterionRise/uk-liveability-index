@@ -1,4 +1,4 @@
-"""Tree cover around homes, from ESA WorldCover 10m land cover (2021).
+"""Tree cover and built-up land around homes, from ESA WorldCover 10m land cover (2021).
 
 Each 3° tile (36,000 × 36,000 cells) is reduced to blocks of 10 × 10 cells (1/1200°,
 about 93m north–south and 57m east–west over Britain) holding the number of tree-cover
@@ -6,6 +6,10 @@ cells and of land cells. A box sum over the blocks within about 500m of a point 
 gives the share of nearby land under tree canopy; each residential postcode is sampled
 and the LSOA takes the mean over its postcodes. Water and unmapped cells are not land,
 so a seafront home is judged on the land around it.
+
+The same pass counts WorldCover's built-up class (buildings, roads and other sealed
+surfaces) for ``sealed_surface`` (#129): a yes/no per 10 m cell, so the share is of
+cells that are built up, not a sealing degree.
 """
 
 import math
@@ -25,6 +29,7 @@ from lix_pipeline.geo.access import residential_postcodes
 logger = setup_logging("stage.landcover")
 
 TREE_COVER = 10
+BUILT_UP = 50
 WATER = 80
 NODATA = 0
 BLOCK = 10  # cells per block side
@@ -65,9 +70,14 @@ def blocks_per_degree(path: Path) -> int:
 
 
 def reduce_tile(
-    path: Path, grid: BlockGrid, tree: np.ndarray, land: np.ndarray, strip_rows: int = 3600
+    path: Path,
+    grid: BlockGrid,
+    tree: np.ndarray,
+    land: np.ndarray,
+    strip_rows: int = 3600,
+    built: np.ndarray | None = None,
 ) -> None:
-    """Add a tile's tree-cover and land cell counts per block into ``tree`` and ``land``."""
+    """Add a tile's tree-cover, land (and, with ``built``, built-up) cell counts per block."""
     with rasterio.open(path) as src:
         t = src.transform
         if src.width % BLOCK or src.height % BLOCK:
@@ -84,6 +94,9 @@ def reduce_tile(
             row0 = round((grid.lat1 - (t.f + t.e * r0)) * grid.blocks_per_degree)
             _paste(tree, tree_blk, row0, col0)
             _paste(land, land_blk, row0, col0)
+            if built is not None:
+                built_blk = (a == BUILT_UP).reshape(shape).sum(axis=(1, 3), dtype=np.uint8)
+                _paste(built, built_blk, row0, col0)
 
 
 def _paste(target: np.ndarray, block: np.ndarray, row0: int, col0: int) -> None:
@@ -116,7 +129,8 @@ def canopy_share(
 def tree_cover_at_homes(
     tiles: list[Path], homes: pl.DataFrame, radius_m: float = CANOPY_RADIUS_M
 ) -> pl.DataFrame:
-    """Per LSOA: mean share of land under tree canopy within ``radius_m`` of its postcodes."""
+    """Per LSOA: mean share of land under tree canopy, and of land built up, within
+    ``radius_m`` of its postcodes."""
     lon = homes["long"].to_numpy().astype(float)
     lat = homes["lat"].to_numpy().astype(float)
     margin = 2 * radius_m / M_PER_DEGREE_LAT
@@ -124,24 +138,31 @@ def tree_cover_at_homes(
     grid = BlockGrid.covering(bbox, blocks_per_degree(tiles[0]))
     tree = np.zeros((grid.nrows, grid.ncols), dtype=np.uint8)
     land = np.zeros((grid.nrows, grid.ncols), dtype=np.uint8)
+    built = np.zeros((grid.nrows, grid.ncols), dtype=np.uint8)
     for path in tiles:
         with rasterio.open(path) as src:
             b = src.bounds
         if b.right < bbox[0] or b.left > bbox[2] or b.top < bbox[1] or b.bottom > bbox[3]:
             continue
         logger.info(f"Reducing {path.name}")
-        reduce_tile(path, grid, tree, land)
-    canopy = canopy_share(tree, land, grid, radius_m, lat_mid=(bbox[1] + bbox[3]) / 2)
+        reduce_tile(path, grid, tree, land, built=built)
     rows, cols = grid.rowcol(lon, lat)
     inside = (rows >= 0) & (rows < grid.nrows) & (cols >= 0) & (cols < grid.ncols)
-    values = np.full(len(lon), np.nan, dtype=np.float64)
-    values[inside] = canopy[rows[inside], cols[inside]]
+    lat_mid = (bbox[1] + bbox[3]) / 2
+    columns = {}
+    for name, counts in (("canopy_pct", tree), ("builtup_pct", built)):
+        share = canopy_share(counts, land, grid, radius_m, lat_mid=lat_mid)
+        values = np.full(len(lon), np.nan, dtype=np.float64)
+        values[inside] = share[rows[inside], cols[inside]]
+        columns[name] = pl.Series(name, values, nan_to_null=True)
+        del share
     return (
         homes.select("lsoa21cd")
-        .with_columns(pl.Series("canopy_pct", values, nan_to_null=True))
+        .with_columns(*columns.values())
         .group_by("lsoa21cd")
         .agg(
             pl.col("canopy_pct").mean(),
+            pl.col("builtup_pct").mean(),
             pl.col("canopy_pct").is_not_null().sum().alias("n_postcodes"),
         )
         .sort("lsoa21cd")
@@ -156,6 +177,7 @@ def stage_tree_cover() -> pl.LazyFrame:
     df = tree_cover_at_homes(tiles, homes)
     logger.info(
         f"{df.height:,} LSOAs from {homes.height:,} postcodes and {len(tiles)} tiles; "
-        f"median canopy {df['canopy_pct'].median():.1f}%"
+        f"median canopy {df['canopy_pct'].median():.1f}%, "
+        f"built up {df['builtup_pct'].median():.1f}%"
     )
     return df.lazy()

@@ -114,6 +114,9 @@ class ArcgisLayerAccess(_Strict):
     fields: list[str] | None = None
     geometry: Literal["none", "point", "line", "polygon"] = "none"
     out_sr: int = 27700
+    # Fewer records a page than the server allows, for layers whose full pages of
+    # detailed geometry the server cannot build (SEPA's rivers answer 500)
+    page_size: int | None = None
 
 
 class GovukAttachmentAccess(_Strict):
@@ -400,6 +403,11 @@ UNIT_CODES: dict[str, str] = {
     "m/s": "m_s",
     "within 1.5km": "within_1500m",
     "patients per practice": "patients_per_practice",
+    "km per km²": "km_per_km2",
+    "hectares": "hectares",
+    "% slope": "pct_slope",
+    "class 1–4 (4 = excellent)": "class4",
+    "class 1–5 (5 = high)": "class5",
 }
 
 

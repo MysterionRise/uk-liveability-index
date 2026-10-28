@@ -6,6 +6,7 @@ import rasterio
 from rasterio.transform import from_origin
 
 from lix_pipeline.stage.landcover import (
+    BUILT_UP,
     TREE_COVER,
     WATER,
     BlockGrid,
@@ -66,3 +67,16 @@ def test_lsoa_mean_over_homes(tmp_path):
     assert out["canopy_pct"].to_list()[:2] == [100.0, 0.0]
     assert out["n_postcodes"].to_list() == [2, 1, 0]
     assert out["canopy_pct"][2] is None
+
+
+def test_built_up_share_of_land(tmp_path):
+    """Sealed surfaces from the same pass (#129): built-up cells over land cells, so
+    water around a harbour home does not dilute it."""
+    row = [BUILT_UP] * 15 + [30] * 5 + [WATER] * 20
+    tile = _tile(tmp_path / "t.tif", 0.0, 51.0, [row] * 40)
+    homes = pl.DataFrame(
+        {"lsoa21cd": ["E01", "E02"], "long": [5 * RES, 15 * RES], "lat": [51.0 - 5 * RES] * 2}
+    )
+    out = tree_cover_at_homes([tile], homes, radius_m=1.0).sort("lsoa21cd")
+    assert out["builtup_pct"].to_list() == [100.0, 50.0]
+    assert out["canopy_pct"].to_list() == [0.0, 0.0]

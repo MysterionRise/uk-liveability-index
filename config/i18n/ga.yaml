@@ -56,6 +56,11 @@ units:
   m_s: "m/s"
   within_1500m: "laistigh de 1.5km"
   patients_per_practice: "othair in aghaidh an chleachtais"
+  km_per_km2: "km in aghaidh an km²"
+  hectares: "heicteáir"
+  pct_slope: "% fána"
+  class4: "aicme 1–4 (4 = ar fheabhas)"
+  class5: "aicme 1–5 (5 = ard)"
 
 flags:
   imputed: "Is meastacháin iad na figiúirí coireachta anseo: ní fhoilsíonn Póilíní Greater Manchester sonraí ar leibhéal sráide."
@@ -108,6 +113,14 @@ indicators:
   night_noise: {label: Tithe i dtorann oíche, description: "Sciar de thithe ina bhfuil torann mapáilte 50 dB Lnight nó níos mó ar an meán idir 23:00 agus 07:00, an leibhéal ag a n-áiríonn an Treoir um Thorann Comhshaoil daoine a bheith nochta dó san oíche."}
   road_rail_noise: {label: Tithe i dtorann bóthair nó iarnróid, description: "Sciar de thithe ina sroicheann torann bóthair nó iarnróid 60 dB Lden nó níos mó thar an lá, an tráthnóna agus an oíche, ó na mapaí torainn straitéiseacha."}
   coast_distance: {label: Fad go dtí an cósta, description: "Fad ó thithe go dtí an cósta is gaire, i gciliméadair (marc an lán mara sa Bhreatain Mhór agus in Éirinn, imlíne Thuaisceart Éireann)."}
+  sealed_surface: {label: Talamh tógtha timpeall tithe, description: "Sciar den talamh laistigh de 500m de thithe a rangaíonn clúdach talún satailíte mar thalamh tógtha, is é sin foirgnimh, bóithre agus dromchlaí crua eile (ESA WorldCover, 10m)."}
+  protected_nature: {label: Dúlra cosanta in aice láimhe, description: "Heicteáir talún laistigh de thart ar 2km de thithe atá cosanta ar mhaithe leis an dúlra (Láithreáin de Shuim Speisialta Eolaíochta, tearmainn dúlra, Limistéir faoi Chaomhnú Speisialta agus Limistéir faoi Chosaint Speisialta; in Éirinn, Limistéir faoi Chaomhnú Speisialta, Limistéir faoi Chosaint Speisialta agus Limistéir Oidhreachta Nádúrtha)."}
+  hilliness: {label: Cnocúlacht timpeall tithe, description: "Meánfhána na talún laistigh de thart ar 500m de thithe, mar chéatadán (ardaíonn fána 10% 10m in aghaidh gach 100m)."}
+  elevation: {label: Airde os cionn leibhéal na farraige, description: "Meánairde tithe os cionn leibhéal na farraige, i méadair, ón ngreille talún 50m."}
+  storm_overflow_spills: {label: Doirteadh séarachais in aice láimhe, description: "Na huaireanta sa bhliain a dhoirt sceithirí stoirme laistigh de 2km de thithe séarachas isteach in aibhneacha agus san fharraige, curtha le chéile (Monatóireacht ar Fhad Teagmhas na Gníomhaireachta Comhshaoil)."}
+  bathing_water_distance: {label: Fad go huisce snámha, description: "Fad ó thithe go dtí an t-uisce snámha ainmnithe is gaire (trá, loch nó stráice abhann a ndéantar monatóireacht air do shnámhóirí), i gciliméadair."}
+  bathing_water_class: {label: Cáilíocht uisce snámha in aice láimhe, description: "Aicme an uisce snámha ainmnithe is gaire laistigh de 10km de thithe, ó 4 (Ar fheabhas) trí Maith agus Leordhóthanach go 1 (Lag), don séasúr is déanaí."}
+  river_status: {label: Sláinte aibhneacha agus locha in aice láimhe, description: "Stádas na habhann nó an locha is gaire laistigh de 2km de thithe faoin gCreat-Treoir Uisce, ó 5 (Ard) trí Maith, Measartha agus Lag go 1 (Olc)."}
   tree_canopy: {label: Clúdach crann timpeall tithe, description: "Sciar den talamh laistigh de 500m de thithe a rangaíonn clúdach talún satailíte mar chlúdach crann (ESA WorldCover, 10m)."}
   light_pollution: {label: Solas na hoíche, description: "Meánradaíocht oíche laistigh de 1km de thithe, ó chomhiomlán bliantúil satailíte VIIRS (nW/cm²/sr)."}
   iod_outdoors: {label: Timpeallacht chónaithe amuigh IoD 2025, description: "Cáilíocht aeir agus timpistí tráchta bóthair (fofhearann IoD 2025)."}
@@ -128,6 +141,8 @@ indicators:
   connectivity_overall: {label: Nascacht iomlán, description: "Scór nascachta DfT thar gach modh taistil agus ceann scríbe."}
   connectivity_public_transport: {label: Nascacht iompair phoiblí, description: "Scór nascachta DfT d'iompar poiblí chuig gach ceann scríbe."}
   connectivity_walking: {label: Insiúltacht, description: "Scór nascachta DfT do shiúl chuig gach ceann scríbe."}
+  cycle_infrastructure: {label: Rianta agus lánaí rothaíochta in aice láimhe, description: "Ciliméadair de rothbhealaí, de rianta rothaíochta agus de lánaí rothaíochta péinteáilte in aghaidh an km² laistigh de 1km de thithe (OpenStreetMap)."}
+  street_connectivity: {label: Nascacht sráideanna, description: "Acomhail sráideanna agus cosán in aghaidh an km² laistigh de 1km de thithe (OpenStreetMap)."}
   connectivity_cycling: {label: Nascacht rothaíochta, description: "Scór nascachta DfT do rothaíocht chuig gach ceann scríbe."}
   access_deprivation: {label: Rochtain ar sheirbhísí (SIMD agus NIMDM), description: "Fearann rochtana geografaí Innéacs Ildíothachta na hAlban 2020 (agus fearann gaireacht seirbhísí NIMDM 2017 i dTuaisceart Éireann): amanna tiomána agus iompair phoiblí chuig dochtúirí teaghlaigh, scoileanna, siopaí, oifigí poist agus stáisiúin pheitril, tugtha chuig criosanna 2021 agus 2022."}
   station_distance: {label: Fad chuig an stáisiún is gaire, description: "Meánfhad díreach ó thithe chuig an stad iarnróid, meitreo nó trama is gaire."}

@@ -15,6 +15,20 @@ All notable changes to this project. The format follows
   reproject, a NaN-aware window mean, Horn slope, sampling at homes block by block)
   (#199).
 
+- Ten context measures (#80 #81 #84 #128 #129 #83 #79 #82): cycle tracks and lanes per
+  km² within 1 km and street connectivity (junctions per km²) from a new OpenStreetMap
+  highway pass (`osm_ways`, graph-ready for the walking network of v0.8.x, and
+  `osm_network_points`); protected nature within about 2 km (SSSI/ASSI, nature reserves,
+  SAC and SPA; in Ireland SAC, SPA and NHA), merged and clipped to land; built-up land
+  within 500 m from the WorldCover pass tree cover already reads; hilliness and height
+  from OS Terrain 50, OSNI's 50 m terrain model and Copernicus GLO-30; sewage overflow
+  spill hours within 2 km from the Environment Agency's Event Duration Monitoring
+  (England); the distance to, and the class of, the nearest designated bathing water; and
+  the Water Framework Directive status of the nearest river or lake. 45 new sources, all
+  anonymous downloads; Northern Ireland's bathing water classes are a curated table from
+  DAERA's announcement. A National Grid reference parser, a page size for ArcGIS layers
+  whose full pages fail, and the Copernicus DEM licence in DATA-LICENCE.md.
+
 ### Fixed
 
 - One search-cap rule for every distance indicator: the search stops at the indicator's

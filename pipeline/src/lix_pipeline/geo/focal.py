@@ -52,12 +52,14 @@ class BngGrid:
         gy1 = math.ceil((y1 + margin_m) / cell_m) * cell_m
         gx1 = math.ceil((x1 + margin_m) / cell_m) * cell_m
         gy0 = math.floor((y0 - margin_m) / cell_m) * cell_m
+        # One row and column more than the span: a point on the south or east edge
+        # (y0, x1 on a cell boundary) falls in the next cell, which must exist
         return cls(
             gx0,
             gy1,
             cell_m,
-            max(1, round((gy1 - gy0) / cell_m)),
-            max(1, round((gx1 - gx0) / cell_m)),
+            int(round((gy1 - gy0) / cell_m)) + 1,
+            int(round((gx1 - gx0) / cell_m)) + 1,
         )
 
     @property
@@ -215,7 +217,7 @@ def horn_slope_pct(dem: np.ndarray, cell_m: float) -> np.ndarray:
 
 
 def focal_at_homes(
-    fn: Callable[[BngGrid], np.ndarray | None],
+    fn: Callable[[BngGrid], np.ndarray | dict[str, np.ndarray] | None],
     homes: pl.DataFrame,
     cell_m: float = 50.0,
     halo_m: float = 2_000.0,
@@ -227,13 +229,14 @@ def focal_at_homes(
     """Run ``fn`` on every padded block that holds homes and sample its result at the
     homes in the block's core; the per-area mean over homes with a value, and
     ``n_postcodes`` (the raster stagers' column name). ``fn`` returns an array of the
-    padded grid's shape, or None for a block with nothing to say."""
+    padded grid's shape (the column ``value``), a dict of such arrays (one column each;
+    ``n_postcodes`` counts the first), or None for a block with nothing to say."""
     homes = homes.filter(pl.col(xy[0]).is_not_null() & pl.col(xy[1]).is_not_null())
     x = homes[xy[0]].to_numpy().astype(float)
     y = homes[xy[1]].to_numpy().astype(float)
     grid = BngGrid.covering((x.min(), y.min(), x.max(), y.max()), cell_m)
     rows, cols = grid.rowcol(x, y)
-    values = np.full(len(x), np.nan)
+    values: dict[str, np.ndarray] = {}
     blocks = list(grid.blocks(block_m, halo_m))
     for i, block in enumerate(blocks):
         r0 = round((grid.y1 - block.core.y1) / cell_m)
@@ -246,15 +249,24 @@ def focal_at_homes(
         )
         if not inside.any():
             continue
-        arr = fn(block.padded)
-        if arr is None:
+        out = fn(block.padded)
+        if out is None:
             continue
-        values[inside] = arr[rows[inside] - r0 + block.halo, cols[inside] - c0 + block.halo]
+        arrays = out if isinstance(out, dict) else {"value": out}
+        rr, cc = rows[inside] - r0 + block.halo, cols[inside] - c0 + block.halo
+        for name, arr in arrays.items():
+            values.setdefault(name, np.full(len(x), np.nan))[inside] = arr[rr, cc]
         if log:
             log(f"block {i + 1}/{len(blocks)}: {int(inside.sum()):,} homes")
-    per_home = pl.DataFrame({by: homes[by], "value": values}, nan_to_null=True)
+    if not values:
+        values = {"value": np.full(len(x), np.nan)}
+    first = next(iter(values))
+    per_home = pl.DataFrame({by: homes[by], **values}, nan_to_null=True)
     return (
         per_home.group_by(by)
-        .agg(pl.col("value").mean(), pl.col("value").is_not_null().sum().alias("n_postcodes"))
+        .agg(
+            *[pl.col(n).mean() for n in values],
+            pl.col(first).is_not_null().sum().alias("n_postcodes"),
+        )
         .sort(by)
     )

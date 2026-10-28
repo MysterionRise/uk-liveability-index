@@ -56,6 +56,11 @@ units:
   m_s: "m/s"
   within_1500m: "taobh a-staigh 1.5km"
   patients_per_practice: "euslaintich gach cleachdadh"
+  km_per_km2: "km gach km²"
+  hectares: "heactairean"
+  pct_slope: "% leathad"
+  class4: "ìre 1–4 (4 = sàr-mhath)"
+  class5: "ìre 1–5 (5 = àrd)"
 
 flags:
   imputed: "Is e tuairmsean a th' anns na figearan eucoir an seo: chan eil Poileas Greater Manchester a' foillseachadh dàta aig ìre sràide."
@@ -108,6 +113,14 @@ indicators:
   night_noise: {label: Dachaighean ann am fuaim na h-oidhche, description: "Cuid de na dachaighean far a bheil fuaim mhapaichte a' cuibheasachadh 50 dB Lnight no barrachd eadar 23:00 agus 07:00, an ìre aig a bheil an Stiùireadh Fuaim Àrainneachdail a' cunntadh dhaoine mar fhosgailte dhi air an oidhche."}
   road_rail_noise: {label: Dachaighean ann am fuaim rathaid no rèile, description: "Cuid de dhachaighean far a bheil fuaim rathaid no rèile a' ruighinn 60 dB Lden no barrachd thar an latha, an fheasgair agus na h-oidhche, bho na mapaichean fuaim ro-innleachdail."}
   coast_distance: {label: Astar chun a' chladaich, description: "Astar bho dhachaighean chun a' chladaich as fhaisge, ann an cilemeatairean (comharra àrd-làin ann am Breatainn Mhòr agus Èirinn, iomall-crìche Èirinn a Tuath)."}
+  sealed_surface: {label: Fearann togte timcheall dhachaighean, description: "Cuid den fhearann taobh a-staigh 500m de dhachaighean a tha còmhdach-fearainn saideil a' seòrsachadh mar fhearann togte, is e sin togalaichean, rathaidean is uachdaran cruaidh eile (ESA WorldCover, 10m)."}
+  protected_nature: {label: Nàdar dìonte faisg air làimh, description: "Heactairean de dh'fhearann taobh a-staigh mu 2km de dhachaighean a tha dìonte airson nàdair (Làraichean Sònraichte Saidheansail, tèarmannan nàdair, Raointean Sònraichte Glèidhteachais is Raointean Dìon Sònraichte; ann an Èirinn, Raointean Sònraichte Glèidhteachais, Raointean Dìon Sònraichte is Raointean Dualchais Nàdarra)."}
+  hilliness: {label: Cnocachas timcheall dhachaighean, description: "Leathad cuibheasach na talmhainn taobh a-staigh mu 500m de dhachaighean, mar cheudad (bidh leathad 10% ag èirigh 10m gach 100m)."}
+  elevation: {label: Àirde os cionn ìre na mara, description: "Àirde chuibheasach dhachaighean os cionn ìre na mara, ann am meatairean, bhon ghriod talmhainn 50m."}
+  storm_overflow_spills: {label: Dòrtadh òtrachais faisg air làimh, description: "Na h-uairean sa bhliadhna a dhòirt dòrtaidhean stoirme taobh a-staigh 2km de dhachaighean òtrachas a-steach do aibhnichean is dhan mhuir, air an cur ri chèile (Sgrùdadh Faid Thachartasan aig Buidheann na h-Àrainneachd)."}
+  bathing_water_distance: {label: Astar gu uisge-snàimh, description: "Astar bho dhachaighean chun an uisge-snàimh ainmichte as fhaisge (tràigh, loch no pìos aibhne a thathar a' sgrùdadh airson luchd-snàimh), ann an cilemeatairean."}
+  bathing_water_class: {label: Càileachd uisge-snàimh faisg air làimh, description: "Ìre an uisge-snàimh ainmichte as fhaisge taobh a-staigh 10km de dhachaighean, bho 4 (Sàr-mhath) tro Math is Iomchaidh gu 1 (Bochd), airson an t-seusain as ùire."}
+  river_status: {label: Slàinte aibhnichean is lochan faisg air làimh, description: "Inbhe na h-aibhne no an locha as fhaisge taobh a-staigh 2km de dhachaighean fo Stiùireadh Frèam an Uisge, bho 5 (Àrd) tro Math, Meadhanach is Bochd gu 1 (Dona)."}
   tree_canopy: {label: Còmhdach chraobhan timcheall dhachaighean, description: "Cuid den fhearann taobh a-staigh 500m de dhachaighean a tha còmhdach-fearainn saideil a' seòrsachadh mar chòmhdach chraobhan (ESA WorldCover, 10m)."}
   light_pollution: {label: Solas na h-oidhche, description: "Deàrrsadh oidhche cuibheasach taobh a-staigh 1km de dhachaighean, bho cho-mheasgachadh bliadhnail saideil VIIRS (nW/cm²/sr)."}
   iod_outdoors: {label: Àrainneachd-còmhnaidh a-muigh IoD 2025, description: "Càileachd èadhair agus tubaistean trafaig rathaid (fo-raon IoD 2025)."}
@@ -128,6 +141,8 @@ indicators:
   connectivity_overall: {label: Ceangalachd iomlan, description: "Sgòr ceangalachd DfT thar gach dòigh-siubhail agus ceann-uidhe."}
   connectivity_public_transport: {label: Ceangalachd còmhdhail phoblaich, description: "Sgòr ceangalachd DfT airson còmhdhail phoblaich gu gach ceann-uidhe."}
   connectivity_walking: {label: Coiseachdachd, description: "Sgòr ceangalachd DfT airson coiseachd gu gach ceann-uidhe."}
+  cycle_infrastructure: {label: Slighean is sreathan baidhsagail faisg air làimh, description: "Cilemeatairean de shlighean baidhsagail, de thracaichean baidhsagail is de shreathan baidhsagail peantaichte gach km² taobh a-staigh 1km de dhachaighean (OpenStreetMap)."}
+  street_connectivity: {label: Ceangalachd shràidean, description: "Snaimean de shràidean is de shlighean coiseachd gach km² taobh a-staigh 1km de dhachaighean (OpenStreetMap)."}
   connectivity_cycling: {label: Ceangalachd baidhsagail, description: "Sgòr ceangalachd DfT airson baidhsagal gu gach ceann-uidhe."}
   access_deprivation: {label: "Ruigsinneachd sheirbheisean (SIMD, NIMDM)", description: "Raon ruigsinneachd cruinn-eòlasach Clàr-amais Ioma-bhochdainn na h-Alba 2020 (ùineachan dràibhidh agus còmhdhail phoblaich gu dotairean-teaghlaich, sgoiltean, bùthan, oifisean-puist agus stèiseanan peatrail), air an toirt gu sònaichean dàta 2022."}
   station_distance: {label: Astar chun an stèisein as fhaisge, description: "Astar dìreach cuibheasach bho dhachaighean chun an stad rèile, metro no trama as fhaisge."}

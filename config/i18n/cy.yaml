@@ -55,6 +55,11 @@ units:
   m_s: "m/s"
   within_1500m: "o fewn 1.5km"
   patients_per_practice: "cleifion fesul practis"
+  km_per_km2: "km y km²"
+  hectares: "hectarau"
+  pct_slope: "% llethr"
+  class4: "dosbarth 1–4 (4 = ardderchog)"
+  class5: "dosbarth 1–5 (5 = uchel)"
 
 flags:
   imputed: "Mae'r ffigurau troseddu yma'n amcangyfrifon: nid yw Heddlu Manceinion Fwyaf yn cyhoeddi data ar lefel stryd."
@@ -89,6 +94,14 @@ indicators:
   flood_rivers_sea: {label: Cartrefi mewn perygl o afonydd neu'r môr, description: Cyfran y cartrefi sydd mewn perygl uchel neu ganolig o lifogydd o afonydd neu'r môr yn unig (siawns o 1% y flwyddyn o leiaf).}
   road_rail_noise: {label: Cartrefi mewn sŵn ffyrdd neu reilffyrdd, description: "Cyfran y cartrefi lle mae sŵn ffyrdd neu reilffyrdd yn cyfartalu 60 dB Lden neu fwy dros y dydd, yr hwyr a'r nos, o'r mapiau sŵn strategol."}
   coast_distance: {label: Pellter i'r arfordir, description: "Pellter o gartrefi i'r arfordir agosaf, mewn cilometrau (y marc penllanw ym Mhrydain Fawr ac Iwerddon, amlinell Gogledd Iwerddon)."}
+  sealed_surface: {label: Tir adeiledig o amgylch cartrefi, description: "Cyfran y tir o fewn 500m i gartrefi y mae gorchudd tir lloeren yn ei ddosbarthu fel tir adeiledig, sef adeiladau, ffyrdd ac arwynebau caled eraill (ESA WorldCover, 10m)."}
+  protected_nature: {label: Natur warchodedig gerllaw, description: "Hectarau o dir o fewn tua 2km i gartrefi sydd wedi'i warchod er mwyn natur (Safleoedd o Ddiddordeb Gwyddonol Arbennig, gwarchodfeydd natur, Ardaloedd Cadwraeth Arbennig ac Ardaloedd Gwarchodaeth Arbennig; yn Iwerddon, Ardaloedd Cadwraeth Arbennig, Ardaloedd Gwarchodaeth Arbennig ac Ardaloedd Treftadaeth Naturiol)."}
+  hilliness: {label: Bryniogrwydd o amgylch cartrefi, description: "Llethr cyfartalog y tir o fewn tua 500m i gartrefi, fel canran (mae llethr o 10% yn codi 10m bob 100m)."}
+  elevation: {label: Uchder uwchlaw lefel y môr, description: "Uchder cyfartalog cartrefi uwchlaw lefel y môr, mewn metrau, o'r grid tir 50m."}
+  storm_overflow_spills: {label: Gorlifiadau carthion gerllaw, description: "Yr oriau yn y flwyddyn y bu gorlifiadau storm o fewn 2km i gartrefi yn gollwng carthion i afonydd a'r môr, wedi'u hadio (Monitro Hyd Digwyddiadau Asiantaeth yr Amgylchedd)."}
+  bathing_water_distance: {label: Pellter i ddŵr ymdrochi, description: "Pellter o gartrefi i'r dŵr ymdrochi dynodedig agosaf (traeth, llyn neu ran o afon sy'n cael ei monitro ar gyfer nofwyr), mewn cilometrau."}
+  bathing_water_class: {label: Ansawdd dŵr ymdrochi gerllaw, description: "Dosbarth y dŵr ymdrochi dynodedig agosaf o fewn 10km i gartrefi, o 4 (Ardderchog) drwy Da a Digonol i 1 (Gwael), ar gyfer y tymor diweddaraf."}
+  river_status: {label: Iechyd afonydd a llynnoedd gerllaw, description: "Statws yr afon neu'r llyn agosaf o fewn 2km i gartrefi o dan y Gyfarwyddeb Fframwaith Dŵr, o 5 (Uchel) drwy Da, Cymedrol a Gwael i 1 (Drwg)."}
   tree_canopy: {label: Gorchudd coed o amgylch cartrefi, description: "Cyfran y tir o fewn 500m i gartrefi y mae gorchudd tir lloeren yn ei ddosbarthu fel gorchudd coed (ESA WorldCover, 10m)."}
   light_pollution: {label: Golau yn y nos, description: "Disgleirdeb cyfartalog yn y nos o fewn 1km i gartrefi, o gyfansawdd blynyddol lloeren VIIRS (nW/cm²/sr)."}
   iod_outdoors: {label: Amgylchedd byw awyr agored IoD 2025, description: Ansawdd aer a damweiniau traffig ffordd (is-barth IoD 2025).}
@@ -107,6 +120,8 @@ indicators:
   connectivity_overall: {label: Cysylltedd cyffredinol, description: Sgôr cysylltedd yr Adran Drafnidiaeth ar draws pob dull a chyrchfan.}
   connectivity_public_transport: {label: Cysylltedd trafnidiaeth gyhoeddus, description: Sgôr cysylltedd yr Adran Drafnidiaeth ar gyfer trafnidiaeth gyhoeddus i bob cyrchfan.}
   connectivity_walking: {label: Cerddadwyedd, description: Sgôr cysylltedd yr Adran Drafnidiaeth ar gyfer cerdded i bob cyrchfan.}
+  cycle_infrastructure: {label: Llwybrau a lonydd beicio gerllaw, description: "Cilometrau o lwybrau beicio, traciau beicio a lonydd beicio wedi'u paentio fesul km² o fewn 1km i gartrefi (OpenStreetMap)."}
+  street_connectivity: {label: Cysylltedd strydoedd, description: "Cyffyrdd strydoedd a llwybrau cerdded fesul km² o fewn 1km i gartrefi (OpenStreetMap)."}
   connectivity_cycling: {label: Cysylltedd beicio, description: Sgôr cysylltedd yr Adran Drafnidiaeth ar gyfer beicio i bob cyrchfan.}
   station_distance: {label: Pellter i'r orsaf agosaf, description: "Pellter cyfartalog mewn llinell syth o gartrefi i'r orsaf reilffordd, metro neu dram agosaf."}
   bus_frequency: {label: Amlder bysiau, description: "Bysiau yr awr (dyddiau'r wythnos, 07:00–19:00) yn yr arhosfan brysuraf o fewn 400m i gartrefi."}

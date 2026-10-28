@@ -80,6 +80,39 @@ STAGE_INPUTS: dict[str, list[str]] = {
     "fsa_fhrs": ["fsa_fhrs", "nspl", *LOW_BOUNDARIES],
     "overture_pubs": ["overture_pubs", *LOW_BOUNDARIES],
     "osm_pois": ["osm_*"],
+    "osm_ways": ["osm_*"],
+    "terrain": ["os_terrain_50", "osni_dtm_50m", "copernicus_dem_glo30"],
+    "storm_overflows": ["ea_edm_annual"],
+    "water_status": [
+        "ea_wfd_rivers",
+        "ea_wfd_lakes",
+        "nrw_wfd_rivers",
+        "nrw_wfd_lakes",
+        "sepa_wfd_rivers",
+        "sepa_wfd_lochs",
+        "daera_wfd_status_2018",
+        "daera_river_segments",
+        "daera_lake_water_bodies",
+        "epa_wfd_rivers",
+        "epa_wfd_lakes",
+    ],
+    "bathing_waters": [
+        "ea_bathing_waters",
+        "nrw_bathing_waters",
+        "sepa_bathing_waters",
+        "daera_bathing_waters",
+        "bathing_water_classes_ni",
+        "epa_bathing_waters",
+    ],
+    # The designations, and the small-area boundaries that clip them to land
+    "protected_areas": [
+        "pa_*",
+        "lsoa_boundaries",
+        "sg_dz22_boundaries",
+        "nisra_sdz21_boundaries",
+        "cso_sa22_boundaries",
+    ],
+    "osm_network_points": ["osm_*"],  # through the ways table
     "ods_dentists": ["ods_dentists", "phs_dentists", "bso_dental", "nspl", *LOW_BOUNDARIES],
     "ae_sites": ["ae_sites", "nspl", *LOW_BOUNDARIES],
     "chargers": ["esb_ev_sites", "open_charge_map_gb", "open_charge_map_ie", *LOW_BOUNDARIES],
@@ -223,6 +256,9 @@ STAGE_READS: dict[str, list[str]] = {
     "flood": ["ea_flood_all_postcodes", "ea_flood_postcodes", "os_open_uprn", "voa_ctsop"],
     "noise": ["homes"],
     "tree_cover": ["homes"],
+    "osm_network_points": ["osm_ways"],
+    "protected_areas": ["homes"],
+    "terrain": ["homes"],
     "night_lights": ["homes"],
     "climate": ["homes"],
     "deprivation": ["iod_2025", "dz11_dz22", "soa01_sdz21"],
@@ -262,6 +298,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
 
     from lix_core.config import load_registry
     from lix_pipeline.stage import (
+        bathing_waters,
         chargers,
         childcare,
         climate,
@@ -277,11 +314,16 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         logainm,
         night_lights,
         noise,
+        osm_ways,
+        protected_areas,
         radon,
         safety,
         schools,
+        storm_overflows,
+        terrain,
         transport,
         uprn,
+        water_status,
     )
     from lix_pipeline.stage.census import stage_census_table
     from lix_pipeline.stage.deprivation import stage_deprivation
@@ -314,6 +356,8 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "police_crime": stage_police,
         **pcm,  # needs staged nspl
         "osm_pois": stage_osm,  # before its readers (ods_gp, chargers, dentists, pharmacies …)
+        "osm_ways": osm_ways.stage_osm_ways,  # the highway network, one pass per extract
+        "osm_network_points": osm_ways.stage_osm_network_points,  # junctions, cycle samples
         "ods_gp": health.stage_ods_gp,
         "gp_registrations": health.stage_gp_registrations,
         "gp_workforce": health.stage_gp_workforce,
@@ -361,6 +405,11 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "noise": noise.stage_noise,  # needs staged nspl
         "tree_cover": landcover.stage_tree_cover,  # needs staged nspl
         "coastline": coastline.stage_coastline,
+        "protected_areas": protected_areas.stage_protected_areas,  # needs staged homes
+        "terrain": terrain.stage_terrain,  # needs staged homes
+        "storm_overflows": storm_overflows.stage_storm_overflows,
+        "bathing_waters": bathing_waters.stage_bathing_waters,
+        "water_status": water_status.stage_water_status,
         "night_lights": night_lights.stage_night_lights,  # manual source; needs staged nspl
         "climate": climate.stage_climate,  # manual source; needs staged nspl
         "ukcp_hot_days": climate.stage_ukcp_hot_days,  # needs staged geo_lsoa
