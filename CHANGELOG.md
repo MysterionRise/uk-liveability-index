@@ -36,6 +36,8 @@ sources in use). Every new source is an anonymous download.
   DAERA's announcement. A National Grid reference parser, a page size for ArcGIS layers
   whose full pages fail, and the Copernicus DEM licence in DATA-LICENCE.md.
 
+- The profile card's key facts add hilliness, protected nature nearby, bathing water quality
+  and river and lake health.
 - Classes read as words: a bathing water's class shows "Excellent (3.8)" and a river's
   status "Moderate (3.1)", in the interface language.
 - The indicators' caveats in Welsh, Gaelic and Irish: the catalogues carry a `caveats`

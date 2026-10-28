@@ -71,10 +71,13 @@ def with_substitutes(store: Store, row: dict, values: list[IndicatorValue]) -> l
     return out
 
 
+# The card's facts; v0.7.0 adds the four context measures its issues asked to see there
+# (the classes read as words: "Excellent (3.8)")
 KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_exposure",
              "flood_risk", "tree_canopy", "sunshine", "gp_distance", "station_distance",
              "everyday_services", "gigabit_broadband", "well_run_pubs",
-             "households_with_children"]  # fmt: skip
+             "households_with_children", "hilliness", "protected_nature",
+             "bathing_water_class", "river_status"]  # fmt: skip
 
 # The flags an area can carry, worded in agent.messages (four languages)
 FLAG_CODES = ("imputed", "low_n", "broadcast_lad", "not_available", "theme_gap")
