@@ -175,6 +175,7 @@
     "broadcast_lad": "air feadh na comhairle",
     "not_available": "chan eil ri fhaighinn an seo",
     "missing": "gun dàta",
+    "capped": "co-dhiù cho fada seo",
     "standsInFor": "a' seasamh an àite {label}"
   },
   "Legend": {

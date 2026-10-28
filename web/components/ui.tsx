@@ -101,7 +101,7 @@ export function Band({ band, percentile, nationOf, urbanRural }: { band?: number
   );
 }
 
-const QUALITY_KEYS = ["imputed", "low_n", "broadcast_msoa", "broadcast_lad", "not_available", "missing"] as const;
+const QUALITY_KEYS = ["imputed", "low_n", "broadcast_msoa", "broadcast_lad", "not_available", "missing", "capped"] as const;
 
 /** A short note for a value that isn't measured directly for the LSOA ("estimated"). */
 export function useQualityNote(): (quality: string | null | undefined) => string | undefined {

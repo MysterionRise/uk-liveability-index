@@ -892,7 +892,7 @@ indicators:
     builder: amenities:osm_nearest
     params: {values: [library], beyond_cap: 20000}
     role: context
-    caveats: Libraries as OpenStreetMap maps them; a council's list may be fuller. An area whose homes have none within 50 km, the search cap, reads 50 km.
+    caveats: Libraries as OpenStreetMap maps them; a council's list may be fuller. The search stops at 20 km; a home with none that close counts as 20 km, and an area whose homes mostly have none is marked as at least that far.
 
   - id: post_office_distance
     theme: amenities
@@ -905,7 +905,7 @@ indicators:
     builder: amenities:osm_nearest
     params: {values: [post_office], beyond_cap: 20000}
     role: context
-    caveats: Post offices as OpenStreetMap maps them, counters inside shops included where mapped. An area whose homes have none within 50 km, the search cap, reads 50 km.
+    caveats: Post offices as OpenStreetMap maps them, counters inside shops included where mapped; Tramore's are not mapped. The search stops at 20 km; a home with none that close counts as 20 km, and an area whose homes mostly have none is marked as at least that far.
 
   - id: shops
     theme: amenities

@@ -13,5 +13,6 @@ QUALITY_LEVELS: tuple[str, ...] = (
     "broadcast_lad",  # copied down from the local authority
     "missing",  # the source should cover this area but has no value
     "not_available",  # the indicator is not built for this nation
+    "capped",  # most homes have none within the search distance: the value is that distance
 )
 QUALITY_CODE = {level: i for i, level in enumerate(QUALITY_LEVELS)}

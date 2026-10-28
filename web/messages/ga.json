@@ -175,6 +175,7 @@
     "broadcast_lad": "ar fud na comhairle",
     "not_available": "níl ar fáil anseo",
     "missing": "gan sonraí",
+    "capped": "ar a laghad chomh fada seo",
     "standsInFor": "in ionad {label}"
   },
   "Legend": {

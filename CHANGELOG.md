@@ -6,8 +6,22 @@ All notable changes to this project. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Shared helpers for the v0.7.0 measures: `nearest_attr` (the nearest point's value
+  within reach, per home) and `sum_within` (an undecayed sum or density within a radius,
+  counted without a pair matrix, so dense points such as junctions scale to five million
+  homes), and `geo/focal.py`, a 50 m British National Grid raster helper (rasterise,
+  reproject, a NaN-aware window mean, Horn slope, sampling at homes block by block)
+  (#199).
+
 ### Fixed
 
+- One search-cap rule for every distance indicator: the search stops at the indicator's
+  `beyond_cap` (else 50 km), a home with nothing that close counts as that distance, and
+  an area whose homes mostly have nothing in reach carries the new quality level
+  `capped` ("at least this far"). Libraries and post offices said 20 km in the
+  configuration and 50 km in practice (#213).
 - The nightly source check rewrote the newest open issue labelled `data-refresh`, which on
   27 and 28 October was a planner bug report (#205), not the "Data refresh due" report.
   It now matches the report by its title as well (#218).

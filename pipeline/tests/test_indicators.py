@@ -345,6 +345,62 @@ def test_nearest_beyond_the_cap_can_count_as_the_cap():
     assert nearest(none, "ae_sites", "type", ["type1"], beyond_cap=50_000)["value"].to_list() == [
         50_000.0, 50_000.0,
     ]  # fmt: skip
+    # An area whose homes mostly have nothing within the search is flagged (#213)
+    assert plain["quality"].to_list() == ["ok", "capped"]
+
+
+def test_beyond_cap_is_the_search_and_never_below_it():
+    """library_distance said beyond_cap 20 km while the search ran to 50 km, so a home
+    with nothing within 50 km read 50 km and one with a library 30 km away read 30 km
+    (#213): beyond_cap now sets the search, and a lower one than the search is refused."""
+    from lix_pipeline.indicators.common import nearest
+
+    origins = pl.DataFrame({
+        "lsoa21cd": ["E01000001", "E01000002", "E01000002"],
+        "east1m": [0.0, 30_000.0, 31_000.0], "north1m": [0.0, 0.0, 0.0],
+    })  # fmt: skip
+    libraries = pl.DataFrame({"x": [1000.0], "y": [0.0]})
+    ctx = FakeContext(origins=origins, libs=libraries)
+    df = nearest(ctx, "libs", beyond_cap=20_000).sort("lsoa21cd")
+    assert df["value"].to_list() == pytest.approx([1000.0, 20_000.0])
+    assert df["quality"].to_list() == ["ok", "capped"]
+    with pytest.raises(ValueError, match="below the search cap"):
+        nearest(ctx, "libs", beyond_cap=20_000, max_nearest_m=50_000)
+
+
+def test_nearest_attr_takes_the_nearest_within_reach():
+    from lix_pipeline.indicators.common import nearest_attr
+
+    origins = pl.DataFrame({
+        "lsoa21cd": ["E01000001", "E01000001", "E01000002", "E01000002", "E01000002"],
+        "east1m": [0.0, 100.0, 50_000.0, 50_100.0, 90_000.0], "north1m": [0.0] * 5,
+    })  # fmt: skip
+    waters = pl.DataFrame({
+        "x": [2_000.0, 6_000.0, 52_000.0], "y": [0.0, 0.0, 0.0], "cls": [4.0, 1.0, 2.0],
+    })  # fmt: skip
+    ctx = FakeContext(origins=origins, bw=waters)
+    df = nearest_attr(ctx, "bw", "cls", max_m=10_000).sort("lsoa21cd")
+    # The first area's homes are nearest the class-4 water; in the second, two of three
+    # homes have one within 10 km (class 2) and the third none, which is no value, not 0
+    assert df["value"].to_list() == pytest.approx([4.0, 2.0])
+    strict = nearest_attr(ctx, "bw", "cls", max_m=10_000, min_share=0.9).sort("lsoa21cd")
+    assert strict["value"].to_list() == [4.0, None]
+
+
+def test_sum_within_counts_and_weights_without_a_pair_matrix():
+    from lix_pipeline.geo.access import sum_within
+
+    origins = pl.DataFrame({
+        "lsoa21cd": ["E01000001", "E01000001", "E01000002"],
+        "east1m": [0.0, 0.0, 10_000.0], "north1m": [0.0, 0.0, 0.0],
+    })  # fmt: skip
+    pts = pl.DataFrame({"x": [500.0, 900.0, 1_500.0], "y": [0.0] * 3, "hours": [10.0, 5.0, 99.0]})
+    counted = sum_within(origins, pts, 1_000).sort("lsoa21cd")
+    assert counted["value"].to_list() == pytest.approx([2.0, 0.0])
+    weighted = sum_within(origins, pts, 1_000, weight="hours", chunk=1).sort("lsoa21cd")
+    assert weighted["value"].to_list() == pytest.approx([15.0, 0.0])
+    dense = sum_within(origins, pts, 1_000, per_km2=True).sort("lsoa21cd")
+    assert dense["value"][0] == pytest.approx(2 / 3.14159265, rel=1e-6)
 
 
 def test_well_run_counts_a_recent_scottish_pass_like_a_high_rating():

@@ -175,6 +175,7 @@
     "broadcast_lad": "council-wide",
     "not_available": "not available here",
     "missing": "no data",
+    "capped": "at least this far",
     "standsInFor": "stands in for {label}"
   },
   "Legend": {
