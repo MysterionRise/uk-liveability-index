@@ -132,6 +132,9 @@ def build_all(only: list[str] | None = None) -> Path:
         # Keep the other indicators, but only those still in the catalogue
         current = [i.id for i in catalogue.indicators if i.id not in only]
         kept = pl.read_parquet(out_path).filter(pl.col("indicator_id").is_in(current))
+        # A table written before a quality level was appended ("capped", #213) has a
+        # narrower enum: read its levels as text and cast to today's
+        kept = kept.with_columns(pl.col("quality").cast(pl.Utf8).cast(pl.Enum(QUALITY)))
         long = pl.concat([kept, long])
     long = long.sort("indicator_id", "lsoa21cd")
     out_path.parent.mkdir(parents=True, exist_ok=True)

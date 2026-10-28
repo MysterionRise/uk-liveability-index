@@ -21,6 +21,8 @@ from lix_pipeline.geo.ngr import ngr_to_bng_arrays
 logger = setup_logging("stage.storm_overflows")
 
 SHEET = "All WaSC"
+# Day 0 of Excel's 1900 date system as spreadsheet readers count it
+EXCEL_EPOCH = __import__("datetime").datetime(1899, 12, 30)
 COLUMNS = {
     "Unique ID": "overflow_id",
     "Water Company Name": "company",
@@ -44,6 +46,14 @@ def duration_hours(value) -> float | None:
     m = re.fullmatch(r"(\d+):(\d{1,2})(?::(\d{1,2}))?", text)
     if m:
         return int(m.group(1)) + int(m.group(2)) / 60 + int(m.group(3) or 0) / 3600
+    # A duration over a day reads as Excel's date for the serial number, counted from
+    # 1899-12-30 ("1900-01-16 21:00:00" is 17 days and 21 hours): most of the 2025 file
+    m = re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?", text)
+    if m:
+        from datetime import datetime
+
+        y, mo, d, h, mi, s = (int(g or 0) for g in m.groups())
+        return (datetime(y, mo, d, h, mi, s) - EXCEL_EPOCH).total_seconds() / 3600
     try:
         return float(text) * 24.0  # a day fraction written as text
     except ValueError:
