@@ -24,10 +24,14 @@ All notable changes to this project. The format follows
   from OS Terrain 50, OSNI's 50 m terrain model and Copernicus GLO-30; sewage overflow
   spill hours within 2 km from the Environment Agency's Event Duration Monitoring
   (England); the distance to, and the class of, the nearest designated bathing water; and
-  the Water Framework Directive status of the nearest river or lake. 45 new sources, all
+  the Water Framework Directive status of the nearest river or lake. 39 new sources, all
   anonymous downloads; Northern Ireland's bathing water classes are a curated table from
   DAERA's announcement. A National Grid reference parser, a page size for ArcGIS layers
   whose full pages fail, and the Copernicus DEM licence in DATA-LICENCE.md.
+
+- The indicators' caveats in Welsh, Gaelic and Irish: the catalogues carry a `caveats`
+  draft for every indicator that has one, the manifest takes them along, and the
+  explainer shows the one in the interface language (#209).
 
 ### Fixed
 
@@ -36,6 +40,22 @@ All notable changes to this project. The format follows
   an area whose homes mostly have nothing in reach carries the new quality level
   `capped` ("at least this far"). Libraries and post offices said 20 km in the
   configuration and 50 km in practice (#213).
+- Search: "SW1", "EC1", "W1" and the other central London prefixes find the lettered
+  districts they stand for; a division or small-area name its council repeats carries
+  its code in profiles, comparisons and rankings, not only in search results (#210).
+- Northern Irish places had no postcode district; they take the district of the nearest
+  live postcode within 3 km (#211).
+- A Scottish Data Zone was "Whitburn Glenisla Court�" and 31 names carried stray
+  spaces: the Scottish Government's lookup is read as Windows-1252 where it is not
+  UTF-8, names are trimmed, and `lix validate geo` checks every name column (#212).
+- One message to the assistant could be longer than any conversation should cost: the
+  newest message stops at 4,000 characters (the chat box too) with a worded refusal,
+  and a run whose estimated cost would overshoot what is left of the day's budget is
+  refused before it starts (#214).
+- Printing leaves out the language and theme selects and the tab strip, keeps the colour
+  of the theme bars and dots, and sets the cards close; the welcome dialog keeps the
+  focus while open and gives it back when closed; the search box points
+  `aria-controls` at its list only while the list exists (#216).
 - The nightly source check rewrote the newest open issue labelled `data-refresh`, which on
   27 and 28 October was a planner bug report (#205), not the "Data refresh due" report.
   It now matches the report by its title as well (#218).

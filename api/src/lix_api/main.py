@@ -24,7 +24,15 @@ from pydantic_ai.ui import StateDeps
 
 from lix_api.agent.agent import agent
 from lix_api.agent.errors import FriendlyAGUIAdapter
-from lix_api.agent.limits import limits, reply_model, user_turns
+from lix_api.agent.limits import (
+    MAX_USER_MESSAGE_CHARS,
+    conversation_chars,
+    limits,
+    newest_user_message,
+    reply_model,
+    user_turns,
+)
+from lix_api.agent.messages import message
 from lix_api.agent.runlog import log_run, usage_limits
 from lix_api.agent.state import LiveabilityState
 from lix_api.mcp_server import mcp
@@ -344,9 +352,14 @@ async def run_agent(request: Request) -> Response:
         body = await request.json()  # the body is cached for the adapter
         turns = user_turns(body)
         locale = str((body.get("state") or {}).get("locale") or "en")[:2]
+        newest = len(newest_user_message(body))
+        chars = conversation_chars(body)
     except (ValueError, AttributeError):
-        turns, locale = 0, "en"  # the adapter rejects the malformed request
-    refusal = limits.admit(turns, locale)
+        turns, locale, newest, chars = 0, "en", 0, 0  # the adapter rejects the malformed request
+    if newest > MAX_USER_MESSAGE_CHARS:
+        refusal = message("message_too_long", locale, limit=f"{MAX_USER_MESSAGE_CHARS:,}")
+    else:
+        refusal = limits.admit(turns, locale, input_chars=chars)
     if refusal:
         # Answered without the model; the run still completes normally for the client
         return await FriendlyAGUIAdapter.dispatch_request(

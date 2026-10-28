@@ -55,14 +55,45 @@ export function Onboarding() {
   const coverageIn = useCoverageIn();
   const labels = useLabels();
   const welcomed = useWelcomed();
-  // Escape closes the dialog, as a dialog should (#188)
+  // Escape closes the dialog, as a dialog should (#188); while it is open, Tab cycles
+  // within it, and closing it hands the focus back to where it was (#216)
   useEffect(() => {
     if (welcomed) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && dismiss();
+    const dialog = () => document.querySelector<HTMLElement>('[data-testid="onboarding"]');
+    const before = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        dismiss();
+        return;
+      }
+      const box = dialog();
+      if (e.key !== "Tab" || !box) return;
+      const items = Array.from(
+        box.querySelectorAll<HTMLElement>("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"),
+      ).filter((el) => !el.hasAttribute("disabled"));
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const inside = box.contains(document.activeElement);
+      if (e.shiftKey && (document.activeElement === first || !inside)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (document.activeElement === last || !inside)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener("keydown", onKey);
     // A dialog takes the focus when it opens: the first persona, not the page behind
-    document.querySelector<HTMLElement>('[data-testid="onboarding"] button')?.focus();
-    return () => window.removeEventListener("keydown", onKey);
+    dialog()?.querySelector<HTMLElement>("button")?.focus();
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      const back =
+        before && before !== document.body && document.contains(before)
+          ? before
+          : document.querySelector<HTMLElement>('[data-testid="search"] input');
+      back?.focus();
+    };
   }, [welcomed]);
   if (welcomed) return null;
   const presets = PERSONAS.filter((p) => !manifest || manifest.presets[p]);

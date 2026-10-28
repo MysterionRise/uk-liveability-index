@@ -99,6 +99,44 @@ def council_of(df: pl.DataFrame, nation: str) -> pl.Series:
     return pl.Series("local_authority", names.where(names.notna(), None).to_list(), dtype=pl.Utf8)
 
 
+# A place takes the district of the nearest live postcode this close (a village centre
+# is rarely more than a few hundred metres from one)
+DISTRICT_WITHIN_M = 3_000.0
+
+
+def nearest_district(places: pl.DataFrame, nation: str) -> pl.Series:
+    """The postcode district (outward code) of the live postcode nearest each place, for
+    a nation with postcodes in the NSPL (Northern Ireland); null elsewhere and beyond
+    ``DISTRICT_WITHIN_M``. OS Open Names gives Great Britain's places theirs (#211)."""
+    import numpy as np
+    from scipy.spatial import cKDTree
+
+    from lix_pipeline.geo.nspl import load_nspl
+
+    empty = pl.Series("postcode_district", [None] * places.height, dtype=pl.Utf8)
+    if nation != "N" or places.height == 0:
+        return empty
+    pcs = (
+        load_nspl(nations=(nation,), live_only=True)
+        .select("postcode", "east1m", "north1m")
+        .drop_nulls()
+        .collect()
+    )
+    if pcs.height == 0:
+        return empty
+    tree = cKDTree(np.column_stack([pcs["east1m"].to_numpy(), pcs["north1m"].to_numpy()]))
+    dist, idx = tree.query(
+        np.column_stack([places["x"].to_numpy(), places["y"].to_numpy()]),
+        distance_upper_bound=DISTRICT_WITHIN_M,
+    )
+    outward = pcs["postcode"].str.split(" ").list.first().to_list()
+    return pl.Series(
+        "postcode_district",
+        [outward[i] if np.isfinite(d) else None for d, i in zip(dist, idx, strict=True)],
+        dtype=pl.Utf8,
+    )
+
+
 def osm_places(nation: str) -> pl.DataFrame:
     """Places of ``nation`` in the shape of ``stage_places``' OS Open Names rows."""
     pbfs = extracts_for(nation)
@@ -112,6 +150,7 @@ def osm_places(nation: str) -> pl.DataFrame:
     df = df.with_columns(council_of(df, nation))
     # Places over the border carry no council: outside every active area
     df = df.filter(pl.col("local_authority").is_not_null())
+    df = df.with_columns(nearest_district(df, nation))
     out = df.select(
         pl.concat_str([pl.lit("osm:"), pl.col("osm_id").cast(pl.Utf8)]).alias("place_id"),
         "name",
@@ -121,7 +160,7 @@ def osm_places(nation: str) -> pl.DataFrame:
         "place_type",
         "x",
         "y",
-        pl.lit(None, pl.Utf8).alias("postcode_district"),
+        "postcode_district",
         "local_authority",
         pl.lit(None, pl.Utf8).alias("region"),
         pl.lit(country).alias("country"),

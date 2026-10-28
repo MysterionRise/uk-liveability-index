@@ -5,7 +5,7 @@ import polars as pl
 from lix_api.models import AreaProfile, IndicatorValue, Point, ThemeScore
 from lix_api.services.names import base_locale, english_if_different, localised, ruc_label
 from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
-from lix_api.services.search import resolve_lsoa
+from lix_api.services.search import distinct_name, resolve_lsoa
 from lix_api.store import Store
 from lix_core.scoring import band_of
 
@@ -193,10 +193,26 @@ def area_profile(
     lo, hi = row.get(f"pct_lo__{preset_id}"), row.get(f"pct_hi__{preset_id}")
     return AreaProfile(
         lsoa21cd=code,
-        lsoa_name=localised(row, "lsoa21nm", locale),
+        lsoa_name=distinct_name(
+            store,
+            "lsoa",
+            localised(row, "lsoa21nm", locale),
+            row.get("lad_nm"),
+            code,
+            row.get("lsoa21nm"),
+        ),  # fmt: skip
         # A nation whose small areas are their own mid tier (Northern Ireland) has no
         # separate neighbourhood to name
-        neighbourhood=localised(row, "msoa_name", locale) if row["msoa21cd"] != code else None,
+        neighbourhood=distinct_name(
+            store,
+            "msoa",
+            localised(row, "msoa_name", locale),
+            row.get("lad_nm"),
+            row["msoa21cd"],
+            row.get("msoa_name"),
+        )
+        if row["msoa21cd"] != code
+        else None,  # fmt: skip
         neighbourhood_en=english_if_different(row, "msoa_name", locale)
         if row["msoa21cd"] != code
         else None,

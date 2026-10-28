@@ -70,15 +70,22 @@ class Limits:
         self._roll()
         return self.daily_budget > 0 and self.spent >= self.daily_budget
 
-    def admit(self, user_turns: int, locale: str = "en") -> str | None:
+    def admit(self, user_turns: int, locale: str = "en", input_chars: int = 0) -> str | None:
         """None if the question may go ahead (and counts it), else the reason it can't, in
         the interface language.
 
         ``user_turns`` is the number of user messages in the conversation so far,
         including this one: AG-UI clients send the whole conversation each time.
+        ``input_chars`` is the conversation's text, priced at a cautious rate so that one
+        enormous request cannot overshoot what is left of the day's budget (#214).
         """
         if self.budget_spent():
             return message("budget", locale)
+        if self.daily_budget > 0 and input_chars:
+            self._roll()
+            estimate = input_chars / CHARS_PER_TOKEN * INPUT_PRICE_PER_TOKEN
+            if self.spent + estimate > self.daily_budget:
+                return message("budget", locale)
         now = self.clock()
         while self.recent and now - self.recent[0] > 60:
             self.recent.popleft()
@@ -126,6 +133,31 @@ class Limits:
 def user_turns(body: dict) -> int:
     """User messages in an AG-UI run input."""
     return sum(1 for m in body.get("messages") or [] if m.get("role") == "user")
+
+
+# The longest message the assistant reads; the chat box stops typing at the same length
+MAX_USER_MESSAGE_CHARS = 4_000
+# A cautious price for the budget check before a run: about four characters a token and
+# $15 per million input tokens (Opus-class; cheaper models only make it stricter)
+CHARS_PER_TOKEN = 4.0
+INPUT_PRICE_PER_TOKEN = 15.0 / 1_000_000
+
+
+def _text(content) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):  # parts: [{"type": "text", "text": …}, …]
+        return " ".join(str(p.get("text") or "") for p in content if isinstance(p, dict))
+    return ""
+
+
+def newest_user_message(body: dict) -> str:
+    users = [m for m in body.get("messages") or [] if m.get("role") == "user"]
+    return _text(users[-1].get("content")) if users else ""
+
+
+def conversation_chars(body: dict) -> int:
+    return sum(len(_text(m.get("content"))) for m in body.get("messages") or [])
 
 
 def reply_model(text: str):

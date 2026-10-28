@@ -365,7 +365,7 @@ def rank_areas(
             rank=i + 1,
             level=level,
             code=r["code"],
-            name=r["name"],
+            name=_ranked_name(store, level, r),
             name_en=r["name_en"] if r["name_en"] != r["name"] else None,
             local_authority=r["lad_nm"],
             overall=None if r["overall"] is None else round(r["overall"], 1),
@@ -392,3 +392,25 @@ def rank_areas(
         direction=direction, place=place_name, radius_km=radius,
         candidates=candidates, results=results, bbox=bbox,
     )  # fmt: skip
+
+
+def _ranked_name(store, level: str, r: dict) -> str:
+    """A ranked row's label, with the code beside a name its council repeats (#210)."""
+    from lix_api.services.search import distinct_name
+
+    if level == "lsoa":
+        own = r.get("lsoa21nm")
+        if (
+            own
+            and (
+                distinct := distinct_name(
+                    store, "lsoa", own, r.get("lad_nm_en") or r.get("lad_nm"), r["code"]
+                )
+            )
+            != own
+        ):
+            return r["name"].replace(own, distinct, 1)
+        return r["name"]
+    return distinct_name(
+        store, level, r["name"], r.get("lad_nm_en") or r.get("lad_nm"), r["code"], r.get("name_en")
+    )

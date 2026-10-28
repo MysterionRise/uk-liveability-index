@@ -6,7 +6,7 @@ from lix_api.models import ComparedArea, Comparison
 from lix_api.services.areas import stand_in
 from lix_api.services.names import localised
 from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
-from lix_api.services.search import resolve_lsoa, search_place
+from lix_api.services.search import distinct_name, resolve_lsoa, search_place
 from lix_api.store import Store
 
 COMPARE_INDICATORS = [
@@ -56,7 +56,11 @@ def compare_areas(
             ]
             rows = scored.filter(pl.col(column) == place.code)
             level, code = place.kind, place.code
-            label = localised(rows.row(0, named=True), name_col, locale) or place.name
+            first = rows.row(0, named=True)
+            label = localised(first, name_col, locale) or place.name
+            label = distinct_name(
+                store, place.kind, label, first.get("lad_nm"), code, first.get(name_col)
+            )
         elif place and place.kind == "place" and place.lsoa21cd:
             # A named suburb or village means its neighbourhood, not one LSOA of it
             home = scored.filter(pl.col("lsoa21cd") == place.lsoa21cd).row(0, named=True)
@@ -70,11 +74,15 @@ def compare_areas(
             rows = scored.filter(pl.col("lsoa21cd") == code)
             r = rows.row(0, named=True)
             own_tier = r["msoa21cd"] == r["lsoa21cd"]
-            label = (
-                localised(r, "lsoa21nm", locale)
-                if own_tier
-                else f"{localised(r, 'lsoa21nm', locale)} ({localised(r, 'msoa_name', locale)})"
+            own = distinct_name(
+                store,
+                "lsoa",
+                localised(r, "lsoa21nm", locale),
+                r.get("lad_nm"),
+                code,
+                r.get("lsoa21nm"),
             )
+            label = own if own_tier else f"{own} ({localised(r, 'msoa_name', locale)})"
             level = "lsoa"
         if (level, code) in seen:  # the same area under another reference
             continue

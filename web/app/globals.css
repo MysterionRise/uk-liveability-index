@@ -228,14 +228,30 @@ input[type="checkbox"] {
   [data-testid="legend"],
   [data-testid="search"],
   [data-testid="onboarding"],
+  [data-testid="locale-toggle"],
+  [data-testid="theme-toggle"],
+  [data-testid="analyst-toggle"],
+  [data-testid="side-panel"] [role="tablist"],
   .copilotKitInput,
   .copilotKitInputContainer {
     display: none !important;
+  }
+  /* The theme bars and the "above average" dots are colour, not decoration (#216) */
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   [data-testid="side-panel"] {
     width: 100% !important;
     max-width: none !important;
     position: static !important;
     border: 0 !important;
+  }
+  /* Paper needs no screen gutters: cards sit close and never split across a page */
+  [data-testid="side-panel"] .rounded-lg {
+    box-shadow: none !important;
+    padding: 0.5rem !important;
+    margin-top: 0.5rem !important;
+    break-inside: avoid;
   }
 }

@@ -2,7 +2,7 @@
 
 from lix_api.models import Contribution, Explanation, SourceRef
 from lix_api.services.areas import indicator_value, with_substitutes
-from lix_api.services.names import localised
+from lix_api.services.names import indicator_caveats, localised
 from lix_api.services.scoring import (
     ThemeWeights,
     match_theme,
@@ -81,7 +81,8 @@ def explain_score(
     }
     # Only the caveats of indicators this area's nation has (an Irish area has no Ofsted)
     caveats = sorted(
-        {store.indicators[v.id].caveats for c in contributions for v in c.indicators
+        {indicator_caveats(store, store.indicators[v.id], locale)
+         for c in contributions for v in c.indicators
          if store.indicators[v.id].caveats and v.role == "scored"
          and v.quality != "not_available"}
     )  # fmt: skip

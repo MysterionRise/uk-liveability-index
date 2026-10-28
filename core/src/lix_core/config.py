@@ -783,7 +783,7 @@ def load_label_catalogues() -> dict[str, dict]:
     return out
 
 
-LABEL_FIELDS = {"label", "description", "one", "other"}
+LABEL_FIELDS = {"label", "description", "one", "other", "caveats"}
 
 
 def catalogue_gaps(
@@ -818,6 +818,9 @@ def catalogue_gaps(
         entry = (labels.get("indicators") or {}).get(ind.id) or {}
         if not entry.get("label"):
             gaps.append(f"indicators.{ind.id}.label")
+        # The caveat is the one paragraph the explainer shows in full (#209)
+        if ind.caveats and not entry.get("caveats"):
+            gaps.append(f"indicators.{ind.id}.caveats")
     # An unquoted comma in a flow mapping splits a description into stray keys with no
     # value ("Ysgolion a meithrinfeydd da", "diogelwch …": null); such an entry is broken
     for section in ("themes", "presets", "indicators", "units", "flags"):

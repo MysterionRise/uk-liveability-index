@@ -110,7 +110,8 @@ export function SearchBox() {
         aria-label={t("placeholder")}
         role="combobox"
         aria-expanded={open}
-        aria-controls="search-results"
+        // Only a list that exists: none while the box is closed (#216)
+        aria-controls={open ? "search-results" : undefined}
         aria-activedescendant={
           open && results[active] ? `search-${active}` : undefined
         }

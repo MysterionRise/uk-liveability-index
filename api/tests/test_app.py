@@ -552,6 +552,27 @@ def test_references_and_bodies_are_bounded(client):
     assert r.status_code == 200 and r.json()[0]["name"] == "Headingley"
 
 
+def test_one_message_longer_than_the_assistant_reads_is_refused_in_words(client):
+    """A 20 KB message was answered normally, and 8 MiB of one would be about two million
+    input tokens (#214): the newest message is capped, in the interface language."""
+    events = _agui(client, "x" * 4_001, state={"locale": "cy"})
+    text = "".join(e.get("delta", "") for e in events if e["type"] == "TEXT_MESSAGE_CONTENT")
+    assert "4,000" in text and "byrhewch" in text
+    assert [e for e in events if e["type"] == "TOOL_CALL_START"] == []
+    ok = _agui(client, "y" * 3_900 + " Use family weights please")
+    assert any(e["type"] == "TOOL_CALL_START" for e in ok)
+
+
+def test_a_request_that_would_overshoot_the_budget_is_refused_before_the_run():
+    from lix_api.agent.limits import Limits
+
+    limits = Limits(session_turns=30, rate_per_minute=20, daily_budget=1.0)
+    # About $0.94 at the cautious rate: refused when $0.10 is already spent
+    limits.spent = 0.10
+    assert limits.admit(1, "en", input_chars=250_000) is not None
+    assert limits.admit(1, "en", input_chars=2_000) is None
+
+
 def test_head_and_docs_through_the_api_prefix(client):
     """Uptime probes send HEAD; the schema and docs live under /api/v1 so the proxy can
     reach them (#178)."""

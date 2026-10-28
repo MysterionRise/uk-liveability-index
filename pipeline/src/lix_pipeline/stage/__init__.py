@@ -257,6 +257,7 @@ STAGE_READS: dict[str, list[str]] = {
     "noise": ["homes"],
     "tree_cover": ["homes"],
     "osm_network_points": ["osm_ways"],
+    "places": ["nspl"],  # Northern Irish places take the nearest postcode's district (#211)
     "protected_areas": ["homes"],
     "terrain": ["homes"],
     "night_lights": ["homes"],

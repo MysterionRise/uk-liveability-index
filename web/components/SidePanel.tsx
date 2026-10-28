@@ -131,8 +131,13 @@ export function SidePanel() {
               welcomeMessageText: t("chatWelcome"),
               chatDisclaimerText: t("chatDisclaimer"),
             }}
-            // CopilotKit's icon buttons have no accessible names of their own
-            input={{ sendButton: { "aria-label": t("send") }, addMenuButton: { "aria-label": t("moreOptions") } }}
+            // CopilotKit's icon buttons have no accessible names of their own; the box stops
+            // at the longest message the assistant reads (MAX_USER_MESSAGE_CHARS, #214)
+            input={{
+              textArea: { maxLength: 4000 },
+              sendButton: { "aria-label": t("send") },
+              addMenuButton: { "aria-label": t("moreOptions") },
+            }}
           />
         </div>
         {tab !== "assistant" && (

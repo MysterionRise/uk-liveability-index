@@ -731,3 +731,47 @@ class TestSearchRemainder:
             compare.compare_areas(store, ["LS6 3HN", "ls6 3hn"])
         with pytest.raises(ValueError, match="different"):
             compare.compare_areas(store, ["LS6 3HN", "E01000001"])
+
+
+def test_london_prefixes_resolve_to_their_lettered_districts():
+    """ "SW1" names no district: the districts are SW1A … SW1Y (#210)."""
+    import polars as pl
+
+    from lix_api.services.search import postcode_groups
+
+    pcs = pl.DataFrame({
+        "postcode_norm": ["SW1A1AA", "SW1A2AB", "SW1P3BU", "LS63HN", "W1A1AA"],
+        "lat": [51.50, 51.50, 51.49, 53.82, 51.52], "lon": [-0.14, -0.13, -0.13, -1.57, -0.14],
+        "lsoa21cd": ["E01004736", "E01004736", "E01004737", "E01011350", "E01004700"],
+    })  # fmt: skip
+    groups = postcode_groups(pcs)
+    assert groups["prefix"]["SW1"]["count"] == 3 and groups["prefix"]["W1"]["count"] == 1
+    assert "LS6" not in groups["prefix"]  # an unlettered district is its own group
+    assert groups["district"]["SW1A"]["count"] == 2
+
+
+def test_names_a_council_repeats_carry_their_code():
+    import polars as pl
+
+    from lix_api.services.search import distinct_name, repeated_area_names
+
+    areas = pl.DataFrame({"level": ["msoa", "msoa", "msoa"], "name": ["Kilmeadan", "Kilmeadan", "Tramore"],
+                          "lad_nm": ["Waterford", "Waterford", "Waterford"]})  # fmt: skip
+    features = pl.DataFrame({"lsoa21nm": ["Togher 001", "Togher 001", "Togher 002"],
+                             "lad_nm": ["Wicklow", "Wicklow", "Wicklow"]})  # fmt: skip
+    repeated = repeated_area_names(areas, features)
+
+    class S:
+        repeated_areas = repeated
+
+    assert (
+        distinct_name(S, "msoa", "Kilmeadan", "Waterford", "I02002702") == "Kilmeadan (I02002702)"
+    )
+    assert distinct_name(S, "msoa", "Tramore", "Waterford", "I02002800") == "Tramore"
+    assert (
+        distinct_name(S, "lsoa", "Togher 001", "Wicklow", "I01013732") == "Togher 001 (I01013732)"
+    )
+    assert (
+        distinct_name(S, "lsoa", "Tóchar 001", "Wicklow", "I01013732", "Togher 001")
+        == "Tóchar 001 (I01013732)"
+    )
