@@ -79,6 +79,24 @@ KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_expos
              "households_with_children", "hilliness", "protected_nature",
              "bathing_water_class", "river_status"]  # fmt: skip
 
+# A fact with nothing to say for many areas, and what the card shows instead: two thirds
+# of areas have no bathing water within 10 km, so the class would read "no data" there
+KEY_FACT_FALLBACK = {"bathing_water_class": "bathing_water_distance"}
+
+
+def key_facts(store: Store, row: dict) -> list[IndicatorValue]:
+    out = []
+    for i in KEY_FACTS:
+        if i not in store.indicators:
+            continue
+        value = fact(store, row, i)
+        other = KEY_FACT_FALLBACK.get(i)
+        if value.value is None and other in store.indicators:
+            value = fact(store, row, other)
+        out.append(value)
+    return out
+
+
 # The flags an area can carry, worded in agent.messages (four languages)
 FLAG_CODES = ("imputed", "low_n", "broadcast_lad", "not_available", "theme_gap")
 
@@ -241,7 +259,7 @@ def area_profile(
         themes=theme_scores,
         strengths=list(reversed(ranked[-3:])),
         weaknesses=ranked[:3],
-        key_facts=[fact(store, row, i) for i in KEY_FACTS if i in store.indicators],
+        key_facts=key_facts(store, row),
         flags=flags,
         flag_codes=flag_codes,
         centre=Point(lat=row["pwc_lat"], lon=row["pwc_lon"]),

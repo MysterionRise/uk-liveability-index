@@ -31,3 +31,5 @@ def test_hectares_count_overlaps_once_and_only_on_land():
     assert out["A"] == pytest.approx(100.0, rel=0.02)  # the whole square km is in reach
     assert out["B"] == pytest.approx(0.0)  # 7 km away
     assert out["C"] == pytest.approx(0.0)  # on the coast, next to the marine site only
+    # No protected land is exactly zero, never filter residue either side of it
+    assert out["B"] == 0.0 and out["C"] == 0.0

@@ -41,6 +41,7 @@ WAY_TAGS = [
     "highway", "foot", "sidewalk", "sidewalk:left", "sidewalk:right", "sidewalk:both",
     "access", "oneway", "oneway:bicycle", "bicycle", "cycleway", "cycleway:left",
     "cycleway:right", "cycleway:both", "segregated", "service", "area", "lit", "name",
+    "footway",
 ]  # fmt: skip
 
 # Walkable highway types; motorways and trunk roads only with a footway beside them
@@ -58,6 +59,10 @@ FOOT_YES = {"yes", "designated", "permissive"}
 NO_ACCESS = {"private", "no"}
 # Driveways and parking aisles stay in the graph but do not make a junction
 MINOR_SERVICE = {"driveway", "parking_aisle", "drive-through"}
+# Nor do pavements and crossings mapped as their own ways: where a city maps them, every
+# kerb link and crossing met three way-ends, and central Westminster read 1,712 junctions
+# per km² against a street grid's 150–350 (v0.7.0 release pass)
+MINOR_FOOTWAY = {"sidewalk", "crossing", "traffic_island", "access_aisle", "link"}
 
 # Cycle infrastructure: a cycleway, a path with cycling designated, or a lane or track
 CYCLE_PATHS = {"path", "footway", "pedestrian", "bridleway", "track"}
@@ -87,9 +92,11 @@ def walkable_expr() -> pl.Expr:
 
 
 def minor_expr() -> pl.Expr:
-    return (
-        (pl.col("highway") == "service").fill_null(False) & _tag_in("service", MINOR_SERVICE)
-    ).alias("minor")
+    driveway = (pl.col("highway") == "service").fill_null(False) & _tag_in("service", MINOR_SERVICE)
+    pavement = _tag_in("highway", {"footway", "path", "cycleway"}) & _tag_in(
+        "footway", MINOR_FOOTWAY
+    )
+    return (driveway | pavement).alias("minor")
 
 
 def cycle_infra_expr() -> pl.Expr:

@@ -112,9 +112,11 @@ def nearest_attr(
     """The nearest point's ``value`` for each home with one within ``max_m``, as the
     per-area mean over those homes, with ``share_with_any`` (the share of homes that
     have one) and ``n_origins``. A home with none in reach has no value: the class of a
-    bathing water 40 km away says nothing about the one on the doorstep."""
+    bathing water 40 km away says nothing about the one on the doorstep. Nor does a home
+    whose nearest point has no value (a bathing water not yet classified): it does not
+    take a farther one's (454 English areas did, v0.7.0 release pass)."""
     ox, oy = origin_xy
-    pois = pois.filter(pl.col(poi_xy[0]).is_not_null() & pl.col(value).is_not_null())
+    pois = pois.filter(pl.col(poi_xy[0]).is_not_null() & pl.col(poi_xy[1]).is_not_null())
     origins = origins.filter(pl.col(ox).is_not_null() & pl.col(oy).is_not_null())
     n = origins.height
     vals = np.full(n, np.nan)
@@ -123,7 +125,7 @@ def nearest_attr(
             _xy(origins, origin_xy), k=1, distance_upper_bound=max_m, workers=-1
         )
         hit = np.isfinite(dist)
-        vals[hit] = pois[value].to_numpy().astype(float)[idx[hit]]
+        vals[hit] = pois[value].cast(pl.Float64).fill_null(np.nan).to_numpy()[idx[hit]]
     per_origin = pl.DataFrame({by: origins[by], "value": vals}, nan_to_null=True)
     return (
         per_origin.group_by(by)

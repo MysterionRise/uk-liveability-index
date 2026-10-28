@@ -20,6 +20,7 @@ NODES = {
     6: (-0.090, 51.510), 7: (-0.080, 51.510),  # a motorway
     8: (-0.110, 51.520), 9: (-0.103, 51.520),  # a street with a painted cycle lane, ~490 m
     10: (-0.100, 51.501),  # a driveway into node 1
+    11: (-0.0981, 51.4995), 12: (-0.0979, 51.5005),  # a mapped crossing at node 3
 }  # fmt: skip
 WAYS = [
     (101, [1, 2, 3], {"highway": "residential", "name": "High Street"}),
@@ -28,6 +29,7 @@ WAYS = [
     (104, [6, 7], {"highway": "motorway"}),
     (105, [8, 9], {"highway": "tertiary", "cycleway:left": "lane"}),
     (106, [10, 1], {"highway": "service", "service": "driveway"}),
+    (107, [11, 3, 12], {"highway": "footway", "footway": "crossing"}),
 ]
 
 
@@ -45,7 +47,7 @@ def pbf(tmp_path):
 
 def test_ways_carry_their_nodes_lengths_and_flags(pbf):
     ways = extract_ways(pbf).sort("osm_id")
-    assert ways["osm_id"].to_list() == [101, 102, 103, 104, 105, 106]
+    assert ways["osm_id"].to_list() == [101, 102, 103, 104, 105, 106, 107]
     road = ways.row(0, named=True)
     assert road["n_nodes"] == 3 and len(road["xs"]) == 3
     assert road["length_m"] == pytest.approx(139, abs=3) and road["name"] == "High Street"
@@ -54,6 +56,7 @@ def test_ways_carry_their_nodes_lengths_and_flags(pbf):
     }
     assert not flags[104]["walkable"]  # a motorway without a footway beside it
     assert flags[106]["minor"] and flags[106]["walkable"]
+    assert flags[107]["minor"] and flags[107]["walkable"]  # a crossing: walked, not a junction
     assert [i for i, r in flags.items() if r["cycle_infra"]] == [105]
 
 

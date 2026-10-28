@@ -415,7 +415,7 @@ indicators:
     builder: common:column
     params: {slug: terrain, column: elevation_m}
     role: context
-    caveats: The height of the 50m cell each home falls in; Ireland's comes from a surface model, which adds the height of buildings and trees. Neither high nor low is better; the colour scale only orders the areas.
+    caveats: "The height of the 50m cell each home falls in; Ireland's comes from a surface model, which adds the height of buildings and trees. Neither high nor low is better; the colour scale only orders the areas. Irish heights rest on another vertical datum and may read a few metres low: two Dublin dock areas read below sea level."
 
   - id: storm_overflow_spills
     theme: environment
@@ -454,7 +454,7 @@ indicators:
     builder: common:nearest_attr
     params: {slug: bathing_waters, value: class_score, max_m: 10000}
     role: context
-    caveats: The class of the bathing water nearest each home, averaged over the area's homes; an area where fewer than half the homes have one within 10km has no value. Classes rest on four seasons of samples (three for waters designated since 2022), and Northern Ireland's are transcribed from DAERA's yearly announcement.
+    caveats: "The class of the bathing water nearest each home, averaged over the area's homes; an area where fewer than half the homes have one within 10km has no value. Classes rest on four seasons of samples (three for waters designated since 2022), and Northern Ireland's are transcribed from DAERA's yearly announcement. A home whose nearest designated water has no class yet has none either; Ireland's open layer leaves out the waters not yet classified and the one rated Poor in 2025 (Dún Laoghaire Baths)."
 
   - id: river_status
     theme: environment
@@ -803,7 +803,7 @@ indicators:
     params: {slug: osm_network_points, column: kind, values: [junction], radius_m: 1000}
     role: context
     overlap_group: connectivity
-    caveats: A junction is where three or more ends of walkable streets or paths meet, so a T counts and two streets meeting end to end do not; driveways and car-park aisles are left out. A street grid reads high and a cul-de-sac estate low, unless footpaths through the estate are mapped.
+    caveats: "A junction is where three or more ends of walkable streets or paths meet, so a T counts and two streets meeting end to end do not; driveways and car-park aisles are left out. A street grid reads high and a cul-de-sac estate low, unless footpaths through the estate are mapped. Pavements and crossings mapped as paths of their own do not make junctions, so a city that maps them reads like one that does not."
 
   - id: connectivity_cycling
     theme: transport

@@ -29,7 +29,35 @@ MAX_CELL_CHARS = 1_000
 MAX_CHARS = 4_000_000
 TIMEOUT_S = 10.0
 # repeat('x', 1000000000) is one gigabyte that the memory limit does not see (#208)
-STRING_BUILDERS = re.compile(r"\b(repeat|rpad|lpad)\s*\(", re.IGNORECASE)
+STRING_BUILDERS = re.compile(
+    r"\b(repeat|rpad|lpad|list_resize|array_resize|list_repeat)\s*\(", re.IGNORECASE
+)
+# A generated sequence is fine for a calendar or a histogram's bins; one of a hundred
+# million values (`unnest(range(100000000))`) killed the API container in the v0.7.0
+# release pass, below DuckDB's memory limit's notice. Literal bounds only, a million at most
+SEQUENCES = re.compile(r"\b(range|generate_series)\s*\(([^()]*)\)", re.IGNORECASE)
+MAX_SEQUENCE = 1_000_000
+_INT = re.compile(r"^\s*-?\d+\s*$")
+
+
+def _sequence_problem(sql: str) -> str | None:
+    for m in SEQUENCES.finditer(sql):
+        name, args = m.group(1).lower(), [a for a in m.group(2).split(",")]
+        if not all(_INT.match(a) for a in args) or not 1 <= len(args) <= 3:
+            return f"{name}() takes whole-number bounds here (at most {MAX_SEQUENCE:,} values)"
+        nums = [int(a) for a in args]
+        start, stop = (0, nums[0]) if len(nums) == 1 else (nums[0], nums[1])
+        step = abs(nums[2]) if len(nums) == 3 and nums[2] else 1
+        if abs(stop - start) // step > MAX_SEQUENCE:
+            return f"{name}() builds at most {MAX_SEQUENCE:,} values here"
+    # A sequence built any other way (a nested call, a column, an expression) is refused
+    if re.search(r"\b(range|generate_series)\s*\((?:[^()]*\()", sql, re.IGNORECASE):
+        return (
+            "range() and generate_series() take whole-number bounds here "
+            f"(at most {MAX_SEQUENCE:,} values)"
+        )
+    return None
+
 
 TABLES = {
     "lsoa": "Every LSOA in the build: geography (incl. nation), raw__/n__/q__ per indicator, "
@@ -89,6 +117,8 @@ class SqlGuard:
 
         if m := STRING_BUILDERS.search(sql):
             raise SqlError(f"{m.group(1).lower()}() is not allowed: it builds a value of any size")
+        if problem := _sequence_problem(sql):
+            raise SqlError(problem)
 
         body = sql.strip().rstrip(";")
         # On its own lines, so a trailing "-- comment" cannot swallow the closing bracket

@@ -821,3 +821,36 @@ def test_the_assistants_catalogue_speaks_the_interface_language(store, monkeypat
     other = next(i for i in store.indicators.values() if i.id != some.id)
     assert cy[other.id].label == other.label  # no draft: the English
     assert {b.id for b in list_indicators(store, detail=False, locale="cy")} == set(cy)
+
+
+def test_sql_bounds_generated_sequences(store):
+    """`select unnest(range(100000000))` killed the API container (v0.7.0 release pass)."""
+    from lix_api.services.sql import SqlError, SqlGuard
+
+    sql = SqlGuard(store)
+    with pytest.raises(SqlError, match="at most 1,000,000"):
+        sql.run("select unnest(range(100000000)) as n")
+    with pytest.raises(SqlError, match="whole-number bounds"):
+        sql.run("select unnest(range(power(10, 8)::int)) as n")
+    with pytest.raises(SqlError, match="list_resize"):
+        sql.run("select list_resize([1], 100000000) as l")
+    out = sql.run("select count(*) as n from range(10)")
+    assert out.rows == [[10]]
+
+
+def test_a_repeated_small_area_name_carries_its_code_in_one_bracket():
+    from lix_api.services.search import small_area_label
+
+    class S:
+        repeated_areas = {("lsoa", "togher 001", "Wicklow")}
+
+    label = small_area_label(S, "Togher 001", "Togher 001", "Wicklow", "I01013732", "Togher")
+    assert label == "Togher 001 (Togher, I01013732)"
+    assert (
+        small_area_label(S, "Togher 002", None, "Wicklow", "I01013734", "Togher")
+        == "Togher 002 (Togher)"
+    )
+    assert (
+        small_area_label(S, "Togher 001", None, "Wicklow", "I01013733", None)
+        == "Togher 001 (I01013733)"
+    )

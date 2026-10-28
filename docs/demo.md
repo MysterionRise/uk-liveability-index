@@ -32,7 +32,7 @@ make down           # stop
 | 8 | *Why does Manchester city centre score low on safety?* | The score broken down by theme and indicator, with caveats and source dates | "It explains itself, including the caveats: Greater Manchester Police publishes no crime data, so it's estimated, and city centres have few residents but many visitors." |
 | 9 | *What are the best areas to live in Belfast?* | Belfast's Super Data Zones ranked and outlined; the schools theme shown as limited data | "Four nations, one method: Northern Ireland joined in v0.5.0 with its own sources, and where it publishes less the index says so instead of guessing." |
 | 10 | *What are the best areas to live in Dublin?* | Dublin's Small Areas ranked and outlined; the card says "better than N% of Ireland" and shows schools and housing as limited data | "Ireland joined in v0.6.0 as the second country: its areas compare within Ireland, because it scores on fewer themes than the UK nations" |
-| 11 | Search **Hebden Bridge** (top bar) | Flood risk listed as a weak spot | "Data people care about but rarely see together: 24% of homes here are at real flood risk." |
+| 11 | Search **Hebden Bridge** (top bar) | Flood risk listed as a weak spot | "Data people care about but rarely see together: 39% of homes here are at real flood risk." |
 | 12 | Tick **Analyst**, open the **Analyst** tab | Distribution chart, indicator overlap heatmap, SQL console | "The same data for analysts: read-only SQL over every LSOA, exports with attribution." |
 | 13 | Click **How scores work** → **Validation** | The method, the face-validity review of 58 places, the assistant evals | "We test it: 168 face-validity checks across 58 places, 58 assistant eval cases, run on three models." |
 

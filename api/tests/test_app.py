@@ -596,3 +596,9 @@ def test_search_and_profile_speak_the_interface_language(client):
     assert welsh["urban_rural_label"] == "Trefol: yn nes at dref neu ddinas fawr"
     english = client.get("/api/v1/areas/W01001880").json()
     assert english["urban_rural_label"] == "Urban"
+
+
+def test_a_language_tag_on_a_get_is_as_short_as_a_bodys(client):
+    """/rank refused an 11-character locale while the GET endpoints took any (v0.7.0 pass)."""
+    assert client.get("/api/v1/search", params={"q": "Leeds", "locale": "x" * 11}).status_code == 422
+    assert client.get("/api/v1/search", params={"q": "Leeds", "locale": "cy-GB"}).status_code == 200

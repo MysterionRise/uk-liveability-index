@@ -3849,7 +3849,7 @@ sepa_wfd_lochs:
 x-daera-wfd: &daera_wfd
   coverage: [N]
   theme: environment
-  landing_page: https://www.daera-ni.gov.uk/articles/river-basin-management-plans
+  landing_page: https://www.daera-ni.gov.uk/articles/water-framework-directive
   licence: OGL-3.0
   attribution: "Contains information from the Department of Agriculture, Environment and Rural Affairs (Northern Ireland Environment Agency), licensed under the Open Government Licence v3.0."
   cadence: adhoc

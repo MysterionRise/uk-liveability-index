@@ -415,18 +415,16 @@ def _ranked_name(store, level: str, r: dict) -> str:
     from lix_api.services.search import distinct_name
 
     if level == "lsoa":
+        from lix_api.services.search import small_area_label
+
         own = r.get("lsoa21nm")
-        if (
-            own
-            and (
-                distinct := distinct_name(
-                    store, "lsoa", own, r.get("lad_nm_en") or r.get("lad_nm"), r["code"]
-                )
-            )
-            != own
-        ):
-            return r["name"].replace(own, distinct, 1)
-        return r["name"]
+        if not own:
+            return r["name"]
+        shown, rest = (r["name"].split(" (", 1) + [""])[:2]
+        neighbourhood = rest[:-1] if rest.endswith(")") else None
+        return small_area_label(
+            store, shown, own, r.get("lad_nm_en") or r.get("lad_nm"), r["code"], neighbourhood
+        )
     return distinct_name(
         store, level, r["name"], r.get("lad_nm_en") or r.get("lad_nm"), r["code"], r.get("name_en")
     )

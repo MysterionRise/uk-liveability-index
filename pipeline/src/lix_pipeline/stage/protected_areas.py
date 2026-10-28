@@ -97,7 +97,10 @@ def protected_hectares(
             return None
         protected = rasterize_polygons(site_geoms[site_tree.query(frame)], g)
         protected &= rasterize_polygons(on_land, g)
-        return box_mean(protected.astype(np.float32), cell_m, radius_m) * window_ha
+        hectares = box_mean(protected.astype(np.float32), cell_m, radius_m) * window_ha
+        # The running sums of the window filter leave residue around zero (-2e-12 ha):
+        # no protected land is exactly 0, so those areas tie rather than rank by noise
+        return np.where(hectares < 1e-6, 0.0, hectares)
 
     return focal_at_homes(
         block, homes, cell_m=cell_m, halo_m=radius_m * 1.2, block_m=block_m, log=logger.info

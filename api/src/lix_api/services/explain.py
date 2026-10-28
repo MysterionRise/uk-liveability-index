@@ -10,7 +10,7 @@ from lix_api.services.scoring import (
     resolve_weights,
     scores_for,
 )
-from lix_api.services.search import resolve_lsoa
+from lix_api.services.search import resolve_lsoa, small_area_label
 from lix_api.store import Store
 
 
@@ -104,9 +104,14 @@ def explain_score(
     ]
     return Explanation(
         lsoa21cd=code,
-        name=localised(row, "lsoa21nm", locale)
-        if row["msoa21cd"] == row["lsoa21cd"]
-        else f"{localised(row, 'lsoa21nm', locale)} ({localised(row, 'msoa_name', locale)})",
+        name=small_area_label(
+            store,
+            localised(row, "lsoa21nm", locale),
+            row.get("lsoa21nm"),
+            row.get("lad_nm"),
+            code,
+            None if row["msoa21cd"] == row["lsoa21cd"] else localised(row, "msoa_name", locale),
+        ),
         preset=name,
         overall=None if scores.get("overall") is None else round(scores["overall"], 1),
         overall_percentile=percentile(scores.get("overall_pct")),

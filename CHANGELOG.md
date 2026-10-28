@@ -6,7 +6,7 @@ All notable changes to this project. The format follows
 
 ## [0.7.0] - 2026-10-28
 
-Active travel, water and climate: ten new context measures across the five territories
+Active travel, water, nature and terrain: ten new context measures across the five territories
 on three shared helpers (an OpenStreetMap highway pass ready for the walking network of
 v0.8.x, a 50 m British National Grid raster grid, nearest-value and sum-within access
 measures), the release pass's remaining fixes, and a full refresh of every source in the
@@ -67,6 +67,19 @@ sources in use). Every new source is an anonymous download.
   of the theme bars and dots, and sets the cards close; the welcome dialog keeps the
   focus while open and gives it back when closed; the search box points
   `aria-controls` at its list only while the list exists (#216).
+- Found by the release pass, data: a storm overflow's spill hours read a day too many
+  when the return wrote its duration as a date (Excel's 1900 date system counts from
+  1899-12-31 before 1 March 1900, from 1899-12-30 after), 301,800 hours in all; company
+  totals now match the Environment Agency's 2025 return. Protected land carried filter
+  residue around zero, so a quarter of areas ranked by noise; mapped pavements and
+  crossings made central London's junction density four times a street grid's; a
+  bathing water not yet classified passed its class to a farther one; the card shows the
+  distance where no bathing water is within 10 km. An analyst query unrolling a hundred
+  million values took the API down: generated sequences take literal bounds up to a
+  million, and list builders are refused like string ones. Repeated small-area names
+  carry their code in one bracket everywhere, the explainer too; a GET's `locale` is
+  capped at ten characters. Caveats on Irish heights, Ireland's missing bathing waters
+  and mapped pavements; a dead DAERA link; stale counts in the development guide.
 - Found by the release pass: a neighbourhood list ranked by one measure was ordered by
   the averaged score but showed the averaged value, so "the most protected land" put
   148 ha fourth; it is ordered by the value shown now (a within-nation measure keeps the
@@ -834,6 +847,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.7.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.0
 [0.6.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.3
 [0.6.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.2
 [0.6.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.1

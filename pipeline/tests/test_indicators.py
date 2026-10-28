@@ -385,6 +385,13 @@ def test_nearest_attr_takes_the_nearest_within_reach():
     assert df["value"].to_list() == pytest.approx([4.0, 2.0])
     strict = nearest_attr(ctx, "bw", "cls", max_m=10_000, min_share=0.9).sort("lsoa21cd")
     assert strict["value"].to_list() == [4.0, None]
+    # An unclassified water nearer than a classified one leaves the home without a class
+    unclassified = waters.vstack(
+        pl.DataFrame({"x": [500.0], "y": [0.0], "cls": [None]}, schema=waters.schema)
+    )
+    ctx2 = FakeContext(origins=origins, bw=unclassified)
+    df2 = nearest_attr(ctx2, "bw", "cls", max_m=10_000).sort("lsoa21cd")
+    assert df2["value"].to_list() == [None, 2.0]
 
 
 def test_sum_within_counts_and_weights_without_a_pair_matrix():

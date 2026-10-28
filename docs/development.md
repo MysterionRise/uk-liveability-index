@@ -19,7 +19,7 @@ The pipeline downloads, stages and joins the open datasets below:
   population, area and map bounding box; `lix validate geo` checks it
 - helpers bring other geographies onto LSOAs: points, output areas, MSOA/local-authority values,
   1km grids (sampled at postcodes, so population-weighted) and distance-based access to places
-- `lix indicators` builds 102 indicators (44 scored across 9 themes) from
+- `lix indicators` builds 112 indicators (44 scored across 9 themes) from
   [`config/indicators.yaml`](../config/indicators.yaml); `lix score` turns them into theme and
   overall scores per LSOA for five persona presets ([`config/weights.yaml`](../config/weights.yaml)),
   plus a QA report. The method, including how Greater Manchester's missing crime data and
@@ -155,12 +155,11 @@ With a model key in `.env`, `make dev` uses the real model from `.env`.
 
 ## Planned
 
-- More open datasets: cycle infrastructure, street connectivity, river and bathing water
-  quality, storm overflows, protected nature, terrain and sealed surfaces (v0.7.0), then
-  private rents, jobs density, overcrowding, energy use and energy performance
-  certificates, mobile coverage (v0.7.1)
+- More open datasets: private rents, jobs density, overcrowding, energy use and energy
+  performance certificates, mobile coverage (v0.7.1)
+- Answers composed as a page of cards rather than a chat reply (v0.8.0)
 - Walking-network travel times instead of straight-line distances (v0.8.x), built on the
-  OpenStreetMap ways table of v0.7.0
+  OpenStreetMap ways table (`osm_ways`) that v0.7.0 stages
 
 ## Building the data
 

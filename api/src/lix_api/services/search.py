@@ -197,6 +197,16 @@ def repeated_area_names(
     return out
 
 
+def small_area_label(
+    store, shown: str, english: str | None, lad: str | None, code: str, neighbourhood: str | None
+) -> str:
+    """A small area's label: "Headingley 003A (Headingley)", and with the code inside the
+    one bracket when the council repeats the name: "Togher 001 (Togher, I01013732)"."""
+    repeated = store is not None and ("lsoa", fold(english or shown), lad) in store.repeated_areas
+    parts = [p for p in (neighbourhood, code if repeated else None) if p]
+    return f"{shown} ({', '.join(parts)})" if parts else shown
+
+
 def distinct_name(
     store, level: str, shown: str | None, lad: str | None, code: str, english: str | None = None
 ) -> str | None:

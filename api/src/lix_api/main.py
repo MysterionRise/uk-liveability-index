@@ -134,6 +134,9 @@ class BodyLimit:
 app.add_middleware(BodyLimit)
 
 
+# A language tag on a GET: as short as the bodies' (en, cy, gd, ga, or a BCP 47 tag)
+QueryLocale = Annotated[str | None, Query(max_length=10)]
+
 @app.exception_handler(LookupError)
 async def not_found(request: Request, exc: LookupError):
     # Serialised, not formatted: a message quoting an id ("indicator:crime_violence") or
@@ -188,7 +191,7 @@ ThemeScore = Annotated[float, Field(ge=0, le=100, allow_inf_nan=False)]
 
 @app.get(f"{api}/search")
 def search_place(
-    q: Ref, limit: Annotated[int, Query(ge=1, le=20)] = 8, locale: str | None = None
+    q: Ref, limit: Annotated[int, Query(ge=1, le=20)] = 8, locale: QueryLocale = None
 ) -> list[Place]:
     return search.search_place(get_store(), q, limit=limit, locale=locale)
 
@@ -227,7 +230,7 @@ MULTIPLIERS_DOC = 'Indicator multipliers as a JSON object, e.g. {"sunshine": 2}'
 def area_profile(
     ref: Annotated[str, Path(max_length=MAX_REF)],
     preset: str | None = None,
-    locale: str | None = None,
+    locale: QueryLocale = None,
     theme_weights: str | None = Query(None, description=WEIGHTS_DOC),
     indicator_weights: str | None = Query(None, description=MULTIPLIERS_DOC),
 ) -> AreaProfile:
@@ -270,7 +273,7 @@ def rank_areas(req: RankRequest) -> RankResult:
 def compare_areas(
     areas_: Annotated[list[Ref], Query(alias="areas")],
     preset: str | None = None,
-    locale: str | None = None,
+    locale: QueryLocale = None,
     theme_weights: str | None = Query(None, description=WEIGHTS_DOC),
     indicator_weights: str | None = Query(None, description=MULTIPLIERS_DOC),
 ) -> Comparison:
@@ -315,7 +318,7 @@ def explain_score(
     ref: Annotated[str, Path(max_length=MAX_REF)],
     theme: str | None = None,
     preset: str | None = None,
-    locale: str | None = None,
+    locale: QueryLocale = None,
 ) -> Explanation:
     return explain.explain_score(get_store(), ref, theme=theme, preset=preset, locale=locale)
 
