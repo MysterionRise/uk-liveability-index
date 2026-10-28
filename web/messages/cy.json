@@ -399,5 +399,20 @@
       "Tachwedd",
       "Rhagfyr"
     ]
+  },
+  "Classes": {
+    "class4": {
+      "1": "Gwael",
+      "2": "Digonol",
+      "3": "Da",
+      "4": "Ardderchog"
+    },
+    "class5": {
+      "1": "Drwg",
+      "2": "Gwael",
+      "3": "Cymedrol",
+      "4": "Da",
+      "5": "Uchel"
+    }
   }
 }

@@ -399,5 +399,20 @@
       "November",
       "December"
     ]
+  },
+  "Classes": {
+    "class4": {
+      "1": "Poor",
+      "2": "Sufficient",
+      "3": "Good",
+      "4": "Excellent"
+    },
+    "class5": {
+      "1": "Bad",
+      "2": "Poor",
+      "3": "Moderate",
+      "4": "Good",
+      "5": "High"
+    }
   }
 }

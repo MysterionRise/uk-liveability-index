@@ -399,5 +399,20 @@
       "Samhain",
       "Dùbhlachd"
     ]
+  },
+  "Classes": {
+    "class4": {
+      "1": "Bochd",
+      "2": "Iomchaidh",
+      "3": "Math",
+      "4": "Sàr-mhath"
+    },
+    "class5": {
+      "1": "Dona",
+      "2": "Bochd",
+      "3": "Meadhanach",
+      "4": "Math",
+      "5": "Àrd"
+    }
   }
 }

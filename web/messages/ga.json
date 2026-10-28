@@ -399,5 +399,20 @@
       "Samhain",
       "Nollaig"
     ]
+  },
+  "Classes": {
+    "class4": {
+      "1": "Lag",
+      "2": "Leordhóthanach",
+      "3": "Maith",
+      "4": "Ar fheabhas"
+    },
+    "class5": {
+      "1": "Olc",
+      "2": "Lag",
+      "3": "Measartha",
+      "4": "Maith",
+      "5": "Ard"
+    }
   }
 }
