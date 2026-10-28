@@ -81,7 +81,9 @@ def validate_geo() -> list[str]:
         )
         if bad.height:
             examples = bad.select("lsoa21cd", col).head(3).rows()
-            problems.append(f"geo_lsoa.{col}: {bad.height:,} names with stray characters, e.g. {examples}")
+            problems.append(
+                f"geo_lsoa.{col}: {bad.height:,} names with stray characters, e.g. {examples}"
+            )
     if missing_columns:
         return problems  # the per-nation checks below assume the columns exist
 

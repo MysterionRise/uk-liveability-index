@@ -155,7 +155,11 @@ def test_names_read_through_windows_1252_and_are_trimmed(tmp_path):
     from lix_pipeline.stage.geo_scotland import clean_name, read_text_csv
 
     path = tmp_path / "lookup.csv"
-    path.write_bytes(b"DZ22_Code,DZ22_Name\nS01020747,Whitburn Glenisla Court\xa0\nS01020618,Fauldhouse  Centre \n")
+    path.write_bytes(
+        b"DZ22_Code,DZ22_Name\n"
+        b"S01020747,Whitburn Glenisla Court\xa0\n"
+        b"S01020618,Fauldhouse  Centre \n"
+    )
     df = read_text_csv(path).select("DZ22_Code", clean_name("DZ22_Name"))
     assert df["DZ22_Name"].to_list() == ["Whitburn Glenisla Court", "Fauldhouse Centre"]
     assert not df["DZ22_Name"].str.contains("�").any()

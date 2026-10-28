@@ -755,10 +755,15 @@ def test_names_a_council_repeats_carry_their_code():
 
     from lix_api.services.search import distinct_name, repeated_area_names
 
-    areas = pl.DataFrame({"level": ["msoa", "msoa", "msoa"], "name": ["Kilmeadan", "Kilmeadan", "Tramore"],
-                          "lad_nm": ["Waterford", "Waterford", "Waterford"]})  # fmt: skip
-    features = pl.DataFrame({"lsoa21nm": ["Togher 001", "Togher 001", "Togher 002"],
-                             "lad_nm": ["Wicklow", "Wicklow", "Wicklow"]})  # fmt: skip
+    areas = pl.DataFrame({
+        "level": ["msoa", "msoa", "msoa"],
+        "name": ["Kilmeadan", "Kilmeadan", "Tramore"],
+        "lad_nm": ["Waterford", "Waterford", "Waterford"],
+    })  # fmt: skip
+    features = pl.DataFrame({
+        "lsoa21nm": ["Togher 001", "Togher 001", "Togher 002"],
+        "lad_nm": ["Wicklow", "Wicklow", "Wicklow"],
+    })  # fmt: skip
     repeated = repeated_area_names(areas, features)
 
     class S:
