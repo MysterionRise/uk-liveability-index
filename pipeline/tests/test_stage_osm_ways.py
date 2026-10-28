@@ -84,6 +84,7 @@ def test_cycle_samples_add_up_to_the_lane(pbf):
         ({"highway": "path", "bicycle": "designated"}, True, True),
         ({"highway": "residential", "cycleway": "shared_lane"}, True, False),
         ({"highway": "cycleway"}, True, True),
+        ({"highway": "residential", "cycleway:left": "separate"}, True, False),
         ({"highway": "construction"}, False, False),
     ],
 )

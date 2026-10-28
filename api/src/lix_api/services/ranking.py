@@ -285,6 +285,8 @@ def rank_areas(
             in_locale(name_col).first().alias("name"),
             pl.col(name_col).first().alias("name_en"),
             in_locale("lad_nm").first().alias("lad_nm"),
+            # The council's English name keys the repeated-name check (#210)
+            pl.col("lad_nm").first().alias("lad_nm_en"),
             pl.col("nation").first(),
             w.sum().alias("population"),
             *[((pl.col(c) * w).sum() / w.filter(pl.col(c).is_not_null()).sum()).alias(c)
@@ -318,6 +320,7 @@ def rank_areas(
             )
             .alias("name_en"),
             in_locale("lad_nm").alias("lad_nm"),
+            pl.col("lad_nm").alias("lad_nm_en"),
         )
 
     if max_median_price is not None and df.height and "q__house_price" in df.columns:

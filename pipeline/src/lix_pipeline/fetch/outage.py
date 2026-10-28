@@ -17,6 +17,17 @@ class InMaintenance(Exception):
     """The publisher answered with a maintenance page or a 503."""
 
 
+def outage(e: BaseException) -> InMaintenance | None:
+    """``e`` as an outage, or None: a maintenance answer, or the fetch session giving up
+    after retrying 503s (its urllib3 Retry raises RetryError before any caller sees the
+    503 itself, v0.7.0 release pass)."""
+    if isinstance(e, InMaintenance):
+        return e
+    if isinstance(e, requests.exceptions.RetryError) and "503" in str(e):
+        return InMaintenance(f"the server kept answering 503 (service unavailable): {e}")
+    return None
+
+
 def raise_if_maintenance(resp: requests.Response, asked: str) -> None:
     host = urlsplit(asked).netloc or asked
     if resp.status_code == 503:

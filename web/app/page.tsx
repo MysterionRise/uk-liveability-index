@@ -56,7 +56,7 @@ export default function Home() {
           </nav>
         </header>
         <div className="grid min-h-0 grid-cols-[minmax(0,1fr)] grid-rows-[45dvh_1fr] md:grid-cols-[minmax(0,1fr)_minmax(360px,440px)] md:grid-rows-1">
-          <div className="relative min-h-0">
+          <div className="relative min-h-0" data-testid="map-column">
             {error ? (
               <div className="p-6 text-sm text-[var(--text-secondary)]" role="alert">
                 {t.rich("loadError", { error, code: (chunks) => <code>{chunks}</code> })}

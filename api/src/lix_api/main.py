@@ -137,6 +137,7 @@ app.add_middleware(BodyLimit)
 # A language tag on a GET: as short as the bodies' (en, cy, gd, ga, or a BCP 47 tag)
 QueryLocale = Annotated[str | None, Query(max_length=10)]
 
+
 @app.exception_handler(LookupError)
 async def not_found(request: Request, exc: LookupError):
     # Serialised, not formatted: a message quoting an id ("indicator:crime_violence") or

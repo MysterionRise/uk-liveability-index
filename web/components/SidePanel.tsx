@@ -104,6 +104,7 @@ export function SidePanel() {
         <label
           className="ml-auto flex shrink-0 items-center gap-1.5 py-2 pl-2 text-xs text-[var(--text-secondary)]"
           title={t("analystTitle")}
+          data-testid="analyst-label"
         >
           <input
             type="checkbox"

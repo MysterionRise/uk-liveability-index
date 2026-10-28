@@ -80,6 +80,15 @@ sources in use). Every new source is an anonymous download.
   carry their code in one bracket everywhere, the explainer too; a GET's `locale` is
   capped at ten characters. Caveats on Irish heights, Ireland's missing bathing waters
   and mapped pavements; a dead DAERA link; stale counts in the development guide.
+- Found by the release pass, code and interface: a publisher answering 503 again and
+  again reached the check as a retry error, not as an outage; ranked rows of repeated
+  Irish names lost their code under Welsh, Gaelic and Irish; the serve fingerprint now
+  follows the staged tables the pack copies from (geography, places, postcodes, points
+  of interest); a road whose cycle track is mapped separately no longer counts twice;
+  the assistant's cost estimate prices a run at three requests and says so in its own
+  words; printing runs to every page, on white paper whatever the theme, without the
+  map column or the analyst label; the legend no longer names Ireland on an England-only
+  layer; no value prints as "-0.0".
 - Found by the release pass: a neighbourhood list ranked by one measure was ordered by
   the averaged score but showed the averaged value, so "the most protected land" put
   148 ha fourth; it is ordered by the value shown now (a within-nation measure keeps the

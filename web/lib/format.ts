@@ -4,8 +4,9 @@ export function formatValue(value: number | null | undefined, unit: string, loca
   if (value == null || Number.isNaN(value)) return "–";
   // Round as toFixed does (so the English output is unchanged), then group and punctuate
   // for the locale
+  // Never "-0.0": a value that rounds to zero is zero
   const n = (v: number, digits = 0) =>
-    Number(v.toFixed(digits)).toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    (Number(v.toFixed(digits)) || 0).toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
   const code = unitCode(unit);
   if (code === "gbp" || code === "gbp_year") return `£${n(Math.round(value))}`;
   if (code === "metres") return value >= 1000 ? `${n(value / 1000, 1)} km` : `${n(Math.round(value))} m`;

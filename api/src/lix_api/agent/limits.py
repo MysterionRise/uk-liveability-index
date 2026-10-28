@@ -83,9 +83,9 @@ class Limits:
             return message("budget", locale)
         if self.daily_budget > 0 and input_chars:
             self._roll()
-            estimate = input_chars / CHARS_PER_TOKEN * INPUT_PRICE_PER_TOKEN
+            estimate = input_chars / CHARS_PER_TOKEN * INPUT_PRICE_PER_TOKEN * REQUESTS_PER_RUN
             if self.spent + estimate > self.daily_budget:
-                return message("budget", locale)
+                return message("budget_short", locale)
         now = self.clock()
         while self.recent and now - self.recent[0] > 60:
             self.recent.popleft()
@@ -141,6 +141,9 @@ MAX_USER_MESSAGE_CHARS = 4_000
 # $15 per million input tokens (Opus-class; cheaper models only make it stricter)
 CHARS_PER_TOKEN = 4.0
 INPUT_PRICE_PER_TOKEN = 15.0 / 1_000_000
+# A run sends the conversation to the model once per step (a tool call and the answer
+# after it): three is typical, the usage limit allows eight
+REQUESTS_PER_RUN = 3
 
 
 def _text(content) -> str:

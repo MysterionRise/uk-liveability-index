@@ -18,3 +18,10 @@ describe("formatValue", () => {
     expect(formatValue(0.75, "rating 0–1 (Good = 0.75)")).toBe("7.5/10");
   });
 });
+
+describe("formatValue never prints a negative zero", () => {
+  it("rounds tiny negatives to 0", () => {
+    expect(formatValue(-6.5e-15, "hectares")).toBe("0.0");
+    expect(formatValue(-0.04, "km")).toBe("0.0");
+  });
+});

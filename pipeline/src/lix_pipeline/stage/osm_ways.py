@@ -66,7 +66,8 @@ MINOR_FOOTWAY = {"sidewalk", "crossing", "traffic_island", "access_aisle", "link
 
 # Cycle infrastructure: a cycleway, a path with cycling designated, or a lane or track
 CYCLE_PATHS = {"path", "footway", "pedestrian", "bridleway", "track"}
-CYCLE_LANES = {"lane", "track", "share_busway", "opposite_lane", "opposite_track", "separate"}
+# Not "separate": the road says its track is mapped as a way of its own, which counts
+CYCLE_LANES = {"lane", "track", "share_busway", "opposite_lane", "opposite_track"}
 CYCLE_SAMPLE_M = 50.0
 
 

@@ -18,7 +18,7 @@ from lix_core.log import setup_logging
 from lix_core.paths import data_dir
 from lix_pipeline.fetch import ManualDownloadRequired, fetch, resolve_and_lock
 from lix_pipeline.fetch.lock import read_lock, update_entry
-from lix_pipeline.fetch.outage import InMaintenance
+from lix_pipeline.fetch.outage import outage
 from lix_pipeline.fetch.session import make_session
 from lix_pipeline.refresh import plan as planning
 from lix_pipeline.refresh.plan import RefreshPlan, Step
@@ -85,12 +85,12 @@ def refresh(
                 continue
             try:
                 resolved = resolve_and_lock(slug, registry[slug], session)
-            except InMaintenance as e:
-                logger.warning(f"[{slug}] {e}: keeps its locked edition")
-                outages.add(slug)
-                unresolved.add(slug)
-                continue
             except Exception as e:  # keep going, report at the end
+                if (down := outage(e)) is not None:
+                    logger.warning(f"[{slug}] {down}: keeps its locked edition")
+                    outages.add(slug)
+                    unresolved.add(slug)
+                    continue
                 log["failures"].append({"phase": "resolve", "slug": slug, "error": str(e)})
                 unresolved.add(slug)
                 continue
@@ -119,11 +119,11 @@ def refresh(
             except ManualDownloadRequired as e:
                 logger.warning(str(e))
                 continue
-            except InMaintenance as e:
-                logger.warning(f"[{slug}] {e}: keeps its locked edition")
-                outages.add(slug)
-                continue
             except Exception as e:
+                if (down := outage(e)) is not None:
+                    logger.warning(f"[{slug}] {down}: keeps its locked edition")
+                    outages.add(slug)
+                    continue
                 logger.exception(f"[{slug}] Fetch failed")
                 log["failures"].append({"phase": "fetch", "slug": slug, "error": str(e)})
                 continue

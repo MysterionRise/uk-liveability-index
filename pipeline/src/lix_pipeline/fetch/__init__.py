@@ -22,7 +22,7 @@ from lix_core.paths import data_dir, get_project_root
 from lix_pipeline.fetch import arcgis, ckan, govuk, html, keyed, nomis, overture, wcs, wfs
 from lix_pipeline.fetch.http import _read_meta, _write_meta, download, download_set
 from lix_pipeline.fetch.lock import read_lock, update_entry
-from lix_pipeline.fetch.outage import InMaintenance, raise_if_maintenance
+from lix_pipeline.fetch.outage import InMaintenance, outage, raise_if_maintenance
 from lix_pipeline.fetch.session import make_session
 
 logger = setup_logging("fetch")
@@ -572,6 +572,8 @@ def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dic
     except (_Unreached, InMaintenance) as e:
         return done("warn", f"not verified: {e}" if isinstance(e, InMaintenance) else str(e))
     except Exception as e:  # report every failure, keep checking the rest
+        if (down := outage(e)) is not None:
+            return done("warn", f"not verified: {down}")
         return done("fail", f"resolve failed: {e}")
     out["version"] = resolved.get("version")
     # A server that states no edition this time (no Last-Modified on today's answer) is
@@ -599,6 +601,8 @@ def check_source(slug: str, spec: DatasetSpec, session: requests.Session) -> dic
     except InMaintenance as e:
         return done("warn", f"not verified: {e}")
     except requests.RequestException as e:
+        if (down := outage(e)) is not None:
+            return done("warn", f"not verified: {down}")
         return done("fail", f"unreachable: {e}")
     if status == 403:
         return done("warn", f"not verified: 403 from {resolved['url']}")

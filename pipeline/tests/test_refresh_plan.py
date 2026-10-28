@@ -305,6 +305,22 @@ class TestIndicatorsServeTiles:
             ("aircraft_noise", "staged inputs changed: noise")
         ]
 
+    def test_a_table_the_pack_copies_restages_the_pack(self, data, tmp_path):
+        """A re-staged places or geography table changes the pack even when the indicator
+        table does not (#211 and #212 did; v0.7.0 release pass)."""
+        root = tmp_path / "repo"
+        (root / "config" / "i18n").mkdir(parents=True)
+        for name in p.SERVE_CONFIG:
+            (root / "config" / name).write_text(f"{name}: 1\n")
+        (data / "indicators").mkdir()
+        (data / "indicators" / "long.parquet").write_bytes(b"PAR1")
+        graph.write_sidecar(graph.sidecar_path("places"), "places", "places-1", {})
+        digest, parts = p.serve_fingerprint(root)
+        graph.write_sidecar(p.serve_sidecar(), "serve", digest, parts)
+        assert p.serve_step(root=root) is None
+        graph.write_sidecar(graph.sidecar_path("places"), "places", "places-2", {})
+        assert p.serve_step(root=root).reason == "staged inputs changed: places"
+
     def test_serve_and_tiles_steps(self, data, tmp_path):
         root = tmp_path / "repo"
         (root / "config" / "i18n").mkdir(parents=True)

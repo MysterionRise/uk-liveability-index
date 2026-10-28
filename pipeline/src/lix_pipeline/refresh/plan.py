@@ -327,10 +327,25 @@ def serve_sidecar() -> Path:
     return data_dir("serve") / ".meta.json"
 
 
+# The staged tables the serve step reads itself (scores.py for the geography,
+# lookups.py for postcodes, places and the points of interest): a re-stage that leaves
+# the indicator table as it was still changes the pack, as the Scottish names (#212)
+# and the Northern Irish places' districts (#211) did (v0.7.0 release pass)
+SERVE_TABLES = (
+    "geo_lsoa", "nspl", "places", "logainm", "ods_gp", "schools", "ofsted_schools",
+    "chargers", "osm_pois",
+)  # fmt: skip
+
+
 def serve_fingerprint(root: Path | None = None) -> tuple[str, dict[str, str | None]]:
-    """The indicator table plus the configuration the scores are computed from."""
+    """The indicator table, the staged tables the pack copies from, and the configuration
+    the scores are computed from."""
     root = root or get_project_root()
     parts = {"indicators/long.parquet": _file_sha(data_dir("indicators") / "long.parquet")}
+    for table in SERVE_TABLES:
+        meta = graph.read_sidecar(graph.sidecar_path(table))
+        if meta:
+            parts[f"staged:{table}"] = meta.get("fingerprint")
     for name in serve_config_files(root):
         parts[f"config/{name}"] = _file_sha(root / "config" / name)
     digest = hashlib.sha256(

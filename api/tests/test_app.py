@@ -567,9 +567,11 @@ def test_a_request_that_would_overshoot_the_budget_is_refused_before_the_run():
     from lix_api.agent.limits import Limits
 
     limits = Limits(session_turns=30, rate_per_minute=20, daily_budget=1.0)
-    # About $0.94 at the cautious rate: refused when $0.10 is already spent
+    # About $0.94 a run at the cautious rate (three requests): refused when $0.10 is
+    # already spent, in words that do not claim the day is over
     limits.spent = 0.10
-    assert limits.admit(1, "en", input_chars=250_000) is not None
+    refusal = limits.admit(1, "en", input_chars=85_000)
+    assert refusal is not None and "shorter" in refusal
     assert limits.admit(1, "en", input_chars=2_000) is None
 
 
@@ -600,5 +602,7 @@ def test_search_and_profile_speak_the_interface_language(client):
 
 def test_a_language_tag_on_a_get_is_as_short_as_a_bodys(client):
     """/rank refused an 11-character locale while the GET endpoints took any (v0.7.0 pass)."""
-    assert client.get("/api/v1/search", params={"q": "Leeds", "locale": "x" * 11}).status_code == 422
+    assert (
+        client.get("/api/v1/search", params={"q": "Leeds", "locale": "x" * 11}).status_code == 422
+    )
     assert client.get("/api/v1/search", params={"q": "Leeds", "locale": "cy-GB"}).status_code == 200

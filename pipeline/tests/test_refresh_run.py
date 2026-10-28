@@ -95,3 +95,32 @@ def test_a_kept_source_keeps_the_edition_its_file_is(two_sources, monkeypatch):
     log = refresh(keep_going=True)
     assert log["kept"] == ["a"]
     assert written == [("a", "resolved", {"version": "old"})]
+
+
+def test_a_server_that_keeps_answering_503_is_an_outage(two_sources, monkeypatch):
+    """The fetch session retries 503s and then raises RetryError, so the 503 itself never
+    reaches the maintenance check (v0.7.0 release pass)."""
+    import requests
+
+    def resolve_and_lock(slug, spec, session):
+        if slug == "a":
+            raise requests.exceptions.RetryError(
+                "Max retries exceeded (too many 503 error responses)"
+            )
+        return {"version": "v1"}
+
+    monkeypatch.setattr(run_mod, "resolve_and_lock", resolve_and_lock)
+    log = refresh()
+    assert log["failures"] == [] and log["outages"] == ["a"]
+
+
+def test_outage_tells_a_503_give_up_from_other_failures():
+    import requests
+
+    from lix_pipeline.fetch.outage import InMaintenance, outage
+
+    assert isinstance(
+        outage(requests.exceptions.RetryError("too many 503 error responses")), InMaintenance
+    )
+    assert outage(requests.exceptions.RetryError("too many 500 error responses")) is None
+    assert outage(RuntimeError("No link matching")) is None
