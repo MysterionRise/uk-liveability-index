@@ -1,6 +1,6 @@
 {
   "schema_version": 5,
-  "generated_at": "2026-10-28T16:34:51+00:00",
+  "generated_at": "2026-10-28T18:17:40+00:00",
   "data_release": null,
   "data_to": "2026-10-28",
   "geography": {
@@ -603,7 +603,7 @@
         "elevation": {
           "label": "Uchder uwchlaw lefel y m\u00f4r",
           "description": "Uchder cyfartalog cartrefi uwchlaw lefel y m\u00f4r, mewn metrau, o'r grid tir 50m.",
-          "caveats": "Uchder y gell 50m y mae pob cartref ynddi; daw data Iwerddon o fodel arwyneb, sy'n ychwanegu uchder adeiladau a choed. Nid yw uchel nac isel yn well; dim ond trefnu'r ardaloedd y mae'r raddfa liw yn ei wneud."
+          "caveats": "Uchder y gell 50m y mae pob cartref ynddi; daw data Iwerddon o fodel arwyneb, sy'n ychwanegu uchder adeiladau a choed. Nid yw uchel nac isel yn well; dim ond trefnu'r ardaloedd y mae'r raddfa liw yn ei wneud. Mae uchderau Iwerddon yn seiliedig ar ddatwm fertigol arall a gallant fod ychydig fetrau'n rhy isel: mae dwy ardal dociau yn Nulyn yn is na lefel y m\u00f4r."
         },
         "storm_overflow_spills": {
           "label": "Gorlifiadau carthion gerllaw",
@@ -618,7 +618,7 @@
         "bathing_water_class": {
           "label": "Ansawdd d\u0175r ymdrochi gerllaw",
           "description": "Dosbarth y d\u0175r ymdrochi dynodedig agosaf o fewn 10km i gartrefi, o 4 (Ardderchog) drwy Da a Digonol i 1 (Gwael), ar gyfer y tymor diweddaraf.",
-          "caveats": "Dosbarth y d\u0175r ymdrochi agosaf at bob cartref, wedi'i gyfartaleddu ar draws cartrefi'r ardal; nid oes gwerth gan ardal lle mae gan lai na hanner y cartrefi dd\u0175r ymdrochi o fewn 10km. Mae'r dosbarthiadau'n seiliedig ar bedwar tymor o samplau (tri ar gyfer dyfroedd a ddynodwyd ers 2022), ac mae rhai Gogledd Iwerddon wedi'u trawsgrifio o gyhoeddiad blynyddol DAERA."
+          "caveats": "Dosbarth y d\u0175r ymdrochi agosaf at bob cartref, wedi'i gyfartaleddu ar draws cartrefi'r ardal; nid oes gwerth gan ardal lle mae gan lai na hanner y cartrefi dd\u0175r ymdrochi o fewn 10km. Mae'r dosbarthiadau'n seiliedig ar bedwar tymor o samplau (tri ar gyfer dyfroedd a ddynodwyd ers 2022), ac mae rhai Gogledd Iwerddon wedi'u trawsgrifio o gyhoeddiad blynyddol DAERA. Nid oes dosbarth chwaith i gartref nad oes dosbarth eto i'r d\u0175r dynodedig agosaf ato; mae haen agored Iwerddon yn gadael allan y dyfroedd nad ydynt wedi'u dosbarthu eto a'r un a gafodd y dosbarth Gwael yn 2025 (Baddonau D\u00fan Laoghaire)."
         },
         "river_status": {
           "label": "Iechyd afonydd a llynnoedd gerllaw",
@@ -716,7 +716,7 @@
         "street_connectivity": {
           "label": "Cysylltedd strydoedd",
           "description": "Cyffyrdd strydoedd a llwybrau cerdded fesul km\u00b2 o fewn 1km i gartrefi (OpenStreetMap).",
-          "caveats": "Cyffordd yw lle mae tri neu fwy o bennau strydoedd neu lwybrau y gellir cerdded arnynt yn cwrdd, felly mae cyffordd T yn cyfrif ond nid yw dwy stryd yn cwrdd pen wrth ben; gadewir dreifiau a lonydd meysydd parcio allan. Mae grid o strydoedd yn dangos gwerth uchel ac ystad cul-de-sac werth isel, oni bai bod llwybrau troed drwy'r ystad wedi'u mapio."
+          "caveats": "Cyffordd yw lle mae tri neu fwy o bennau strydoedd neu lwybrau y gellir cerdded arnynt yn cwrdd, felly mae cyffordd T yn cyfrif ond nid yw dwy stryd yn cwrdd pen wrth ben; gadewir dreifiau a lonydd meysydd parcio allan. Mae grid o strydoedd yn dangos gwerth uchel ac ystad cul-de-sac werth isel, oni bai bod llwybrau troed drwy'r ystad wedi'u mapio. Nid yw palmentydd a chroesfannau a fapiwyd fel llwybrau ar wah\u00e2n yn creu cyffyrdd, felly mae dinas sy'n eu mapio yn darllen fel un nad yw'n gwneud hynny."
         },
         "connectivity_cycling": {
           "label": "Cysylltedd beicio",
@@ -1391,7 +1391,7 @@
         "elevation": {
           "label": "Airde os cionn leibh\u00e9al na farraige",
           "description": "Me\u00e1nairde tithe os cionn leibh\u00e9al na farraige, i m\u00e9adair, \u00f3n ngreille tal\u00fan 50m.",
-          "caveats": "Airde na cille 50m a bhfuil gach teach laistigh di; tagann figi\u00far na h\u00c9ireann \u00f3 shamhail dromchla, a chuireann airde foirgneamh agus crann leis. N\u00ed fearr ard n\u00e1 \u00edseal; n\u00ed dh\u00e9anann sc\u00e1la na ndathanna ach na ceantair a chur in ord."
+          "caveats": "Airde na cille 50m a bhfuil gach teach laistigh di; tagann figi\u00far na h\u00c9ireann \u00f3 shamhail dromchla, a chuireann airde foirgneamh agus crann leis. N\u00ed fearr ard n\u00e1 \u00edseal; n\u00ed dh\u00e9anann sc\u00e1la na ndathanna ach na ceantair a chur in ord. T\u00e1 aird\u00ed na h\u00c9ireann bunaithe ar dheitum ingearach eile agus d'fh\u00e9adfadh siad a bheith c\u00fapla m\u00e9adar r\u00f3-\u00edseal: t\u00e1 dh\u00e1 cheantar duga\u00ed i mBaile \u00c1tha Cliath faoi leibh\u00e9al na farraige."
         },
         "storm_overflow_spills": {
           "label": "Doirteadh s\u00e9arachais in aice l\u00e1imhe",
@@ -1406,7 +1406,7 @@
         "bathing_water_class": {
           "label": "C\u00e1il\u00edocht uisce sn\u00e1mha in aice l\u00e1imhe",
           "description": "Aicme an uisce sn\u00e1mha ainmnithe is gaire laistigh de 10km de thithe, \u00f3 4 (Ar fheabhas) tr\u00ed Maith agus Leordh\u00f3thanach go 1 (Lag), don s\u00e9as\u00far is d\u00e9ana\u00ed.",
-          "caveats": "Aicme an uisce sn\u00e1mha is gaire do gach teach, me\u00e1naithe thar thithe an cheantair; n\u00edl aon luach ag ceantar a bhfuil ceann laistigh de 10km ag n\u00edos l\u00fa n\u00e1 leath de na tithe. Buna\u00edtear na haicm\u00ed ar cheithre sh\u00e9as\u00far de shampla\u00ed (tr\u00ed cinn d'uisc\u00ed a ainmn\u00edodh \u00f3 2022 i leith), agus tras-scr\u00edobhadh cinn Thuaiscirt \u00c9ireann \u00f3 fh\u00f3gra bliant\u00fail DAERA."
+          "caveats": "Aicme an uisce sn\u00e1mha is gaire do gach teach, me\u00e1naithe thar thithe an cheantair; n\u00edl aon luach ag ceantar a bhfuil ceann laistigh de 10km ag n\u00edos l\u00fa n\u00e1 leath de na tithe. Buna\u00edtear na haicm\u00ed ar cheithre sh\u00e9as\u00far de shampla\u00ed (tr\u00ed cinn d'uisc\u00ed a ainmn\u00edodh \u00f3 2022 i leith), agus tras-scr\u00edobhadh cinn Thuaiscirt \u00c9ireann \u00f3 fh\u00f3gra bliant\u00fail DAERA. N\u00edl aicme ach oiread ag teach nach bhfuil aicme f\u00f3s ag an uisce ainmnithe is gaire d\u00f3; f\u00e1gann sraith oscailte na h\u00c9ireann amach na huisc\u00ed nach bhfuil aicme acu f\u00f3s agus an ceann a ranga\u00edodh Lag in 2025 (Folctha\u00ed Dh\u00fan Laoghaire)."
         },
         "river_status": {
           "label": "Sl\u00e1inte aibhneacha agus locha in aice l\u00e1imhe",
@@ -1514,7 +1514,7 @@
         "street_connectivity": {
           "label": "Nascacht sr\u00e1ideanna",
           "description": "Acomhail sr\u00e1ideanna agus cos\u00e1n in aghaidh an km\u00b2 laistigh de 1km de thithe (OpenStreetMap).",
-          "caveats": "Is acomhal \u00e9 \u00e1it a dtagann tr\u00ed dheireadh n\u00f3 n\u00edos m\u00f3 de shr\u00e1ideanna n\u00f3 de chos\u00e1in ar f\u00e9idir si\u00fal orthu le ch\u00e9ile, mar sin \u00e1ir\u00edtear T ach n\u00ed \u00e1ir\u00edtear dh\u00e1 shr\u00e1id a thagann le ch\u00e9ile ceann le ceann; f\u00e1gtar cabhsa\u00ed agus pas\u00e1ist\u00ed carrchl\u00f3is ar l\u00e1r. Faigheann greille sr\u00e1ideanna luach ard agus east\u00e1t c\u00fal-de-sac luach \u00edseal, mura map\u00e1iltear cos\u00e1in si\u00fail tr\u00edd an east\u00e1t."
+          "caveats": "Is acomhal \u00e9 \u00e1it a dtagann tr\u00ed dheireadh n\u00f3 n\u00edos m\u00f3 de shr\u00e1ideanna n\u00f3 de chos\u00e1in ar f\u00e9idir si\u00fal orthu le ch\u00e9ile, mar sin \u00e1ir\u00edtear T ach n\u00ed \u00e1ir\u00edtear dh\u00e1 shr\u00e1id a thagann le ch\u00e9ile ceann le ceann; f\u00e1gtar cabhsa\u00ed agus pas\u00e1ist\u00ed carrchl\u00f3is ar l\u00e1r. Faigheann greille sr\u00e1ideanna luach ard agus east\u00e1t c\u00fal-de-sac luach \u00edseal, mura map\u00e1iltear cos\u00e1in si\u00fail tr\u00edd an east\u00e1t. N\u00ed dh\u00e9anann cos\u00e1in agus trasnuithe a map\u00e1ladh mar chos\u00e1in ar leith acomhail, mar sin l\u00e9ann cathair a mhap\u00e1lann iad mar cheann nach nd\u00e9anann."
         },
         "connectivity_cycling": {
           "label": "Nascacht rotha\u00edochta",
@@ -2131,7 +2131,7 @@
         "elevation": {
           "label": "\u00c0irde os cionn \u00ecre na mara",
           "description": "\u00c0irde chuibheasach dhachaighean os cionn \u00ecre na mara, ann am meatairean, bhon ghriod talmhainn 50m.",
-          "caveats": "An \u00e0irde aig a' chealla 50m anns a bheil gach dachaigh; tha an t\u00e8 aig \u00c8irinn a' tighinn \u00e0 modail uachdair, a tha a' cur \u00e0irde thogalaichean is chraobhan ris. Chan eil \u00e0rd no \u00ecosal nas fhe\u00e0rr; chan eil an sg\u00e8ile dhathan ach ag \u00f2rdachadh nan sg\u00ecrean."
+          "caveats": "An \u00e0irde aig a' chealla 50m anns a bheil gach dachaigh; tha an t\u00e8 aig \u00c8irinn a' tighinn \u00e0 modail uachdair, a tha a' cur \u00e0irde thogalaichean is chraobhan ris. Chan eil \u00e0rd no \u00ecosal nas fhe\u00e0rr; chan eil an sg\u00e8ile dhathan ach ag \u00f2rdachadh nan sg\u00ecrean. Tha \u00e0irdean na h-\u00c8ireann st\u00e8idhichte air datam inghearach eile agus faodaidh iad a bhith beagan mheatairean ro \u00ecosal: tha d\u00e0 sg\u00ecre dhocaichean ann am Baile \u00c0tha Cliath fo \u00ecre na mara."
         },
         "storm_overflow_spills": {
           "label": "D\u00f2rtadh \u00f2trachais faisg air l\u00e0imh",
@@ -2146,7 +2146,7 @@
         "bathing_water_class": {
           "label": "C\u00e0ileachd uisge-sn\u00e0imh faisg air l\u00e0imh",
           "description": "\u00ccre an uisge-sn\u00e0imh ainmichte as fhaisge taobh a-staigh 10km de dhachaighean, bho 4 (S\u00e0r-mhath) tro Math is Iomchaidh gu 1 (Bochd), airson an t-seusain as \u00f9ire.",
-          "caveats": "\u00ccre an uisge-sn\u00e0imh as fhaisge air gach dachaigh, air a cuibheasachadh thar dachaighean na sg\u00ecre; chan eil luach aig sg\u00ecre far a bheil nas lugha na leth de na dachaighean le fear taobh a-staigh 10km. Tha na h-\u00ecrean st\u00e8idhichte air ceithir seusain de shamplaichean (tr\u00ec airson uisgeachan a chaidh ainmeachadh bho 2022), agus tha feadhainn \u00c8irinn a Tuath air an tar-sgr\u00ecobhadh \u00e0 sanas bliadhnail DAERA."
+          "caveats": "\u00ccre an uisge-sn\u00e0imh as fhaisge air gach dachaigh, air a cuibheasachadh thar dachaighean na sg\u00ecre; chan eil luach aig sg\u00ecre far a bheil nas lugha na leth de na dachaighean le fear taobh a-staigh 10km. Tha na h-\u00ecrean st\u00e8idhichte air ceithir seusain de shamplaichean (tr\u00ec airson uisgeachan a chaidh ainmeachadh bho 2022), agus tha feadhainn \u00c8irinn a Tuath air an tar-sgr\u00ecobhadh \u00e0 sanas bliadhnail DAERA. Chan eil \u00ecre aig dachaigh nas motha far nach eil \u00ecre fhathast aig an uisge ainmichte as fhaisge dhi; tha breath fhosgailte na h-\u00c8ireann a' f\u00e0gail a-mach nan uisgeachan aig nach eil \u00ecre fhathast agus an t\u00e8 a fhuair \u00ecre Bochd ann an 2025 (D\u00fan Laoghaire Baths)."
         },
         "river_status": {
           "label": "Sl\u00e0inte aibhnichean is lochan faisg air l\u00e0imh",
@@ -2254,7 +2254,7 @@
         "street_connectivity": {
           "label": "Ceangalachd shr\u00e0idean",
           "description": "Snaimean de shr\u00e0idean is de shlighean coiseachd gach km\u00b2 taobh a-staigh 1km de dhachaighean (OpenStreetMap).",
-          "caveats": "Is e snaim \u00e0ite far a bheil tr\u00ec ceann no barrachd de shr\u00e0idean no slighean a ghabhas coiseachd orra a' coinneachadh, agus mar sin tha T a' cunntadh ach chan eil d\u00e0 shr\u00e0id a' coinneachadh ceann ri ceann; tha slighean-dr\u00e0ibhidh agus trannsaichean ann am p\u00e0ircean-ch\u00e0raichean air am f\u00e0gail a-mach. Bidh griod shr\u00e0idean a' sealltainn luach \u00e0rd agus oighreachd thaigheadais le sr\u00e0idean d\u00f9inte a' sealltainn luach \u00ecosal, mura h-eil slighean-coise tron oighreachd air am mapadh."
+          "caveats": "Is e snaim \u00e0ite far a bheil tr\u00ec ceann no barrachd de shr\u00e0idean no slighean a ghabhas coiseachd orra a' coinneachadh, agus mar sin tha T a' cunntadh ach chan eil d\u00e0 shr\u00e0id a' coinneachadh ceann ri ceann; tha slighean-dr\u00e0ibhidh agus trannsaichean ann am p\u00e0ircean-ch\u00e0raichean air am f\u00e0gail a-mach. Bidh griod shr\u00e0idean a' sealltainn luach \u00e0rd agus oighreachd thaigheadais le sr\u00e0idean d\u00f9inte a' sealltainn luach \u00ecosal, mura h-eil slighean-coise tron oighreachd air am mapadh. Chan eil cabhsairean agus \u00e0iteachan-tarsainn a chaidh a mhapadh mar shlighean leotha fh\u00e8in a' d\u00e8anamh snaimean, mar sin tha baile m\u00f2r a tha gam mapadh a' leughadh mar fhear nach eil."
         },
         "connectivity_cycling": {
           "label": "Ceangalachd baidhsagail",
@@ -3778,7 +3778,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": null,
-      "caveats": "The height of the 50m cell each home falls in; Ireland's comes from a surface model, which adds the height of buildings and trees. Neither high nor low is better; the colour scale only orders the areas.",
+      "caveats": "The height of the 50m cell each home falls in; Ireland's comes from a surface model, which adds the height of buildings and trees. Neither high nor low is better; the colour scale only orders the areas. Irish heights rest on another vertical datum and may read a few metres low: two Dublin dock areas read below sea level.",
       "substitute_for": [],
       "unit_code": "metres"
     },
@@ -3897,7 +3897,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": null,
-      "caveats": "The class of the bathing water nearest each home, averaged over the area's homes; an area where fewer than half the homes have one within 10km has no value. Classes rest on four seasons of samples (three for waters designated since 2022), and Northern Ireland's are transcribed from DAERA's yearly announcement.",
+      "caveats": "The class of the bathing water nearest each home, averaged over the area's homes; an area where fewer than half the homes have one within 10km has no value. Classes rest on four seasons of samples (three for waters designated since 2022), and Northern Ireland's are transcribed from DAERA's yearly announcement. A home whose nearest designated water has no class yet has none either; Ireland's open layer leaves out the waters not yet classified and the one rated Poor in 2025 (D\u00fan Laoghaire Baths).",
       "substitute_for": [],
       "unit_code": "class4"
     },
@@ -4820,7 +4820,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": "connectivity",
-      "caveats": "A junction is where three or more ends of walkable streets or paths meet, so a T counts and two streets meeting end to end do not; driveways and car-park aisles are left out. A street grid reads high and a cul-de-sac estate low, unless footpaths through the estate are mapped.",
+      "caveats": "A junction is where three or more ends of walkable streets or paths meet, so a T counts and two streets meeting end to end do not; driveways and car-park aisles are left out. A street grid reads high and a cul-de-sac estate low, unless footpaths through the estate are mapped. Pavements and crossings mapped as paths of their own do not make junctions, so a city that maps them reads like one that does not.",
       "substitute_for": [],
       "unit_code": "per_km2"
     },
@@ -11854,12 +11854,12 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "38874702bb7e95947e39fa6d67dcb1fdf6fd4fa18c17e2e4b8abac12a3161101",
-      "bytes": 4807487
+      "sha256": "b17b15e7fa19f06ee64209bf85ff9c19134803109cb908a8d4054418a22a36c0",
+      "bytes": 4802812
     },
     "scores.parquet": {
-      "sha256": "6916c6245ed736a13294164430a44013b0016d1ce6e36442c5d7606cc4340fab",
-      "bytes": 932925
+      "sha256": "05bccd5a0373100cd1be84f916d2b63510ee2bfe8a78888493e32ae3d6dc57f5",
+      "bytes": 931508
     },
     "postcodes.parquet": {
       "sha256": "b40a92ce69ff836d7027cb36999445fcfc00e1f88e4acf1f6e2145f59fcde5e6",
@@ -11870,8 +11870,8 @@
       "bytes": 35139
     },
     "areas.parquet": {
-      "sha256": "cb11928070a9690f435dce84665a1879e0cafe6512c28949aca4d131b074dce1",
-      "bytes": 34428
+      "sha256": "e4978f80592010fb9a2353d39081c6bd1fb51e3fda31b26254f2e2341df3ecb2",
+      "bytes": 34407
     },
     "pois.parquet": {
       "sha256": "83964f17ceb8039484ad63671518cffaa69daba0418db6060a5bca5fbcdcfea0",

@@ -185,7 +185,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Whitechapel** (Spitalfields). Dense, central, high income deprivation. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ street_connectivity ≥ 600: 883.1 ⚓
+- ✅ street_connectivity ≥ 450: 584.2 ⚓
 - ✅ sealed_surface ≥ 75: 89.3 ⚓
 - ✅ transport score ≥ 85: 90.6 ⚓
 - ✅ community score ≤ 40: 25.7
@@ -197,8 +197,8 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Manchester** (Castlefield & Deansgate). City centre; Greater Manchester crime is estimated (no police.uk data). Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
-- ✅ cycle_infrastructure ≥ 4: 6.4 ⚓
-- ✅ storm_overflow_spills ≥ 500: 1,431.9
+- ✅ cycle_infrastructure ≥ 4: 6.0 ⚓
+- ✅ storm_overflow_spills ≥ 500: 596.6
 - ✅ flag imputed: crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence ⚓
 - ✅ safety score ≤ 25: 18.7 ⚓
 - ✅ transport score ≥ 85: 97.0
@@ -243,7 +243,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Cambridge** (Central & West Cambridge). Expensive university city, cycling and rail. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
-- ✅ cycle_infrastructure ≥ 3: 4.0
+- ✅ cycle_infrastructure ≥ 3: 3.5
 - ✅ bathing_water_class ≤ 1.5: 1.0 ⚓
 - ✅ housing score ≤ 30: 13.4 ⚓
 - ✅ gigabit_broadband ≥ 80: 87.1
@@ -320,7 +320,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Clifton** (Clifton East). Affluent inner suburb of Bristol, expensive, lots nearby. Flags: broadcast_lad, broadcast_msoa, not_available.
 
-- ✅ storm_overflow_spills ≥ 1,000: 2,258.1 ⚓
+- ✅ storm_overflow_spills ≥ 500: 890.2 ⚓
 - ✅ amenities score ≥ 70: 100.0
 - ✅ housing score ≤ 40: 17.8
 

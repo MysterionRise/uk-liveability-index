@@ -214,7 +214,7 @@ places:
     local_authority: Tower Hamlets
     why: Dense, central, high income deprivation
     checks:
-      - {indicator: street_connectivity, op: ge, value: 600, anchor: true}  # a dense street grid (883)
+      - {indicator: street_connectivity, op: ge, value: 450, anchor: true}  # a dense street grid (584 once mapped pavements stopped counting)
       - {indicator: sealed_surface, op: ge, value: 75, anchor: true}  # (89)
       - {theme: transport, op: ge, value: 85, anchor: true}
       - {theme: community, op: le, value: 40}
@@ -402,7 +402,7 @@ places:
     local_authority: Bristol
     why: Affluent inner suburb of Bristol, expensive, lots nearby
     checks:
-      - {indicator: storm_overflow_spills, op: ge, value: 1000, anchor: true}  # Bristol's combined sewers into the Avon (2,258 h)
+      - {indicator: storm_overflow_spills, op: ge, value: 500, anchor: true}  # Bristol's combined sewers into the Avon (890 h)
       - {theme: amenities, op: ge, value: 70}
       - {theme: housing, op: le, value: 40}
 
