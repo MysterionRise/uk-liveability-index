@@ -112,6 +112,8 @@ places:
     local_authority: Highland
     why: "Highland town under Ben Nevis: clean air, trees, a small hospital with an A&E"
     checks:
+      - {indicator: hilliness, op: ge, value: 9}  # (13%)
+      - {indicator: river_status, op: ge, value: 3.5, anchor: true}  # the Nevis and Lochy at good status
       - {indicator: wet_days, op: ge, value: 200, anchor: true}  # the wettest corner of Britain
       - {theme: environment, op: ge, value: 50, anchor: true}
       - {indicator: hospital_ae_distance, op: le, value: 5000, anchor: true}  # the Belford
@@ -160,6 +162,8 @@ places:
     local_authority: Merthyr Tydfil
     why: Valleys town, high deprivation, cheap homes
     checks:
+      - {indicator: protected_nature, op: ge, value: 80, anchor: true}  # the Brecon Beacons' edge (140 ha)
+      - {indicator: elevation, op: ge, value: 150}  # (208 m)
       - {theme: community, op: le, value: 30, anchor: true}
       - {theme: housing, op: ge, value: 50}
 
@@ -180,6 +184,8 @@ places:
     local_authority: Gwynedd
     why: Remote slate town, cheap but with few amenities
     checks:
+      - {indicator: hilliness, op: ge, value: 12, anchor: true}  # a slate town on a mountainside (18.5%)
+      - {indicator: elevation, op: ge, value: 150, anchor: true}  # (201 m)
       - {theme: housing, op: ge, value: 50, anchor: true}
       - {theme: amenities, op: le, value: 50}
 
@@ -197,6 +203,7 @@ places:
     local_authority: Hackney
     why: Nightlife hub with high crime per resident and expensive homes
     checks:
+      - {indicator: protected_nature, op: le, value: 5}
       - {theme: amenities, op: ge, value: 80, anchor: true}
       - {theme: safety, op: le, value: 30, anchor: true}
       - {theme: transport, op: ge, value: 85}
@@ -207,6 +214,8 @@ places:
     local_authority: Tower Hamlets
     why: Dense, central, high income deprivation
     checks:
+      - {indicator: street_connectivity, op: ge, value: 600, anchor: true}  # a dense street grid (883)
+      - {indicator: sealed_surface, op: ge, value: 75, anchor: true}  # (89)
       - {theme: transport, op: ge, value: 85, anchor: true}
       - {theme: community, op: le, value: 40}
 
@@ -222,6 +231,8 @@ places:
     local_authority: Manchester
     why: City centre; Greater Manchester crime is estimated (no police.uk data)
     checks:
+      - {indicator: cycle_infrastructure, op: ge, value: 4, anchor: true}  # city-centre lanes and tracks (6.4 in v0.7.0)
+      - {indicator: storm_overflow_spills, op: ge, value: 500}  # the Irwell and Medlock overflows
       - {flag: imputed, anchor: true}
       - {theme: safety, op: le, value: 25, anchor: true}
       - {theme: transport, op: ge, value: 85}
@@ -259,6 +270,7 @@ places:
     local_authority: Winchester
     why: Affluent cathedral city with strong schools
     checks:
+      - {indicator: protected_nature, op: ge, value: 60}  # the Itchen and its water meadows (109 ha)
       - {overall: true, op: ge, value: 55}
       - {theme: education, op: ge, value: 55}
 
@@ -266,6 +278,7 @@ places:
     local_authority: St Albans
     why: London commuter city, expensive
     checks:
+      - {indicator: storm_overflow_spills, op: le, value: 50}  # (0)
       - {theme: housing, op: le, value: 35, anchor: true}
       - {theme: community, op: ge, value: 65}
 
@@ -281,6 +294,8 @@ places:
     local_authority: Cambridge
     why: Expensive university city, cycling and rail
     checks:
+      - {indicator: cycle_infrastructure, op: ge, value: 3}  # (4.0)
+      - {indicator: bathing_water_class, op: le, value: 1.5, anchor: true}  # the River Cam's bathing water rated Poor in 2025
       - {theme: housing, op: le, value: 30, anchor: true}
       - {indicator: gigabit_broadband, op: ge, value: 80}
 
@@ -289,6 +304,10 @@ places:
     local_authority: Cotswold
     why: "Cotswolds market town: green, remote from rail"
     checks:
+      - {indicator: street_connectivity, op: le, value: 100, anchor: true}  # a market town's few junctions (38)
+      - {indicator: cycle_infrastructure, op: le, value: 0.5}
+      - {indicator: sealed_surface, op: le, value: 20}  # (9)
+      - {indicator: bathing_water_distance, op: ge, value: 30}  # far inland (45 km)
       - {theme: transport, op: le, value: 55, anchor: true}
       - {indicator: station_distance, op: ge, value: 5000, anchor: true}
       - {indicator: no2, op: le, value: 8}
@@ -306,6 +325,8 @@ places:
     local_authority: East Devon
     why: Seaside retirement town
     checks:
+      - {indicator: bathing_water_class, op: ge, value: 3.5}  # (Excellent)
+      - {indicator: bathing_water_distance, op: le, value: 3, anchor: true}  # (1.1 km)
       - {indicator: aged_65_plus, op: ge, value: 35, anchor: true}
       - {indicator: no2, op: le, value: 8}
 
@@ -317,6 +338,7 @@ places:
     level: lsoa
     why: Among the most deprived neighbourhoods in England, with cheap homes
     checks:
+      - {indicator: elevation, op: le, value: 10}  # (3 m)
       - {theme: community, op: le, value: 15, anchor: true}
       - {theme: housing, op: ge, value: 60}
 
@@ -346,12 +368,15 @@ places:
     local_authority: South Holland
     why: Fenland town, much of it at risk from rivers and the sea
     checks:
+      - {indicator: hilliness, op: le, value: 1.5}  # the Fens (0.6%)
       - {indicator: flood_risk, op: ge, value: 25, anchor: true}
 
   - name: Wisbech
     local_authority: Fenland
     why: Fenland town on the tidal Nene
     checks:
+      - {indicator: hilliness, op: le, value: 1.5}
+      - {indicator: elevation, op: le, value: 10, anchor: true}  # the Fens (3.5 m)
       - {indicator: flood_risk, op: ge, value: 10}
       - {indicator: everyday_services, op: le, value: 90}  # a market town's spread-out edges (87 in data-2026-10.7)
       - {indicator: night_noise, op: le, value: 15, anchor: true}  # no major road or railway through it
@@ -368,6 +393,8 @@ places:
     local_authority: Milton Keynes
     why: "New town: almost no homes from before 1919; grid roads kept away from homes"
     checks:
+      - {indicator: cycle_infrastructure, op: ge, value: 4}  # the redway network (5.7)
+      - {indicator: bathing_water_distance, op: ge, value: 30}  # (47 km)
       - {indicator: period_homes, op: le, value: 5, anchor: true}
       - {indicator: noise_exposure, op: le, value: 10, anchor: true}  # 2.6% at 60 dB
 
@@ -375,6 +402,7 @@ places:
     local_authority: Bristol
     why: Affluent inner suburb of Bristol, expensive, lots nearby
     checks:
+      - {indicator: storm_overflow_spills, op: ge, value: 1000, anchor: true}  # Bristol's combined sewers into the Avon (2,258 h)
       - {theme: amenities, op: ge, value: 70}
       - {theme: housing, op: le, value: 40}
 
@@ -500,6 +528,8 @@ places:
     local_authority: Galway County
     why: "Connemara's market town at the edge of the island: no railway, Galway's A&E 80 km away"
     checks:
+      - {indicator: street_connectivity, op: le, value: 100}  # (33)
+      - {indicator: river_status, op: ge, value: 3.5}  # (4.0)
       - {indicator: hospital_ae_distance, op: ge, value: 40000, anchor: true}
       - {indicator: station_distance, op: ge, value: 40000, anchor: true}
       - {indicator: rainfall_total, op: ge, value: 1200}
