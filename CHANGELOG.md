@@ -4,6 +4,29 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- The nightly source check rewrote the newest open issue labelled `data-refresh`, which on
+  27 and 28 October was a planner bug report (#205), not the "Data refresh due" report.
+  It now matches the report by its title as well (#218).
+- A publisher's maintenance page read as a reshaped file: uk-air.defra.gov.uk redirected
+  every URL to a 200 maintenance page, so the three PCM sources "failed to resolve". A
+  redirect to a maintenance path, or a 503, is an outage now: the nightly check reports
+  it as not verified, and a refresh keeps the locked edition without `--keep-going`
+  (#219).
+- Re-staging one table rebuilt almost every indicator: the planner matched indicators on
+  the closure of the table's inputs, and every home-based table reads NSPL through
+  `homes`. It matches on the table's own inputs now; a re-staged flood table rebuilds the
+  two flood indicators, not 50 (#205).
+- Refresh planner polish (#215): the registry and every catalogue under `config/i18n/`
+  are part of the serve fingerprint; `lix stage --rehash` leaves a stale sidecar alone
+  rather than hiding its cascade; a source kept by `--keep-going` keeps the edition its
+  raw file is in the lock; and the indicator sidecar records the fingerprints of the
+  staged tables each indicator reads, so a table re-staged by hand makes its indicators
+  stale. The first plan after the upgrade rebuilds every indicator once.
+
 ## [0.6.3] - 2026-10-27
 
 The QA minors that did not fit 0.6.1, three measures that fell out of inputs the build

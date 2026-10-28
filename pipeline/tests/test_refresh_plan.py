@@ -167,9 +167,25 @@ class TestStageSteps:
             "code changed",
             "staged inputs changed: nspl; code changed",
         ]
-        assert graph.rehash_sidecars(["nspl", "homes"], registry, ["E"], lock) == ["nspl", "homes"]
+        assert graph.rehash_sidecars(["nspl", "homes"], registry, ["E"], lock) == (
+            ["nspl", "homes"],
+            {},
+        )
         assert p.stage_steps(lock, registry, ["E"], ["nspl", "homes"])[0] == []
         assert graph.read_sidecar(graph.sidecar_path("homes"))["rows"] == 3
+
+        # A stager edited since its table was built is stale, not mis-hashed: the rehash
+        # leaves it (and the cascade to its readers) for the refresh (#215)
+        monkeypatch.setattr(graph, "stager_code_hash", lambda slug: "c2" if slug == "nspl" else "c")
+        done, refused = graph.rehash_sidecars(["nspl", "homes"], registry, ["E"], lock)
+        assert done == ["homes"] and refused == {"nspl": "code"}
+        todo, _ = p.stage_steps(lock, registry, ["E"], ["nspl", "homes"])
+        assert [(s.name, s.reason) for s in todo] == [
+            ("nspl", "code changed"),
+            ("homes", "inputs restaged: nspl"),
+        ]
+        lock["nspl"] = {"fetched": {"sha256": "2"}}  # a raw input moved since homes was built
+        assert "nspl" in graph.rehash_sidecars(["homes"], registry, ["E"], lock)[1]["homes"]
 
     def test_the_code_hash_follows_the_stager_and_what_it_calls(self):
         """Every stager hashes; the hash is stable within a process and differs between
@@ -228,6 +244,66 @@ class TestIndicatorsServeTiles:
         steps = p.restaged_indicator_steps(stage, registry, ["E", "W", "N"], specs, {"bounds"})
         assert [(s.name, s.reason) for s in steps] == [("crime", "inputs restaged: police_crime")]
         assert p.restaged_indicator_steps([], registry, ["E"], specs, set()) == []
+
+    def test_a_restaged_table_touches_only_its_readers(self, registry):
+        """The November 2026 refresh re-staged flood and then rebuilt 50 indicators
+        (population_density, sunshine, house_price…) that never read it, because every
+        indicator lists NSPL and flood reads homes, which reads NSPL (#205)."""
+        spec = lambda id, *sources: IndicatorSpec(  # noqa: E731
+            id=id, theme="environment", label=id, description="", unit="n",
+            direction="lower_better", sources=list(sources), builder="common:column",
+        )  # fmt: skip
+        specs = [
+            spec("flood_risk", "ea_flood_postcodes", "nrw_fraw_rivers", "nspl", "te_buildings"),
+            spec("population_density", "pop_lsoa_mye", "nspl", "lsoa_boundaries"),
+            spec("tree_canopy", "esa_worldcover", "nspl", "te_buildings"),
+        ]
+        nations = ["E", "W", "S", "N", "I"]
+        steps = p.restaged_indicator_steps(
+            [p.Step("flood", "code changed")], registry, nations, specs, set()
+        )
+        assert [(s.name, s.reason) for s in steps] == [("flood_risk", "inputs restaged: flood")]
+
+        # A re-staged homes table moves every home-based indicator, and its readers
+        # (planned by stage_steps in the same run) cascade through their own inputs
+        stage = [p.Step("homes", "inputs changed: nspl"), p.Step("flood", "inputs restaged: homes")]
+        steps = p.restaged_indicator_steps(stage, registry, nations, specs, set())
+        assert {s.name for s in steps} == {"flood_risk", "population_density", "tree_canopy"}
+        assert (
+            dict((s.name, s.reason) for s in steps)["flood_risk"] == "inputs restaged: flood, homes"
+        )
+
+    def test_a_table_restaged_by_hand_makes_its_indicators_stale(self, registry, data):
+        """On 27 October 2026 the noise table was re-staged by hand and the next refresh
+        planned none of the five noise indicators: the indicator sidecar knew the raw
+        checksums only (#215). It records the staged tables' fingerprints now."""
+        nations = ["E", "N"]
+        spec = IndicatorSpec(
+            id="aircraft_noise", theme="environment", label="A", description="", unit="%",
+            direction="lower_better", sources=["defra_noise_air_lden", "daera_noise_r3", "nspl"],
+            builder="environment:percent", params={"slug": "noise", "column": "share_air_55"},
+        )  # fmt: skip
+        other = IndicatorSpec(
+            id="tree_canopy", theme="environment", label="T", description="", unit="%",
+            direction="higher_better", sources=["esa_worldcover", "nspl"],
+            builder="common:column", params={"slug": "tree_cover", "column": "canopy_pct"},
+        )  # fmt: skip
+        feeds = p.table_feeds(registry, nations)
+        assert p.indicator_tables(spec, feeds) == ["homes", "noise", "nspl"]
+        for table in ("noise", "homes", "nspl", "tree_cover"):
+            graph.write_sidecar(graph.sidecar_path(table), table, f"{table}-1", {})
+        lock = {}
+        graph.write_sidecar(
+            p.indicators_sidecar(), "indicators", "", {}, nations=nations,
+            indicators=p.indicator_fingerprints(lock, [spec, other], registry, nations),
+        )  # fmt: skip
+        assert p.indicator_steps(lock, [spec, other], nations=nations, registry=registry) == []
+
+        graph.write_sidecar(graph.sidecar_path("noise"), "noise", "noise-2", {})
+        steps = p.indicator_steps(lock, [spec, other], nations=nations, registry=registry)
+        assert [(s.name, s.reason) for s in steps] == [
+            ("aircraft_noise", "staged inputs changed: noise")
+        ]
 
     def test_serve_and_tiles_steps(self, data, tmp_path):
         root = tmp_path / "repo"

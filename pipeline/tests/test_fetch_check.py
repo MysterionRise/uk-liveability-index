@@ -154,3 +154,52 @@ def test_a_vanished_host_or_a_failed_certificate_stays_a_failure(monkeypatch, lo
     monkeypatch.setattr(fetch_mod, "PROBE_RETRY_S", 0)
     out = check_source("plain", _spec("https://gone.example/a.csv"), requests.Session())
     assert out["status"] == "fail" and calls == ["plain"]
+
+
+def _html_spec(page: str) -> DatasetSpec:
+    return DatasetSpec(
+        title="Linked file",
+        theme="environment",
+        coverage=["E"],
+        access={
+            "type": "html_link",
+            "page": page,
+            "steps": [{"pattern": 'href="([^"]*/map\\d{4}\\.csv)"'}],
+        },
+        format="csv",
+        description="d",
+        licence="OGL-3.0",
+        attribution="a",
+        cadence="annual",
+    )
+
+
+def test_a_page_redirected_to_maintenance_is_not_verified_not_failed(httpserver, lock):
+    """uk-air.defra.gov.uk answered every URL with a redirect to a 200 maintenance page,
+    which has no CSV links: an outage, reported as not verified (#219)."""
+    httpserver.expect_request("/data/pcm-data").respond_with_data(
+        "", status=302, headers={"Location": httpserver.url_for("/maintenance/")}
+    )
+    httpserver.expect_request("/maintenance/").respond_with_data("Website Temporarily Unavailable")
+    out = check_source(
+        "plain", _html_spec(httpserver.url_for("/data/pcm-data")), requests.Session()
+    )
+    assert out["status"] == "warn"
+    assert "in maintenance" in out["note"] and "/maintenance/" in out["note"]
+
+
+def test_a_page_without_the_link_still_fails(httpserver, lock):
+    httpserver.expect_request("/data/pcm-data").respond_with_data("<a href='other.csv'>")
+    out = check_source(
+        "plain", _html_spec(httpserver.url_for("/data/pcm-data")), requests.Session()
+    )
+    assert out["status"] == "fail" and "No link matching" in out["note"]
+
+
+def test_a_503_on_the_file_is_not_verified(httpserver, lock):
+    httpserver.expect_request("/a.csv", method="HEAD").respond_with_data(
+        "", headers={"Last-Modified": LM1}
+    )
+    httpserver.expect_request("/a.csv", method="GET").respond_with_data("down", status=503)
+    out = check_source("plain", _spec(httpserver.url_for("/a.csv")), requests.Session())
+    assert out["status"] == "warn" and "503" in out["note"]

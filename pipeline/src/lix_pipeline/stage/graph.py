@@ -246,6 +246,30 @@ def inputs_for(stager: str, registry: dict, nations: Iterable[str]) -> list[str]
     ]
 
 
+def direct_inputs(stager: str, registry: dict, nations: Iterable[str]) -> list[str]:
+    """The stager's own raw inputs (``STAGE_INPUTS``), not those of the tables it reads,
+    narrowed to ``nations`` (#205)."""
+    from lix_pipeline.stage import STAGE_INPUTS
+
+    active = set(nations)
+    return [
+        s
+        for s in expand_inputs(STAGE_INPUTS.get(stager, [stager]), registry)
+        if s not in registry or active & set(registry[s].coverage)
+    ]
+
+
+# The tables every home-based table is built on: their raw inputs (NSPL, the Irish
+# buildings, the low boundaries) sit in nearly every indicator's sources, so they say
+# nothing about which indicator reads a re-staged table (#205)
+SHARED_TABLES = ("homes", "nspl")
+
+
+def shared_inputs(registry: dict, nations: Iterable[str]) -> set[str]:
+    nations = list(nations)
+    return {s for t in SHARED_TABLES for s in direct_inputs(t, registry, nations)}
+
+
 def has_inputs(stager: str, registry: dict, nations: Iterable[str]) -> bool:
     """Every raw input the stager needs for these nations is on disk (a manual source
     counts when its files sit in data/manual/)."""
@@ -380,23 +404,37 @@ def record_staged(
 
 def rehash_sidecars(
     order: Iterable[str], registry: dict, nations: Iterable[str], lock: dict
-) -> list[str]:
+) -> tuple[list[str], dict[str, str]]:
     """Rewrite every existing sidecar's fingerprint under the current scheme without
     re-staging, for a planner upgrade: the tables on disk are taken as built by the
     current code from the inputs the lockfile names. In run order, so a reader sees its
-    inputs' new fingerprints. Returns the slugs rewritten."""
+    inputs' new fingerprints.
+
+    A sidecar that records a raw checksum or a code hash other than today's is left
+    alone: its table really is stale, and rewriting it would hide the cascade (#215; on
+    27 October 2026 a rehash after a stager edit made the re-stage that followed plan
+    nothing downstream). Returns the slugs rewritten and, per slug left alone, what moved."""
     nations = list(nations)
-    done = []
+    done: list[str] = []
+    refused: dict[str, str] = {}
     for slug in order:
         path = sidecar_path(slug)
         meta = read_sidecar(path)
         if not meta:
             continue
         digest, parts = stage_fingerprint(slug, registry, nations, lock)
+        before = meta.get("inputs") or {}
+        moved = sorted(
+            k for k, v in before.items()
+            if not k.startswith("staged:") and k in parts and parts[k] != v
+        )  # fmt: skip
+        if moved:
+            refused[slug] = ", ".join(moved[:4])
+            continue
         extra = {k: v for k, v in meta.items() if k not in ("name", "fingerprint", "inputs")}
         write_sidecar(path, slug, digest, parts, **extra)
         done.append(slug)
-    return done
+    return done, refused
 
 
 def stale_reason(path: Path, digest: str, parts: dict[str, str | None]) -> str | None:

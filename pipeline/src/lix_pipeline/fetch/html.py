@@ -13,6 +13,7 @@ import requests
 
 from lix_core.config import HtmlLinkAccess, LinkStep
 from lix_pipeline.fetch.dates import find_date
+from lix_pipeline.fetch.outage import raise_if_maintenance
 
 
 def _candidates(html: str, base_url: str, step: LinkStep) -> list[str]:
@@ -30,6 +31,7 @@ def resolve_link(access: HtmlLinkAccess, session: requests.Session) -> dict:
 
     def walk(url: str, steps: list[LinkStep], trail: list[str]) -> dict | None:
         resp = session.get(url, timeout=(30, 60))
+        raise_if_maintenance(resp, url)
         resp.raise_for_status()
         candidates = _candidates(resp.text, url, steps[0])
         if len(steps) == 1:
