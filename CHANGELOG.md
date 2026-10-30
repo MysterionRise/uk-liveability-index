@@ -4,6 +4,116 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.7.0] - 2026-10-30
+
+Active travel, water, nature and terrain: ten new context measures across the five territories
+on three shared helpers (an OpenStreetMap highway pass ready for the walking network of
+v0.8.x, a 50 m British National Grid raster grid, nearest-value and sum-within access
+measures), the release pass's remaining fixes, and a full refresh of every source in the
+data release `make data-release` cuts with it (serve schema 5, 112 indicators, about 224
+sources in use). Every new source is an anonymous download.
+
+### Added
+
+- Shared helpers for the v0.7.0 measures: `nearest_attr` (the nearest point's value
+  within reach, per home) and `sum_within` (an undecayed sum or density within a radius,
+  counted without a pair matrix, so dense points such as junctions scale to five million
+  homes), and `geo/focal.py`, a 50 m British National Grid raster helper (rasterise,
+  reproject, a NaN-aware window mean, Horn slope, sampling at homes block by block)
+  (#199).
+
+- Ten context measures (#80 #81 #84 #128 #129 #83 #79 #82): cycle tracks and lanes per
+  km² within 1 km and street connectivity (junctions per km²) from a new OpenStreetMap
+  highway pass (`osm_ways`, graph-ready for the walking network of v0.8.x, and
+  `osm_network_points`); protected nature within about 2 km (SSSI/ASSI, nature reserves,
+  SAC and SPA; in Ireland SAC, SPA and NHA), merged and clipped to land; built-up land
+  within 500 m from the WorldCover pass tree cover already reads; hilliness and height
+  from OS Terrain 50, OSNI's 50 m terrain model and Copernicus GLO-30; sewage overflow
+  spill hours within 2 km from the Environment Agency's Event Duration Monitoring
+  (England); the distance to, and the class of, the nearest designated bathing water; and
+  the Water Framework Directive status of the nearest river or lake. 39 new sources, all
+  anonymous downloads; Northern Ireland's bathing water classes are a curated table from
+  DAERA's announcement. A National Grid reference parser, a page size for ArcGIS layers
+  whose full pages fail, and the Copernicus DEM licence in DATA-LICENCE.md.
+
+- The profile card's key facts add hilliness, protected nature nearby, bathing water quality
+  and river and lake health.
+- Classes read as words: a bathing water's class shows "Excellent (3.8)" and a river's
+  status "Moderate (3.1)", in the interface language.
+- The indicators' caveats in Welsh, Gaelic and Irish: the catalogues carry a `caveats`
+  draft for every indicator that has one, the manifest takes them along, and the
+  explainer shows the one in the interface language (#209).
+
+### Fixed
+
+- One search-cap rule for every distance indicator: the search stops at the indicator's
+  `beyond_cap` (else 50 km), a home with nothing that close counts as that distance, and
+  an area whose homes mostly have nothing in reach carries the new quality level
+  `capped` ("at least this far"). Libraries and post offices said 20 km in the
+  configuration and 50 km in practice (#213).
+- Search: "SW1", "EC1", "W1" and the other central London prefixes find the lettered
+  districts they stand for; a division or small-area name its council repeats carries
+  its code in profiles, comparisons and rankings, not only in search results (#210).
+- Northern Irish places had no postcode district; they take the district of the nearest
+  live postcode within 3 km (#211).
+- A Scottish Data Zone was "Whitburn Glenisla Court�" and 31 names carried stray
+  spaces: the Scottish Government's lookup is read as Windows-1252 where it is not
+  UTF-8, names are trimmed, and `lix validate geo` checks every name column (#212).
+- One message to the assistant could be longer than any conversation should cost: the
+  newest message stops at 4,000 characters (the chat box too) with a worded refusal,
+  and a run whose estimated cost would overshoot what is left of the day's budget is
+  refused before it starts (#214).
+- Printing leaves out the language and theme selects and the tab strip, keeps the colour
+  of the theme bars and dots, and sets the cards close; the welcome dialog keeps the
+  focus while open and gives it back when closed; the search box points
+  `aria-controls` at its list only while the list exists (#216).
+- Found by the release pass, data: a storm overflow's spill hours read a day too many
+  when the return wrote its duration as a date (Excel's 1900 date system counts from
+  1899-12-31 before 1 March 1900, from 1899-12-30 after), 301,800 hours in all; company
+  totals now match the Environment Agency's 2025 return. Protected land carried filter
+  residue around zero, so a quarter of areas ranked by noise; mapped pavements and
+  crossings made central London's junction density four times a street grid's; a
+  bathing water not yet classified passed its class to a farther one; the card shows the
+  distance where no bathing water is within 10 km. An analyst query unrolling a hundred
+  million values took the API down: generated sequences take literal bounds up to a
+  million, and list builders are refused like string ones. Repeated small-area names
+  carry their code in one bracket everywhere, the explainer too; a GET's `locale` is
+  capped at ten characters. Caveats on Irish heights, Ireland's missing bathing waters
+  and mapped pavements; a dead DAERA link; stale counts in the development guide.
+- Found by the release pass, code and interface: a publisher answering 503 again and
+  again reached the check as a retry error, not as an outage; ranked rows of repeated
+  Irish names lost their code under Welsh, Gaelic and Irish; the serve fingerprint now
+  follows the staged tables the pack copies from (geography, places, postcodes, points
+  of interest); a road whose cycle track is mapped separately no longer counts twice;
+  the assistant's cost estimate prices a run at three requests and says so in its own
+  words; printing runs to every page, on white paper whatever the theme, without the
+  map column or the analyst label; the legend no longer names Ireland on an England-only
+  layer; no value prints as "-0.0".
+- Found by the release pass: a neighbourhood list ranked by one measure was ordered by
+  the averaged score but showed the averaged value, so "the most protected land" put
+  148 ha fourth; it is ordered by the value shown now (a within-nation measure keeps the
+  score). An England-only context measure ranked elsewhere said "it has no values"; it
+  says where it is built. The assistant's indicator catalogue answers in the interface
+  language, so its caveats are the drafted ones rather than its own translations.
+- The nightly source check rewrote the newest open issue labelled `data-refresh`, which on
+  27 and 28 October was a planner bug report (#205), not the "Data refresh due" report.
+  It now matches the report by its title as well (#218).
+- A publisher's maintenance page read as a reshaped file: uk-air.defra.gov.uk redirected
+  every URL to a 200 maintenance page, so the three PCM sources "failed to resolve". A
+  redirect to a maintenance path, or a 503, is an outage now: the nightly check reports
+  it as not verified, and a refresh keeps the locked edition without `--keep-going`
+  (#219).
+- Re-staging one table rebuilt almost every indicator: the planner matched indicators on
+  the closure of the table's inputs, and every home-based table reads NSPL through
+  `homes`. It matches on the table's own inputs now; a re-staged flood table rebuilds the
+  two flood indicators, not 50 (#205).
+- Refresh planner polish (#215): the registry and every catalogue under `config/i18n/`
+  are part of the serve fingerprint; `lix stage --rehash` leaves a stale sidecar alone
+  rather than hiding its cascade; a source kept by `--keep-going` keeps the edition its
+  raw file is in the lock; and the indicator sidecar records the fingerprints of the
+  staged tables each indicator reads, so a table re-staged by hand makes its indicators
+  stale. The first plan after the upgrade rebuilds every indicator once.
+
 ## [0.6.3] - 2026-10-27
 
 The QA minors that did not fit 0.6.1, three measures that fell out of inputs the build
@@ -746,6 +856,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.7.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.0
 [0.6.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.3
 [0.6.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.2
 [0.6.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.1

@@ -208,8 +208,15 @@ export function LiveabilityMap() {
   const layerNations = coverageNations(manifest, state.map.layer);
   const coverageIn = useCoverageIn(layerNations ?? undefined);
   // Nations whose headline compares within themselves get a second line (#147)
+  // and only those the layer covers: England-only sewage spills said "Ireland: against
+  // areas in Ireland" over a grey Ireland (v0.7.0 release pass)
   const ownNations = Object.entries(headlineWithin(manifest))
-    .filter(([code, rule]) => rule === "nation" && manifest?.geography?.active?.includes(code))
+    .filter(
+      ([code, rule]) =>
+        rule === "nation" &&
+        manifest?.geography?.active?.includes(code) &&
+        (!layerNations || layerNations.includes(code)),
+    )
     .map(([code]) => code);
   const against =
     state.compare_within === "uk" && ownNations.length

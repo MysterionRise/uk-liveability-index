@@ -365,6 +365,110 @@ indicators:
     role: context
     caveats: Straight-line distance to the nearest point of the mapped coastline, which runs up estuaries, sea loughs and tidal rivers as far as the high water mark goes (Norwich, Gloucester and Wisbech read under 2 km); a measure of nearness to tidal water, not of beach access. Lakes and inland loughs are not coast.
 
+  - id: sealed_surface
+    theme: environment
+    label: Built-up land around homes
+    description: Share of the land within 500m of homes that satellite land cover classes as built up, meaning buildings, roads and other sealed surfaces (ESA WorldCover, 10m).
+    unit: "%"
+    direction: lower_better
+    coverage: [E, W, S, N, I]
+    sources: [esa_worldcover, nspl, te_buildings]
+    builder: common:column
+    params: {slug: tree_cover, column: builtup_pct}
+    role: context
+    caveats: A 10m cell counts as built up when sealed surfaces dominate it, so gardens and verges between houses lower the share; a yes/no map of 2021, not a measure of how sealed each cell is. Water and unmapped cells are left out of the land total.
+
+  - id: protected_nature
+    theme: environment
+    label: Protected nature nearby
+    description: Hectares of land within about 2km of homes protected for nature (Sites of Special Scientific Interest, nature reserves, Special Areas of Conservation and Special Protection Areas; in Ireland, Special Areas of Conservation, Special Protection Areas and Natural Heritage Areas).
+    unit: hectares
+    direction: higher_better
+    coverage: [E, W, S, N, I]
+    sources: [pa_ne_sssi, pa_ne_nnr, pa_ne_lnr, pa_ne_sac, pa_ne_spa, pa_nrw_sssi, pa_nrw_nnr, pa_nrw_lnr, pa_nrw_sac, pa_nrw_spa, pa_naturescot, pa_daera_assi, pa_daera_nnr, pa_daera_sac, pa_daera_spa, pa_npws_sac, pa_npws_spa, pa_npws_nha, lsoa_boundaries, sg_dz22_boundaries, nisra_sdz21_boundaries, cso_sa22_boundaries, nspl, te_buildings]
+    builder: common:column
+    params: {slug: protected_areas, column: protected_ha}
+    role: context
+    caveats: Each designation's own boundaries, merged so that land protected twice counts once, and clipped to land, so marine sites are left out; measured over a window with the area of a 2km circle around each home (at most about 1,257 ha) on a 50m grid. Northern Ireland publishes no national layer of local nature reserves, and Ireland's set is its statutory one, without the proposed Natural Heritage Areas of 1995.
+
+  - id: hilliness
+    theme: environment
+    label: Hilliness around homes
+    description: Mean slope of the ground within about 500m of homes, in percent (a 10% slope rises 10m every 100m).
+    unit: "% slope"
+    direction: lower_better
+    coverage: [E, W, S, N, I]
+    sources: [os_terrain_50, osni_dtm_50m, copernicus_dem_glo30, nspl, te_buildings]
+    builder: common:column
+    params: {slug: terrain, column: hilliness_pct}
+    role: context
+    caveats: Slope by Horn's method on a 50m grid, from OS Terrain 50 in Great Britain and OSNI's 50m terrain model in Northern Ireland; Ireland's comes from Copernicus GLO-30, a surface model in which buildings and trees add height, so Irish towns and woods read somewhat hillier than the ground is. Flatter is easier on foot and by bike; the colour says nothing better about either.
+
+  - id: elevation
+    theme: environment
+    label: Height above sea level
+    description: Mean height of homes above sea level, in metres, from the 50m terrain grid.
+    unit: metres
+    direction: lower_better
+    coverage: [E, W, S, N, I]
+    sources: [os_terrain_50, osni_dtm_50m, copernicus_dem_glo30, nspl, te_buildings]
+    builder: common:column
+    params: {slug: terrain, column: elevation_m}
+    role: context
+    caveats: "The height of the 50m cell each home falls in; Ireland's comes from a surface model, which adds the height of buildings and trees. Neither high nor low is better; the colour scale only orders the areas. Irish heights rest on another vertical datum and may read a few metres low: two Dublin dock areas read below sea level."
+
+  - id: storm_overflow_spills
+    theme: environment
+    label: Sewage overflow spills nearby
+    description: Hours in the year that storm overflows within 2km of homes spilled sewage into rivers and the sea, added up (Environment Agency Event Duration Monitoring).
+    unit: hours a year
+    direction: lower_better
+    coverage: [E]
+    sources: [ea_edm_annual, nspl]
+    builder: common:sum_within
+    params: {slug: storm_overflows, weight: spill_hours, radius_m: 2000}
+    role: context
+    caveats: The water companies' own monitoring of each overflow's outlet over the latest calendar year, before spills are grouped into counted spills; an overflow whose monitor worked for less than 90% of the year under-reports. A spill reaches the river downstream, which may be further than 2km from the homes counted here. England only, because the Welsh returns go to Natural Resources Wales and Scotland, Northern Ireland and Ireland publish no full annual record.
+
+  - id: bathing_water_distance
+    theme: environment
+    label: Distance to a bathing water
+    description: Distance from homes to the nearest designated bathing water (a beach, lake or river stretch monitored for swimmers), in kilometres.
+    unit: km
+    direction: lower_better
+    coverage: [E, W, S, N, I]
+    sources: [ea_bathing_waters, nrw_bathing_waters, sepa_bathing_waters, daera_bathing_waters, bathing_water_classes_ni, epa_bathing_waters, nspl, te_buildings]
+    builder: common:nearest
+    params: {slug: bathing_waters, max_nearest_m: 100000, scale: 0.001}
+    role: context
+    caveats: Straight-line distance to the sampling point (in Northern Ireland the middle of the designated area). Only waters designated for bathing count, so a fine but undesignated beach or lake does not; the search stops at 100km.
+
+  - id: bathing_water_class
+    theme: environment
+    label: Bathing water quality nearby
+    description: Class of the nearest designated bathing water within 10km of homes, from 4 (Excellent) through Good and Sufficient to 1 (Poor), for the latest season.
+    unit: class 1–4 (4 = excellent)
+    direction: higher_better
+    coverage: [E, W, S, N, I]
+    sources: [ea_bathing_waters, nrw_bathing_waters, sepa_bathing_waters, daera_bathing_waters, bathing_water_classes_ni, epa_bathing_waters, nspl, te_buildings]
+    builder: common:nearest_attr
+    params: {slug: bathing_waters, value: class_score, max_m: 10000}
+    role: context
+    caveats: "The class of the bathing water nearest each home, averaged over the area's homes; an area where fewer than half the homes have one within 10km has no value. Classes rest on four seasons of samples (three for waters designated since 2022), and Northern Ireland's are transcribed from DAERA's yearly announcement. A home whose nearest designated water has no class yet has none either; Ireland's open layer leaves out the waters not yet classified and the one rated Poor in 2025 (Dún Laoghaire Baths)."
+
+  - id: river_status
+    theme: environment
+    label: River and lake health nearby
+    description: Status of the nearest river or lake within 2km of homes under the Water Framework Directive, from 5 (High) through Good, Moderate and Poor to 1 (Bad).
+    unit: class 1–5 (5 = high)
+    direction: higher_better
+    coverage: [E, W, S, N, I]
+    sources: [ea_wfd_rivers, ea_wfd_lakes, nrw_wfd_rivers, nrw_wfd_lakes, sepa_wfd_rivers, sepa_wfd_lochs, daera_wfd_status_2018, daera_river_segments, daera_lake_water_bodies, epa_wfd_rivers, epa_wfd_lakes, nspl, te_buildings]
+    builder: common:nearest_attr
+    params: {slug: water_status, value: class_score, max_m: 2000}
+    role: context
+    caveats: The status of the river or lake nearest each home, averaged over the area's homes; an area where fewer than half the homes have one within 2km has no value. Ecological status in England (2025), Wales (2024, interim), Northern Ireland (2018, the newest open) and Ireland (2019–2024); overall status in Scotland (2024), the only class SEPA publishes openly. Only the water bodies the agencies classify count, so small streams and ponds do not.
+
   - id: tree_canopy
     theme: environment
     label: Tree cover around homes
@@ -673,6 +777,34 @@ indicators:
     role: context
     overlap_group: connectivity
 
+  - id: cycle_infrastructure
+    theme: transport
+    label: Cycle tracks and lanes nearby
+    description: Kilometres of cycleway, cycle track and painted cycle lane per km² within 1km of homes (OpenStreetMap).
+    unit: km per km²
+    direction: higher_better
+    coverage: [E, W, S, N, I]
+    sources: [osm_england, osm_wales, osm_scotland, osm_ireland, nspl, te_buildings]
+    builder: common:sum_within
+    params: {slug: osm_network_points, column: kind, values: [cycle_sample], weight: weight, radius_m: 1000, per_km2: true}
+    role: context
+    overlap_group: connectivity
+    caveats: "Cycle infrastructure as OpenStreetMap maps it, which is fuller in cities: cycleways, paths where cycling is designated, and lanes or tracks along a road (a lane on both sides of a street counts once). Shared footways without the designation and quiet streets are not counted."
+
+  - id: street_connectivity
+    theme: transport
+    label: Street connectivity
+    description: Junctions of walkable streets and paths per km² within 1km of homes (OpenStreetMap).
+    unit: per km²
+    direction: higher_better
+    coverage: [E, W, S, N, I]
+    sources: [osm_england, osm_wales, osm_scotland, osm_ireland, nspl, te_buildings]
+    builder: common:density_within
+    params: {slug: osm_network_points, column: kind, values: [junction], radius_m: 1000}
+    role: context
+    overlap_group: connectivity
+    caveats: "A junction is where three or more ends of walkable streets or paths meet, so a T counts and two streets meeting end to end do not; driveways and car-park aisles are left out. A street grid reads high and a cul-de-sac estate low, unless footpaths through the estate are mapped. Pavements and crossings mapped as paths of their own do not make junctions, so a city that maps them reads like one that does not."
+
   - id: connectivity_cycling
     theme: transport
     label: Cycling connectivity
@@ -892,7 +1024,7 @@ indicators:
     builder: amenities:osm_nearest
     params: {values: [library], beyond_cap: 20000}
     role: context
-    caveats: Libraries as OpenStreetMap maps them; a council's list may be fuller. An area whose homes have none within 50 km, the search cap, reads 50 km.
+    caveats: Libraries as OpenStreetMap maps them; a council's list may be fuller. The search stops at 20 km; a home with none that close counts as 20 km, and an area whose homes mostly have none is marked as at least that far.
 
   - id: post_office_distance
     theme: amenities
@@ -905,7 +1037,7 @@ indicators:
     builder: amenities:osm_nearest
     params: {values: [post_office], beyond_cap: 20000}
     role: context
-    caveats: Post offices as OpenStreetMap maps them, counters inside shops included where mapped. An area whose homes have none within 50 km, the search cap, reads 50 km.
+    caveats: Post offices as OpenStreetMap maps them, counters inside shops included where mapped; Tramore's are not mapped. The search stops at 20 km; a home with none that close counts as 20 km, and an area whose homes mostly have none is marked as at least that far.
 
   - id: shops
     theme: amenities

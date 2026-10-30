@@ -175,6 +175,7 @@
     "broadcast_lad": "cyngor cyfan",
     "not_available": "dim ar gael yma",
     "missing": "dim data",
+    "capped": "o leiaf mor bell â hyn",
     "standsInFor": "yn sefyll yn lle {label}"
   },
   "Legend": {
@@ -398,5 +399,20 @@
       "Tachwedd",
       "Rhagfyr"
     ]
+  },
+  "Classes": {
+    "class4": {
+      "1": "Gwael",
+      "2": "Digonol",
+      "3": "Da",
+      "4": "Ardderchog"
+    },
+    "class5": {
+      "1": "Drwg",
+      "2": "Gwael",
+      "3": "Cymedrol",
+      "4": "Da",
+      "5": "Uchel"
+    }
   }
 }

@@ -43,13 +43,11 @@ def osm_access(
 def osm_nearest(
     ctx, values: list[str] | None = None, key: str | None = None, beyond_cap: float | None = None
 ) -> pl.DataFrame:
-    """Mean distance from homes to the nearest matching POI (metres); ``beyond_cap``
-    stands in where no home has one within the search cap."""
-    access = ctx.access(_pois(ctx, values, key), radius_m=1)
-    out = access.select("lsoa21cd", pl.col("nearest_m").alias("value"))
-    if beyond_cap is not None:
-        out = out.with_columns(pl.col("value").fill_null(beyond_cap))
-    return out
+    """Mean distance from homes to the nearest matching POI (metres), under the shared
+    search-cap rule (``common.capped_distance``, #213)."""
+    from lix_pipeline.indicators.common import capped_distance
+
+    return capped_distance(ctx.access, _pois(ctx, values, key), beyond_cap)
 
 
 # A service type counts as staged for a nation when most of its areas have one this close

@@ -69,6 +69,21 @@ def validate_geo() -> list[str]:
     for col in required:
         if col in geo.columns and (n := geo[col].null_count()) > 0:
             problems.append(f"geo_lsoa.{col} has {n:,} nulls")
+    # Names as people read them: no replacement or control characters, no stray spaces
+    # (a Windows-1252 byte read as UTF-8 named a Scottish zone "…Court�", #212)
+    for col in [c for c in geo.columns if c.endswith(("nm", "_name")) or c.startswith("name")]:
+        if geo[col].dtype != pl.Utf8:
+            continue
+        bad = geo.filter(
+            pl.col(col).str.contains(r"[\x00-\x1f\x7f\ufffd]")
+            | (pl.col(col) != pl.col(col).str.strip_chars())
+            | pl.col(col).str.contains(r"\s{2}")
+        )
+        if bad.height:
+            examples = bad.select("lsoa21cd", col).head(3).rows()
+            problems.append(
+                f"geo_lsoa.{col}: {bad.height:,} names with stray characters, e.g. {examples}"
+            )
     if missing_columns:
         return problems  # the per-nation checks below assume the columns exist
 

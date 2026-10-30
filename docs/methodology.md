@@ -56,6 +56,41 @@ may be scored. The build's QA report lists scored indicators that correlate abov
   the nearest point of the mapped coastline (OS Boundary-Line's high water mark in Great
   Britain, Tailte Éireann's high water mark in Ireland, the OSNI outline in Northern
   Ireland with its land border dropped), densified to a vertex every 100 m.
+- **Cycle tracks and lanes nearby** (context) is the kilometres of cycle infrastructure
+  per km² within 1 km of each home: OpenStreetMap's cycleways, paths where cycling is
+  designated, and lanes or tracks along a road (a lane on both sides of a street counts
+  once), sampled every 50 m from a pass over the whole highway network (`osm_ways`).
+- **Street connectivity** (context) is the junctions per km² within 1 km of each home,
+  where a junction is a node met by three or more ends of walkable streets and paths (a
+  T counts, two ways meeting end to end do not, driveways and car-park aisles are left
+  out). A street grid reads high and a cul-de-sac estate low, the standard urbanist
+  measure of how directly one can walk somewhere.
+- **Protected nature nearby** (context) is the hectares of land within about 2 km of
+  each home under a nature designation: SSSIs (ASSIs in Northern Ireland), national and
+  local nature reserves, SACs and SPAs in the UK; SACs, SPAs and NHAs in Ireland. The
+  designations are burned onto one 50 m grid as a single footprint (land protected twice
+  counts once) and clipped to land, and a window with the area of a 2 km circle is
+  averaged around each home.
+- **Built-up land around homes** (context) is the share of the land within 500 m that
+  ESA WorldCover classes as built up (buildings, roads and other sealed surfaces), from
+  the same 10 m map and pass as tree cover; a yes/no class per cell, not a sealing degree.
+- **Hilliness and height** (context) come from a 50 m grid of OS Terrain 50 in Great
+  Britain, OSNI's 50 m terrain model in Northern Ireland and the Copernicus GLO-30
+  surface model in Ireland: hilliness is the mean slope (Horn's method) within about
+  500 m of each home, height the height of the home's own cell. A surface model includes
+  buildings and trees, so Irish towns and woods read a little hillier and higher.
+- **Sewage overflow spills nearby** (context, England) adds up the hours that storm
+  overflows within 2 km of each home spilled in the latest calendar year, from the
+  Environment Agency's Event Duration Monitoring return (each overflow located by its
+  outlet's grid reference). Monitors that worked less than 90% of the year under-report.
+- **Bathing water** (context) is the distance to the nearest designated bathing water and
+  the class (Excellent 4 to Poor 1) of the nearest one within 10 km, averaged over the
+  homes that have one; an area where fewer than half the homes do has no class.
+- **River and lake health nearby** (context) is the Water Framework Directive status
+  (High 5 to Bad 1) of the nearest classified river or lake within 2 km, from points
+  every 100 m along each water body and around each lake, averaged over the homes that
+  have one. Ecological status in England, Wales, Northern Ireland and Ireland, overall
+  status in Scotland, and each agency's latest open classification (2018 to 2025).
 - **Saturation.** Access measures reach full marks at a typical suburb's level of
   provision rather than a city centre's (for example about six cafés and restaurants
   within 800m, three well-run pubs within 1.2km, a DfT connectivity score of 75), so
@@ -255,6 +290,7 @@ says which engine ran. Steering by a protected characteristic is ignored by both
 | Childminders' addresses are withheld by Ofsted | Only nurseries and pre-schools on non-domestic premises are located | — |
 | Flood-risk file includes pseudo-postcodes that aren't in NSPL | Dropped; they hold under 0.1% of the homes at high or medium risk | — |
 | An indicator is not built for a nation (OHID life expectancy, Ofsted childcare, GP capacity and ratings and primary school quality are England-only; the DfT connectivity metric and police.uk crime stop at the border, where the SIMD, the PSNI and NIMDM, and the Garda statistics, Pobal and bus frequency stand in) | No value; the profile says "not available in this nation" unless a substitute stands in, and the theme uses the indicators it has | `not_available` |
+| Nothing within a distance indicator's search (50 km, or the indicator's own cap: 20 km for libraries and post offices, 100 km for bathing waters, 200 km for the coast) | The home counts as that distance, so the area's mean is a floor, not a measurement | `capped` (most of the area's homes) |
 | Wales publishes no per-school results or inspection grades | Secondary school quality takes the local authority's Capped 9 points score, as a percentile among Welsh authorities, copied to its neighbourhoods; primary school quality has no Welsh value (Scotland publishes per-school leaver tariffs, so its secondaries are scored one by one, without grades) | `broadcast_lad` |
 
 ### School quality across Ofsted's framework changes

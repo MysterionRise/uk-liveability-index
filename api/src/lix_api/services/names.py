@@ -14,6 +14,18 @@ def base_locale(locale: str | None) -> str:
     return code if code in LOCALES else "en"
 
 
+def indicator_caveats(store, spec, locale: str | None) -> str | None:
+    """An indicator's caveat in the interface language when its catalogue has one
+    (config/i18n, carried by the manifest), else the English (#209)."""
+    lang = base_locale(locale)
+    if lang != "en" and spec.caveats:
+        catalogue = ((store.manifest.get("i18n") or {}).get(lang) or {}).get("indicators") or {}
+        text = (catalogue.get(spec.id) or {}).get("caveats")
+        if text:
+            return text
+    return spec.caveats
+
+
 def localised(row: dict, column: str, locale: str | None) -> str | None:
     """``row[column]`` in ``locale`` when the row has that form, else the English."""
     code = base_locale(locale)

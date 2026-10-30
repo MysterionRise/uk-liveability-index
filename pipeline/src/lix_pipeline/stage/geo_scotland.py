@@ -41,17 +41,35 @@ def _column(df: pl.DataFrame, prefix: str, suffix: str) -> str:
     return name
 
 
+def read_text_csv(path, **kwargs) -> pl.DataFrame:
+    """A CSV in UTF-8 or, failing that, Windows-1252: the Data Zone lookup writes a few
+    names in the latter (a single 0xA0 byte after "Eskdale"), which a lossy UTF-8 read
+    turned into U+FFFD ("Whitburn Glenisla Court�", #212)."""
+    import io
+    from pathlib import Path
+
+    data = Path(path).read_bytes()
+    try:
+        text = data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        text = data.decode("cp1252", errors="replace")
+    return pl.read_csv(io.StringIO(text), **kwargs)
+
+
+def clean_name(col: str) -> pl.Expr:
+    """Collapse runs of whitespace (non-breaking spaces too) and trim the ends."""
+    return pl.col(col).str.replace_all(r"\s+", " ").str.strip_chars()
+
+
 def read_lookup() -> pl.DataFrame:
     """The Data Zone 2022 lookup: zone, Intermediate Zone, council and the urban rural
     classification (2-fold for urban/rural, 6-fold for the classes)."""
-    raw = pl.read_csv(
-        raw_file("sg_dz22_lookup", "csv"), infer_schema_length=0, encoding="utf8-lossy"
-    )
+    raw = read_text_csv(raw_file("sg_dz22_lookup", "csv"), infer_schema_length=0)
     return raw.select(
         pl.col(_column(raw, "DZ22", "Code")).alias("lsoa21cd"),
-        pl.col(_column(raw, "DZ22", "Name")).alias("lsoa21nm"),
+        clean_name(_column(raw, "DZ22", "Name")).alias("lsoa21nm"),
         pl.col(_column(raw, "IZ22", "Code")).alias("msoa21cd"),
-        pl.col(_column(raw, "IZ22", "Name")).alias("msoa21nm"),
+        clean_name(_column(raw, "IZ22", "Name")).alias("msoa21nm"),
         pl.col(_column(raw, "LA", "Code")).alias("lad_cd"),
         pl.col(_column(raw, "UR6", "Code")).alias("ruc21cd"),
         pl.col(_column(raw, "UR6", "Name")).alias("ruc21nm"),
@@ -86,9 +104,9 @@ def build(nations: Nations) -> pl.DataFrame:
 
     zones = read_lookup()
     # The NSPL's own name documents agree with the lookup; the lookup wins where both exist
-    dz_names = pl.read_csv(nspl_document("LSOA*DZ names and codes SC*.csv"), encoding="utf8-lossy")
+    dz_names = read_text_csv(nspl_document("LSOA*DZ names and codes SC*.csv"))
     dz_names = dz_names.select(
-        pl.col(dz_names.columns[0]).alias("lsoa21cd"), pl.col(dz_names.columns[1]).alias("nm")
+        pl.col(dz_names.columns[0]).alias("lsoa21cd"), clean_name(dz_names.columns[1]).alias("nm")
     )
     zones = (
         zones.join(dz_names, on="lsoa21cd", how="left")

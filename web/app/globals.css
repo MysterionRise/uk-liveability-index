@@ -228,14 +228,58 @@ input[type="checkbox"] {
   [data-testid="legend"],
   [data-testid="search"],
   [data-testid="onboarding"],
+  [data-testid="locale-toggle"],
+  [data-testid="theme-toggle"],
+  [data-testid="analyst-toggle"],
+  [data-testid="analyst-label"],
+  [data-testid="map-column"],
+  [data-testid="side-panel"] [role="tablist"],
   .copilotKitInput,
   .copilotKitInputContainer {
     display: none !important;
+  }
+  /* The theme bars and the "above average" dots are colour, not decoration (#216) */
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* Paper is white: a dark theme printed a black page once colours were kept */
+  :root:root,
+  :root:root[data-theme="dark"],
+  :root:root:not([data-theme="light"]) {
+    color-scheme: light;
+    --page: #ffffff;
+    --surface-1: #ffffff;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #6f6d67;
+    --border: rgba(11, 11, 11, 0.1);
+    --hover: rgba(11, 11, 11, 0.04);
+    --track: #e1e0d9;
+    --baseline: #c3c2b7;
+    --accent: #0b0b0b;
+  }
+  /* Every page, not the first screenful: the page and the panel grow to their content */
+  main,
+  main > div,
+  [data-testid="side-panel"],
+  [data-testid="side-panel"] .overflow-y-auto {
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
   [data-testid="side-panel"] {
     width: 100% !important;
     max-width: none !important;
     position: static !important;
     border: 0 !important;
+  }
+  /* Paper needs no screen gutters: cards sit close and never split across a page */
+  [data-testid="side-panel"] .rounded-lg {
+    box-shadow: none !important;
+    padding: 0.5rem !important;
+    margin-top: 0.5rem !important;
+    break-inside: avoid;
   }
 }

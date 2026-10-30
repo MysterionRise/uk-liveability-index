@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
+from lix_pipeline.fetch.outage import raise_if_maintenance
 from lix_pipeline.fetch.session import make_session
 
 logger = setup_logging("download")
@@ -137,6 +138,7 @@ def _get(
     while True:
         # (connect, read) timeout; large files like price_paid (5.5GB) need generous reads
         resp = session.get(url, headers=headers, stream=True, timeout=(30, read_timeout_s))
+        raise_if_maintenance(resp, url)
         if resp.status_code != 202:
             return resp
         resp.close()
@@ -329,6 +331,7 @@ def download_file(
         try:
             sha256 = hashlib.sha256()
             with session.get(url, stream=True, timeout=(30, read_timeout_s)) as resp:
+                raise_if_maintenance(resp, url)
                 resp.raise_for_status()
                 with open(part, "wb") as f:
                     for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):

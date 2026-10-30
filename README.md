@@ -9,7 +9,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
 - **62,833 neighbourhoods** across the UK and Ireland (2021 LSOAs in England and Wales,
   2022 Data Zones in Scotland, 2021 Super Data Zones in Northern Ireland, 2022 Small Areas
   in Ireland; from a few hundred residents in Ireland and Scotland to a few thousand
-  elsewhere), scored 0–100 on nine themes from **about 185 open datasets** (197 in the
+  elsewhere), scored 0–100 on nine themes from **about 224 open datasets** (236 in the
   registry): police.uk, the PSNI and the CSO's Garda statistics, NHS,
   Ofsted, DfE, the Welsh and Scottish Governments and the Northern Ireland departments,
   Land Registry, Registers of Scotland and Land & Property Services, ONS, NRS, NISRA and
@@ -79,7 +79,7 @@ A full walkthrough video comes with each
 
 ## How the scores work
 
-Each neighbourhood gets up to 102 indicators. The 44 that count towards the score are
+Each neighbourhood gets up to 112 indicators. The 44 that count towards the score are
 turned into 0–100 scores, averaged within nine themes (safety, environment, health
 services, schools and childcare, transport, amenities, housing, community and climate), and
 the themes are weighted by what you choose. Measures that are the same everywhere
@@ -94,7 +94,7 @@ it scores on fewer themes and stand-ins than the UK nations.
 - **Uncertain where it should be.** Nudging every theme's weight shows how stable a result is:
   "better than 72–95% of the UK" rather than a falsely precise 84%, and "close call" tags in
   rankings.
-- **Checked.** A review of 59 contrasting places (139 checks, 98 of them run on every
+- **Checked.** A review of 58 contrasting places (168 checks, 109 of them run on every
   build) is in [docs/validation.md](docs/validation.md).
 
 The full method, including how Greater Manchester's missing crime data and Ofsted's

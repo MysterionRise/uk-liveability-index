@@ -19,6 +19,10 @@ MESSAGES: dict[str, dict[str, str]] = {
         "budget": "The assistant has used today's budget, so it's resting until tomorrow "
         "(midnight UTC). {still_works}",
         "rate": "The assistant is busy right now; please try again in a minute. {still_works}",
+        "message_too_long": "That message is longer than the assistant reads ({limit} "
+        "characters); please shorten it and ask again.",
+        "budget_short": "This question would take more of today's budget than is left; please "
+        "ask a shorter one, or again tomorrow (midnight UTC). {still_works}",
         "session_limit": "This conversation has reached its limit of {turns} questions. Reload "
         "the page "
         "to start a new one. {still_works}",
@@ -78,6 +82,10 @@ MESSAGES: dict[str, dict[str, str]] = {
         "yfory (hanner nos UTC). {still_works}",
         "rate": "Mae'r cynorthwyydd yn brysur ar hyn o bryd; rhowch gynnig arall arni mewn "
         "munud. {still_works}",
+        "message_too_long": "Mae'r neges honno'n hirach nag y mae'r cynorthwyydd yn ei darllen "
+        "({limit} nod); byrhewch hi a gofynnwch eto.",
+        "budget_short": "Byddai'r cwestiwn hwn yn defnyddio mwy o gyllideb heddiw nag sydd ar "
+        "ôl; gofynnwch un byrrach, neu eto yfory (hanner nos UTC). {still_works}",
         "session_limit": "Mae'r sgwrs hon wedi cyrraedd ei therfyn o {turns} cwestiwn. "
         "Ail-lwythwch y "
         "dudalen i ddechrau un newydd. {still_works}",
@@ -132,6 +140,11 @@ MESSAGES: dict[str, dict[str, str]] = {
         "budget": "Chleachd an cuidiche buidseat an latha an-diugh, mar sin tha e a' gabhail fois "
         "gu màireach (meadhan-oidhche UTC). {still_works}",
         "rate": "Tha an cuidiche trang an-dràsta; feuch a-rithist ann am mionaid. {still_works}",
+        "message_too_long": "Tha an teachdaireachd sin nas fhaide na leughas an cuidiche "
+        "({limit} caractaran); dèan nas giorra i is faighnich a-rithist.",
+        "budget_short": "Chleachdadh a' cheist seo barrachd de bhuidseat an latha na tha air "
+        "fhàgail; faighnich tè nas giorra, no a-rithist a-màireach (meadhan-oidhche UTC). "
+        "{still_works}",
         "session_limit": "Ràinig an còmhradh seo a chrìoch de {turns} ceistean. Ath-luchdaich an "
         "duilleag airson fear ùr a thòiseachadh. {still_works}",
         "flag_imputed": "Tha na figearan eucoir an seo nan tuairmse: chan fhoillsich Poileas "
@@ -193,6 +206,10 @@ MESSAGES: dict[str, dict[str, str]] = {
         "amárach (meán oíche UTC). {still_works}",
         "rate": "Tá an cúntóir gnóthach faoi láthair; bain triail eile as i gceann nóiméid. "
         "{still_works}",
+        "message_too_long": "Tá an teachtaireacht sin níos faide ná mar a léann an cúntóir "
+        "({limit} carachtar); giorraigh í agus fiafraigh arís.",
+        "budget_short": "D'úsáidfeadh an cheist seo níos mó de bhuiséad an lae ná mar atá fágtha; "
+        "cuir ceist níos giorra, nó arís amárach (meán oíche UTC). {still_works}",
         "session_limit": "Tá teorainn {turns} ceist an chomhrá seo sroichte. Athlódáil an "
         "leathanach "
         "chun ceann nua a thosú. {still_works}",

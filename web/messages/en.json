@@ -175,6 +175,7 @@
     "broadcast_lad": "council-wide",
     "not_available": "not available here",
     "missing": "no data",
+    "capped": "at least this far",
     "standsInFor": "stands in for {label}"
   },
   "Legend": {
@@ -398,5 +399,20 @@
       "November",
       "December"
     ]
+  },
+  "Classes": {
+    "class4": {
+      "1": "Poor",
+      "2": "Sufficient",
+      "3": "Good",
+      "4": "Excellent"
+    },
+    "class5": {
+      "1": "Bad",
+      "2": "Poor",
+      "3": "Moderate",
+      "4": "Good",
+      "5": "High"
+    }
   }
 }

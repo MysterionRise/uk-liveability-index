@@ -29,12 +29,16 @@ def poi_access(
     poi_xy: tuple[str, str] = ("x", "y"),
     by: str = "lsoa21cd",
     max_nearest_m: float = 50_000,
+    beyond_m: float | None = None,
 ) -> pl.DataFrame:
     """Per-``by`` group means of nearest distance, count within radius and access score.
 
     ``weight`` scales each POI's contribution (e.g. a quality multiplier for a school
-    or the number of nursery places). ``sigma_m`` defaults to half the radius.
+    or the number of nursery places). ``sigma_m`` defaults to half the radius. A home
+    with nothing within ``max_nearest_m`` counts as ``beyond_m`` away (the cap itself by
+    default); ``share_capped`` is the share of homes that are (#213).
     """
+    beyond = max_nearest_m if beyond_m is None else beyond_m
     sigma = sigma_m if sigma_m is not None else radius_m / 2
     ox, oy = origin_xy
     px, py = poi_xy
@@ -44,7 +48,8 @@ def poi_access(
     n = len(o_xy)
 
     if pois.height == 0:
-        nearest = np.full(n, np.nan)
+        nearest = np.full(n, np.nan if beyond_m is None else beyond_m)
+        capped = np.ones(n, dtype=bool)
         count = np.zeros(n)
         score = np.zeros(n)
     else:
@@ -56,7 +61,8 @@ def poi_access(
         # A home with nothing within the search cap is at least the cap away: it counts as
         # the cap in the area's mean, so an area whose homes mostly have nothing in reach
         # reads as far, not as the few homes that do
-        nearest = np.where(np.isinf(nearest), max_nearest_m, nearest)
+        capped = np.isinf(nearest)
+        nearest = np.where(capped, beyond, nearest)
 
         pairs = cKDTree(o_xy).sparse_distance_matrix(
             poi_tree, max_distance=radius_m, output_type="coo_matrix"
@@ -72,6 +78,7 @@ def poi_access(
             "nearest_m": nearest,
             "count": count,
             "score": score,
+            "capped": capped,
         },
         nan_to_null=True,
     )
@@ -82,10 +89,97 @@ def poi_access(
             pl.col("count").mean(),
             pl.col("score").mean(),
             (pl.col("count") > 0).mean().alias("share_with_any"),
+            pl.col("capped").mean().alias("share_capped"),
             pl.len().alias("n_origins"),
         )
         .sort(by)
     )
+
+
+def _xy(df: pl.DataFrame, cols: tuple[str, str]) -> np.ndarray:
+    return np.column_stack([df[cols[0]].to_numpy(), df[cols[1]].to_numpy()]).astype(float)
+
+
+def nearest_attr(
+    origins: pl.DataFrame,
+    pois: pl.DataFrame,
+    value: str,
+    max_m: float,
+    origin_xy: tuple[str, str] = ("east1m", "north1m"),
+    poi_xy: tuple[str, str] = ("x", "y"),
+    by: str = "lsoa21cd",
+) -> pl.DataFrame:
+    """The nearest point's ``value`` for each home with one within ``max_m``, as the
+    per-area mean over those homes, with ``share_with_any`` (the share of homes that
+    have one) and ``n_origins``. A home with none in reach has no value: the class of a
+    bathing water 40 km away says nothing about the one on the doorstep. Nor does a home
+    whose nearest point has no value (a bathing water not yet classified): it does not
+    take a farther one's (454 English areas did, v0.7.0 release pass)."""
+    ox, oy = origin_xy
+    pois = pois.filter(pl.col(poi_xy[0]).is_not_null() & pl.col(poi_xy[1]).is_not_null())
+    origins = origins.filter(pl.col(ox).is_not_null() & pl.col(oy).is_not_null())
+    n = origins.height
+    vals = np.full(n, np.nan)
+    if pois.height:
+        dist, idx = cKDTree(_xy(pois, poi_xy)).query(
+            _xy(origins, origin_xy), k=1, distance_upper_bound=max_m, workers=-1
+        )
+        hit = np.isfinite(dist)
+        vals[hit] = pois[value].cast(pl.Float64).fill_null(np.nan).to_numpy()[idx[hit]]
+    per_origin = pl.DataFrame({by: origins[by], "value": vals}, nan_to_null=True)
+    return (
+        per_origin.group_by(by)
+        .agg(
+            pl.col("value").mean(),
+            pl.col("value").is_not_null().mean().alias("share_with_any"),
+            pl.len().alias("n_origins"),
+        )
+        .sort(by)
+    )
+
+
+def sum_within(
+    origins: pl.DataFrame,
+    pois: pl.DataFrame,
+    radius_m: float,
+    weight: str | None = None,
+    per_km2: bool = False,
+    origin_xy: tuple[str, str] = ("east1m", "north1m"),
+    poi_xy: tuple[str, str] = ("x", "y"),
+    by: str = "lsoa21cd",
+    chunk: int = 200_000,
+) -> pl.DataFrame:
+    """The per-area mean, over homes, of the points within ``radius_m`` (their ``weight``
+    summed when given; per km² of the disc with ``per_km2``), undecayed.
+
+    Unweighted, it counts with ``query_ball_point(return_length=True)``, which keeps no
+    pairs: junctions or 50 m cycleway samples within 1 km of five million homes would be
+    over a billion pairs in ``poi_access``'s distance matrix. Weighted sums (spill hours
+    of storm overflows, a sparse table) build the pairs in batches of homes."""
+    ox, oy = origin_xy
+    pois = pois.filter(pl.col(poi_xy[0]).is_not_null() & pl.col(poi_xy[1]).is_not_null())
+    origins = origins.filter(pl.col(ox).is_not_null() & pl.col(oy).is_not_null())
+    o_xy = _xy(origins, origin_xy)
+    total = np.zeros(len(o_xy))
+    if pois.height:
+        tree = cKDTree(_xy(pois, poi_xy))
+        if weight is None:
+            total = tree.query_ball_point(o_xy, r=radius_m, return_length=True, workers=-1)
+            total = total.astype(float)
+        else:
+            w = pois[weight].fill_null(0).to_numpy().astype(float)
+            for start in range(0, len(o_xy), chunk):
+                block = o_xy[start : start + chunk]
+                pairs = cKDTree(block).sparse_distance_matrix(
+                    tree, max_distance=radius_m, output_type="coo_matrix"
+                )
+                total[start : start + len(block)] = np.bincount(
+                    pairs.row, weights=w[pairs.col], minlength=len(block)
+                )
+    if per_km2:
+        total = total / (np.pi * radius_m**2 / 1e6)
+    per_origin = pl.DataFrame({by: origins[by], "value": total})
+    return per_origin.group_by(by).agg(pl.col("value").mean(), pl.len().alias("n_origins")).sort(by)
 
 
 def residential_postcodes(*extra: str) -> pl.DataFrame:

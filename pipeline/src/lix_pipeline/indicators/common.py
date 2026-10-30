@@ -86,16 +86,41 @@ def nearest(
     """Mean distance from homes to the nearest point of a staged table (metres, or
     ``scale`` times that: 0.001 for kilometres).
 
-    Homes with nothing within the search cap (50 km, or ``max_nearest_m``) have no
-    distance; ``beyond_cap`` gives an area with no measurable distance that value instead
-    (an island with no emergency department within reach is 50 km from one, not
-    unknown)."""
-    kwargs = {"max_nearest_m": max_nearest_m} if max_nearest_m is not None else {}
-    access = ctx.access(_points(ctx, slug, column, values), radius_m=1, **kwargs)
-    out = access.select("lsoa21cd", (pl.col("nearest_m") * scale).alias("value"))
-    if beyond_cap is not None:
-        out = out.with_columns(pl.col("value").fill_null(beyond_cap))
-    return out
+    The search stops at ``max_nearest_m``, else ``beyond_cap``, else 50 km; a home with
+    nothing that close counts as ``beyond_cap`` away (the cap itself without one), and an
+    area most of whose homes do is marked ``capped`` (#213)."""
+    return capped_distance(
+        ctx.access, _points(ctx, slug, column, values), beyond_cap, max_nearest_m, scale
+    )
+
+
+# A home with nothing within this distance of it is beyond the search (50 km)
+DEFAULT_SEARCH_M = 50_000.0
+
+
+def capped_distance(
+    access_fn,
+    points: pl.DataFrame,
+    beyond_cap: float | None = None,
+    max_nearest_m: float | None = None,
+    scale: float = 1.0,
+) -> pl.DataFrame:
+    """The nearest-distance rule every ``*_distance`` indicator shares (#213): one search
+    cap, the value a home beyond it takes, and the ``capped`` flag on an area whose homes
+    mostly are. ``beyond_cap`` below the search cap would rank a home with nothing in
+    reach nearer than one with a service just inside it."""
+    cap = max_nearest_m if max_nearest_m is not None else (beyond_cap or DEFAULT_SEARCH_M)
+    if beyond_cap is not None and beyond_cap < cap:
+        raise ValueError(f"beyond_cap ({beyond_cap:g} m) is below the search cap ({cap:g} m)")
+    access = access_fn(points, radius_m=1, max_nearest_m=cap, beyond_m=beyond_cap)
+    return access.select(
+        "lsoa21cd",
+        (pl.col("nearest_m") * scale).alias("value"),
+        pl.when(pl.col("share_capped") > 0.5)
+        .then(pl.lit("capped"))
+        .otherwise(pl.lit("ok"))
+        .alias("quality"),
+    )
 
 
 def access(
@@ -138,11 +163,47 @@ def density_within(
     values: list | None = None,
 ) -> pl.DataFrame:
     """Mean number of a staged table's points per km² within ``radius_m`` of homes."""
-    import math
+    return sum_within(ctx, slug, radius_m, column=column, values=values, per_km2=True)
 
-    km2 = math.pi * radius_m**2 / 1e6
-    df = ctx.access(_points(ctx, slug, column, values), radius_m=radius_m)
-    return df.select("lsoa21cd", (pl.col("count") / km2).alias("value"))
+
+def sum_within(
+    ctx,
+    slug: str,
+    radius_m: float,
+    weight: str | None = None,
+    per_km2: bool = False,
+    column: str | None = None,
+    values: list | None = None,
+    scale: float = 1.0,
+) -> pl.DataFrame:
+    """Mean over homes of a staged table's points within ``radius_m`` (their ``weight``
+    summed when given, per km² with ``per_km2``), times ``scale``; undecayed."""
+    from lix_pipeline.geo.access import sum_within as _sum_within
+
+    df = _sum_within(
+        ctx.origins, _points(ctx, slug, column, values), radius_m, weight=weight, per_km2=per_km2
+    )
+    return df.select("lsoa21cd", (pl.col("value") * scale).alias("value"))
+
+
+def nearest_attr(
+    ctx,
+    slug: str,
+    value: str,
+    max_m: float,
+    column: str | None = None,
+    values: list | None = None,
+    min_share: float = 0.5,
+) -> pl.DataFrame:
+    """Mean over homes of the nearest point's ``value`` within ``max_m``; an area where
+    fewer than ``min_share`` of its homes have one has no value (``missing``)."""
+    from lix_pipeline.geo.access import nearest_attr as _nearest_attr
+
+    df = _nearest_attr(ctx.origins, _points(ctx, slug, column, values), value, max_m)
+    return df.select(
+        "lsoa21cd",
+        pl.when(pl.col("share_with_any") >= min_share).then(pl.col("value")).alias("value"),
+    )
 
 
 def share(ctx, slug: str, numerator: list[str], denominator: str) -> pl.DataFrame:

@@ -55,12 +55,16 @@ jobs:
         run: |
           gh label create data-refresh --color d4c5f9 \
             --description "The nightly source check found data to refresh" 2>/dev/null || true
-          number="$(gh issue list --label data-refresh --state open --json number --jq '.[0].number')"
+          # The report is the open issue with this label AND this title: a newer issue that
+          # merely carries the label (a planner bug, say) must never be rewritten (#218)
+          title="Data refresh due"
+          number="$(gh issue list --label data-refresh --state open --search "in:title \"$title\"" \
+            --json number,title --jq "[.[] | select(.title == \"$title\")][0].number // empty")"
           if [ "$STATE" = pending ]; then
             if [ -n "$number" ]; then
               gh issue edit "$number" --body-file body.md
             else
-              gh issue create --title "Data refresh due" --label data-refresh --body-file body.md
+              gh issue create --title "$title" --label data-refresh --body-file body.md
             fi
           elif [ -n "$number" ]; then
             gh issue close "$number" --comment "Nothing pending at the last nightly check."

@@ -145,3 +145,22 @@ def test_registers_of_scotland_series_is_pooled_per_zone():
     b = summary.row(1, named=True)
     assert b["median_price_12m"] is None and b["median_price_5y"] is None
     assert b["transaction_count_12m"] == 3
+
+
+def test_names_read_through_windows_1252_and_are_trimmed(tmp_path):
+    """The Data Zone lookup has single cp1252 bytes (a non-breaking space after a name),
+    which a lossy UTF-8 read turned into U+FFFD (#212)."""
+    import polars as pl
+
+    from lix_pipeline.stage.geo_scotland import clean_name, read_text_csv
+
+    path = tmp_path / "lookup.csv"
+    path.write_bytes(
+        b"DZ22_Code,DZ22_Name\n"
+        b"S01020747,Whitburn Glenisla Court\xa0\n"
+        b"S01020618,Fauldhouse  Centre \n"
+    )
+    df = read_text_csv(path).select("DZ22_Code", clean_name("DZ22_Name"))
+    assert df["DZ22_Name"].to_list() == ["Whitburn Glenisla Court", "Fauldhouse Centre"]
+    assert not df["DZ22_Name"].str.contains("�").any()
+    assert pl.read_csv(path, encoding="utf8-lossy")["DZ22_Name"][0].endswith("�")  # the bug

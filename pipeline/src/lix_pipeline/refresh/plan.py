@@ -22,14 +22,16 @@ from lix_pipeline.stage import STAGE_READS, graph
 
 # Serve files depend on these configuration files as well as on the indicator table (the
 # translation catalogues ride the manifest, so a corrected label re-scores: #197)
-SERVE_CONFIG = (
-    "indicators.yaml",
-    "weights.yaml",
-    "nations.yaml",
-    "i18n/cy.yaml",
-    "i18n/gd.yaml",
-    "i18n/ga.yaml",
-)
+# The registry is in it because the manifest publishes each source's title, licence,
+# attribution and coverage (#215); the catalogues are globbed, so a fifth one counts
+SERVE_CONFIG = ("indicators.yaml", "weights.yaml", "nations.yaml", "datasets.yaml")
+
+
+def serve_config_files(root: Path) -> list[str]:
+    return [
+        *SERVE_CONFIG,
+        *sorted(f"i18n/{p.name}" for p in (root / "config" / "i18n").glob("*.yaml")),
+    ]
 
 
 def tile_inputs() -> tuple[str, ...]:
@@ -177,20 +179,69 @@ def indicators_sidecar() -> Path:
     return data_dir("indicators") / "long.meta.json"
 
 
+def table_feeds(registry: dict, nations: Iterable[str]) -> dict[str, set[str]]:
+    """Each stager's own raw inputs, the shared geography left out except for the shared
+    tables themselves: the sources by which an indicator is known to read a table."""
+    from lix_pipeline.stage import stagers
+
+    nations = list(nations)
+    shared = graph.shared_inputs(registry, nations)
+    out = {}
+    for s in stagers():
+        ins = set(graph.direct_inputs(s, registry, nations))
+        out[s] = ins if s in graph.SHARED_TABLES else ins - shared
+    return out
+
+
+def indicator_tables(spec: IndicatorSpec, feeds: dict[str, set[str]]) -> list[str]:
+    """The staged tables an indicator is built from: the table its builder names, and
+    every table fed by one of its sources (``homes`` and ``nspl`` for anything sampled
+    at homes)."""
+    sources = set(spec.sources)
+    slug = (spec.params or {}).get("slug")
+    return sorted(t for t, ins in feeds.items() if t == slug or t in sources or ins & sources)
+
+
+def indicator_fingerprint(
+    spec: IndicatorSpec,
+    lock: dict,
+    feeds: dict[str, set[str]] | None = None,
+    sidecars: dict[str, str | None] | None = None,
+) -> tuple[str, dict[str, str | None]]:
+    """The raw sources' checksums and, with ``feeds``, the fingerprint of each staged
+    table the indicator reads: a table re-staged by hand (``lix stage --slug noise``)
+    makes its indicators stale whatever the raw checksums say (#215)."""
+    digest, parts = graph.fingerprint(spec.sources, lock)
+    if feeds is None:
+        return digest, parts
+    sidecars = {} if sidecars is None else sidecars
+    for t in indicator_tables(spec, feeds):
+        if t not in sidecars:
+            sidecars[t] = graph.read_sidecar(graph.sidecar_path(t)).get("fingerprint")
+        parts[f"staged:{t}"] = sidecars[t]
+    digest = hashlib.sha256(
+        "\n".join(f"{k} {v or 'missing'}" for k, v in sorted(parts.items())).encode()
+    ).hexdigest()
+    return digest, parts
+
+
 def indicator_steps(
     lock: dict,
     indicators: Iterable[IndicatorSpec],
     force: bool = False,
     nations: Iterable[str] | None = None,
+    registry: dict | None = None,
 ) -> list[Step]:
-    """Indicators whose sources' checksums moved since they were built, or every
-    indicator when the table was built for another set of nations."""
+    """Indicators whose sources' checksums, or whose staged tables, moved since they
+    were built, or every indicator when the table was built for another set of nations."""
     meta = graph.read_sidecar(indicators_sidecar())
     built = meta.get("indicators") or {}
     stale_nations = nations_changed(meta, nations) if nations is not None else None
+    feeds = table_feeds(registry, nations) if registry is not None and nations is not None else None
+    sidecars: dict[str, str | None] = {}
     out = []
     for spec in indicators:
-        digest, parts = graph.fingerprint(spec.sources, lock)
+        digest, parts = indicator_fingerprint(spec, lock, feeds, sidecars)
         before = built.get(spec.id)
         if force:
             out.append(Step(spec.id, "forced"))
@@ -199,10 +250,14 @@ def indicator_steps(
         elif stale_nations:
             out.append(Step(spec.id, stale_nations))
         elif before.get("fingerprint") != digest:
-            changed = sorted(
-                s for s, c in parts.items() if (before.get("inputs") or {}).get(s) != c
-            )
-            out.append(Step(spec.id, f"sources changed: {', '.join(changed[:4])}"))
+            was = before.get("inputs") or {}
+            changed = sorted(s for s, c in parts.items() if was.get(s) != c)
+            raw = [s for s in changed if not s.startswith("staged:")]
+            if raw:
+                out.append(Step(spec.id, f"sources changed: {', '.join(raw[:4])}"))
+            else:
+                tables = [s.removeprefix("staged:") for s in changed]
+                out.append(Step(spec.id, f"staged inputs changed: {', '.join(tables[:4])}"))
     return out
 
 
@@ -218,12 +273,21 @@ def restaged_indicator_steps(
     indicator built from its table is then stale whatever the raw checksums say (every
     Northern Irish crime, air and broadband value was missing after v0.5.0's first
     refresh, because police.uk's and Defra's files had not changed). An indicator is
-    touched when one of its sources is the stager itself or one of the stager's inputs."""
+    touched when one of its sources is the stager itself or one of the stager's own raw
+    inputs. Not the closure through the tables it reads: every stager that samples at
+    homes reads ``homes``, and NSPL, the Irish buildings and the boundaries are in nearly
+    every indicator's sources, so one re-staged flood table rebuilt 50 indicators that
+    never read it (#205). Those shared inputs count only when ``homes`` or ``nspl``
+    itself is re-staged; the readers of a re-staged ``homes`` are planned by
+    ``stage_steps`` and cascade through their own inputs here."""
+    nations = list(nations)
+    shared = graph.shared_inputs(registry, nations)
     touched: dict[str, str] = {}
     for step in stage:
         touched.setdefault(step.name, step.name)
-        for slug in graph.inputs_for(step.name, registry, nations):
-            touched.setdefault(slug, step.name)
+        for slug in graph.direct_inputs(step.name, registry, nations):
+            if step.name in graph.SHARED_TABLES or slug not in shared:
+                touched.setdefault(slug, step.name)
     out = []
     for spec in indicators:
         if spec.id in planned:
@@ -234,11 +298,18 @@ def restaged_indicator_steps(
     return out
 
 
-def indicator_fingerprints(lock: dict, indicators: Iterable[IndicatorSpec]) -> dict:
+def indicator_fingerprints(
+    lock: dict,
+    indicators: Iterable[IndicatorSpec],
+    registry: dict | None = None,
+    nations: Iterable[str] | None = None,
+) -> dict:
+    feeds = table_feeds(registry, nations) if registry is not None and nations is not None else None
+    sidecars: dict[str, str | None] = {}
     return {
         spec.id: {"fingerprint": d, "inputs": p}
         for spec in indicators
-        for d, p in [graph.fingerprint(spec.sources, lock)]
+        for d, p in [indicator_fingerprint(spec, lock, feeds, sidecars)]
     }
 
 
@@ -256,11 +327,26 @@ def serve_sidecar() -> Path:
     return data_dir("serve") / ".meta.json"
 
 
+# The staged tables the serve step reads itself (scores.py for the geography,
+# lookups.py for postcodes, places and the points of interest): a re-stage that leaves
+# the indicator table as it was still changes the pack, as the Scottish names (#212)
+# and the Northern Irish places' districts (#211) did (v0.7.0 release pass)
+SERVE_TABLES = (
+    "geo_lsoa", "nspl", "places", "logainm", "ods_gp", "schools", "ofsted_schools",
+    "chargers", "osm_pois",
+)  # fmt: skip
+
+
 def serve_fingerprint(root: Path | None = None) -> tuple[str, dict[str, str | None]]:
-    """The indicator table plus the configuration the scores are computed from."""
+    """The indicator table, the staged tables the pack copies from, and the configuration
+    the scores are computed from."""
     root = root or get_project_root()
     parts = {"indicators/long.parquet": _file_sha(data_dir("indicators") / "long.parquet")}
-    for name in SERVE_CONFIG:
+    for table in SERVE_TABLES:
+        meta = graph.read_sidecar(graph.sidecar_path(table))
+        if meta:
+            parts[f"staged:{table}"] = meta.get("fingerprint")
+    for name in serve_config_files(root):
         parts[f"config/{name}"] = _file_sha(root / "config" / name)
     digest = hashlib.sha256(
         "\n".join(f"{k} {v or 'missing'}" for k, v in sorted(parts.items())).encode()
@@ -316,7 +402,7 @@ def make_plan(
     plan.resolve = slugs_in_scope(registry, nations)
     plan.fetch = fetch_steps(lock, registry, plan.resolve)
     plan.stage, plan.skipped = stage_steps(lock, registry, nations, stager_order, force)
-    plan.indicators = indicator_steps(lock, indicators, force, nations=nations)
+    plan.indicators = indicator_steps(lock, indicators, force, nations=nations, registry=registry)
     plan.indicators += restaged_indicator_steps(
         plan.stage, registry, nations, indicators, {s.name for s in plan.indicators}
     )

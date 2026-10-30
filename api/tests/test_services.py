@@ -384,6 +384,29 @@ class TestRankingScopesAndSorts:
             )
             assert len(out.results) <= 2, ident
 
+    def test_a_one_measure_list_is_ordered_by_the_figure_it_shows(self, store):
+        """A neighbourhood's score and value are each averaged over its small areas, so
+        ordering by the score put the area with the most protected land fourth (v0.7.0
+        release pass); the shown value orders the list now."""
+        from lix_api.services.ranking import rank_areas
+
+        for ident, direction in [("tree_canopy", "best"), ("noise_exposure", "worst")]:
+            out = rank_areas(
+                store, within="Leeds", level="msoa", limit=8,
+                sort_by=f"indicator:{ident}", direction=direction,
+            )  # fmt: skip
+            shown = [r.sort_value for r in out.results if r.sort_value is not None]
+            assert len(shown) >= 2, ident
+            assert shown == sorted(shown, reverse=True), (ident, shown)
+
+    def test_an_england_only_context_measure_says_where_it_is_built(self, store):
+        from lix_api.services.ranking import rank_areas
+
+        if "storm_overflow_spills" not in store.indicators:
+            pytest.skip("the test pack predates the measure")
+        with pytest.raises(ValueError, match="built for England"):
+            rank_areas(store, within="Cardiff", sort_by="indicator:storm_overflow_spills")
+
     def test_rank_in_another_language_names_areas_in_it(self, store):
         from lix_api.services.ranking import rank_areas
 
@@ -731,3 +754,103 @@ class TestSearchRemainder:
             compare.compare_areas(store, ["LS6 3HN", "ls6 3hn"])
         with pytest.raises(ValueError, match="different"):
             compare.compare_areas(store, ["LS6 3HN", "E01000001"])
+
+
+def test_london_prefixes_resolve_to_their_lettered_districts():
+    """ "SW1" names no district: the districts are SW1A … SW1Y (#210)."""
+    import polars as pl
+
+    from lix_api.services.search import postcode_groups
+
+    pcs = pl.DataFrame({
+        "postcode_norm": ["SW1A1AA", "SW1A2AB", "SW1P3BU", "LS63HN", "W1A1AA"],
+        "lat": [51.50, 51.50, 51.49, 53.82, 51.52], "lon": [-0.14, -0.13, -0.13, -1.57, -0.14],
+        "lsoa21cd": ["E01004736", "E01004736", "E01004737", "E01011350", "E01004700"],
+    })  # fmt: skip
+    groups = postcode_groups(pcs)
+    assert groups["prefix"]["SW1"]["count"] == 3 and groups["prefix"]["W1"]["count"] == 1
+    assert "LS6" not in groups["prefix"]  # an unlettered district is its own group
+    assert groups["district"]["SW1A"]["count"] == 2
+
+
+def test_names_a_council_repeats_carry_their_code():
+    import polars as pl
+
+    from lix_api.services.search import distinct_name, repeated_area_names
+
+    areas = pl.DataFrame({
+        "level": ["msoa", "msoa", "msoa"],
+        "name": ["Kilmeadan", "Kilmeadan", "Tramore"],
+        "lad_nm": ["Waterford", "Waterford", "Waterford"],
+    })  # fmt: skip
+    features = pl.DataFrame({
+        "lsoa21nm": ["Togher 001", "Togher 001", "Togher 002"],
+        "lad_nm": ["Wicklow", "Wicklow", "Wicklow"],
+    })  # fmt: skip
+    repeated = repeated_area_names(areas, features)
+
+    class S:
+        repeated_areas = repeated
+
+    assert (
+        distinct_name(S, "msoa", "Kilmeadan", "Waterford", "I02002702") == "Kilmeadan (I02002702)"
+    )
+    assert distinct_name(S, "msoa", "Tramore", "Waterford", "I02002800") == "Tramore"
+    assert (
+        distinct_name(S, "lsoa", "Togher 001", "Wicklow", "I01013732") == "Togher 001 (I01013732)"
+    )
+    assert (
+        distinct_name(S, "lsoa", "Tóchar 001", "Wicklow", "I01013732", "Togher 001")
+        == "Tóchar 001 (I01013732)"
+    )
+
+
+def test_the_assistants_catalogue_speaks_the_interface_language(store, monkeypatch):
+    """The assistant translated English caveats itself under cy/gd/ga, in terms that
+    differed from the drafted catalogues (v0.7.0 release pass)."""
+    from lix_api.services.catalogue import list_indicators
+
+    some = next(i for i in store.indicators.values() if i.caveats)
+    welsh = {"label": "Label Cymraeg", "description": "Disgrifiad", "caveats": "Cafeat"}
+    i18n = {**(store.manifest.get("i18n") or {}), "cy": {"indicators": {some.id: welsh}}}
+    monkeypatch.setitem(store.manifest, "i18n", i18n)
+    cy = {i.id: i for i in list_indicators(store, detail=True, locale="cy")}
+    assert (cy[some.id].label, cy[some.id].description, cy[some.id].caveats) == (
+        "Label Cymraeg", "Disgrifiad", "Cafeat",
+    )  # fmt: skip
+    other = next(i for i in store.indicators.values() if i.id != some.id)
+    assert cy[other.id].label == other.label  # no draft: the English
+    assert {b.id for b in list_indicators(store, detail=False, locale="cy")} == set(cy)
+
+
+def test_sql_bounds_generated_sequences(store):
+    """`select unnest(range(100000000))` killed the API container (v0.7.0 release pass)."""
+    from lix_api.services.sql import SqlError, SqlGuard
+
+    sql = SqlGuard(store)
+    with pytest.raises(SqlError, match="at most 1,000,000"):
+        sql.run("select unnest(range(100000000)) as n")
+    with pytest.raises(SqlError, match="whole-number bounds"):
+        sql.run("select unnest(range(power(10, 8)::int)) as n")
+    with pytest.raises(SqlError, match="list_resize"):
+        sql.run("select list_resize([1], 100000000) as l")
+    out = sql.run("select count(*) as n from range(10)")
+    assert out.rows == [[10]]
+
+
+def test_a_repeated_small_area_name_carries_its_code_in_one_bracket():
+    from lix_api.services.search import small_area_label
+
+    class S:
+        repeated_areas = {("lsoa", "togher 001", "Wicklow")}
+
+    label = small_area_label(S, "Togher 001", "Togher 001", "Wicklow", "I01013732", "Togher")
+    assert label == "Togher 001 (Togher, I01013732)"
+    assert (
+        small_area_label(S, "Togher 002", None, "Wicklow", "I01013734", "Togher")
+        == "Togher 002 (Togher)"
+    )
+    assert (
+        small_area_label(S, "Togher 001", None, "Wicklow", "I01013733", None)
+        == "Togher 001 (I01013733)"
+    )

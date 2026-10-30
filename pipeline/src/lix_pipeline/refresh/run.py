@@ -17,7 +17,8 @@ from lix_core.config import load_indicators, load_registry
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
 from lix_pipeline.fetch import ManualDownloadRequired, fetch, resolve_and_lock
-from lix_pipeline.fetch.lock import read_lock
+from lix_pipeline.fetch.lock import read_lock, update_entry
+from lix_pipeline.fetch.outage import outage
 from lix_pipeline.fetch.session import make_session
 from lix_pipeline.refresh import plan as planning
 from lix_pipeline.refresh.plan import RefreshPlan, Step
@@ -75,6 +76,8 @@ def refresh(
     t0 = time.monotonic()
     new_editions = []
     unresolved: set[str] = set()
+    # A publisher in maintenance keeps its locked edition and is no failure (#219)
+    outages: set[str] = set()
     if not skip_fetch:
         before = read_lock()
         for slug in slugs:
@@ -83,6 +86,11 @@ def refresh(
             try:
                 resolved = resolve_and_lock(slug, registry[slug], session)
             except Exception as e:  # keep going, report at the end
+                if (down := outage(e)) is not None:
+                    logger.warning(f"[{slug}] {down}: keeps its locked edition")
+                    outages.add(slug)
+                    unresolved.add(slug)
+                    continue
                 log["failures"].append({"phase": "resolve", "slug": slug, "error": str(e)})
                 unresolved.add(slug)
                 continue
@@ -112,6 +120,10 @@ def refresh(
                 logger.warning(str(e))
                 continue
             except Exception as e:
+                if (down := outage(e)) is not None:
+                    logger.warning(f"[{slug}] {down}: keeps its locked edition")
+                    outages.add(slug)
+                    continue
                 logger.exception(f"[{slug}] Fetch failed")
                 log["failures"].append({"phase": "fetch", "slug": slug, "error": str(e)})
                 continue
@@ -128,6 +140,16 @@ def refresh(
         # from, and the run says so at the end (#204)
         log["kept"] = names
         logger.warning(f"{len(names)} source(s) keep their locked editions: {names}")
+    # A kept source was resolved to tonight's edition before its fetch failed: put the
+    # edition its raw file is back in the lock, or the pack would name a period its data
+    # does not cover (#215)
+    for slug in sorted({f["slug"] for f in log["failures"] if f["phase"] == "fetch"} | outages):
+        old = before.get(slug, {}).get("resolved") if not skip_fetch else None
+        if old and read_lock().get(slug, {}).get("resolved") != old:
+            update_entry(slug, "resolved", old)
+    if outages:
+        log["outages"] = sorted(outages)
+        log["kept"] = sorted(set(log.get("kept", [])) | outages)
 
     # The lock now holds the checksums the rest of the run is fingerprinted against
     lock = read_lock()
@@ -158,7 +180,9 @@ def refresh(
             "indicators",
             "",
             {},
-            indicators=planning.indicator_fingerprints(lock, catalogue.indicators),
+            indicators=planning.indicator_fingerprints(
+                lock, catalogue.indicators, registry, nations
+            ),
             nations=list(nations),
         )
     phase("indicators", t0, rebuilt=rebuilt)

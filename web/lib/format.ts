@@ -4,8 +4,9 @@ export function formatValue(value: number | null | undefined, unit: string, loca
   if (value == null || Number.isNaN(value)) return "–";
   // Round as toFixed does (so the English output is unchanged), then group and punctuate
   // for the locale
+  // Never "-0.0": a value that rounds to zero is zero
   const n = (v: number, digits = 0) =>
-    Number(v.toFixed(digits)).toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    (Number(v.toFixed(digits)) || 0).toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
   const code = unitCode(unit);
   if (code === "gbp" || code === "gbp_year") return `£${n(Math.round(value))}`;
   if (code === "metres") return value >= 1000 ? `${n(value / 1000, 1)} km` : `${n(Math.round(value))} m`;
@@ -15,6 +16,8 @@ export function formatValue(value: number | null | undefined, unit: string, loca
   // Access and quality indices run 0–1 (1 = what a typical suburb has); out of 10 reads
   // better than a decimal and can't be mistaken for a 0–100 score
   if (code === "index" || code === "quality" || code === "rating") return `${(value * 10).toFixed(1).replace(/\.0$/, "")}/10`;
+  // A class (bathing water 1–4, river status 1–5): the number; ValueWithUnit names it
+  if (code === "class4" || code === "class5") return n(value, 1);
   if (Math.abs(value) >= 100) return n(Math.round(value));
   return n(value, 1);
 }
@@ -24,6 +27,7 @@ export function formatValue(value: number | null | undefined, unit: string, loca
 export function formatsUnit(unit: string): boolean {
   const code = unitCode(unit);
   return code === "gbp" || code === "metres" || code.startsWith("pct") || code === "rate" ||
+    code === "class4" || code === "class5" ||
     code === "index" || code === "quality" || code === "rating" || code === "score" || code.startsWith("score");
 }
 
@@ -43,7 +47,15 @@ export function unitCode(unit: string): string {
   if (unit.startsWith("%")) return "pct";
   if (unit === "rate") return "rate";
   if (/^(index|quality|rating) 0–1/.test(unit)) return unit.split(" ")[0];
+  if (unit.startsWith("class 1–4")) return "class4";
+  if (unit.startsWith("class 1–5")) return "class5";
   return unit;
+}
+
+/** The class a mean class value rounds to (1–4 or 1–5), for its name. */
+export function classOf(value: number, code: "class4" | "class5"): number {
+  const top = code === "class4" ? 4 : 5;
+  return Math.min(top, Math.max(1, Math.round(value)));
 }
 
 /** A percentile as "better than N%": whole numbers, and the top area is 99, never 100. */

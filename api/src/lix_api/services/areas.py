@@ -5,7 +5,7 @@ import polars as pl
 from lix_api.models import AreaProfile, IndicatorValue, Point, ThemeScore
 from lix_api.services.names import base_locale, english_if_different, localised, ruc_label
 from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
-from lix_api.services.search import resolve_lsoa
+from lix_api.services.search import distinct_name, resolve_lsoa
 from lix_api.store import Store
 from lix_core.scoring import band_of
 
@@ -71,10 +71,31 @@ def with_substitutes(store: Store, row: dict, values: list[IndicatorValue]) -> l
     return out
 
 
+# The card's facts; v0.7.0 adds the four context measures its issues asked to see there
+# (the classes read as words: "Excellent (3.8)")
 KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_exposure",
              "flood_risk", "tree_canopy", "sunshine", "gp_distance", "station_distance",
              "everyday_services", "gigabit_broadband", "well_run_pubs",
-             "households_with_children"]  # fmt: skip
+             "households_with_children", "hilliness", "protected_nature",
+             "bathing_water_class", "river_status"]  # fmt: skip
+
+# A fact with nothing to say for many areas, and what the card shows instead: two thirds
+# of areas have no bathing water within 10 km, so the class would read "no data" there
+KEY_FACT_FALLBACK = {"bathing_water_class": "bathing_water_distance"}
+
+
+def key_facts(store: Store, row: dict) -> list[IndicatorValue]:
+    out = []
+    for i in KEY_FACTS:
+        if i not in store.indicators:
+            continue
+        value = fact(store, row, i)
+        other = KEY_FACT_FALLBACK.get(i)
+        if value.value is None and other in store.indicators:
+            value = fact(store, row, other)
+        out.append(value)
+    return out
+
 
 # The flags an area can carry, worded in agent.messages (four languages)
 FLAG_CODES = ("imputed", "low_n", "broadcast_lad", "not_available", "theme_gap")
@@ -193,10 +214,26 @@ def area_profile(
     lo, hi = row.get(f"pct_lo__{preset_id}"), row.get(f"pct_hi__{preset_id}")
     return AreaProfile(
         lsoa21cd=code,
-        lsoa_name=localised(row, "lsoa21nm", locale),
+        lsoa_name=distinct_name(
+            store,
+            "lsoa",
+            localised(row, "lsoa21nm", locale),
+            row.get("lad_nm"),
+            code,
+            row.get("lsoa21nm"),
+        ),  # fmt: skip
         # A nation whose small areas are their own mid tier (Northern Ireland) has no
         # separate neighbourhood to name
-        neighbourhood=localised(row, "msoa_name", locale) if row["msoa21cd"] != code else None,
+        neighbourhood=distinct_name(
+            store,
+            "msoa",
+            localised(row, "msoa_name", locale),
+            row.get("lad_nm"),
+            row["msoa21cd"],
+            row.get("msoa_name"),
+        )
+        if row["msoa21cd"] != code
+        else None,  # fmt: skip
         neighbourhood_en=english_if_different(row, "msoa_name", locale)
         if row["msoa21cd"] != code
         else None,
@@ -222,7 +259,7 @@ def area_profile(
         themes=theme_scores,
         strengths=list(reversed(ranked[-3:])),
         weaknesses=ranked[:3],
-        key_facts=[fact(store, row, i) for i in KEY_FACTS if i in store.indicators],
+        key_facts=key_facts(store, row),
         flags=flags,
         flag_codes=flag_codes,
         centre=Point(lat=row["pwc_lat"], lon=row["pwc_lon"]),

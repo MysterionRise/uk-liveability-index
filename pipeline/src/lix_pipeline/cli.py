@@ -121,8 +121,16 @@ def _stage(args: argparse.Namespace) -> int:
     if args.rehash:
         from lix_pipeline.fetch.lock import read_lock
 
-        done = graph.rehash_sidecars(list(available), registry, nations, read_lock())
+        done, refused = graph.rehash_sidecars(list(available), registry, nations, read_lock())
         logger.info(f"Rewrote {len(done)} sidecar(s) under the current fingerprint scheme")
+        if refused:
+            for slug, moved in refused.items():
+                logger.warning(f"[{slug}] Left alone: built from other inputs or code ({moved})")
+            logger.warning(
+                f"{len(refused)} table(s) are stale, not mis-hashed: run `lix refresh` to "
+                "re-stage them and what reads them"
+            )
+            return 1
         return 0
     if args.with_dependents and not args.slug:
         raise SystemExit("--with-dependents needs --slug")
@@ -201,9 +209,27 @@ def _qa(args: argparse.Namespace) -> int:
 
 
 def _indicators(args: argparse.Namespace) -> int:
+    from lix_core.codes import active_nations
+    from lix_core.config import load_indicators, load_registry
+    from lix_pipeline.fetch.lock import read_lock
     from lix_pipeline.indicators import build_all
+    from lix_pipeline.refresh import plan as planning
+    from lix_pipeline.stage import graph
 
-    build_all(only=args.only.split(",") if args.only else None)
+    only = args.only.split(",") if args.only else None
+    build_all(only=only)
+    # Record what the rebuilt indicators were built from, as `lix refresh` does, so the
+    # next plan neither rebuilds them again nor misses a table re-staged since (#215)
+    nations = list(active_nations())
+    specs = [s for s in load_indicators().indicators if not only or s.id in only]
+    fps = planning.indicator_fingerprints(read_lock(), specs, load_registry(), nations)
+    meta = graph.read_sidecar(planning.indicators_sidecar())
+    if only and meta:
+        fps = {**(meta.get("indicators") or {}), **fps}
+        nations = meta.get("nations") or nations
+    graph.write_sidecar(
+        planning.indicators_sidecar(), "indicators", "", {}, indicators=fps, nations=nations
+    )
     return 0
 
 

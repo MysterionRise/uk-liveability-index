@@ -114,6 +114,9 @@ class ArcgisLayerAccess(_Strict):
     fields: list[str] | None = None
     geometry: Literal["none", "point", "line", "polygon"] = "none"
     out_sr: int = 27700
+    # Fewer records a page than the server allows, for layers whose full pages of
+    # detailed geometry the server cannot build (SEPA's rivers answer 500)
+    page_size: int | None = None
 
 
 class GovukAttachmentAccess(_Strict):
@@ -400,6 +403,11 @@ UNIT_CODES: dict[str, str] = {
     "m/s": "m_s",
     "within 1.5km": "within_1500m",
     "patients per practice": "patients_per_practice",
+    "km per km²": "km_per_km2",
+    "hectares": "hectares",
+    "% slope": "pct_slope",
+    "class 1–4 (4 = excellent)": "class4",
+    "class 1–5 (5 = high)": "class5",
 }
 
 
@@ -775,7 +783,7 @@ def load_label_catalogues() -> dict[str, dict]:
     return out
 
 
-LABEL_FIELDS = {"label", "description", "one", "other"}
+LABEL_FIELDS = {"label", "description", "one", "other", "caveats"}
 
 
 def catalogue_gaps(
@@ -810,6 +818,9 @@ def catalogue_gaps(
         entry = (labels.get("indicators") or {}).get(ind.id) or {}
         if not entry.get("label"):
             gaps.append(f"indicators.{ind.id}.label")
+        # The caveat is the one paragraph the explainer shows in full (#209)
+        if ind.caveats and not entry.get("caveats"):
+            gaps.append(f"indicators.{ind.id}.caveats")
     # An unquoted comma in a flow mapping splits a description into stray keys with no
     # value ("Ysgolion a meithrinfeydd da", "diogelwch …": null); such an entry is broken
     for section in ("themes", "presets", "indicators", "units", "flags"):

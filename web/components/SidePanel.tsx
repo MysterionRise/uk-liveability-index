@@ -104,6 +104,7 @@ export function SidePanel() {
         <label
           className="ml-auto flex shrink-0 items-center gap-1.5 py-2 pl-2 text-xs text-[var(--text-secondary)]"
           title={t("analystTitle")}
+          data-testid="analyst-label"
         >
           <input
             type="checkbox"
@@ -131,8 +132,13 @@ export function SidePanel() {
               welcomeMessageText: t("chatWelcome"),
               chatDisclaimerText: t("chatDisclaimer"),
             }}
-            // CopilotKit's icon buttons have no accessible names of their own
-            input={{ sendButton: { "aria-label": t("send") }, addMenuButton: { "aria-label": t("moreOptions") } }}
+            // CopilotKit's icon buttons have no accessible names of their own; the box stops
+            // at the longest message the assistant reads (MAX_USER_MESSAGE_CHARS, #214)
+            input={{
+              textArea: { maxLength: 4000 },
+              sendButton: { "aria-label": t("send") },
+              addMenuButton: { "aria-label": t("moreOptions") },
+            }}
           />
         </div>
         {tab !== "assistant" && (

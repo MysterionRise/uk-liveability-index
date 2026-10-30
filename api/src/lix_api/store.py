@@ -245,7 +245,7 @@ class Store:
         """Areas whose name repeats within their council (search shows their code)."""
         from lix_api.services.search import repeated_area_names
 
-        return repeated_area_names(self.areas)
+        return repeated_area_names(self.areas, self.features)
 
     @cached_property
     def area_name_columns(self) -> list[str]:

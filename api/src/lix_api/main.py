@@ -24,7 +24,15 @@ from pydantic_ai.ui import StateDeps
 
 from lix_api.agent.agent import agent
 from lix_api.agent.errors import FriendlyAGUIAdapter
-from lix_api.agent.limits import limits, reply_model, user_turns
+from lix_api.agent.limits import (
+    MAX_USER_MESSAGE_CHARS,
+    conversation_chars,
+    limits,
+    newest_user_message,
+    reply_model,
+    user_turns,
+)
+from lix_api.agent.messages import message
 from lix_api.agent.runlog import log_run, usage_limits
 from lix_api.agent.state import LiveabilityState
 from lix_api.mcp_server import mcp
@@ -126,6 +134,10 @@ class BodyLimit:
 app.add_middleware(BodyLimit)
 
 
+# A language tag on a GET: as short as the bodies' (en, cy, gd, ga, or a BCP 47 tag)
+QueryLocale = Annotated[str | None, Query(max_length=10)]
+
+
 @app.exception_handler(LookupError)
 async def not_found(request: Request, exc: LookupError):
     # Serialised, not formatted: a message quoting an id ("indicator:crime_violence") or
@@ -180,7 +192,7 @@ ThemeScore = Annotated[float, Field(ge=0, le=100, allow_inf_nan=False)]
 
 @app.get(f"{api}/search")
 def search_place(
-    q: Ref, limit: Annotated[int, Query(ge=1, le=20)] = 8, locale: str | None = None
+    q: Ref, limit: Annotated[int, Query(ge=1, le=20)] = 8, locale: QueryLocale = None
 ) -> list[Place]:
     return search.search_place(get_store(), q, limit=limit, locale=locale)
 
@@ -219,7 +231,7 @@ MULTIPLIERS_DOC = 'Indicator multipliers as a JSON object, e.g. {"sunshine": 2}'
 def area_profile(
     ref: Annotated[str, Path(max_length=MAX_REF)],
     preset: str | None = None,
-    locale: str | None = None,
+    locale: QueryLocale = None,
     theme_weights: str | None = Query(None, description=WEIGHTS_DOC),
     indicator_weights: str | None = Query(None, description=MULTIPLIERS_DOC),
 ) -> AreaProfile:
@@ -262,7 +274,7 @@ def rank_areas(req: RankRequest) -> RankResult:
 def compare_areas(
     areas_: Annotated[list[Ref], Query(alias="areas")],
     preset: str | None = None,
-    locale: str | None = None,
+    locale: QueryLocale = None,
     theme_weights: str | None = Query(None, description=WEIGHTS_DOC),
     indicator_weights: str | None = Query(None, description=MULTIPLIERS_DOC),
 ) -> Comparison:
@@ -307,7 +319,7 @@ def explain_score(
     ref: Annotated[str, Path(max_length=MAX_REF)],
     theme: str | None = None,
     preset: str | None = None,
-    locale: str | None = None,
+    locale: QueryLocale = None,
 ) -> Explanation:
     return explain.explain_score(get_store(), ref, theme=theme, preset=preset, locale=locale)
 
@@ -344,9 +356,14 @@ async def run_agent(request: Request) -> Response:
         body = await request.json()  # the body is cached for the adapter
         turns = user_turns(body)
         locale = str((body.get("state") or {}).get("locale") or "en")[:2]
+        newest = len(newest_user_message(body))
+        chars = conversation_chars(body)
     except (ValueError, AttributeError):
-        turns, locale = 0, "en"  # the adapter rejects the malformed request
-    refusal = limits.admit(turns, locale)
+        turns, locale, newest, chars = 0, "en", 0, 0  # the adapter rejects the malformed request
+    if newest > MAX_USER_MESSAGE_CHARS:
+        refusal = message("message_too_long", locale, limit=f"{MAX_USER_MESSAGE_CHARS:,}")
+    else:
+        refusal = limits.admit(turns, locale, input_chars=chars)
     if refusal:
         # Answered without the model; the run still completes normally for the client
         return await FriendlyAGUIAdapter.dispatch_request(

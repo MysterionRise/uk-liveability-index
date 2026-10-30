@@ -82,6 +82,9 @@ class Measure:
     unit: str | None = None
     raw_column: str | None = None
     raw_higher_better: bool = True
+    # The raw figure means the same in every nation (benchmark "uk"), so a list can be
+    # ordered by it; a within-nation measure (an index of deprivation) cannot
+    raw_comparable: bool = False
 
     def value(self, row: dict) -> float | None:
         """The figure to show beside the rank: the indicator's raw value, or the score."""
@@ -125,6 +128,7 @@ def sort_measure(store: Store, sort_by: str | None) -> Measure:
                 unit=spec.unit,
                 raw_column=raw if raw in columns else None,
                 raw_higher_better=spec.direction == "higher_better",
+                raw_comparable=spec.benchmark != "nation",
             )
     themes = ", ".join(f"theme:{t}" for t in store.themes)
     raise ValueError(
@@ -176,7 +180,12 @@ def _check_available(store: Store, measure: Measure, df: pl.DataFrame) -> None:
         iid = measure.sort_by.split(":", 1)[1]
         nations = set(df["nation"].unique().to_list())
         here = ", ".join(store.nation_names.get(n, n) for n in sorted(nations))
-        covered = [store.nation_names.get(n, n) for n in store.applicable.get(iid, [])]
+        # Any indicator's coverage, context ones too: "applicable" holds the scored only,
+        # so an England-only context measure said "it has no values" (v0.7.0 pass)
+        coverage = next(
+            (i.get("coverage") or [] for i in store.manifest["indicators"] if i["id"] == iid), []
+        )
+        covered = [store.nation_names.get(n, n) for n in coverage]
         where = f"it is built for {', '.join(covered)}" if covered else "it has no values"
         stand_in = _stand_in(store, iid, nations)
         hint = (
@@ -276,6 +285,8 @@ def rank_areas(
             in_locale(name_col).first().alias("name"),
             pl.col(name_col).first().alias("name_en"),
             in_locale("lad_nm").first().alias("lad_nm"),
+            # The council's English name keys the repeated-name check (#210)
+            pl.col("lad_nm").first().alias("lad_nm_en"),
             pl.col("nation").first(),
             w.sum().alias("population"),
             *[((pl.col(c) * w).sum() / w.filter(pl.col(c).is_not_null()).sum()).alias(c)
@@ -309,6 +320,7 @@ def rank_areas(
             )
             .alias("name_en"),
             in_locale("lad_nm").alias("lad_nm"),
+            pl.col("lad_nm").alias("lad_nm_en"),
         )
 
     if max_median_price is not None and df.height and "q__house_price" in df.columns:
@@ -336,13 +348,20 @@ def rank_areas(
     _check_available(store, measure, df)
     df = df.filter(pl.col(measure.score_column).is_not_null())
     candidates = df.height
-    # A threshold score saturates (every area beyond 50 km reads 0, the sunniest fifth of
-    # the South East reads 100), so ties are broken by the raw value in the same sense
+    # A list ranked by one measure is ordered by the figure it shows: a neighbourhood's
+    # score and value are each averaged over its small areas, and for a skewed measure
+    # the two orders differ ("the most protected land" put 148 ha fourth behind 109 ha,
+    # v0.7.0 release pass). A within-nation measure, whose raw scales differ by nation,
+    # keeps the score; a threshold score saturates, so the raw value breaks its ties.
     best = direction == "best"
-    by, descending = [measure.score_column], [best]
-    if measure.raw_column:
-        by.append(measure.raw_column)
-        descending.append(best if measure.raw_higher_better else not best)
+    raw_desc = best if measure.raw_higher_better else not best
+    if measure.raw_column and measure.raw_comparable:
+        by, descending = [measure.raw_column, measure.score_column], [raw_desc, best]
+    else:
+        by, descending = [measure.score_column], [best]
+        if measure.raw_column:
+            by.append(measure.raw_column)
+            descending.append(raw_desc)
     df = df.sort(by, descending=descending, nulls_last=True)
     # How robust the top results are to the exact weights (lix_core.uncertainty); a list
     # ranked by one measure does not depend on the weights. The worst-first list is the
@@ -365,7 +384,7 @@ def rank_areas(
             rank=i + 1,
             level=level,
             code=r["code"],
-            name=r["name"],
+            name=_ranked_name(store, level, r),
             name_en=r["name_en"] if r["name_en"] != r["name"] else None,
             local_authority=r["lad_nm"],
             overall=None if r["overall"] is None else round(r["overall"], 1),
@@ -392,3 +411,23 @@ def rank_areas(
         direction=direction, place=place_name, radius_km=radius,
         candidates=candidates, results=results, bbox=bbox,
     )  # fmt: skip
+
+
+def _ranked_name(store, level: str, r: dict) -> str:
+    """A ranked row's label, with the code beside a name its council repeats (#210)."""
+    from lix_api.services.search import distinct_name
+
+    if level == "lsoa":
+        from lix_api.services.search import small_area_label
+
+        own = r.get("lsoa21nm")
+        if not own:
+            return r["name"]
+        shown, rest = (r["name"].split(" (", 1) + [""])[:2]
+        neighbourhood = rest[:-1] if rest.endswith(")") else None
+        return small_area_label(
+            store, shown, own, r.get("lad_nm_en") or r.get("lad_nm"), r["code"], neighbourhood
+        )
+    return distinct_name(
+        store, level, r["name"], r.get("lad_nm_en") or r.get("lad_nm"), r["code"], r.get("name_en")
+    )

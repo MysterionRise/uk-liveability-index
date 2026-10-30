@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import { bandVar } from "@/lib/colors";
 import { useCoverageOf } from "@/lib/copy";
-import { formatValue, pctRank, unitSuffix } from "@/lib/format";
+import { classOf, formatValue, pctRank, unitCode, unitSuffix } from "@/lib/format";
 import { useLabels } from "@/lib/labels";
 import { themeVar } from "@/lib/palette";
 
@@ -101,7 +101,7 @@ export function Band({ band, percentile, nationOf, urbanRural }: { band?: number
   );
 }
 
-const QUALITY_KEYS = ["imputed", "low_n", "broadcast_msoa", "broadcast_lad", "not_available", "missing"] as const;
+const QUALITY_KEYS = ["imputed", "low_n", "broadcast_msoa", "broadcast_lad", "not_available", "missing", "capped"] as const;
 
 /** A short note for a value that isn't measured directly for the LSOA ("estimated"). */
 export function useQualityNote(): (quality: string | null | undefined) => string | undefined {
@@ -130,6 +130,17 @@ export function parseResult<T>(result: unknown): T | null {
 export function ValueWithUnit({ value, id, unit }: { value: number | null | undefined; id: string; unit: string }) {
   const locale = useLocale();
   const labels = useLabels();
+  const classes = useTranslations("Classes");
+  const code = unitCode(unit);
+  if ((code === "class4" || code === "class5") && value != null && !Number.isNaN(value)) {
+    // "Good (3.4)": the class the homes' mean rounds to, with the mean beside it
+    return (
+      <>
+        {classes(`${code}.${classOf(value, code)}` as "class4.1")}
+        <span className="ml-1 text-[var(--text-muted)]">({formatValue(value, unit, locale)})</span>
+      </>
+    );
+  }
   const suffix = value == null ? "" : unitSuffix(unit, labels.unit(id));
   return (
     <>

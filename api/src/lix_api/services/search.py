@@ -63,15 +63,22 @@ def postcode_groups(postcodes: pl.DataFrame) -> dict[str, dict[str, dict]]:
     pc = postcodes.with_columns(
         pl.col("postcode_norm").str.slice(0, length - 3).alias("district"),
         pl.col("postcode_norm").str.slice(0, length - 2).alias("sector"),
+    ).with_columns(
+        # Central London's districts are lettered (SW1A … SW1Y, EC1A …, W1A …); people
+        # call the whole "SW1" (#210). Only lettered districts belong to a prefix group
+        pl.when(pl.col("district").str.contains(r"^[A-Z]{1,2}\d[A-Z]$"))
+        .then(pl.col("district").str.slice(0, pl.col("district").str.len_chars() - 1))
+        .alias("prefix"),
     )
     out: dict[str, dict[str, dict]] = {}
-    for kind in ("district", "sector"):
+    for kind in ("district", "sector", "prefix"):
         # The postcode nearest the group's mean point names the area the group stands in
         off = (pl.col("lat") - pl.col("lat").mean().over(kind)) ** 2 + (
             pl.col("lon") - pl.col("lon").mean().over(kind)
         ) ** 2
         groups = (
-            pc.with_columns(off.alias("_off"))
+            pc.filter(pl.col(kind).is_not_null())
+            .with_columns(off.alias("_off"))
             .group_by(kind)
             .agg(
                 pl.len().alias("count"),
@@ -108,6 +115,9 @@ def lookup_postcode_group(store: Store, text: str, locale: str | None = None) ->
         if not pattern.match(norm):
             continue
         row = store.postcode_groups[kind].get(norm)
+        if row is None and kind == "district":
+            # "SW1" names no district of its own: the lettered districts it stands for
+            row = store.postcode_groups.get("prefix", {}).get(norm)
         if row is None:
             continue
         shown = f"{norm[:-1]} {norm[-1]}" if kind == "sector" else norm
@@ -162,23 +172,52 @@ def lookup_nation(store: Store, text: str, locale: str | None = None) -> Place |
     return _area_place(row, shown, store, locale)
 
 
-def repeated_area_names(areas: pl.DataFrame) -> set[tuple[str, str, str]]:
+def repeated_area_names(
+    areas: pl.DataFrame, features: pl.DataFrame | None = None
+) -> set[tuple[str, str, str]]:
     """(level, folded name, council) of every area whose name another area of the same
     level and council also carries: Ireland has 39 division names repeated within one
-    council ("Kilmeadan" twice in Waterford), so the council alone cannot tell them
-    apart in a result list (#194)."""
-    if "lad_nm" not in areas.columns:
-        return set()
-    dup = (
-        areas.filter(pl.col("level").is_in(["lsoa", "msoa"]))
-        .group_by("level", "name", "lad_nm")
-        .len()
-        .filter(pl.col("len") > 1)
-    )
-    return {
-        (level, fold(name), lad)
-        for level, name, lad in dup.select("level", "name", "lad_nm").iter_rows()
-    }
+    council ("Kilmeadan" twice in Waterford, #194) and 55 small-area names ("Togher 001"
+    twice in Wicklow, #210), so the council alone cannot tell them apart."""
+    out: set[tuple[str, str, str]] = set()
+    if "lad_nm" in areas.columns:
+        dup = (
+            areas.filter(pl.col("level").is_in(["lsoa", "msoa"]))
+            .group_by("level", "name", "lad_nm")
+            .len()
+            .filter(pl.col("len") > 1)
+        )
+        out |= {
+            (level, fold(name), lad)
+            for level, name, lad in dup.select("level", "name", "lad_nm").iter_rows()
+        }
+    if features is not None and {"lsoa21nm", "lad_nm"} <= set(features.columns):
+        small = features.group_by("lsoa21nm", "lad_nm").len().filter(pl.col("len") > 1)
+        out |= {("lsoa", fold(name), lad) for name, lad, _ in small.iter_rows()}
+    return out
+
+
+def small_area_label(
+    store, shown: str, english: str | None, lad: str | None, code: str, neighbourhood: str | None
+) -> str:
+    """A small area's label: "Headingley 003A (Headingley)", and with the code inside the
+    one bracket when the council repeats the name: "Togher 001 (Togher, I01013732)"."""
+    repeated = store is not None and ("lsoa", fold(english or shown), lad) in store.repeated_areas
+    parts = [p for p in (neighbourhood, code if repeated else None) if p]
+    return f"{shown} ({', '.join(parts)})" if parts else shown
+
+
+def distinct_name(
+    store, level: str, shown: str | None, lad: str | None, code: str, english: str | None = None
+) -> str | None:
+    """``shown``, with the area's code beside it when another area of the same level and
+    council shares the name (``english``, the pack's name, decides): the label of a
+    profile, a comparison column or a ranked row (#210)."""
+    if shown is None or store is None:
+        return shown
+    if (level, fold(english or shown), lad) in store.repeated_areas:
+        return f"{shown} ({code})"
+    return shown
 
 
 def _area_place(

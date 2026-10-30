@@ -6,7 +6,7 @@ population-weighted, with the default (balanced) weights. Expectations are in
 [config/validation_places.yaml](../config/validation_places.yaml); regenerate this
 page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
-**138 of 138 checks pass** (97 of 97 anchors) across 58 places.
+**168 of 168 checks pass** (109 of 109 anchors) across 58 places.
 
 ## Scores
 
@@ -35,14 +35,14 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 | Headingley | Headingley, Leeds | 68 | 97 | 65 | 62 | 60 | 78 | 90 | 49 | 30 | 81 |
 | Harrogate | Central Harrogate, North Yorkshire | 68 | 93 | 51 | 67 | 66 | 79 | 90 | 34 | 41 | 82 |
 | Winchester | Winchester East, Winchester | 69 | 85 | 83 | 42 | 79 | 84 | 94 | 41 | 46 | 78 |
-| St Albans | St Albans Central, St Albans | 72 | 98 | 84 | 73 | 93 | 74 | 80 | 30 | 28 | 92 |
+| St Albans | St Albans Central, St Albans | 72 | 98 | 84 | 73 | 94 | 74 | 80 | 30 | 28 | 92 |
 | Royal Sutton Coldfield | Sutton Coldfield South & Central, Birmingham | 69 | 81 | 74 | 62 | 81 | 74 | 85 | 44 | 42 | 80 |
 | Cambridge | Central & West Cambridge, Cambridge | 70 | 90 | 79 | 95 | 84 | 79 | 87 | 13 | 33 | 77 |
 | Chipping Campden | Willersey, Chipping Campden & Blockley, Cotswold | 52 | 24 | 76 | 78 | 45 | 73 | 59 | 29 | 59 | 42 |
 | Holsworthy | Holsworthy, Bradworthy & Welcombe, Torridge | 48 | 30 | 62 | 53 | 24 | 80 | 52 | 34 | 76 | 27 |
 | Sidmouth | Sidmouth Town, East Devon | 64 | 71 | 88 | 78 | 40 | 84 | 81 | 26 | 70 | 54 |
 | Jaywick Sands | Tendring 018A (Jaywick & St Osyth), Tendring | 44 | 35 | 99 | 0 | 27 | 58 | 63 | 67 | 20 | 55 |
-| Blackpool | North Shore, Blackpool | 54 | 84 | 68 | 5 | 29 | 74 | 86 | 60 | 7 | 81 |
+| Blackpool | North Shore, Blackpool | 54 | 83 | 68 | 5 | 29 | 74 | 86 | 60 | 7 | 81 |
 | Middlesbrough | Middlesbrough Central, Middlesbrough | 56 | 84 | 70 | 8 | 45 | 64 | 85 | 66 | 8 | 79 |
 | Burnley | Central Burnley & Daneshouse, Burnley | 52 | 57 | 37 | 8 | 41 | 78 | 73 | 60 | 32 | 75 |
 | Spalding | Spalding North, South Holland | 65 | 70 | 81 | 59 | 62 | 60 | 60 | 76 | 56 | 68 |
@@ -53,7 +53,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 | Bexhill-on-Sea | Bexhill Central, Rother | 62 | 99 | 96 | 25 | 57 | 69 | 66 | 51 | 31 | 80 |
 | Bognor Regis | Bognor Regis Central, Arun | 62 | 93 | 97 | 23 | 53 | 79 | 77 | 58 | 17 | 74 |
 | Penzance | Penzance Quay, Cornwall | 58 | 92 | 77 | 23 | 34 | 85 | 71 | 41 | 34 | 76 |
-| Hounslow | Hounslow High Street, Hounslow | 63 | 90 | 96 | 47 | 80 | 51 | 75 | 42 | 19 | 80 |
+| Hounslow | Hounslow High Street, Hounslow | 63 | 92 | 96 | 47 | 80 | 51 | 75 | 42 | 19 | 80 |
 | Upper Malone | Balmoral L, Belfast | 60 | 33 | 43 | 98 | – | 77 | 93 | 8 | 54 | 66 |
 | Shankill | Court K, Belfast | 59 | 86 | 48 | 5 | – | 59 | 100 | 69 | 8 | 90 |
 | Holywood | Holywood and Clandeboye H, Ards and North Down | 61 | 58 | 53 | 70 | – | 65 | 100 | 30 | 29 | 81 |
@@ -95,7 +95,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≤ 35: 6.5 ⚓
 - ✅ house_price ≤ 240,000: 214,004.3 ⚓
 - ✅ housing_condition ≥ 75: 86.0
-- ✅ flag not_available: aircraft_noise, bus_access, care_homes, claimant_rate, connectivity_cycling, connectivity_overall, connectivity_public_transport, connectivity_walking, council_tax_typical, crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence, domestic_rates, gp_quality, household_income, iod_outdoors, leisure_facilities, life_expectancy, lower_band_homes, new_builds, patients_per_gp, period_homes, pobal_deprivation, price_to_income, primary_results, primary_school_quality, rainfall_total, road_rail_noise, secondary_results, swimming_pool_distance ⚓
+- ✅ flag not_available: aircraft_noise, bus_access, care_homes, claimant_rate, connectivity_cycling, connectivity_overall, connectivity_public_transport, connectivity_walking, council_tax_typical, crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence, domestic_rates, gp_quality, household_income, iod_outdoors, leisure_facilities, life_expectancy, lower_band_homes, new_builds, patients_per_gp, period_homes, pobal_deprivation, price_to_income, primary_results, primary_school_quality, rainfall_total, road_rail_noise, secondary_results, storm_overflow_spills, swimming_pool_distance ⚓
 
 **Bearsden** (Kilmardinny West). Prosperous suburb north of Glasgow, low crime, strong schools. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
@@ -109,11 +109,13 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Fort William** (Fort William South). Highland town under Ben Nevis: clean air, trees, a small hospital with an A&E. Flags: broadcast_lad, broadcast_msoa, imputed, low_n, not_available.
 
+- ✅ hilliness ≥ 9: 13.0
+- ✅ river_status ≥ 3.5: 4.0 ⚓
 - ✅ wet_days ≥ 200: 214.8 ⚓
 - ✅ environment score ≥ 50: 78.8 ⚓
 - ✅ hospital_ae_distance ≤ 5,000: 951.8 ⚓
 
-**Lerwick** (Lerwick North). Remote island capital: no railway anywhere near, clean air, its own A&E. Flags: broadcast_lad, broadcast_msoa, imputed, low_n, not_available.
+**Lerwick** (Lerwick North). Remote island capital: no railway anywhere near, clean air, its own A&E. Flags: broadcast_lad, broadcast_msoa, capped, imputed, low_n, not_available.
 
 - ✅ summer_warmth ≤ 15: 14.2 ⚓
 - ✅ station_distance ≥ 40,000: 50,000.0 ⚓
@@ -140,10 +142,12 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≤ 25: 11.1 ⚓
 - ✅ housing score ≥ 50: 61.8 ⚓
 - ✅ flag broadcast_lad: council_tax, secondary_school_quality ⚓
-- ✅ flag not_available: access_deprivation, aircraft_noise, bus_access, care_homes, domestic_rates, gp_list_size, gp_quality, leisure_facilities, life_expectancy, patients_per_gp, pobal_deprivation, primary_results, primary_school_quality, rainfall_total, recorded_crime, secondary_results, swimming_pool_distance ⚓
+- ✅ flag not_available: access_deprivation, aircraft_noise, bus_access, care_homes, domestic_rates, gp_list_size, gp_quality, leisure_facilities, life_expectancy, patients_per_gp, pobal_deprivation, primary_results, primary_school_quality, rainfall_total, recorded_crime, secondary_results, storm_overflow_spills, swimming_pool_distance ⚓
 
 **Merthyr Tydfil** (Gelli-deg & Town). Valleys town, high deprivation, cheap homes. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
+- ✅ protected_nature ≥ 80: 140.5 ⚓
+- ✅ elevation ≥ 150: 207.9
 - ✅ community score ≤ 30: 18.0 ⚓
 - ✅ housing score ≥ 50: 60.1
 
@@ -158,6 +162,8 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Blaenau Ffestiniog** (Blaenau Ffestiniog & Trawsfynydd). Remote slate town, cheap but with few amenities. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
+- ✅ hilliness ≥ 12: 18.5 ⚓
+- ✅ elevation ≥ 150: 201.0 ⚓
 - ✅ housing score ≥ 50: 60.0 ⚓
 - ✅ amenities score ≤ 50: 37.6
 
@@ -170,6 +176,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Shoreditch** (Shoreditch). Nightlife hub with high crime per resident and expensive homes. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ protected_nature ≤ 5: 0.0
 - ✅ amenities score ≥ 80: 100.0 ⚓
 - ✅ safety score ≤ 30: 9.9 ⚓
 - ✅ transport score ≥ 85: 96.4
@@ -178,6 +185,8 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Whitechapel** (Spitalfields). Dense, central, high income deprivation. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ street_connectivity ≥ 450: 584.2 ⚓
+- ✅ sealed_surface ≥ 75: 89.3 ⚓
 - ✅ transport score ≥ 85: 90.6 ⚓
 - ✅ community score ≤ 40: 25.7
 
@@ -188,6 +197,8 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Manchester** (Castlefield & Deansgate). City centre; Greater Manchester crime is estimated (no police.uk data). Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
+- ✅ cycle_infrastructure ≥ 4: 6.0 ⚓
+- ✅ storm_overflow_spills ≥ 500: 596.6
 - ✅ flag imputed: crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence ⚓
 - ✅ safety score ≤ 25: 18.7 ⚓
 - ✅ transport score ≥ 85: 97.0
@@ -214,11 +225,13 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Winchester** (Winchester East). Affluent cathedral city with strong schools. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ protected_nature ≥ 60: 108.8
 - ✅ overall score ≥ 55: 69.4
 - ✅ education score ≥ 55: 78.7
 
 **St Albans** (St Albans Central). London commuter city, expensive. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ storm_overflow_spills ≤ 50: 0.0
 - ✅ housing score ≤ 35: 29.7 ⚓
 - ✅ community score ≥ 65: 73.1
 
@@ -230,11 +243,17 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Cambridge** (Central & West Cambridge). Expensive university city, cycling and rail. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
+- ✅ cycle_infrastructure ≥ 3: 3.5
+- ✅ bathing_water_class ≤ 1.5: 1.0 ⚓
 - ✅ housing score ≤ 30: 13.4 ⚓
 - ✅ gigabit_broadband ≥ 80: 87.1
 
 **Chipping Campden** (Willersey, Chipping Campden & Blockley). Cotswolds market town: green, remote from rail. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ street_connectivity ≤ 100: 37.5 ⚓
+- ✅ cycle_infrastructure ≤ 0.5: 0.1
+- ✅ sealed_surface ≤ 20: 9.3
+- ✅ bathing_water_distance ≥ 30: 44.5
 - ✅ transport score ≤ 55: 42.1 ⚓
 - ✅ station_distance ≥ 5,000: 5,473.1 ⚓
 - ✅ no2 ≤ 8: 3.7
@@ -248,11 +267,14 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Sidmouth** (Sidmouth Town). Seaside retirement town. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ bathing_water_class ≥ 3.5: 4.0
+- ✅ bathing_water_distance ≤ 3: 1.1 ⚓
 - ✅ aged_65_plus ≥ 35: 50.3 ⚓
 - ✅ no2 ≤ 8: 3.7
 
 **Jaywick Sands** (Tendring 018A (Jaywick & St Osyth)). Among the most deprived neighbourhoods in England, with cheap homes. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ elevation ≤ 10: 2.9
 - ✅ community score ≤ 15: 0.2 ⚓
 - ✅ housing score ≥ 60: 67.3
 
@@ -273,10 +295,13 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Spalding** (Spalding North). Fenland town, much of it at risk from rivers and the sea. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ hilliness ≤ 1.5: 0.6
 - ✅ flood_risk ≥ 25: 76.6 ⚓
 
 **Wisbech** (Wisbech South & Peckover). Fenland town on the tidal Nene. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ hilliness ≤ 1.5: 0.8
+- ✅ elevation ≤ 10: 3.5 ⚓
 - ✅ flood_risk ≥ 10: 36.5
 - ✅ everyday_services ≤ 90: 87.1
 - ✅ night_noise ≤ 15: 10.0 ⚓
@@ -288,11 +313,14 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 **Milton Keynes** (Central Milton Keynes & Newlands). New town: almost no homes from before 1919; grid roads kept away from homes. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.
 
+- ✅ cycle_infrastructure ≥ 4: 5.7
+- ✅ bathing_water_distance ≥ 30: 47.3
 - ✅ period_homes ≤ 5: 0.0 ⚓
 - ✅ noise_exposure ≤ 10: 2.6 ⚓
 
 **Clifton** (Clifton East). Affluent inner suburb of Bristol, expensive, lots nearby. Flags: broadcast_lad, broadcast_msoa, not_available.
 
+- ✅ storm_overflow_spills ≥ 500: 890.2 ⚓
 - ✅ amenities score ≥ 70: 100.0
 - ✅ housing score ≤ 40: 17.8
 
@@ -329,7 +357,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≥ 60: 70.4 ⚓
 - ✅ station_distance ≤ 2,000: 371.7 ⚓
 
-**Enniskillen** (Enniskillen E). Lakeland county town with the South West Acute Hospital and no railway; Lough Erne is no coast. Flags: broadcast_lad, broadcast_msoa, not_available.
+**Enniskillen** (Enniskillen E). Lakeland county town with the South West Acute Hospital and no railway; Lough Erne is no coast. Flags: broadcast_lad, broadcast_msoa, capped, not_available.
 
 - ✅ hospital_ae_distance ≤ 5,000: 2,336.9 ⚓
 - ✅ station_distance ≥ 40,000: 50,000.0 ⚓
@@ -374,8 +402,10 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≤ 20: 0.8 ⚓
 - ✅ bus_access ≥ 5: 15.0
 
-**Clifden** (Clifden). Connemara's market town at the edge of the island: no railway, Galway's A&E 80 km away. Flags: not_available.
+**Clifden** (Clifden). Connemara's market town at the edge of the island: no railway, Galway's A&E 80 km away. Flags: capped, not_available.
 
+- ✅ street_connectivity ≤ 100: 33.3
+- ✅ river_status ≥ 3.5: 4.0
 - ✅ hospital_ae_distance ≥ 40,000: 50,000.0 ⚓
 - ✅ station_distance ≥ 40,000: 48,364.5 ⚓
 - ✅ rainfall_total ≥ 1,200: 1,463.9
