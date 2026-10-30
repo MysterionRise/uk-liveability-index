@@ -4,7 +4,7 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [0.7.0] - 2026-10-28
+## [0.7.0] - 2026-10-30
 
 Active travel, water, nature and terrain: ten new context measures across the five territories
 on three shared helpers (an OpenStreetMap highway pass ready for the walking network of
