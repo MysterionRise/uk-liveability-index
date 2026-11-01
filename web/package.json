@@ -6,6 +6,9 @@
   "engines": {
     "node": ">=24"
   },
+  "overrides": {
+    "zod": "$zod"
+  },
   "scripts": {
     "dev": "COPILOTKIT_TELEMETRY_DISABLED=true NEXT_TELEMETRY_DISABLED=1 next dev",
     "build": "COPILOTKIT_TELEMETRY_DISABLED=true NEXT_TELEMETRY_DISABLED=1 next build",
