@@ -1,6 +1,12 @@
 # UK Liveability Index
 
-Every neighbourhood in the UK, scored from open data. Choose what matters to you (safety,
+[![CI](https://github.com/MysterionRise/uk-liveability-index/actions/workflows/ci.yml/badge.svg)](https://github.com/MysterionRise/uk-liveability-index/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/MysterionRise/uk-liveability-index?label=release)](https://github.com/MysterionRise/uk-liveability-index/releases/latest)
+[![Data release](https://img.shields.io/github/v/release/MysterionRise/uk-liveability-index?include_prereleases&filter=data-*&label=data)](https://github.com/MysterionRise/uk-liveability-index/releases)
+[![Code: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
+[![Data: ODbL](https://img.shields.io/badge/data-ODbL-blue.svg)](DATA-LICENCE.md)
+
+Every neighbourhood in the UK and Ireland, scored from open data. Choose what matters to you (safety,
 schools, green space, transport, pubs, prices…), see the whole country recolour, and ask an
 assistant that answers with maps, profiles and comparisons instead of walls of text.
 
@@ -24,29 +30,43 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
   only use numbers from the data ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.
+- **Built with** [Pydantic AI](https://ai.pydantic.dev) (the agent),
+  [AG-UI](https://docs.ag-ui.com) and [CopilotKit](https://www.copilotkit.ai) (the
+  generative UI), [FastMCP](https://gofastmcp.com) and [FastAPI](https://fastapi.tiangolo.com),
+  [DuckDB](https://duckdb.org) and [Polars](https://pola.rs) (the pipeline),
+  [MapLibre](https://maplibre.org) and [PMTiles](https://docs.protomaps.com/pmtiles/) (the
+  map), [Next.js](https://nextjs.org); developed with Claude Code.
 
 ## Quickstart
 
 You need [Docker](https://docs.docker.com/get-docker/) (with Compose), `make` and `curl`.
 On Windows, use WSL (not tested yet).
 
+**Two minutes, no download:**
+
 ```bash
 git clone https://github.com/MysterionRise/uk-liveability-index.git
 cd uk-liveability-index
+make up-demo
+```
+
+That runs the small dataset in the repo (Leeds, Brighton, Cardiff, Edinburgh, Belfast and
+Dublin) at http://localhost:3000, with the assistant answering its suggested questions from
+recordings. Stop it with `make down`.
+
+**The whole of the UK and Ireland:**
+
+```bash
 make quickstart
 ```
 
-That downloads the newest data release's pack (about 250 MB) and the app's images, and opens
-http://localhost:3000. Stop it with `make down`.
+That downloads the newest data release's pack (about 250 MB) and the app's images. Irish
+areas are found by place name (Eircode is licensed, so there is no postcode search there).
 
-**The assistant** needs a model key. Put an [OpenRouter](https://openrouter.ai) key in
-`.env` (`make quickstart` creates it from [.env.example](.env.example)) and run `make up`.
-Without a key, everything else works and the assistant answers its suggested questions
-from recordings. See [Assistant](#assistant) for other providers and costs.
-
-**Just a look?** `make up-demo` runs on the small dataset in the repo (Leeds, Brighton, Cardiff,
-Edinburgh, Belfast and Dublin), with no download. Irish areas are found by place name
-(Eircode is licensed, so there is no postcode search there).
+**The assistant** needs a model key to answer anything you ask. Put an
+[OpenRouter](https://openrouter.ai) key in `.env` (`make quickstart` creates it from
+[.env.example](.env.example)) and run `make up`. See [Assistant](#assistant) for other
+providers, costs and the MCP server.
 
 ## What you can do
 
@@ -74,7 +94,7 @@ Also: a shortlist with side-by-side comparison, shareable links, light and dark 
 the interface in English, Cymraeg, Gàidhlig or Gaeilge (drafts, until fluent speakers have
 reviewed them; see
 [docs/i18n.md](docs/i18n.md)).
-A full walkthrough video comes with each
+A full walkthrough video comes with each feature
 [release](https://github.com/MysterionRise/uk-liveability-index/releases).
 
 ## How the scores work
@@ -125,8 +145,24 @@ minute and $1 of spend a day, plus limits on each question's model requests, too
 tokens. A refused question gets a chat reply and the map keeps working. Change them in
 `.env`, and also set a credit limit on the key itself.
 
-The same tools are available to Claude Desktop and other clients over
-[MCP](https://modelcontextprotocol.io) at http://localhost:3000/mcp/.
+### From Claude Code, Claude Desktop or Cursor
+
+While the app runs, the same seven read-only tools (search a place, an area's profile,
+rankings, comparisons, nearby points of interest, a score explanation, the catalogue) are
+an [MCP](https://modelcontextprotocol.io) server at `http://localhost:3000/mcp/`:
+
+```bash
+# Claude Code
+claude mcp add --transport http liveability http://localhost:3000/mcp/
+```
+
+```json
+// Cursor (.cursor/mcp.json) and other clients that take a URL
+{ "mcpServers": { "liveability": { "url": "http://localhost:3000/mcp/" } } }
+
+// Claude Desktop (claude_desktop_config.json) reaches a local URL through mcp-remote
+{ "mcpServers": { "liveability": { "command": "npx", "args": ["mcp-remote", "http://localhost:3000/mcp/"] } } }
+```
 
 ## Limitations
 

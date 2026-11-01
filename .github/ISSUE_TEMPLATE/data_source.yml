@@ -1,0 +1,48 @@
+name: Data source proposal
+description: An open dataset the index should use, or a better source for a measure it already has.
+labels: [data-source]
+body:
+  - type: input
+    id: publisher
+    attributes:
+      label: Publisher and dataset
+      placeholder: Natural Resources Wales, Event Duration Monitoring annual return
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Download URL
+      description: A direct link to the file, API or bulk download; say if it needs a login or key.
+    validations:
+      required: true
+  - type: input
+    id: licence
+    attributes:
+      label: Licence
+      description: OGL, CC BY, ODbL, or whatever the publisher states; the project only ships open data.
+    validations:
+      required: true
+  - type: dropdown
+    id: coverage
+    attributes:
+      label: Coverage
+      multiple: true
+      options:
+        - England
+        - Wales
+        - Scotland
+        - Northern Ireland
+        - Ireland
+  - type: input
+    id: cadence
+    attributes:
+      label: How often it is updated
+      placeholder: yearly, quarterly, daily
+  - type: textarea
+    id: use
+    attributes:
+      label: What it would measure
+      description: The question a person choosing where to live would answer with it, and whether it would replace or add to an existing measure.
+    validations:
+      required: true

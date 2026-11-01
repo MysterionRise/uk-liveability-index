@@ -75,8 +75,9 @@ jobs:
         run: npm test
 
   e2e:
-    # Browser tests on the committed demo dataset (Leeds + Brighton, `make demo-data`)
-    # with the scripted assistant: no data download and no LLM key needed
+    # Browser tests on the committed demo dataset (each nation's demo city: Leeds,
+    # Brighton, Cardiff, Edinburgh, Belfast and Dublin; `make demo-data`) with the
+    # scripted assistant: no data download and no LLM key needed
     runs-on: ubuntu-latest
     env:
       LIX_DATA_DIR: ${{ github.workspace }}/fixtures/demo

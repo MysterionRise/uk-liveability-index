@@ -86,7 +86,7 @@ validate:
 	uv run lix validate places
 
 # Small dataset (each nation's demo_upper in config/nations.yaml: Leeds, Brighton, Cardiff,
-# Edinburgh) cut from a full build, for CI end-to-end tests
+# Edinburgh, Belfast and Dublin) cut from a full build, for CI end-to-end tests
 demo-data:
 	uv run lix demo-data --out fixtures/demo
 
