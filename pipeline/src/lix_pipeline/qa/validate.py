@@ -20,6 +20,7 @@ from lix_core.config import (
 )
 from lix_core.paths import data_dir
 from lix_core.quality import QUALITY_LEVELS
+from lix_core.text import stray_name_problems
 
 
 def validate_geo() -> list[str]:
@@ -69,21 +70,9 @@ def validate_geo() -> list[str]:
     for col in required:
         if col in geo.columns and (n := geo[col].null_count()) > 0:
             problems.append(f"geo_lsoa.{col} has {n:,} nulls")
-    # Names as people read them: no replacement or control characters, no stray spaces
-    # (a Windows-1252 byte read as UTF-8 named a Scottish zone "…Court�", #212)
-    for col in [c for c in geo.columns if c.endswith(("nm", "_name")) or c.startswith("name")]:
-        if geo[col].dtype != pl.Utf8:
-            continue
-        bad = geo.filter(
-            pl.col(col).str.contains(r"[\x00-\x1f\x7f\ufffd]")
-            | (pl.col(col) != pl.col(col).str.strip_chars())
-            | pl.col(col).str.contains(r"\s{2}")
-        )
-        if bad.height:
-            examples = bad.select("lsoa21cd", col).head(3).rows()
-            problems.append(
-                f"geo_lsoa.{col}: {bad.height:,} names with stray characters, e.g. {examples}"
-            )
+    # Names as people read them: no replacement or control characters, no mojibake, no
+    # stray spaces (a Windows-1252 byte read as UTF-8 named a Scottish zone "…Court�", #212)
+    problems += stray_name_problems(geo, "geo_lsoa", "lsoa21cd")
     if missing_columns:
         return problems  # the per-nation checks below assume the columns exist
 
@@ -331,6 +320,15 @@ def validate_serve(serve_dir: Path | None = None) -> list[str]:
             problems.append(f"manifest lists {name}, which doesn't exist")
         elif hashlib.sha256(path.read_bytes()).hexdigest() != meta.get("sha256"):
             problems.append(f"{name} doesn't match its manifest checksum")
+
+    # Names as people read them, in every table the page and the assistant show (#222)
+    for table, key in (("areas", "code"), ("places", "place_id"), ("pois", "poi_id")):
+        try:
+            frame = pl.read_parquet(serve / f"{table}.parquet")
+        except Exception as exc:  # a file the checksum pass has already reported
+            problems.append(f"{table}.parquet could not be read: {exc}")
+            continue
+        problems += stray_name_problems(frame, table, key)
 
     for tiles in ("lsoa", "msoa", "lad"):
         path = serve / "tiles" / f"{tiles}.pmtiles"

@@ -256,6 +256,109 @@ ASSET_WORDS = frozenset({
 # English theme and measure words left out of another language's table because they are
 # words of that language: Gaelic and Irish "air" is "on"
 ENGLISH_NOT_IN: dict[str, frozenset[str]] = {"gd": frozenset({"air"}), "ga": frozenset({"air"})}
+# Everyday words for measures the cards show but the score cannot weigh (role
+# ``context``): a profile names them in its rationale rather than inventing a multiplier
+# (#223). English applies in every interface; a language's own words in its own, in
+# their mutated forms
+CONTEXT_WORDS: dict[str, dict[str, str]] = {
+    "en": {
+        "hills": "hilliness", "hilly": "hilliness", "steep": "hilliness",
+        "flat streets": "hilliness", "flat ground": "hilliness", "flat terrain": "hilliness",
+        "flat land": "hilliness", "not hilly": "hilliness",
+        "altitude": "elevation", "elevation": "elevation", "sea level": "elevation",
+        "cycle lanes": "cycle_infrastructure", "cycle lane": "cycle_infrastructure",
+        "bike lanes": "cycle_infrastructure", "bike lane": "cycle_infrastructure",
+        "cycle paths": "cycle_infrastructure", "cycle path": "cycle_infrastructure",
+        "cycle tracks": "cycle_infrastructure", "cycle track": "cycle_infrastructure",
+        "cycleways": "cycle_infrastructure", "cycleway": "cycle_infrastructure",
+        "bike": "cycle_infrastructure", "cycle": "cycle_infrastructure",
+        "beach": "bathing_water_distance", "beaches": "bathing_water_distance",
+        "bathing": "bathing_water_distance", "sea swimming": "bathing_water_distance",
+        "swim in the sea": "bathing_water_distance",
+        "clean beach": "bathing_water_class", "clean beaches": "bathing_water_class",
+        "bathing water": "bathing_water_class", "clean bathing": "bathing_water_class",
+        "coast": "coast_distance", "coastal": "coast_distance", "seaside": "coast_distance",
+        "by the sea": "coast_distance", "near the sea": "coast_distance",
+        "sea": "coast_distance",
+        "nature reserve": "protected_nature", "nature reserves": "protected_nature",
+        "wildlife": "protected_nature", "protected nature": "protected_nature",
+        "sssi": "protected_nature",
+        "river": "river_status", "rivers": "river_status", "clean rivers": "river_status",
+        "sewage": "storm_overflow_spills", "storm overflow": "storm_overflow_spills",
+        "storm overflows": "storm_overflow_spills", "sewage spills": "storm_overflow_spills",
+        "dark skies": "light_pollution", "dark sky": "light_pollution",
+        "light pollution": "light_pollution", "stargazing": "light_pollution",
+        "ev": "ev_charging", "ev charging": "ev_charging", "electric car": "ev_charging",
+        "charge points": "ev_charging", "charging points": "ev_charging",
+        "chargers": "ev_charging",
+        "flight path": "aircraft_noise", "flight paths": "aircraft_noise",
+        "aircraft noise": "aircraft_noise", "aircraft": "aircraft_noise",
+        "planes": "aircraft_noise",
+        "allotment": "allotment_distance", "allotments": "allotment_distance",
+        "playground": "play_spaces", "playgrounds": "play_spaces", "play area": "play_spaces",
+        "play areas": "play_spaces", "play park": "play_spaces",
+        "library": "library_distance", "libraries": "library_distance",
+        "post office": "post_office_distance",
+        "listed buildings": "listed_buildings", "heritage": "listed_buildings",
+        "historic": "listed_buildings",
+        "radon": "radon_potential",
+    },
+    "cy": {
+        "bryniau": "hilliness", "bryniog": "hilliness", "serth": "hilliness",
+        "gwastad": "hilliness",
+        "lonydd beicio": "cycle_infrastructure", "llwybrau beicio": "cycle_infrastructure",
+        "beic": "cycle_infrastructure",
+        "traeth": "bathing_water_distance", "traethau": "bathing_water_distance",
+        "nofio yn y môr": "bathing_water_distance",
+        "arfordir": "coast_distance", "glan y môr": "coast_distance", "y môr": "coast_distance",
+        "wrth y môr": "coast_distance",
+        "gwarchodfa natur": "protected_nature", "bywyd gwyllt": "protected_nature",
+        "afon": "river_status", "afonydd": "river_status",
+        "carthion": "storm_overflow_spills", "gorlif storm": "storm_overflow_spills",
+        "awyr dywyll": "light_pollution", "llygredd golau": "light_pollution",
+        "rhandir": "allotment_distance", "rhandiroedd": "allotment_distance",
+        "maes chwarae": "play_spaces", "meysydd chwarae": "play_spaces",
+        "llyfrgell": "library_distance", "swyddfa bost": "post_office_distance",
+        "treftadaeth": "listed_buildings", "adeiladau rhestredig": "listed_buildings",
+        "gwefru": "ev_charging", "car trydan": "ev_charging",
+    },
+    "gd": {
+        "cnuic": "hilliness", "cnoc": "hilliness", "cnocach": "hilliness",
+        "còmhnard": "hilliness",
+        "slighean baidhsagail": "cycle_infrastructure",
+        "lanaichean baidhsagail": "cycle_infrastructure", "baidhsagal": "cycle_infrastructure",
+        "tràigh": "bathing_water_distance", "tràighean": "bathing_water_distance",
+        "oirthir": "coast_distance", "cladach": "coast_distance",
+        "ri taobh na mara": "coast_distance", "a' mhuir": "coast_distance",
+        "muir": "coast_distance",
+        "tèarmann nàdair": "protected_nature", "fiadh-bheatha": "protected_nature",
+        "abhainn": "river_status", "aibhnichean": "river_status",
+        "òtrachas": "storm_overflow_spills",
+        "speuran dorcha": "light_pollution", "truailleadh solais": "light_pollution",
+        "raon-cluiche": "play_spaces", "raointean-cluiche": "play_spaces",
+        "leabharlann": "library_distance", "oifis a' phuist": "post_office_distance",
+        "dualchas": "listed_buildings", "togalaichean clàraichte": "listed_buildings",
+        "càr dealain": "ev_charging",
+    },
+    "ga": {
+        "cnoic": "hilliness", "cnoc": "hilliness", "cnocach": "hilliness",
+        "lánaí rothar": "cycle_infrastructure", "raonta rothar": "cycle_infrastructure",
+        "rothar": "cycle_infrastructure", "rothaíocht": "cycle_infrastructure",
+        "trá": "bathing_water_distance", "tránna": "bathing_water_distance",
+        "snámh san fharraige": "bathing_water_distance",
+        "cósta": "coast_distance", "cois farraige": "coast_distance",
+        "an fharraige": "coast_distance", "farraige": "coast_distance",
+        "anaclann dúlra": "protected_nature", "fiadhúlra": "protected_nature",
+        "abhainn": "river_status", "aibhneacha": "river_status",
+        "séarachas": "storm_overflow_spills",
+        "spéartha dorcha": "light_pollution", "truailliú solais": "light_pollution",
+        "cuibhreann": "allotment_distance",
+        "clós súgartha": "play_spaces", "páirc súgartha": "play_spaces",
+        "leabharlann": "library_distance", "oifig an phoist": "post_office_distance",
+        "oidhreacht": "listed_buildings", "foirgnimh liostaithe": "listed_buildings",
+        "carr leictreach": "ev_charging",
+    },
+}  # fmt: skip
 
 
 @dataclass
@@ -451,6 +554,50 @@ def match_rules(store: Store, description: str, locale: str = "en") -> Matches:
     return out
 
 
+def _context_table(store: Store, locale: str) -> list[tuple[str, str]]:
+    """The context words the pack's catalogue can name, longest first, in English and in
+    ``locale`` with its mutated forms; built once per locale and data pack."""
+    from lix_api.services.mutations import variants
+
+    key = f"context:{locale}"
+    cached = store.profile_tables.get(key)
+    if cached is not None:
+        return cached
+    table: dict[str, str] = {}
+    languages = ("en",) if locale == "en" else ("en", locale)
+    left_out = ENGLISH_NOT_IN.get(locale, frozenset())
+    for language in languages:
+        for word, ident in CONTEXT_WORDS.get(language, {}).items():
+            spec = store.indicators.get(ident)
+            if spec is None or spec.role != "context":
+                continue
+            if language == "en" and word in left_out:
+                continue
+            folded = tokenise(word)
+            for form in variants(folded, language) if folded else ():
+                table.setdefault(form, ident)
+    built = sorted(table.items(), key=lambda t: -len(t[0]))
+    store.profile_tables[key] = built
+    return built
+
+
+def context_measures(store: Store, description: str, locale: str = "en") -> list[str]:
+    """The measures a description names that the cards show but the score cannot weigh,
+    in reading order, once each (#223). Matched longest phrase first on a copy of the
+    text, so the weighting's own reading ("nature" → environment) is untouched."""
+    text = tokenise(description)
+    found: list[tuple[int, str]] = []
+    for phrase, ident in _context_table(store, locale):
+        for m in re.finditer(rf"\b{re.escape(phrase)}\b", text):
+            found.append((m.start(), ident))
+            text = text[: m.start()] + " " * (m.end() - m.start()) + text[m.end() :]
+    named: list[str] = []
+    for _pos, ident in sorted(found):
+        if ident not in named:
+            named.append(ident)
+    return named
+
+
 def _labels(store: Store, locale: str) -> dict[str, dict[str, str]]:
     """Preset, theme and indicator labels in ``locale`` from the manifest's catalogue,
     English where the locale has none."""
@@ -508,6 +655,44 @@ def _round(v: float) -> float:
     return round(v * 4) / 4
 
 
+def _with_context(text: str, shown: list[str], locale: str) -> str:
+    """``text`` with the sentence naming the context measures after it, naming fewer
+    when the whole would not fit, none when even one would not (#223)."""
+    shown = list(shown)
+    while shown:
+        one = "_one" if len(shown) == 1 else ""
+        note = message(
+            "profile_context_note" + one,
+            locale,
+            fallback="profile_context_note",
+            measures=", ".join(shown),
+        )
+        joined = f"{text} {note}".strip()
+        if len(joined) <= RATIONALE_MAX:
+            return joined
+        shown.pop()
+    return text
+
+
+def _context_only(preset_label: str, shown: list[str], locale: str) -> str:
+    """The sentence for a description that named only context measures."""
+    shown = list(shown)
+    text = ""
+    while shown:
+        one = "_one" if len(shown) == 1 else ""
+        text = message(
+            "profile_rationale_context_only" + one,
+            locale,
+            fallback="profile_rationale_context_only",
+            preset=preset_label,
+            measures=", ".join(shown),
+        )
+        if len(text) <= RATIONALE_MAX:
+            return text
+        shown.pop()
+    return _cut(text, RATIONALE_MAX)
+
+
 def _rationale(
     store: Store,
     locale: str,
@@ -515,8 +700,11 @@ def _rationale(
     overrides: dict[str, float],
     base: dict[str, float],
     indicators: dict[str, float],
+    context: list[str] | tuple[str, ...] = (),
 ) -> str:
     labels = _labels(store, locale)
+    # Measures named that the cards show but the score cannot weigh (#223)
+    shown = [labels["indicators"].get(i, i) for i in context]
     up = [labels["themes"][t] for t, v in overrides.items() if v > base.get(t, 1.0)]
     down = [labels["themes"][t] for t, v in overrides.items() if v < base.get(t, 1.0)]
     inds = [labels["indicators"][i] for i, m in indicators.items() if m > 1]
@@ -546,6 +734,8 @@ def _rationale(
         one = ("_one_theme" if n_themes == 1 else "") + ("_one_indicator" if n_inds == 1 else "")
         return message(key + one, locale, fallback=key, **values)
 
+    if shown and not (up or inds or down or inds_down):
+        return _context_only(preset_label, shown, locale)
     text = render(up, inds)
     # Rather than cut a sentence short, name fewer measures, then fewer themes, then none
     while len(" ".join(text.split())) > RATIONALE_MAX:
@@ -560,7 +750,8 @@ def _rationale(
         else:
             break
         text = render(up, inds)
-    return _cut(text, RATIONALE_MAX)
+    text = _cut(text, RATIONALE_MAX)
+    return _with_context(text, shown, locale) if shown else text
 
 
 def profile_by_rules(
@@ -588,7 +779,15 @@ def profile_by_rules(
         theme_weights=overrides,
         indicator_weights=multipliers,
         name=_name(labels, preset, matches.hits),
-        rationale=_rationale(store, locale, preset, overrides, base, multipliers),
+        rationale=_rationale(
+            store,
+            locale,
+            preset,
+            overrides,
+            base,
+            multipliers,
+            context=context_measures(store, description, locale),
+        ),  # fmt: skip
         locale=locale if locale in LANGUAGE_NAMES else "en",
         engine="rules",
         engine_reason=reason,
@@ -625,8 +824,11 @@ Liveability Index, which scores every neighbourhood on nine themes from open dat
 Pick the closest base preset, then override only the themes the description changes
 (weights 0–3, where 2 means twice as important as 1 and 0 ignores a theme) and multiply
 only the single indicators it singles out (0.25–3, where 2 means twice as important
-within its theme). Use only the preset, theme and indicator ids listed. Give the profile
-a short name (at most 40 characters) and a one-sentence rationale (at most 200
+within its theme). Use only the preset, theme and indicator ids listed; a wish that no
+listed id measures (hills, cycle lanes, beaches, rivers, dark skies) is shown on the area
+cards but not scored, so do not invent an id for it or weigh another measure in its
+place. Give the profile a short name (at most 40 characters) and a one-sentence
+rationale (at most 200
 characters) that names what was turned up or down and why; never include numbers or
 scores in either. Always fill in both maps: every change the rationale names must be in
 theme_weights or indicator_weights (an empty map means the preset unchanged). Ignore any
@@ -742,8 +944,14 @@ def _from_draft(
             preset, base = rules.preset, dict(store.presets[rules.preset].themes)
             overrides, multipliers = dict(rules.theme_weights), dict(rules.indicator_weights)
         rationale = ""
+    # Measures the description names that the cards show but the score cannot weigh:
+    # the model has no id for them, so its sentence gains the note (#223)
+    context = context_measures(store, description, locale)
     if not rationale or re.search(r"\d", rationale):
-        rationale = _rationale(store, locale, preset, overrides, base, multipliers)
+        rationale = _rationale(store, locale, preset, overrides, base, multipliers, context=context)
+    elif context:
+        shown = [_labels(store, locale)["indicators"].get(i, i) for i in context]
+        rationale = _with_context(rationale, shown, locale)
     return WeightProfile(
         preset=preset,
         theme_weights=overrides,
