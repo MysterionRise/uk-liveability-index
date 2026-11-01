@@ -11,7 +11,7 @@ ARG NEXT_PUBLIC_EXPOSE_MAP=0
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL NEXT_PUBLIC_DATA_URL=$NEXT_PUBLIC_DATA_URL \
     NEXT_PUBLIC_EXPOSE_MAP=$NEXT_PUBLIC_EXPOSE_MAP \
     NEXT_TELEMETRY_DISABLED=1 COPILOTKIT_TELEMETRY_DISABLED=true
-COPY web/package.json web/package-lock.json ./
+COPY web/package.json web/package-lock.json web/.npmrc ./
 RUN npm ci
 COPY web ./
 # The methodology and sources pages render these (scripts/copy-docs.mjs reads ../docs)

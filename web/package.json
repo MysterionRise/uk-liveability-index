@@ -1,6 +1,6 @@
 {
   "name": "lix-web",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "private": true,
   "type": "module",
   "engines": {
@@ -22,9 +22,8 @@
   },
   "dependencies": {
     "@ag-ui/client": "1.0.2",
-    "@copilotkit/react-core": "1.77.1",
-    "@copilotkit/react-ui": "1.77.1",
-    "@copilotkit/runtime": "1.77.1",
+    "@copilotkit/react-core": "1.83.0",
+    "@copilotkit/runtime": "1.83.0",
     "hyparquet": "1.31.2",
     "maplibre-gl": "6.13.0",
     "next": "16.4.3",
@@ -49,6 +48,6 @@
     "postcss": "8.5.29",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   }
 }
