@@ -37,12 +37,13 @@ went in the pull request.
 
 ## Adding a data source
 
-1. **Check the licence.** Only open licences: OGL, ODbL, CC BY, CC0, CDLA, Apache. Add the
-   source to [config/datasets.yaml](config/datasets.yaml) with its licence, attribution and
-   `licence_verified: true` once you have read the licence on the publisher's site.
-2. **Find its file.** Use an existing access type (`http`, `arcgis_item`,
-   `govuk_attachment`, `html_link`, `ckan`, `nomis`, `overture`) so `lix resolve` keeps
-   finding the current version.
+1. **Check the licence.** Only open licences: OGL, ODbL, CC BY, CC0, CDLA, the Copernicus
+   DEM licence. Add the source to [config/datasets.yaml](config/datasets.yaml) with its
+   licence, attribution and `licence_verified: true` once you have read the licence on the
+   publisher's site.
+2. **Find its file.** Use an existing access type (`http`, `arcgis_item`, `arcgis_layer`,
+   `wfs`, `wcs`, `govuk_attachment`, `html_link`, `ckan`, `nomis`, `overture`, `curated`,
+   `api_key`, `manual`) so `lix resolve` keeps finding the current version.
 3. **Stage it** with a stager in `pipeline/src/lix_pipeline/stage/`, plus a test on a small
    fixture (see `pipeline/tests/test_stage_sources.py`).
 4. **Build the indicator** in [config/indicators.yaml](config/indicators.yaml), preferably

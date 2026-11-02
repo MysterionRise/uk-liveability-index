@@ -4,6 +4,78 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+The launch kit (#201, decided 2026-11-01): what a visitor sees first, the assistant's
+dependency chain, and the checks that run without anyone remembering to, before the
+project is promoted. No new measures; the housing, economy and census batch moves to
+v0.7.2. Ships with the November data release (`data-2026-11`).
+
+### Added
+
+- A Dependabot configuration for npm, uv, GitHub Actions and the images: weekly for
+  the packages, monthly for the rest, minors and patches grouped into one pull request
+  per ecosystem; CI already runs on pull requests with the scripted model, so each update
+  gets the full check. Code scanning (CodeQL), secret scanning with push protection and
+  private vulnerability reporting are repository settings, free for a public repo,
+  turned on at release (#224).
+- Issue forms (a bug, a number that looks wrong, a data source proposal, a translation
+  review), a pull request template with the CONTRIBUTING checks, a code of conduct (the
+  Contributor Covenant 2.1 by reference) and a `CITATION.cff` (#225).
+- README: a badge row, a "Built with" line, `make up-demo` as the two-minute path before
+  the full quickstart, and an MCP section with Claude Code, Cursor and Claude Desktop
+  configuration (#226).
+- Profiles: a description that names a measure the cards show but the score cannot
+  weigh (hills, cycle lanes, a beach, a river, dark skies, a library…) gets one more
+  sentence in its rationale, in the four languages: "Hilliness around homes is shown on
+  the cards, not scored". Both engines add it; the context words are matched on a copy
+  of the text, so the weighting's own reading of a word ("nature" → environment) is
+  unchanged, and the model is told not to invent an id for such a wish (#223).
+- The MCP tools carry the REST API's bounds (a limit of 0 or a negative radius gave a
+  traceback; a weight of −5 was accepted), are annotated read-only so clients need not
+  confirm each call, and the server reports the app's version (release pass).
+- `lix validate serve` runs the name check that `lix validate geo` gained in v0.6.3 over
+  `areas`, `places` and `pois` as well, and both now refuse mojibake pairs (#222).
+
+### Changed
+
+- CopilotKit 1.77.1 → 1.83.0 (`@copilotkit/react-core`, `@copilotkit/runtime`; the
+  unused `@copilotkit/react-ui` dropped); `@ag-ui/client` stays at 1.0.2, the version
+  the runtime pins. CopilotKit 1.81+ declares an optional peer on maplibre-gl 5 for a
+  map widget this app never renders, so `web/.npmrc` sets `legacy-peer-deps` and the
+  web image copies it before `npm ci` (#206, #224).
+- Routine version bumps (react, maplibre, hyparquet, playwright, ruff, pytest and the
+  rest, all a minor or a patch behind) are left to Dependabot's first grouped pull
+  requests rather than bumped by hand here (#224).
+- The pitch line says the UK and Ireland; the package descriptions, the demo dataset
+  comments, the walkthrough sentence ("with each feature release") and Haiku's speed
+  and cost (the evals' 5 s and $0.001) read the same everywhere; the TikTok end card
+  carries 62,833 neighbourhoods and 224 datasets (#226, #227).
+
+### Fixed
+
+- Points of interest: 14 Open Charge Map and OpenStreetMap names arrived double-encoded
+  ("NestlÃ© UK", "St LeonardÃ¢Â€Â™s Court"), 318 carried leading or trailing spaces, 106
+  doubled spaces and 14 control or zero-width characters. A shared `lix_core.text`
+  helper repairs mojibake where the bytes round-trip, drops the stray characters and
+  collapses whitespace; the POI builder applies it to every source and trims the detail
+  strings (#222).
+
+- Profiles in Welsh: "llai o drosedd" (less crime) set Safety to 0, because a problem
+  word was not recognised in its mutated form after "o"; the problem and asset words
+  now carry each language's mutations (release pass).
+
+### Security
+
+- `npm audit` on v0.7.0: 47 advisories, 22 high, no critical, every high chaining to
+  zod < 4.6.6 pinned inside the CopilotKit and ag-ui packages (no advisory names a
+  CopilotKit or ag-ui package itself). After the bump and `npm audit fix`: 39, 19 high,
+  the three direct ones all inherited from zod. With `"overrides": {"zod": "$zod"}` in
+  `web/package.json`, every copy resolves to the app's zod 4.6.6, and `npm audit fix`
+  takes `@hono/node-server` 1.19.17 for the last high: 22 advisories, none high or
+  critical, all transitive; verified with the unit checks and the browser suite against
+  the production image (#206).
+
 ## [0.7.0] - 2026-10-30
 
 Active travel, water, nature and terrain: ten new context measures across the five territories

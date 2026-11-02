@@ -51,3 +51,11 @@ updates:
     commit-message:
       prefix: deps
     labels: [dependencies]
+
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: deps
+    labels: [dependencies]

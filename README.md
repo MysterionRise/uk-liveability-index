@@ -23,7 +23,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
   HadUK-Grid climate averages, Environment Agency, Natural Resources Wales and SEPA flood
   maps, strategic noise maps, Ofcom broadband, bus and rail timetables, OpenStreetMap and
   more.
-- **Your weights, computed in your browser**, from five ready-made personas, a sentence
+- **Your weights, computed in your browser**, from five ready-made presets, a sentence
   about yourself ("young professional, one child starting school, I need sunshine") or
   any weighting of your own, with an honest range for how much a result depends on them.
 - **An assistant that shows its working**, tested on 58 cases, including that its replies
@@ -156,11 +156,15 @@ an [MCP](https://modelcontextprotocol.io) server at `http://localhost:3000/mcp/`
 claude mcp add --transport http liveability http://localhost:3000/mcp/
 ```
 
-```json
-// Cursor (.cursor/mcp.json) and other clients that take a URL
-{ "mcpServers": { "liveability": { "url": "http://localhost:3000/mcp/" } } }
+Cursor (`.cursor/mcp.json`) and other clients that take a URL:
 
-// Claude Desktop (claude_desktop_config.json) reaches a local URL through mcp-remote
+```json
+{ "mcpServers": { "liveability": { "url": "http://localhost:3000/mcp/" } } }
+```
+
+Claude Desktop (`claude_desktop_config.json`) reaches a local URL through `mcp-remote`:
+
+```json
 { "mcpServers": { "liveability": { "command": "npx", "args": ["mcp-remote", "http://localhost:3000/mcp/"] } } }
 ```
 

@@ -121,7 +121,7 @@ down:
 	docker compose down
 
 # The data pack: a built data/serve (about 250 MB) with its licence notices, so another
-# machine can skip the 25 GB raw download. Packs ship as monthly data releases
+# machine can skip the 20 GB raw download. Packs ship as monthly data releases
 # (data-YYYY-MM, GitHub pre-releases) separate from code releases; a code release reads
 # the newest pack with the serve schema it understands (SERVE_SCHEMA_VERSION):
 #   make data-pack                       write dist/lix-serve.tar.gz (+ .sha256)

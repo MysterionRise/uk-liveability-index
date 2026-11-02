@@ -262,7 +262,7 @@ ENGLISH_NOT_IN: dict[str, frozenset[str]] = {"gd": frozenset({"air"}), "ga": fro
 # their mutated forms
 CONTEXT_WORDS: dict[str, dict[str, str]] = {
     "en": {
-        "hills": "hilliness", "hilly": "hilliness", "steep": "hilliness",
+        "hills": "hilliness", "hilly": "hilliness", "steep hills": "hilliness",
         "flat streets": "hilliness", "flat ground": "hilliness", "flat terrain": "hilliness",
         "flat land": "hilliness", "not hilly": "hilliness",
         "altitude": "elevation", "elevation": "elevation", "sea level": "elevation",

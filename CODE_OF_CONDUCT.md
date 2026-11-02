@@ -5,7 +5,7 @@ version 2.1.
 
 In short: be kind and constructive, assume good faith, welcome newcomers and people
 whose first language is not English (three of the interface's four languages are
-community-reviewed drafts), and keep disagreements about the data and the method to
+drafts awaiting review by fluent speakers), and keep disagreements about the data and the method to
 the data and the method. Harassment, personal attacks and discriminatory remarks are
 not welcome anywhere the project is discussed.
 
