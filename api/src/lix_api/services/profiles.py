@@ -271,7 +271,6 @@ CONTEXT_WORDS: dict[str, dict[str, str]] = {
         "cycle paths": "cycle_infrastructure", "cycle path": "cycle_infrastructure",
         "cycle tracks": "cycle_infrastructure", "cycle track": "cycle_infrastructure",
         "cycleways": "cycle_infrastructure", "cycleway": "cycle_infrastructure",
-        "bike": "cycle_infrastructure", "cycle": "cycle_infrastructure",
         "beach": "bathing_water_distance", "beaches": "bathing_water_distance",
         "bathing": "bathing_water_distance", "sea swimming": "bathing_water_distance",
         "swim in the sea": "bathing_water_distance",
@@ -279,7 +278,7 @@ CONTEXT_WORDS: dict[str, dict[str, str]] = {
         "bathing water": "bathing_water_class", "clean bathing": "bathing_water_class",
         "coast": "coast_distance", "coastal": "coast_distance", "seaside": "coast_distance",
         "by the sea": "coast_distance", "near the sea": "coast_distance",
-        "sea": "coast_distance",
+        "the sea": "coast_distance",
         "nature reserve": "protected_nature", "nature reserves": "protected_nature",
         "wildlife": "protected_nature", "protected nature": "protected_nature",
         "sssi": "protected_nature",
@@ -300,7 +299,6 @@ CONTEXT_WORDS: dict[str, dict[str, str]] = {
         "library": "library_distance", "libraries": "library_distance",
         "post office": "post_office_distance",
         "listed buildings": "listed_buildings", "heritage": "listed_buildings",
-        "historic": "listed_buildings",
         "radon": "radon_potential",
     },
     "cy": {
@@ -332,9 +330,10 @@ CONTEXT_WORDS: dict[str, dict[str, str]] = {
         "ri taobh na mara": "coast_distance", "a' mhuir": "coast_distance",
         "muir": "coast_distance",
         "tèarmann nàdair": "protected_nature", "fiadh-bheatha": "protected_nature",
-        "abhainn": "river_status", "aibhnichean": "river_status",
+        "abhainn": "river_status", "aibhne": "river_status", "aibhnichean": "river_status",
         "òtrachas": "storm_overflow_spills",
-        "speuran dorcha": "light_pollution", "truailleadh solais": "light_pollution",
+        "speuran dorcha": "light_pollution", "speur dorcha": "light_pollution",
+        "truailleadh solais": "light_pollution",
         "raon-cluiche": "play_spaces", "raointean-cluiche": "play_spaces",
         "leabharlann": "library_distance", "oifis a' phuist": "post_office_distance",
         "dualchas": "listed_buildings", "togalaichean clàraichte": "listed_buildings",
@@ -343,15 +342,17 @@ CONTEXT_WORDS: dict[str, dict[str, str]] = {
     "ga": {
         "cnoic": "hilliness", "cnoc": "hilliness", "cnocach": "hilliness",
         "lánaí rothar": "cycle_infrastructure", "raonta rothar": "cycle_infrastructure",
+        "lána rothaíochta": "cycle_infrastructure", "lánaí rothaíochta": "cycle_infrastructure",
         "rothar": "cycle_infrastructure", "rothaíocht": "cycle_infrastructure",
         "trá": "bathing_water_distance", "tránna": "bathing_water_distance",
         "snámh san fharraige": "bathing_water_distance",
         "cósta": "coast_distance", "cois farraige": "coast_distance",
         "an fharraige": "coast_distance", "farraige": "coast_distance",
         "anaclann dúlra": "protected_nature", "fiadhúlra": "protected_nature",
-        "abhainn": "river_status", "aibhneacha": "river_status",
+        "abhainn": "river_status", "abhann": "river_status", "aibhneacha": "river_status",
         "séarachas": "storm_overflow_spills",
-        "spéartha dorcha": "light_pollution", "truailliú solais": "light_pollution",
+        "spéartha dorcha": "light_pollution", "spéir dhorcha": "light_pollution",
+        "truailliú solais": "light_pollution",
         "cuibhreann": "allotment_distance",
         "clós súgartha": "play_spaces", "páirc súgartha": "play_spaces",
         "leabharlann": "library_distance", "oifig an phoist": "post_office_distance",
@@ -482,7 +483,18 @@ def _negation(written: str, start: int, end: int, locale: str) -> str | None:
     return None
 
 
-def _effect(store: Store, phrase: str, kind: str, ident: str, negation: str | None) -> str:
+@lru_cache(maxsize=8)
+def _word_forms(words: frozenset[str], locale: str) -> frozenset[str]:
+    """``words`` and each one's mutated forms in ``locale`` ("trosedd" → "drosedd",
+    "throsedd"), so a Welsh problem word is still a problem after "o" or "llai o"."""
+    from lix_api.services.mutations import variants
+
+    return frozenset(form for word in words for form in variants(word, locale))
+
+
+def _effect(
+    store: Store, phrase: str, kind: str, ident: str, negation: str | None, locale: str = "en"
+) -> str:
     """Whether a plain word moves its theme or measure "up" or "down": up as written,
     down under indifference; under aversion ("hate noise", "no crime") up for a
     problem and down for an asset."""
@@ -490,9 +502,9 @@ def _effect(store: Store, phrase: str, kind: str, ident: str, negation: str | No
         return "up"
     if negation == "indifference":
         return "down"
-    if phrase in ASSET_WORDS:
+    if phrase in _word_forms(ASSET_WORDS, locale):
         return "down"
-    if phrase in PROBLEM_WORDS:
+    if phrase in _word_forms(PROBLEM_WORDS, locale):
         return "up"
     if kind == "indicator" and store.indicators[ident].direction == "lower_better":
         return "up"
@@ -513,7 +525,7 @@ def match_rules(store: Store, description: str, locale: str = "en") -> Matches:
                 effect = (
                     "up"
                     if kind in ("rule", "preset")
-                    else _effect(store, phrase, kind, str(payload), negation)
+                    else _effect(store, phrase, kind, str(payload), negation, locale)
                 )
                 found.append((m.start(), kind, payload, effect))
             text = text[: m.start()] + " " * (m.end() - m.start()) + text[m.end() :]
@@ -737,8 +749,10 @@ def _rationale(
     if shown and not (up or inds or down or inds_down):
         return _context_only(preset_label, shown, locale)
     text = render(up, inds)
-    # Rather than cut a sentence short, name fewer measures, then fewer themes, then none
-    while len(" ".join(text.split())) > RATIONALE_MAX:
+    # Rather than cut a sentence short, name fewer measures, then fewer themes, then none;
+    # with context measures to name as well, leave room for the note naming the first
+    reserve = len(_with_context("", shown[:1], locale)) + 1 if shown else 0
+    while len(" ".join(text.split())) + reserve > RATIONALE_MAX:
         if len(inds) > 1:
             inds = inds[:-1]
         elif len(up) > 1:

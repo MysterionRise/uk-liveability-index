@@ -352,13 +352,37 @@ class TestContextMeasures:
 
     def test_named_in_reading_order_once_each(self, store):
         assert profiles.context_measures(store, self.CYCLING, "en") == [
-            "cycle_infrastructure",
             "bathing_water_distance",
             "hilliness",
+            "cycle_infrastructure",
             "bathing_water_class",
             "protected_nature",
         ]
         assert profiles.context_measures(store, "schools and pubs", "en") == []
+
+    @pytest.mark.parametrize(
+        ("description", "named"),
+        [
+            # Bare words that are usually something else do not fire; phrases do
+            ("the life cycle of plants, my bike was stolen, historic mistakes", []),
+            ("a sea of paperwork", []),
+            ("cycle lanes, a bike lane, by the sea, listed buildings", [
+                "cycle_infrastructure", "coast_distance", "listed_buildings"]),
+            ("a flat near the river", ["river_status"]),
+        ],
+    )  # fmt: skip
+    def test_phrases_fire_and_bare_words_do_not(self, store, description, named):
+        assert profiles.context_measures(store, description, "en") == named
+
+    def test_gaelic_and_irish_forms(self, store):
+        assert profiles.context_measures(store, "speur dorcha, taobh na h-aibhne", "gd") == [
+            "light_pollution",
+            "river_status",
+        ]
+        assert profiles.context_measures(store, "lána rothaíochta agus spéir dhorcha", "ga") == [
+            "cycle_infrastructure",
+            "light_pollution",
+        ]
 
     def test_the_rules_engine_says_so_and_weighs_none(self, store):
         p = profile_by_rules(store, self.CYCLING, "en")
@@ -367,7 +391,7 @@ class TestContextMeasures:
         assert p.rationale.startswith("Starts from") and len(p.rationale) <= 200
         assert p.rationale.endswith("are shown on the cards, not scored.")
         # Named in reading order, as many as fit in the sentence
-        assert "Cycle tracks and lanes nearby, Distance to a bathing water" in p.rationale
+        assert "Distance to a bathing water, Hilliness around homes" in p.rationale
         # "nature" still reads as the environment theme for the weighting
         assert p.theme_weights.get("environment", 1) > 1
 
@@ -404,3 +428,23 @@ class TestContextMeasures:
         )
         p = profile_by_rules(store, long, "en")
         assert len(p.rationale) <= 200 and p.rationale.endswith(".")
+        # The scored sentence makes room, so the first context measure is always named
+        assert "Hilliness around homes is shown on the cards, not scored." in p.rationale
+        assert p.rationale.startswith("Starts from")
+
+    def test_the_note_survives_a_long_scored_sentence(self, store):
+        p = profile_by_rules(store, "asthma, pubs, a beach and dark skies", "en")
+        assert p.indicator_weights["no2"] == 2 and p.indicator_weights["well_run_pubs"] == 2
+        assert "Distance to a bathing water" in p.rationale and len(p.rationale) <= 200
+        assert p.rationale.endswith("shown on the cards, not scored.")
+
+
+class TestMutatedProblemWords:
+    """A Welsh problem word stays a problem in its mutated form: "llai o drosedd" (less
+    crime) wants more safety, as "less crime" does in English."""
+
+    def test_less_crime_in_welsh_and_english(self, store):
+        assert profile_by_rules(store, "less crime", "en").theme_weights["safety"] == 2
+        assert profile_by_rules(store, "llai o drosedd", "cy").theme_weights["safety"] == 2
+        assert profile_by_rules(store, "dim llawer o drosedd", "cy").theme_weights["safety"] == 2
+        assert profile_by_rules(store, "trosedd isel", "cy").theme_weights["safety"] == 2
