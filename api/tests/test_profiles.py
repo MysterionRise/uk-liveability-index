@@ -57,6 +57,17 @@ class TestRules:
         assert plain.preset == store.default_preset and plain.theme_weights == {}
         assert plain.rationale.startswith("Nothing in the description matched")
 
+    @pytest.mark.parametrize(
+        "description",
+        [
+            "a couple with two kids who cycle everywhere and want a pub nearby",
+            "we have a child starting school next year",
+            "three children, so parks and a good primary matter most",
+        ],
+    )
+    def test_a_household_with_children_starts_from_the_family_preset(self, store, description):
+        assert profile_by_rules(store, description, "en").preset == "family"
+
 
 class TestLanguages:
     """#161: each language's words apply in its own interface, in their mutated forms;

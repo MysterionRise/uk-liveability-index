@@ -77,6 +77,9 @@ INDICATOR_WORDS = {
     "deprivation": "income_deprivation",
 }  # fmt: skip
 PRESET_WORDS = {
+    # A household with children starts from the family preset ("no kids" is a rule, matched
+    # first); "young professional" and the rest name a preset outright
+    "kids": "family", "kid": "family", "children": "family", "child": "family",
     "default": "balanced", "families": "family", "retired": "retiree", "retirees": "retiree",
     "retirement": "retiree", "commuters": "commuter", "commuting": "commuter",
     "commute": "commuter", "young professionals": "young_professional",

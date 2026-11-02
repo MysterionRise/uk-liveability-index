@@ -25,14 +25,14 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 | Abergavenny | Abergavenny South & Crucorney, Monmouthshire | 57 | 48 | 70 | 75 | 56 | 82 | 75 | 24 | 39 | 50 |
 | Penarth | Penarth, Vale of Glamorgan | 74 | 91 | 82 | 83 | 77 | 90 | 84 | 35 | 50 | 77 |
 | Blaenau Ffestiniog | Blaenau Ffestiniog & Trawsfynydd, Gwynedd | 47 | 38 | 24 | 47 | 33 | 68 | 51 | 60 | 52 | 40 |
-| Hampstead | Hampstead Town, Camden | 72 | 99 | 87 | 88 | 87 | 67 | 89 | 17 | 28 | 94 |
+| Hampstead | Hampstead Town, Camden | 72 | 99 | 87 | 88 | 86 | 67 | 89 | 17 | 28 | 94 |
 | Shoreditch | Shoreditch, Hackney | 61 | 100 | 89 | 44 | 90 | 29 | 76 | 28 | 10 | 96 |
 | Whitechapel | Spitalfields, Tower Hamlets | 58 | 100 | 88 | 26 | 81 | 34 | 75 | 36 | 8 | 91 |
 | Kensington | Kensington Abingdon, Kensington and Chelsea | 70 | 100 | 92 | 91 | 96 | 49 | 76 | 18 | 23 | 93 |
 | Manchester | Castlefield & Deansgate, Manchester | 65 | 100 | 62 | 63 | 57 | 50 | 82 | 55 | 19 | 97 |
 | Salford | Weaste & Seedley, Salford | 56 | 55 | 64 | 21 | 55 | 64 | 86 | 54 | 30 | 75 |
 | Jesmond | South Jesmond & Sandyford, Newcastle upon Tyne | 71 | 98 | 73 | 70 | 70 | 78 | 89 | 46 | 43 | 75 |
-| Headingley | Headingley, Leeds | 68 | 97 | 65 | 62 | 60 | 78 | 90 | 49 | 30 | 81 |
+| Headingley | Headingley, Leeds | 68 | 97 | 65 | 62 | 61 | 78 | 90 | 49 | 30 | 81 |
 | Harrogate | Central Harrogate, North Yorkshire | 68 | 93 | 51 | 67 | 66 | 79 | 90 | 34 | 41 | 82 |
 | Winchester | Winchester East, Winchester | 69 | 85 | 83 | 42 | 79 | 84 | 94 | 41 | 46 | 78 |
 | St Albans | St Albans Central, St Albans | 72 | 98 | 84 | 73 | 94 | 74 | 80 | 30 | 28 | 92 |
@@ -69,7 +69,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 | Clifden | Clifden, Galway County | 50 | 65 | 45 | 26 | – | 77 | 35 | – | 56 | 46 |
 | Kilkenny | Kilkenny No. 2 Urban, Kilkenny | 69 | 98 | 82 | 40 | – | 67 | 100 | – | 29 | 73 |
 | Dalkey | Dalkey-Bullock, Dún Laoghaire-Rathdown | 77 | 89 | 88 | 89 | – | 78 | 90 | – | 45 | 67 |
-| Letterkenny | Letterkenny Urban, Donegal | 61 | 97 | 53 | 19 | – | 73 | 100 | – | 29 | 48 |
+| Letterkenny | Letterkenny Urban, Donegal | 61 | 97 | 53 | 19 | – | 73 | 100 | – | 29 | 49 |
 
 ## Observations
 

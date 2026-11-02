@@ -47,6 +47,14 @@ v0.7.2. Ships with the November data release (`data-2026-11`).
 - Routine version bumps (react, maplibre, hyparquet, playwright, ruff, pytest and the
   rest, all a minor or a patch behind) are left to Dependabot's first grouped pull
   requests rather than bumped by hand here (#224).
+- Profiles: a description that mentions kids or children starts from the family preset
+  (it took "family" or "families" before); "no kids" is still read first and clears
+  education (release pass).
+- The November refresh: fifteen sources carry a new edition (the four OpenStreetMap
+  extracts of 31 October, GIAS, the FSA ratings, ODS GPs and dentists, BSO dental,
+  NaPTAN, the NTA timetable, Natural Resources Wales's river and sea flood maps, Open
+  Charge Map for Great Britain and Ireland); 168/168 face-validity checks still pass,
+  and the demo fixture is re-cut from the new pack.
 - The pitch line says the UK and Ireland; the package descriptions, the demo dataset
   comments, the walkthrough sentence ("with each feature release") and Haiku's speed
   and cost (the evals' 5 s and $0.001) read the same everywhere; the TikTok end card

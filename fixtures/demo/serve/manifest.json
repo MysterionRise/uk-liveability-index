@@ -1,8 +1,8 @@
 {
   "schema_version": 5,
-  "generated_at": "2026-10-28T18:17:40+00:00",
+  "generated_at": "2026-11-02T01:57:59+00:00",
   "data_release": null,
-  "data_to": "2026-10-28",
+  "data_to": "2026-11-02",
   "geography": {
     "build": {
       "working_crs": 27700,
@@ -7314,7 +7314,7 @@
       ],
       "version": "6ee6614fb50827ad",
       "fetched_version": "6ee6614fb50827ad",
-      "fetched_at": "2026-10-28T15:40:50+00:00",
+      "fetched_at": "2026-11-01T23:59:06+00:00",
       "period": {
         "label": "18 October 2026",
         "start": "2026-10-18",
@@ -7334,11 +7334,11 @@
       ],
       "version": "5387c79c68d2c713",
       "fetched_version": "5387c79c68d2c713",
-      "fetched_at": "2026-10-28T15:43:41+00:00",
+      "fetched_at": "2026-11-02T00:02:09+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 2 November 2026",
+        "start": "2026-11-02",
+        "end": "2026-11-02",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -7398,9 +7398,9 @@
       "fetched_version": "itm_all_gtfs.zip",
       "fetched_at": "2026-10-26T20:32:41.190131+00:00",
       "period": {
-        "label": "timetable for 10 November 2026",
-        "start": "2026-11-10",
-        "end": "2026-11-10",
+        "label": "timetable for 17 November 2026",
+        "start": "2026-11-17",
+        "end": "2026-11-17",
         "kind": "day"
       },
       "cadence": "daily",
@@ -7418,9 +7418,9 @@
       "fetched_version": "itm_scotland_gtfs.zip",
       "fetched_at": "2026-10-26T20:38:35.718645+00:00",
       "period": {
-        "label": "timetable for 10 November 2026",
-        "start": "2026-11-10",
-        "end": "2026-11-10",
+        "label": "timetable for 17 November 2026",
+        "start": "2026-11-17",
+        "end": "2026-11-17",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -7438,9 +7438,9 @@
       "fetched_version": "itm_wales_gtfs.zip",
       "fetched_at": "2026-10-26T20:37:55.491603+00:00",
       "period": {
-        "label": "timetable for 10 November 2026",
-        "start": "2026-11-10",
-        "end": "2026-11-10",
+        "label": "timetable for 17 November 2026",
+        "start": "2026-11-17",
+        "end": "2026-11-17",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -7454,13 +7454,13 @@
       "coverage": [
         "N"
       ],
-      "version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/bbfa77f8-444d-49f3-bed3-ae2e50514b08/download/dental-surgery-list-as-at-30th-june-2026.csv",
-      "fetched_version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/bbfa77f8-444d-49f3-bed3-ae2e50514b08/download/dental-surgery-list-as-at-30th-june-2026.csv",
-      "fetched_at": "2026-10-14T15:48:05.494085+00:00",
+      "version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/3668a550-703e-499d-ac44-6aedc145f574/download/dental-surgery-list-as-at-30th-september-2026.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/7a65dda8-5d57-4344-bc0a-9cca26a3a57c/resource/3668a550-703e-499d-ac44-6aedc145f574/download/dental-surgery-list-as-at-30th-september-2026.csv",
+      "fetched_at": "2026-11-01T23:59:15.176471+00:00",
       "period": {
-        "label": "June 2026",
-        "start": "2026-06-01",
-        "end": "2026-06-30",
+        "label": "September 2026",
+        "start": "2026-09-01",
+        "end": "2026-09-30",
         "kind": "month"
       },
       "cadence": "quarterly",
@@ -7764,7 +7764,7 @@
       ],
       "version": "9c8c1364f0532226",
       "fetched_version": "9c8c1364f0532226",
-      "fetched_at": "2026-10-28T15:42:10+00:00",
+      "fetched_at": "2026-11-02T00:00:16+00:00",
       "period": {
         "label": "14 October 2026",
         "start": "2026-10-14",
@@ -7784,7 +7784,7 @@
       ],
       "version": "4064b39ef7904c61",
       "fetched_version": "4064b39ef7904c61",
-      "fetched_at": "2026-10-28T15:40:50+00:00",
+      "fetched_at": "2026-11-01T23:59:07+00:00",
       "period": {
         "label": "13 October 2026",
         "start": "2026-10-13",
@@ -7842,13 +7842,13 @@
       "coverage": [
         "I"
       ],
-      "version": "28/10/2026",
-      "fetched_version": "28/10/2026",
-      "fetched_at": "2026-10-28T15:43:13.303439+00:00",
+      "version": "01/11/2026",
+      "fetched_version": "01/11/2026",
+      "fetched_at": "2026-11-02T00:00:37.623569+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 2 November 2026",
+        "start": "2026-11-02",
+        "end": "2026-11-02",
         "kind": "day"
       },
       "cadence": "quarterly",
@@ -8877,13 +8877,13 @@
         "S",
         "N"
       ],
-      "version": "Wed, 28 Oct 2026 02:27:51 GMT",
-      "fetched_version": "Wed, 28 Oct 2026 02:27:51 GMT",
-      "fetched_at": "2026-10-28T15:37:07.055171+00:00",
+      "version": "Sun, 01 Nov 2026 02:13:13 GMT",
+      "fetched_version": "Sun, 01 Nov 2026 02:13:13 GMT",
+      "fetched_at": "2026-11-01T23:55:24.536633+00:00",
       "period": {
-        "label": "published October 2026",
-        "start": "2026-10-01",
-        "end": "2026-10-31",
+        "label": "published November 2026",
+        "start": "2026-11-01",
+        "end": "2026-11-30",
         "kind": "month"
       },
       "cadence": "daily",
@@ -8899,11 +8899,11 @@
       ],
       "version": "1dfe8f46dbb80776",
       "fetched_version": "1dfe8f46dbb80776",
-      "fetched_at": "2026-10-28T15:43:13+00:00",
+      "fetched_at": "2026-11-02T00:00:37+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 2 November 2026",
+        "start": "2026-11-02",
+        "end": "2026-11-02",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -8917,13 +8917,13 @@
       "coverage": [
         "E"
       ],
-      "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261028.csv",
-      "fetched_version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261028.csv",
-      "fetched_at": "2026-10-28T15:12:04.724848+00:00",
+      "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261101.csv",
+      "fetched_version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261101.csv",
+      "fetched_at": "2026-11-01T23:47:34.849608+00:00",
       "period": {
-        "label": "28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "1 November 2026",
+        "start": "2026-11-01",
+        "end": "2026-11-01",
         "kind": "day"
       },
       "cadence": "daily",
@@ -8982,7 +8982,7 @@
       ],
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-28T15:40:50+00:00",
+      "fetched_at": "2026-11-01T23:59:07+00:00",
       "period": {
         "label": "1991\u20132020 averages",
         "start": "2020-01-01",
@@ -9022,11 +9022,11 @@
       ],
       "version": "e32708817890b90d",
       "fetched_version": "e32708817890b90d",
-      "fetched_at": "2026-10-28T15:43:02+00:00",
+      "fetched_at": "2026-11-02T00:00:27+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 2 November 2026",
+        "start": "2026-11-02",
+        "end": "2026-11-02",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -9352,11 +9352,11 @@
       ],
       "version": "Stops.csv",
       "fetched_version": "Stops.csv",
-      "fetched_at": "2026-10-28T15:12:12.245012+00:00",
+      "fetched_at": "2026-11-01T23:47:42.754852+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 1 November 2026",
+        "start": "2026-11-01",
+        "end": "2026-11-01",
         "kind": "day"
       },
       "cadence": "daily",
@@ -9412,7 +9412,7 @@
       ],
       "version": "f0c2e833f55a702b",
       "fetched_version": "f0c2e833f55a702b",
-      "fetched_at": "2026-10-28T15:40:56+00:00",
+      "fetched_at": "2026-11-01T23:59:13+00:00",
       "period": {
         "label": "2026\u201327",
         "start": "2026-01-01",
@@ -9672,11 +9672,11 @@
       ],
       "version": "NRW_FLOOD_RISK_FROM_RIVERS.gpkg",
       "fetched_version": "NRW_FLOOD_RISK_FROM_RIVERS.gpkg",
-      "fetched_at": "2026-10-28T15:38:22.313179+00:00",
+      "fetched_at": "2026-11-01T23:56:43.647742+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 1 November 2026",
+        "start": "2026-11-01",
+        "end": "2026-11-01",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -9692,11 +9692,11 @@
       ],
       "version": "NRW_FLOOD_RISK_FROM_SEA.gpkg",
       "fetched_version": "NRW_FLOOD_RISK_FROM_SEA.gpkg",
-      "fetched_at": "2026-10-28T15:38:34.300367+00:00",
+      "fetched_at": "2026-11-01T23:56:54.067615+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 1 November 2026",
+        "start": "2026-11-01",
+        "end": "2026-11-01",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -9793,9 +9793,9 @@
       "coverage": [
         "I"
       ],
-      "version": "Tue, 27 Oct 2026 23:20:00 GMT",
-      "fetched_version": "Tue, 27 Oct 2026 23:20:00 GMT",
-      "fetched_at": "2026-10-28T15:43:10.579036+00:00",
+      "version": "Sat, 31 Oct 2026 23:21:32 GMT",
+      "fetched_version": "Sat, 31 Oct 2026 23:21:32 GMT",
+      "fetched_at": "2026-11-02T00:00:33.389297+00:00",
       "period": {
         "label": "published October 2026",
         "start": "2026-10-01",
@@ -9835,13 +9835,13 @@
         "E",
         "W"
       ],
-      "version": "\"11s4sdici3a1c6vy\"",
-      "fetched_version": "\"11s4sdici3a1c6vy\"",
-      "fetched_at": "2026-10-28T15:11:59.146546+00:00",
+      "version": "\"y0oo9w6r941c761\"",
+      "fetched_version": "\"y0oo9w6r941c761\"",
+      "fetched_at": "2026-11-01T23:47:30.131091+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 1 November 2026",
+        "start": "2026-11-01",
+        "end": "2026-11-01",
         "kind": "day"
       },
       "cadence": "daily",
@@ -9856,13 +9856,13 @@
         "E",
         "W"
       ],
-      "version": "\"fvkd7fo34f1z90i\"",
-      "fetched_version": "\"fvkd7fo34f1z90i\"",
-      "fetched_at": "2026-10-26T20:30:45.203053+00:00",
+      "version": "\"10qawpv3bnx1zabj\"",
+      "fetched_version": "\"10qawpv3bnx1zabj\"",
+      "fetched_at": "2026-11-01T23:47:27.987692+00:00",
       "period": {
-        "label": "downloaded 26 October 2026",
-        "start": "2026-10-26",
-        "end": "2026-10-26",
+        "label": "downloaded 1 November 2026",
+        "start": "2026-11-01",
+        "end": "2026-11-01",
         "kind": "day"
       },
       "cadence": "daily",
@@ -9944,11 +9944,11 @@
       ],
       "version": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json",
       "fetched_version": "https://api.openchargemap.io/v3/poi?countrycode=GB&maxresults=250000&compact=false&verbose=false&output=json",
-      "fetched_at": "2026-10-28T15:43:24.585646+00:00",
+      "fetched_at": "2026-11-02T00:00:48.652110+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 2 November 2026",
+        "start": "2026-11-02",
+        "end": "2026-11-02",
         "kind": "day"
       },
       "cadence": "daily",
@@ -9964,11 +9964,11 @@
       ],
       "version": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json",
       "fetched_version": "https://api.openchargemap.io/v3/poi?countrycode=IE&maxresults=50000&compact=false&verbose=false&output=json",
-      "fetched_at": "2026-10-28T15:43:25.260189+00:00",
+      "fetched_at": "2026-11-02T00:00:49.298214+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 2 November 2026",
+        "start": "2026-11-02",
+        "end": "2026-11-02",
         "kind": "day"
       },
       "cadence": "daily",
@@ -10136,13 +10136,13 @@
       "coverage": [
         "E"
       ],
-      "version": "Wed, 28 Oct 2026 02:18:06 GMT",
-      "fetched_version": "Wed, 28 Oct 2026 02:18:06 GMT",
-      "fetched_at": "2026-10-28T15:37:01.377581+00:00",
+      "version": "Sun, 01 Nov 2026 00:28:01 GMT",
+      "fetched_version": "Sun, 01 Nov 2026 00:28:01 GMT",
+      "fetched_at": "2026-11-01T23:55:18.715442+00:00",
       "period": {
-        "label": "27 October 2026",
-        "start": "2026-10-27",
-        "end": "2026-10-27",
+        "label": "31 October 2026",
+        "start": "2026-10-31",
+        "end": "2026-10-31",
         "kind": "day"
       },
       "cadence": "daily",
@@ -10157,13 +10157,13 @@
         "N",
         "I"
       ],
-      "version": "Wed, 28 Oct 2026 01:51:35 GMT",
-      "fetched_version": "Wed, 28 Oct 2026 01:51:35 GMT",
-      "fetched_at": "2026-10-28T15:42:10.495803+00:00",
+      "version": "Sun, 01 Nov 2026 13:03:03 GMT",
+      "fetched_version": "Sun, 01 Nov 2026 13:03:03 GMT",
+      "fetched_at": "2026-11-02T00:00:16.048534+00:00",
       "period": {
-        "label": "27 October 2026",
-        "start": "2026-10-27",
-        "end": "2026-10-27",
+        "label": "31 October 2026",
+        "start": "2026-10-31",
+        "end": "2026-10-31",
         "kind": "day"
       },
       "cadence": "daily",
@@ -10177,13 +10177,13 @@
       "coverage": [
         "S"
       ],
-      "version": "Wed, 28 Oct 2026 02:19:06 GMT",
-      "fetched_version": "Wed, 28 Oct 2026 02:19:06 GMT",
-      "fetched_at": "2026-10-28T15:40:50.147469+00:00",
+      "version": "Sun, 01 Nov 2026 00:26:04 GMT",
+      "fetched_version": "Sun, 01 Nov 2026 00:26:04 GMT",
+      "fetched_at": "2026-11-01T23:59:06.958777+00:00",
       "period": {
-        "label": "27 October 2026",
-        "start": "2026-10-27",
-        "end": "2026-10-27",
+        "label": "31 October 2026",
+        "start": "2026-10-31",
+        "end": "2026-10-31",
         "kind": "day"
       },
       "cadence": "daily",
@@ -10197,13 +10197,13 @@
       "coverage": [
         "W"
       ],
-      "version": "Wed, 28 Oct 2026 02:18:11 GMT",
-      "fetched_version": "Wed, 28 Oct 2026 02:18:11 GMT",
-      "fetched_at": "2026-10-28T15:39:47.241494+00:00",
+      "version": "Sun, 01 Nov 2026 00:25:42 GMT",
+      "fetched_version": "Sun, 01 Nov 2026 00:25:42 GMT",
+      "fetched_at": "2026-11-01T23:57:33.870998+00:00",
       "period": {
-        "label": "27 October 2026",
-        "start": "2026-10-27",
-        "end": "2026-10-27",
+        "label": "31 October 2026",
+        "start": "2026-10-31",
+        "end": "2026-10-31",
         "kind": "day"
       },
       "cadence": "daily",
@@ -10745,11 +10745,11 @@
       ],
       "version": "718977eba9aaeecc",
       "fetched_version": "718977eba9aaeecc",
-      "fetched_at": "2026-10-28T15:42:10+00:00",
+      "fetched_at": "2026-11-02T00:00:16+00:00",
       "period": {
-        "label": "downloaded 28 October 2026",
-        "start": "2026-10-28",
-        "end": "2026-10-28",
+        "label": "downloaded 2 November 2026",
+        "start": "2026-11-02",
+        "end": "2026-11-02",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -11579,7 +11579,7 @@
       ],
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-28T15:11:56+00:00",
+      "fetched_at": "2026-11-01T23:47:26+00:00",
       "period": {
         "label": "2025",
         "start": "2025-01-01",
@@ -11854,28 +11854,28 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "b17b15e7fa19f06ee64209bf85ff9c19134803109cb908a8d4054418a22a36c0",
-      "bytes": 4802812
+      "sha256": "157d5bf0c97771fe347d9a5157a72f9efa2fd95cd36216338cc003d87f6e4b5f",
+      "bytes": 4802246
     },
     "scores.parquet": {
-      "sha256": "05bccd5a0373100cd1be84f916d2b63510ee2bfe8a78888493e32ae3d6dc57f5",
-      "bytes": 931508
+      "sha256": "8465f756c76d96a280a97039b62051a8dd31cc7aa75b17196474d1489e9c35d8",
+      "bytes": 931452
     },
     "postcodes.parquet": {
       "sha256": "b40a92ce69ff836d7027cb36999445fcfc00e1f88e4acf1f6e2145f59fcde5e6",
       "bytes": 1406543
     },
     "places.parquet": {
-      "sha256": "0567cf78d5da5270042b26c7f6bfff1f0bce256183da4fcb830bfce2437b46dc",
-      "bytes": 35139
+      "sha256": "51b852085460928ee72df2a1cb6a8afb719dc419fa5063d39c5906db7148b85b",
+      "bytes": 35114
     },
     "areas.parquet": {
-      "sha256": "e4978f80592010fb9a2353d39081c6bd1fb51e3fda31b26254f2e2341df3ecb2",
-      "bytes": 34407
+      "sha256": "e59c6053e3c1a31835e3aa5528e0462ba266cdb43cfa2be9337e0b8d7c4ece9f",
+      "bytes": 34466
     },
     "pois.parquet": {
-      "sha256": "83964f17ceb8039484ad63671518cffaa69daba0418db6060a5bca5fbcdcfea0",
-      "bytes": 2090362
+      "sha256": "f69b3ca261236116d62c152a3164294efe3e1e185b230652cd8b2ccfaf130fa4",
+      "bytes": 2093178
     }
   },
   "correlations": {
@@ -11979,7 +11979,7 @@
         0.63,
         0.58,
         0.38,
-        0.25,
+        0.24,
         0.11,
         0.19,
         0.21,
@@ -11987,8 +11987,8 @@
         -0.25,
         0.02,
         0.62,
-        0.11,
-        0.6,
+        0.1,
+        0.59,
         0.2,
         -0.08,
         0.54,
@@ -12059,7 +12059,7 @@
         -0.3,
         -0.6,
         0.56,
-        0.71,
+        0.72,
         0.67,
         0.03,
         0.49
@@ -12095,7 +12095,7 @@
         -0.23,
         0.59,
         0.15,
-        0.38,
+        0.39,
         -0.03,
         -0.18,
         -0.42,
@@ -12151,7 +12151,7 @@
         -0.33,
         -0.53,
         0.6,
-        0.68,
+        0.69,
         0.63,
         0.26,
         0.35
@@ -12164,7 +12164,7 @@
         1.0,
         null,
         0.21,
-        0.17,
+        0.16,
         0.21,
         0.29,
         -0.13,
@@ -12185,7 +12185,7 @@
         0.03,
         0.24,
         -0.13,
-        0.4,
+        0.41,
         0.07,
         0.27,
         0.06,
@@ -12249,7 +12249,7 @@
         null
       ],
       [
-        0.25,
+        0.24,
         0.25,
         0.13,
         0.22,
@@ -12289,7 +12289,7 @@
         -0.19,
         -0.26,
         0.25,
-        0.38,
+        0.37,
         0.15,
         0.08,
         0.22
@@ -12299,7 +12299,7 @@
         0.16,
         0.08,
         0.03,
-        0.17,
+        0.16,
         null,
         0.69,
         1.0,
@@ -12310,7 +12310,7 @@
         null,
         0.07,
         0.08,
-        0.07,
+        0.06,
         0.2,
         0.15,
         0.0,
@@ -12617,7 +12617,7 @@
         0.51
       ],
       [
-        0.11,
+        0.1,
         0.17,
         0.17,
         0.03,
@@ -12652,7 +12652,7 @@
         0.02,
         0.03,
         -0.03,
-        -0.11,
+        -0.1,
         0.25,
         null,
         -0.08,
@@ -12663,14 +12663,14 @@
         0.19
       ],
       [
-        0.6,
+        0.59,
         0.48,
         0.69,
         0.56,
         0.43,
         null,
         0.3,
-        0.07,
+        0.06,
         0.25,
         0.4,
         -0.29,
@@ -12679,7 +12679,7 @@
         0.78,
         0.2,
         1.0,
-        0.24,
+        0.25,
         0.01,
         0.57,
         -0.73,
@@ -12724,7 +12724,7 @@
         null,
         0.2,
         0.37,
-        0.24,
+        0.25,
         1.0,
         0.01,
         0.05,
@@ -12735,8 +12735,8 @@
         0.11,
         0.1,
         0.02,
-        0.12,
-        -0.06,
+        0.13,
+        -0.05,
         0.06,
         0.16,
         null,
@@ -12750,7 +12750,7 @@
         -0.15,
         0.04,
         null,
-        0.22,
+        0.23,
         -0.06,
         0.25
       ],
@@ -13185,7 +13185,7 @@
         0.49,
         0.17,
         0.64,
-        0.12,
+        0.13,
         -0.0,
         0.46,
         -0.53,
@@ -13231,7 +13231,7 @@
         -0.34,
         -0.12,
         -0.37,
-        -0.06,
+        -0.05,
         0.1,
         -0.24,
         0.35,
@@ -13265,7 +13265,7 @@
         0.59,
         0.59,
         0.73,
-        0.4,
+        0.41,
         0.48,
         0.25,
         0.02,
@@ -13355,7 +13355,7 @@
       [
         0.45,
         0.25,
-        0.38,
+        0.39,
         0.42,
         0.27,
         null,
@@ -13597,7 +13597,7 @@
         0.43,
         -0.12,
         -0.54,
-        -0.11,
+        -0.1,
         -0.62,
         -0.17,
         0.19,
@@ -13814,12 +13814,12 @@
       ],
       [
         0.65,
-        0.71,
+        0.72,
         0.79,
-        0.68,
+        0.69,
         null,
         0.61,
-        0.38,
+        0.37,
         null,
         null,
         0.32,
@@ -13875,7 +13875,7 @@
         0.84,
         0.15,
         0.89,
-        0.22,
+        0.23,
         -0.13,
         0.62,
         -0.71,
