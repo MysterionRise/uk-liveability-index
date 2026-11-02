@@ -72,6 +72,13 @@ v0.7.2. Ships with the November data release (`data-2026-11`).
 - Profiles in Welsh: "llai o drosedd" (less crime) set Safety to 0, because a problem
   word was not recognised in its mutated form after "o"; the problem and asset words
   now carry each language's mutations (release pass).
+- The manifest and `docs/data-sources.md` labelled the British bus timetables with
+  Ireland's reference day ("timetable for 17 November 2026" for feeds counted on the
+  10th): the period read the merged staged table's latest day. Each GTFS feed, Ireland's
+  too, now names the reference Tuesday of its own calendar (release pass).
+- Points of interest: a lone "Â" before a space (a no-break space mangled upstream and
+  then normalised), "N/A", and names without a letter or digit ("≈", "#") are no name;
+  the validator refuses them too (release pass).
 
 ### Security
 

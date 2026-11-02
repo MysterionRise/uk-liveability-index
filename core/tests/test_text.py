@@ -71,6 +71,21 @@ def test_clean_name_repairs_strips_and_trims():
     ]
 
 
+def test_placeholders_and_a_lone_a_circumflex():
+    # A no-break space mangled to "Â " (its trailer turned into a space upstream) goes; a
+    # real Â before a letter stays; "N/A" and names without a letter or digit become null
+    df = pl.DataFrame(
+        {
+            "poi_id": list("abcdefgh"),
+            "name": ["Â Table!", "Ân Phú", "Name Â", "N/A", "n/a", "≈", "#", "No. 1"],
+        }
+    )
+    out = df.with_columns(clean_name(pl.col("name")))
+    assert out["name"].to_list() == ["Table!", "Ân Phú", "Name", None, None, None, None, "No. 1"]
+    assert stray_name_problems(out, "pois", "poi_id") == []
+    assert len(stray_name_problems(df, "pois", "poi_id")) == 1
+
+
 def test_an_unrepairable_name_keeps_its_c1_bytes_for_the_validator():
     # A run that is not valid UTF-8 (an overlong three-byte sequence) stays as it came,
     # C1 controls included, so the validator sees it rather than a silently cut name

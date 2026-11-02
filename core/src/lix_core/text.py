@@ -30,9 +30,18 @@ _PLAIN = re.compile(r"^[\x00-\u024f\u1e00-\u1eff\u2000-\u206f\u20a0-\u20cf\u2122
 STRAY_CHARS = r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\ufffd\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff]"
 # C1 controls: dropped once no mojibake remains (they are its continuation bytes)
 C1_CHARS = r"[\x80-\x9f]"
-# What the validator refuses in a name: stray or C1 characters, mojibake, a leading,
-# trailing or doubled space
-STRAY_NAME = rf"{STRAY_CHARS}|{C1_CHARS}|{MOJIBAKE}|^\s|\s$|\s\s"
+# A no-break space mangled to "Â\xa0" whose trailer a publisher then turned into a plain
+# space ("Â Table!"): a lone Â before a space or at the end is dropped
+LONE_A_CIRCUMFLEX = r"\u00c2(?:\s|$)"
+# What a publisher writes instead of a name: "N/A", or nothing a person can read (no
+# letter or digit: "≈", "#", "^"); served as no name
+PLACEHOLDER_NAME = r"^(?i:n/a)$|^[^\p{L}\p{N}]*$"
+# What the validator refuses in a name: stray or C1 characters, mojibake, a lone Â, a
+# placeholder, a leading, trailing or doubled space
+STRAY_NAME = (
+    rf"{STRAY_CHARS}|{C1_CHARS}|{MOJIBAKE}|{LONE_A_CIRCUMFLEX}|{PLACEHOLDER_NAME}"
+    r"|^\s|\s$|\s\s"
+)
 
 _MOJIBAKE_RE = re.compile(MOJIBAKE)
 
@@ -68,8 +77,9 @@ def repair_mojibake(text: str | None) -> str | None:
 def clean_name(expr: pl.Expr) -> pl.Expr:
     """A name column as people read it: mojibake repaired where it reads back, whitespace
     of every kind (newlines too) collapsed to single spaces, control and zero-width
-    characters dropped, trimmed, empty → null. A C1 control is dropped only once no
-    mojibake remains, so an unrepairable name stays visible to the validator."""
+    characters and a lone Â dropped, trimmed; empty or a placeholder ("N/A", "#") → null.
+    A C1 control is dropped only once no mojibake remains, so an unrepairable name stays
+    visible to the validator."""
     repaired = (
         pl.when(expr.str.contains(MOJIBAKE))
         .then(expr.map_elements(repair_mojibake, return_dtype=pl.Utf8))
@@ -79,11 +89,16 @@ def clean_name(expr: pl.Expr) -> pl.Expr:
     cleaned = (
         pl.when(spaced.str.contains(MOJIBAKE))
         .then(spaced)
-        .otherwise(spaced.str.replace_all(C1_CHARS, ""))
+        .otherwise(spaced.str.replace_all(C1_CHARS, "").str.replace_all(LONE_A_CIRCUMFLEX, " "))
         .str.replace_all(r"\s+", " ")
         .str.strip_chars()
     )
-    return pl.when(cleaned == "").then(None).otherwise(cleaned).alias(expr.meta.output_name())
+    return (
+        pl.when((cleaned == "") | cleaned.str.contains(PLACEHOLDER_NAME))
+        .then(None)
+        .otherwise(cleaned)
+        .alias(expr.meta.output_name())
+    )
 
 
 def stray_name_problems(

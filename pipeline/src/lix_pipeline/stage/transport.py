@@ -7,6 +7,7 @@ travel times; DfT advises comparing places of the same urban/rural type.
 
 import re
 from datetime import date, datetime, timedelta
+from pathlib import Path
 
 import fastexcel
 import polars as pl
@@ -327,6 +328,27 @@ def _txc_departures(root) -> pl.DataFrame:
     return df
 
 
+def gtfs_reference_day(root: Path) -> date | None:
+    """The reference Tuesday of one feed, from its calendar: what the stager counts, and
+    the day the source's period names (each feed has its own; the staged table merges
+    them)."""
+    import duckdb
+
+    cal = Path(root) / "calendar.txt"
+    if not cal.exists():
+        return None
+    start, end = (
+        duckdb.connect()
+        .execute(f"SELECT min(start_date), max(end_date) FROM read_csv('{cal}', all_varchar=true)")
+        .fetchone()
+    )
+    if not start or not end:
+        return None
+    return reference_tuesday(
+        datetime.strptime(start, "%Y%m%d").date(), datetime.strptime(end, "%Y%m%d").date()
+    )
+
+
 def _gtfs_departures(root) -> pl.DataFrame:
     import duckdb
 
@@ -335,10 +357,7 @@ def _gtfs_departures(root) -> pl.DataFrame:
     con = duckdb.connect()
     cal = f"read_csv('{root / 'calendar.txt'}', all_varchar=true)"
     dates = f"read_csv('{root / 'calendar_dates.txt'}', all_varchar=true)"
-    start, end = con.execute(f"SELECT min(start_date), max(end_date) FROM {cal}").fetchone()
-    day = reference_tuesday(
-        datetime.strptime(start, "%Y%m%d").date(), datetime.strptime(end, "%Y%m%d").date()
-    )
+    day = gtfs_reference_day(root)
     d = day.strftime("%Y%m%d")
     sql = f"""
     WITH active AS (
