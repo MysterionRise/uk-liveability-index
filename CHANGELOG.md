@@ -4,7 +4,7 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.7.1] - 2026-11-04
 
 The launch kit (#201, decided 2026-11-01): what a visitor sees first, the assistant's
 dependency chain, and the checks that run without anyone remembering to, before the
@@ -1015,6 +1015,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.7.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.1
 [0.7.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.0
 [0.6.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.3
 [0.6.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.2
