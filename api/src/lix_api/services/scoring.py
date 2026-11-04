@@ -81,8 +81,9 @@ PRESET_WORDS = {
     # first); "young professional" and the rest name a preset outright
     "kids": "family", "kid": "family", "children": "family", "child": "family",
     "default": "balanced", "families": "family", "retired": "retiree", "retirees": "retiree",
-    "retirement": "retiree", "commuters": "commuter", "commuting": "commuter",
-    "commute": "commuter", "young professionals": "young_professional",
+    "retirement": "retiree", "retiring": "retiree", "retire": "retiree",
+    "pensioner": "retiree", "pensioners": "retiree", "commuters": "commuter",
+    "commuting": "commuter", "commute": "commuter", "young professionals": "young_professional",
 }  # fmt: skip
 
 

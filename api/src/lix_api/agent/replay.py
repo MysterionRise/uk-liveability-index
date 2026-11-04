@@ -18,6 +18,7 @@ import json
 import os
 import re
 from collections.abc import Callable
+from dataclasses import replace
 from pathlib import Path
 
 from pydantic_ai.messages import (
@@ -106,6 +107,15 @@ def replay_model(path: Path | None = None, fallback: Responder | None = None) ->
     return FunctionModel(respond, stream_function=stream, model_name="replay")
 
 
+def without_preamble(response: ModelResponse) -> ModelResponse:
+    """A response that calls tools keeps the calls, not text written beside them: that is
+    thinking aloud the instructions forbid ("Need indicator id; guess raw__broadband?"),
+    and a visitor watching a replay would read it (v0.7.1 hardening pass)."""
+    if not any(isinstance(p, ToolCallPart) for p in response.parts):
+        return response
+    return replace(response, parts=[p for p in response.parts if not isinstance(p, TextPart)])
+
+
 async def record(model_name: str, path: Path = CASSETTES) -> dict:
     """Run every demo prompt (a fresh conversation each) and save the model's responses."""
     import yaml
@@ -127,7 +137,7 @@ async def record(model_name: str, path: Path = CASSETTES) -> dict:
             model_settings=model_settings(),
             usage_limits=usage_limits(),
         )
-        turn = [m for m in result.new_messages() if isinstance(m, ModelResponse)]
+        turn = [without_preamble(m) for m in result.new_messages() if isinstance(m, ModelResponse)]
         cassettes[normalise(item["text"])] = json.loads(ModelMessagesTypeAdapter.dump_json(turn))
         tools = [p.tool_name for m in turn for p in m.parts if isinstance(p, ToolCallPart)]
         print(f"recorded {item['text'][:60]!r}: {tools or 'no tools'}")

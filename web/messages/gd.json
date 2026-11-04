@@ -66,8 +66,8 @@
     "chatPlaceholder": "Faighnich mu nàbachd…",
     "chatWelcome": "Ciamar as urrainn dhomh do chuideachadh an-diugh?",
     "chatDisclaimer": "Faodaidh IF mearachdan a dhèanamh. Dearbh fiosrachadh cudromach.",
+    "chatUnreachable": "Chan eil an cuidiche ri fhaighinn an-dràsta. Tha am mapa, an lorg agus na pròifilean fhathast ag obair; feuch a' cheist a-rithist an ceann greis.",
     "send": "Cuir",
-    "moreOptions": "Barrachd roghainnean",
     "suggestions": {
       "familyTitle": "Freagarrach do theaghlaichean faisg air Dùn Èideann",
       "familyMessage": "Tha dithis chloinne òga againn agus buidseat de £350k. Càite am bu chòir dhuinn coimhead timcheall air Dùn Èideann?",
@@ -76,7 +76,7 @@
       "compareTitle": "Dèan coimeas eadar dà àite",
       "compareMessage": "Dèan coimeas eadar Headingley agus Chapel Allerton",
       "explainTitle": "Mìnich sgòr",
-      "explainMessage": "Carson a tha meadhan baile Manchester a' faighinn sgòr ìosal air sàbhailteachd?"
+      "explainMessage": "Carson a tha meadhan baile Dhùn Èideann a' faighinn sgòr ìosal air sàbhailteachd?"
     },
     "copyMessage": "Dèan lethbhreac"
   },

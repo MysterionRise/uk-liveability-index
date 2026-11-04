@@ -322,6 +322,25 @@ def test_replay_plays_a_recorded_turn_and_falls_back(client, tmp_path):
     assert next(e for e in other if e["type"] == "TOOL_CALL_START")["toolCallName"] == "set_weights"
 
 
+def test_every_suggestion_chip_has_a_recording():
+    """A visitor without a key clicks the chips first, so each one, in every language, must
+    replay. In the v0.7.1 hardening pass two of the four English chips and every other
+    language's answered "can only answer the suggested questions"."""
+    from lix_api.agent.replay import load_cassettes, normalise
+    from lix_core.paths import get_project_root
+
+    recorded = set(load_cassettes())
+    missing = []
+    for path in sorted((get_project_root() / "web" / "messages").glob("*.json")):
+        chips = json.loads(path.read_text())["SidePanel"]["suggestions"]
+        missing += [
+            f"{path.stem}: {text}"
+            for key, text in chips.items()
+            if key.endswith("Message") and normalise(text) not in recorded
+        ]
+    assert not missing, f"record them (make demo-record): {missing}"
+
+
 def test_explaining_an_area_shows_it_on_the_map(client):
     events = _agui(client, "Why is the score low in LS6 3HN?")
     snapshot = next(e for e in events if e["type"] == "STATE_SNAPSHOT")["snapshot"]

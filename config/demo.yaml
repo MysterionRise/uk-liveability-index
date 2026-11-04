@@ -14,3 +14,32 @@ prompts:
   - text: Which areas of Birmingham have the fewest immigrants?
   - text: Using SQL, list the 10 local authorities with the highest average gigabit broadband availability.
     state: {mode: analyst}
+
+  # The side panel's suggestion chips in every language (web/messages/*.json), so a
+  # visitor without a key gets an answer to each, on the full pack and on the six-city
+  # demo (test_every_suggestion_chip_has_a_recording keeps them in step)
+  - text: Why does Leeds city centre score low on safety?
+  - text: "Mae gennym ddau o blant ifanc a chyllideb o £300k. Ble ddylen ni edrych o gwmpas Caerdydd?"
+    state: {locale: cy}
+  - text: "Dangoswch dafarndai sy'n cael eu rhedeg yn dda ger CF10 1AA"
+    state: {locale: cy}
+  - text: "Cymharwch Pontcanna a Cathays"
+    state: {locale: cy}
+  - text: "Pam mae canol dinas Caerdydd yn sgorio'n isel ar ddiogelwch?"
+    state: {locale: cy}
+  - text: "Tha dithis chloinne òga againn agus buidseat de £350k. Càite am bu chòir dhuinn coimhead timcheall air Dùn Èideann?"
+    state: {locale: gd}
+  - text: "Seall dhomh taighean-seinnse math faisg air EH8 9AA"
+    state: {locale: gd}
+  - text: "Dèan coimeas eadar Headingley agus Chapel Allerton"
+    state: {locale: gd}
+  - text: "Carson a tha meadhan baile Dhùn Èideann a' faighinn sgòr ìosal air sàbhailteachd?"
+    state: {locale: gd}
+  - text: "Tá beirt pháistí óga againn. Cá háit ar chóir dúinn breathnú timpeall Bhaile Átha Cliath?"
+    state: {locale: ga}
+  - text: "Taispeáin dom tithe tábhairne in aice le Raghnallach"
+    state: {locale: ga}
+  - text: "Cuir Raghnallach agus Ráth Maonais i gcomparáid"
+    state: {locale: ga}
+  - text: "Cén fáth a bhfaigheann lár chathair Bhaile Átha Cliath scór íseal ar shábháilteacht?"
+    state: {locale: ga}

@@ -68,6 +68,19 @@ class TestRules:
     def test_a_household_with_children_starts_from_the_family_preset(self, store, description):
         assert profile_by_rules(store, description, "en").preset == "family"
 
+    @pytest.mark.parametrize(
+        "description",
+        [
+            "We're retiring and want somewhere quiet and safe",
+            "I'm about to retire, near the sea please",
+            "two pensioners who want a GP close by",
+        ],
+    )
+    def test_retiring_starts_from_the_retiree_preset(self, store, description):
+        # "retired" and "retirement" did; "retiring", "retire" and "pensioners" started
+        # from Balanced (v0.7.1 eval rerun, retiree_devon)
+        assert profile_by_rules(store, description, "en").preset == "retiree"
+
 
 class TestLanguages:
     """#161: each language's words apply in its own interface, in their mutated forms;

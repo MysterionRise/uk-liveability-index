@@ -66,17 +66,17 @@
     "chatPlaceholder": "Ask about a neighbourhood…",
     "chatWelcome": "How can I help you today?",
     "chatDisclaimer": "AI can make mistakes. Please verify important information.",
+    "chatUnreachable": "The assistant can't be reached just now. The map, search and profiles still work; try your question again in a moment.",
     "send": "Send",
-    "moreOptions": "More options",
     "suggestions": {
       "familyTitle": "Family-friendly near Leeds",
       "familyMessage": "We have two young kids and a budget of £350k. Where should we look around Leeds?",
       "pubsTitle": "Well-run pubs nearby",
-      "pubsMessage": "Show me well-run pubs near SW1A 1AA",
+      "pubsMessage": "Show me well-run pubs near LS6 3AA",
       "compareTitle": "Compare two places",
-      "compareMessage": "Compare Headingley and Chapel Allerton",
+      "compareMessage": "Compare Far Headingley and Chapel Allerton",
       "explainTitle": "Explain a score",
-      "explainMessage": "Why does Manchester city centre score low on safety?"
+      "explainMessage": "Why does Leeds city centre score low on safety?"
     },
     "copyMessage": "Copy"
   },
