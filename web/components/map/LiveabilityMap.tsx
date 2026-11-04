@@ -310,6 +310,10 @@ export function LiveabilityMap() {
       map.remove();
       mapRef.current = null;
       attribRef.current = null;
+      // The view applied went with this map: a new one (StrictMode's remount in
+      // development) must fly to the same area again. A shared link whose area was found
+      // before the map's chunk loaded otherwise left the new map on the opening view
+      appliedBbox.current = "";
     };
   }, []);
 
