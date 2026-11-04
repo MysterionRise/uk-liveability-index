@@ -86,7 +86,7 @@ validate:
 	uv run lix validate places
 
 # Small dataset (each nation's demo_upper in config/nations.yaml: Leeds, Brighton, Cardiff,
-# Edinburgh) cut from a full build, for CI end-to-end tests
+# Edinburgh, Belfast and Dublin) cut from a full build, for CI end-to-end tests
 demo-data:
 	uv run lix demo-data --out fixtures/demo
 
@@ -109,6 +109,7 @@ format:
 # release's images from GitHub's registry, building any that aren't published; BUILD=1
 # builds from this checkout instead
 up:
+	@test -f $(or $(LIX_SERVE_DIR),data/serve)/manifest.json || { echo "No data in $(or $(LIX_SERVE_DIR),data/serve): make quickstart downloads the full pack, make up-demo runs on the six-city demo"; exit 1; }
 	$(if $(BUILD),,docker compose pull --quiet --ignore-pull-failures api web proxy)
 	docker compose up -d $(if $(BUILD),--build,) --remove-orphans --wait
 	@echo "Running at $(APP_URL); stop with make down"
@@ -121,7 +122,7 @@ down:
 	docker compose down
 
 # The data pack: a built data/serve (about 250 MB) with its licence notices, so another
-# machine can skip the 25 GB raw download. Packs ship as monthly data releases
+# machine can skip the 35 GB raw download. Packs ship as monthly data releases
 # (data-YYYY-MM, GitHub pre-releases) separate from code releases; a code release reads
 # the newest pack with the serve schema it understands (SERVE_SCHEMA_VERSION):
 #   make data-pack                       write dist/lix-serve.tar.gz (+ .sha256)
@@ -164,7 +165,7 @@ data-unpack:
 # NO_OPEN=1 skips opening the browser
 quickstart:
 	@test -f data/serve/manifest.json || $(MAKE) data-download
-	@test -f .env || (cp .env.example .env && echo "Created .env from .env.example: add a model key there to use the assistant")
+	@test -f .env || (install -m 600 .env.example .env && echo "Created .env from .env.example: add a model key there to use the assistant")
 	$(MAKE) up
 	@$(if $(NO_OPEN),true,(open $(APP_URL) || xdg-open $(APP_URL)) >/dev/null 2>&1 || true)
 

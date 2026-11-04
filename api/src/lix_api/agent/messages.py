@@ -58,6 +58,13 @@ MESSAGES: dict[str, dict[str, str]] = {
         "their themes.",
         "profile_rationale_plain": "Nothing in the description matched a theme or measure, so "
         "it starts from {preset}.",
+        # Measures the cards show but the score cannot weigh, named in a description (#223)
+        "profile_context_note": "{measures} are shown on the cards, not scored.",
+        "profile_context_note_one": "{measures} is shown on the cards, not scored.",
+        "profile_rationale_context_only": "Starts from {preset}; {measures} are shown on the "
+        "cards, not scored.",
+        "profile_rationale_context_only_one": "Starts from {preset}; {measures} is shown on "
+        "the cards, not scored.",
         # Singular forms, picked when one theme or one measure is named (#161)
         "profile_rationale_one_theme": "Starts from {preset}; {themes} counts more, and "
         "{indicators} weigh more within their themes.",
@@ -133,6 +140,12 @@ MESSAGES: dict[str, dict[str, str]] = {
         "{indicators} yn pwyso llai o fewn ei thema.",
         "profile_rationale_plain": "Nid oedd dim yn y disgrifiad yn cyfateb i thema na mesur, "
         "felly mae'n dechrau o {preset}.",
+        "profile_context_note": "Dangosir {measures} ar y cardiau, heb eu sgorio.",
+        "profile_context_note_one": "Dangosir {measures} ar y cardiau, heb ei sgorio.",
+        "profile_rationale_context_only": "Yn dechrau o {preset}; dangosir {measures} ar y "
+        "cardiau, heb eu sgorio.",
+        "profile_rationale_context_only_one": "Yn dechrau o {preset}; dangosir {measures} ar "
+        "y cardiau, heb ei sgorio.",
     },
     "gd": {
         "postcodes_count": "{n} còd-puist",
@@ -198,6 +211,9 @@ MESSAGES: dict[str, dict[str, str]] = {
         "{indicators} nas aotruime am broinn a chuspair.",
         "profile_rationale_plain": "Cha do mhaids dad san tuairisgeul cuspair no tomhas, mar sin "
         "tha e a' tòiseachadh bho {preset}.",
+        "profile_context_note": "Chithear {measures} air na cairtean, gun sgòr.",
+        "profile_rationale_context_only": "A' tòiseachadh bho {preset}; chithear {measures} "
+        "air na cairtean, gun sgòr.",
     },
     "ga": {
         "postcodes_count": "{n} postchód",
@@ -260,6 +276,9 @@ MESSAGES: dict[str, dict[str, str]] = {
         "meáchain ag {indicators} laistigh dá théama.",
         "profile_rationale_plain": "Níor mheaitseáil aon rud sa chur síos téama ná tomhas, mar "
         "sin tosaíonn sé ó {preset}.",
+        "profile_context_note": "Taispeántar {measures} ar na cártaí, gan scór.",
+        "profile_rationale_context_only": "Ag tosú ó {preset}; taispeántar {measures} ar na "
+        "cártaí, gan scór.",
     },
 }
 

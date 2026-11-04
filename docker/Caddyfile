@@ -11,6 +11,32 @@
 }
 
 :8080 {
+	# Headers for every reply (v0.7.1 hardening pass). The content security policy keeps
+	# the page to its own origin and the basemap's tiles: a reply that renders an image
+	# from another site (a prompt injection planted in a place or pub name could ask for
+	# one, carrying the conversation in its URL) is not fetched
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		X-Frame-Options SAMEORIGIN
+		Permissions-Policy "geolocation=(), camera=(), microphone=()"
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://tiles.openfreemap.org; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; worker-src 'self' blob:; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
+		-Server
+	}
+	# A browser request sent from another site (a page posting to the assistant runs it on
+	# this server's key; DNS rebinding reaches /mcp). Same-origin pages, curl and MCP
+	# clients send no foreign Origin. Behind a proxy that rewrites Host, pass the original
+	# Host on, or this refuses every browser POST
+	@crosssite expression `{http.request.header.Origin} != "" && !({http.request.header.Origin}.endsWith("://" + {http.request.hostport}))`
+	handle @crosssite {
+		respond "cross-site request refused" 403
+	}
+	# The API caps its own bodies at 8 MiB, but the web app read a body whole before
+	# relaying it (a 24 MB post took it to about 300 MiB)
+	request_body {
+		max_size 9MB
+	}
+
 	handle_path /data/* {
 		root * /srv
 		# PMTiles and Parquet are read in byte ranges and are compressed internally;

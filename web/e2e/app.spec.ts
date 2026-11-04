@@ -95,6 +95,16 @@ test("the assistant's set_weights moves the sliders", async ({ page }) => {
   await expect(page.getByTestId("weight-education")).toHaveValue("2.5");
 });
 
+test("the chat input keeps the focus after the first message and has no dead + button", async ({ page }) => {
+  await mapReady(page);
+  // The add menu had nothing to offer and only ever rendered disabled (#231)
+  await expect(page.getByTestId("copilot-add-menu-button")).toHaveCount(0);
+  // The first message swaps the welcome layout for the chat layout and a new input (#231)
+  await ask(page, "Use family weights please");
+  await expect(page.getByText(en.Registry.weightsSet)).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId("chat").locator("textarea").first()).toBeFocused();
+});
+
 test("a ranking renders a card and outlines the areas on the map", async ({
   page,
 }) => {
@@ -565,8 +575,11 @@ test("the About page loads without the scores file", async ({ page }) => {
 
 test("printing hides the map chrome and keeps the cards", async ({ page }) => {
   await mapReady(page);
+  await expect(page.getByTestId("copilot-chat-input")).toBeVisible();
   await page.emulateMedia({ media: "print" });
   await expect(page.getByTestId("search")).toBeHidden();
+  // CopilotKit 1.83 dropped the class names the print rule used to target (#231)
+  await expect(page.getByTestId("copilot-chat-input")).toBeHidden();
   // The map prints as a blank (WebGL), so it and its legend are left out
   await expect(page.getByTestId("legend")).toBeHidden();
   await expect(page.getByTestId("side-panel")).toBeVisible();

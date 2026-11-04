@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: If you use the index, its data pack or its method, please cite it.
+title: UK Liveability Index
+type: software
+authors:
+  - family-names: Perikov
+    given-names: Konstantin
+version: 0.7.1
+date-released: "2026-11-04"
+repository-code: https://github.com/MysterionRise/uk-liveability-index
+url: https://github.com/MysterionRise/uk-liveability-index
+license: MIT
+abstract: >-
+  Open-data liveability scores for 62,833 neighbourhoods across the UK and Ireland:
+  a reproducible pipeline over about 224 open datasets, an API and MCP server, a map
+  interface in four languages and an AI assistant whose replies are evaluated for
+  numbers that trace to its tool results. The data pack is published under the ODbL.
+keywords:
+  - liveability
+  - open data
+  - neighbourhoods
+  - United Kingdom
+  - Ireland
+  - geospatial

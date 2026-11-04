@@ -57,6 +57,30 @@ class TestRules:
         assert plain.preset == store.default_preset and plain.theme_weights == {}
         assert plain.rationale.startswith("Nothing in the description matched")
 
+    @pytest.mark.parametrize(
+        "description",
+        [
+            "a couple with two kids who cycle everywhere and want a pub nearby",
+            "we have a child starting school next year",
+            "three children, so parks and a good primary matter most",
+        ],
+    )
+    def test_a_household_with_children_starts_from_the_family_preset(self, store, description):
+        assert profile_by_rules(store, description, "en").preset == "family"
+
+    @pytest.mark.parametrize(
+        "description",
+        [
+            "We're retiring and want somewhere quiet and safe",
+            "I'm about to retire, near the sea please",
+            "two pensioners who want a GP close by",
+        ],
+    )
+    def test_retiring_starts_from_the_retiree_preset(self, store, description):
+        # "retired" and "retirement" did; "retiring", "retire" and "pensioners" started
+        # from Balanced (v0.7.1 eval rerun, retiree_devon)
+        assert profile_by_rules(store, description, "en").preset == "retiree"
+
 
 class TestLanguages:
     """#161: each language's words apply in its own interface, in their mutated forms;
@@ -336,3 +360,115 @@ def test_a_draft_without_weights_takes_the_rules_reading(store):
     # Nothing in the rules either: the preset stands, with the plain sentence
     q = _from_draft(store, draft, "en", "model", description="lorem ipsum")
     assert q.preset == "family" and not q.theme_weights and "Nothing" in q.rationale
+
+
+class TestContextMeasures:
+    """#223: hills, cycle lanes, beaches and the like are measures the cards show but the
+    score cannot weigh. A profile names them in its rationale, in reading order, and
+    never invents a multiplier for them; the weighting's own reading of the words
+    ("nature" → environment) is untouched."""
+
+    CYCLING = (
+        "We cycle everywhere with two kids and love the beach: flat streets, lots of cycle "
+        "lanes, a short trip to a clean bathing beach and lots of protected nature. Hills "
+        "are a no."
+    )
+
+    def test_named_in_reading_order_once_each(self, store):
+        assert profiles.context_measures(store, self.CYCLING, "en") == [
+            "bathing_water_distance",
+            "hilliness",
+            "cycle_infrastructure",
+            "bathing_water_class",
+            "protected_nature",
+        ]
+        assert profiles.context_measures(store, "schools and pubs", "en") == []
+
+    @pytest.mark.parametrize(
+        ("description", "named"),
+        [
+            # Bare words that are usually something else do not fire; phrases do
+            ("the life cycle of plants, my bike was stolen, historic mistakes", []),
+            ("a sea of paperwork", []),
+            ("cycle lanes, a bike lane, by the sea, listed buildings", [
+                "cycle_infrastructure", "coast_distance", "listed_buildings"]),
+            ("a flat near the river", ["river_status"]),
+        ],
+    )  # fmt: skip
+    def test_phrases_fire_and_bare_words_do_not(self, store, description, named):
+        assert profiles.context_measures(store, description, "en") == named
+
+    def test_gaelic_and_irish_forms(self, store):
+        assert profiles.context_measures(store, "speur dorcha, taobh na h-aibhne", "gd") == [
+            "light_pollution",
+            "river_status",
+        ]
+        assert profiles.context_measures(store, "lána rothaíochta agus spéir dhorcha", "ga") == [
+            "cycle_infrastructure",
+            "light_pollution",
+        ]
+
+    def test_the_rules_engine_says_so_and_weighs_none(self, store):
+        p = profile_by_rules(store, self.CYCLING, "en")
+        named = set(profiles.context_measures(store, self.CYCLING, "en"))
+        assert not named & set(p.indicator_weights)
+        assert p.rationale.startswith("Starts from") and len(p.rationale) <= 200
+        assert p.rationale.endswith("are shown on the cards, not scored.")
+        # Named in reading order, as many as fit in the sentence
+        assert "Distance to a bathing water, Hilliness around homes" in p.rationale
+        # "nature" still reads as the environment theme for the weighting
+        assert p.theme_weights.get("environment", 1) > 1
+
+    def test_only_context_measures_named(self, store):
+        p = profile_by_rules(store, "Somewhere flat: we hate steep hills", "en")
+        assert p.theme_weights == {} and p.indicator_weights == {}
+        assert p.rationale.startswith("Starts from ")
+        assert p.rationale.endswith("Hilliness around homes is shown on the cards, not scored.")
+
+    def test_in_welsh(self, store):
+        r = profile_by_rules(store, "lonydd beicio a traeth", "cy").rationale
+        assert "ar y cardiau" in r and r.endswith("heb eu sgorio.")
+        one = profile_by_rules(store, "ysgolion a llyfrgell", "cy").rationale
+        assert one.endswith("heb ei sgorio.")
+
+    def test_a_model_sentence_keeps_its_words_and_gains_the_note(self, store):
+        draft = ProfileDraft(
+            preset="family",
+            theme_weights={"environment": 2},
+            indicator_weights={},
+            name="Cycling family by the sea",
+            rationale="Starts from Family; the environment counts more for the beach.",
+        )
+        p = _from_draft(store, draft, "en", "model", description=self.CYCLING)
+        assert p.rationale.startswith("Starts from Family; the environment counts more")
+        assert p.rationale.endswith("not scored.") and len(p.rationale) <= 200
+        assert p.theme_weights == {"environment": 2}
+
+    def test_the_note_names_fewer_measures_when_it_would_not_fit(self, store):
+        long = (
+            "Asthma, night shifts, no car, first time buyer, dog walks, pubs and gigs, plus "
+            "hills, cycle lanes, a beach, the coast, a nature reserve, a clean river, dark "
+            "skies, an allotment, a library and a post office"
+        )
+        p = profile_by_rules(store, long, "en")
+        assert len(p.rationale) <= 200 and p.rationale.endswith(".")
+        # The scored sentence makes room, so the first context measure is always named
+        assert "Hilliness around homes is shown on the cards, not scored." in p.rationale
+        assert p.rationale.startswith("Starts from")
+
+    def test_the_note_survives_a_long_scored_sentence(self, store):
+        p = profile_by_rules(store, "asthma, pubs, a beach and dark skies", "en")
+        assert p.indicator_weights["no2"] == 2 and p.indicator_weights["well_run_pubs"] == 2
+        assert "Distance to a bathing water" in p.rationale and len(p.rationale) <= 200
+        assert p.rationale.endswith("shown on the cards, not scored.")
+
+
+class TestMutatedProblemWords:
+    """A Welsh problem word stays a problem in its mutated form: "llai o drosedd" (less
+    crime) wants more safety, as "less crime" does in English."""
+
+    def test_less_crime_in_welsh_and_english(self, store):
+        assert profile_by_rules(store, "less crime", "en").theme_weights["safety"] == 2
+        assert profile_by_rules(store, "llai o drosedd", "cy").theme_weights["safety"] == 2
+        assert profile_by_rules(store, "dim llawer o drosedd", "cy").theme_weights["safety"] == 2
+        assert profile_by_rules(store, "trosedd isel", "cy").theme_weights["safety"] == 2

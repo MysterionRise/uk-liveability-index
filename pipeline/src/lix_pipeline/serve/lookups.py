@@ -18,6 +18,7 @@ from lix_core.codes import active_nations, in_scope
 from lix_core.config import load_nations
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
+from lix_core.text import clean_name
 from lix_pipeline.stage.geo import bng_to_lonlat
 
 logger = setup_logging("serve.lookups")
@@ -39,9 +40,14 @@ OSM_CATEGORIES = {
 
 
 def _detail(cols: list[str]) -> pl.Expr:
-    """Pack extra columns into a JSON string (nulls dropped)."""
+    """Pack extra columns into a JSON string (nulls dropped, text trimmed to single
+    spaces)."""
+
+    def tidy(v):
+        return " ".join(v.split()) if isinstance(v, str) else v
+
     return pl.struct(cols).map_elements(
-        lambda s: json.dumps({k: v for k, v in s.items() if v is not None}, default=str),
+        lambda s: json.dumps({k: tidy(v) for k, v in s.items() if v is not None}, default=str),
         return_dtype=pl.Utf8,
     )
 
@@ -253,7 +259,13 @@ def build_pois() -> pl.DataFrame:
             ).alias("detail"),
         )  # fmt: skip
     )
-    return pl.concat(frames, how="vertical_relaxed").filter(pl.col("x").is_not_null())
+    # Names as people read them: Open Charge Map and a few OpenStreetMap names arrive
+    # double-encoded or padded (#222)
+    return (
+        pl.concat(frames, how="vertical_relaxed")
+        .filter(pl.col("x").is_not_null())
+        .with_columns(clean_name(pl.col("name")))
+    )
 
 
 def build_areas(features: pl.DataFrame) -> pl.DataFrame:

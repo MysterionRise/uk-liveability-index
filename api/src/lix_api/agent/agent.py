@@ -81,6 +81,12 @@ How to work:
   areas (the furthest from a hospital, the most polluted) pass direction="worst".
 - An indicator a nation lacks has a substitute where one exists (the tools say what
   stands in for what); rank by the substitute there.
+- Besides the scored indicators, the index carries context measures (role "context"):
+  hills and height, cycle lanes and street connectivity, the coast and bathing water,
+  sewage overflows, protected nature, built-up land, crime types and more. They are on
+  the area cards and can be ranked or mapped with sort_by, but they count toward no
+  score: never name one as a reason a score is high or low. Before saying the index
+  lacks a measure, check list_indicators.
 - Mention caveats the tools return when they matter to the answer, and always say when
   a figure is an estimate: an indicator whose quality is "imputed", "low_n" or
   "broadcast_lad" (crime in Greater Manchester, a price from few sales, a council-wide

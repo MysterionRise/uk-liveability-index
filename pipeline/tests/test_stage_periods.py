@@ -51,6 +51,20 @@ class TestShapes:
 
 
 class TestPeriodOf:
+    def test_each_gtfs_feed_names_its_own_reference_tuesday(self, data):
+        # The staged table merges every feed; the period reads each feed's own calendar
+        # (Ireland's timetable runs a week ahead of Great Britain's)
+        days = "monday,tuesday,wednesday,thursday,friday,saturday,sunday"
+        header = f"service_id,{days},start_date,end_date\n"
+        for slug, start in (("bods_gtfs", "20261027"), ("nta_gtfs", "20261103")):
+            root = data / "raw" / slug
+            root.mkdir(parents=True)
+            (root / "calendar.txt").write_text(header + f"s1,1,1,1,1,1,0,0,{start},20270430\n")
+        spec = _spec(period="current timetable")
+        assert per.period_of("bods_gtfs", spec, {})["label"] == "timetable for 10 November 2026"
+        assert per.period_of("nta_gtfs", spec, {})["label"] == "timetable for 17 November 2026"
+        assert per.period_of("bods_gtfs_wales", spec, {})["label"] == "current timetable"
+
     def test_registry_period_wins_over_dates_in_the_lock(self):
         spec = _spec(period="2021")
         entry = {"resolved": {"url": "https://x.test/table_2026-01-01.zip"}}
@@ -102,14 +116,6 @@ class TestPeriodOf:
         )
         pp = per.period_of("price_paid", _spec(), {})
         assert (pp["label"], pp["end"]) == ("12 months to September 2026", "2026-09-30")
-
-        pl.DataFrame({"reference_day": [date(2026, 10, 20)]}).write_parquet(
-            data / "staged" / "bods_gtfs.parquet"
-        )
-        assert (
-            per.period_of("bods_gtfs_wales", _spec(), {})["label"]
-            == "timetable for 20 October 2026"
-        )
 
         pl.DataFrame(
             {"rc_date": [date(2025, 5, 1), None], "ungraded_date": [date(2026, 6, 3), None]}

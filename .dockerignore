@@ -12,7 +12,7 @@ web/.next/
 web/test-results/
 web/playwright-report/
 web/public/maplibre-gl-worker.mjs
-.env
+**/.env*
 web/recordings/
 dist/
 docs/media/

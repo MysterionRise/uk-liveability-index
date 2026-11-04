@@ -142,8 +142,11 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
           urbanRural={withinUrbanRural}
         />
       </div>
+      {/* The demo's percentiles are among its own six cities, the range is the full
+          build's: side by side they contradicted each other ("34%", "60–81%") */}
       {!withinNation &&
         !withinUrbanRural &&
+        !manifest?.demo &&
         profile.overall_percentile_range &&
         profile.overall_percentile_range[0] !== profile.overall_percentile_range[1] && (
           <p

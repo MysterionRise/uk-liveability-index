@@ -142,6 +142,31 @@ async def test_mcp_lists_and_calls_tools(store):
         assert result.structured_content["neighbourhood"] == "Headingley"
 
 
+async def test_mcp_tools_are_read_only_and_bounded(store):
+    """Every tool says it is read-only, and arguments carry the REST bounds, so a bad
+    limit or weight is refused with a message rather than a traceback (release pass)."""
+    from fastmcp import Client
+    from fastmcp.exceptions import ToolError
+
+    from lix_api.mcp_server import mcp
+
+    async with Client(mcp) as c:
+        tools = await c.list_tools()
+        assert len(tools) == 7
+        assert all(t.annotations and t.annotations.read_only_hint for t in tools)
+        for name, args in [
+            ("nearest_pois", {"category": "gp", "near": "LS6 3HN", "limit": 0}),
+            ("nearest_pois", {"category": "gp", "near": "LS6 3HN", "max_km": -1}),
+            ("rank_areas", {"within": "Leeds", "theme_weights": {"safety": -5}}),
+            ("compare_areas", {"areas": ["LS6 3HN"]}),
+            ("search_place", {"query": ""}),
+        ]:
+            with pytest.raises(ToolError):
+                await c.call_tool(name, args)
+        ranked = await c.call_tool("rank_areas", {"within": "Leeds", "limit": 3})
+        assert 1 <= len(ranked.structured_content["results"]) <= 3
+
+
 def test_agent_turns_are_logged(client, tmp_path, monkeypatch):
     monkeypatch.setenv("LIX_DATA_DIR", str(tmp_path))
     _agui(client, "Use family weights please")
@@ -297,6 +322,25 @@ def test_replay_plays_a_recorded_turn_and_falls_back(client, tmp_path):
     assert next(e for e in other if e["type"] == "TOOL_CALL_START")["toolCallName"] == "set_weights"
 
 
+def test_every_suggestion_chip_has_a_recording():
+    """A visitor without a key clicks the chips first, so each one, in every language, must
+    replay. In the v0.7.1 hardening pass two of the four English chips and every other
+    language's answered "can only answer the suggested questions"."""
+    from lix_api.agent.replay import load_cassettes, normalise
+    from lix_core.paths import get_project_root
+
+    recorded = set(load_cassettes())
+    missing = []
+    for path in sorted((get_project_root() / "web" / "messages").glob("*.json")):
+        chips = json.loads(path.read_text())["SidePanel"]["suggestions"]
+        missing += [
+            f"{path.stem}: {text}"
+            for key, text in chips.items()
+            if key.endswith("Message") and normalise(text) not in recorded
+        ]
+    assert not missing, f"record them (make demo-record): {missing}"
+
+
 def test_explaining_an_area_shows_it_on_the_map(client):
     events = _agui(client, "Why is the score low in LS6 3HN?")
     snapshot = next(e for e in events if e["type"] == "STATE_SNAPSHOT")["snapshot"]
@@ -384,7 +428,7 @@ def test_without_a_key_recorded_prompts_still_answer(monkeypatch, tmp_path):
 
 def test_health_reports_version(client):
     body = client.get("/health").json()
-    assert body["version"] == "0.7.0"
+    assert body["version"] == "0.7.1"
     assert body["assistant"]["recorded_only"] is False
 
 

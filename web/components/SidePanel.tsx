@@ -2,7 +2,7 @@
 
 import { CopilotChat, useConfigureSuggestions } from "@copilotkit/react-core/v2";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { LINK_ARRIVED, useLiveability } from "@/components/AppData";
 import { useLocaleChoice } from "@/components/LocaleProvider";
@@ -14,6 +14,10 @@ import { WeightPanel } from "@/components/panels/WeightPanel";
 import { useCoverageName } from "@/lib/copy";
 
 const SUGGESTION_KEYS = ["family", "pubs", "compare", "explain"] as const;
+
+// CopilotKit's "+" menu lists attachments and tools; the app registers neither, so the
+// button only ever rendered disabled (#231). A component slot that renders nothing drops it.
+const NoAddMenu = () => null;
 
 export function SidePanel() {
   const t = useTranslations("SidePanel");
@@ -52,6 +56,19 @@ export function SidePanel() {
     window.addEventListener(LINK_ARRIVED, onArrival);
     return () => window.removeEventListener(LINK_ARRIVED, onArrival);
   }, [setTab]);
+
+  // The first message swaps CopilotKit's welcome layout for the chat layout, which mounts a
+  // new input and leaves the focus on the page (#231). A message sent from the keyboard or
+  // the send button asks the new input to take the focus; not on touch screens, where
+  // the focus would pull the keyboard back over the reply.
+  const [refocus, setRefocus] = useState(false);
+  // A run that fails before the API answers (the API stopped or restarting) has no reply
+  // to carry the error; the panel says so until the next message
+  const [unreachable, setUnreachable] = useState(false);
+  const askRefocus = () => {
+    setUnreachable(false);
+    if (!refocus && window.matchMedia("(pointer: fine)").matches) setRefocus(true);
+  };
 
   const tabs: [Tab, string][] = [
     ["assistant", t("tabs.assistant")],
@@ -122,9 +139,37 @@ export function SidePanel() {
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {/* Keep the chat mounted so the conversation survives tab switches */}
-        <div className={tab === "assistant" ? "h-full" : "hidden"} data-testid="chat" id="panel-assistant" role="tabpanel">
+        <div
+          className={tab === "assistant" ? "flex h-full flex-col" : "hidden"}
+          data-testid="chat"
+          id="panel-assistant"
+          role="tabpanel"
+          onKeyDownCapture={(e) => {
+            if (e.key === "Enter" && !e.shiftKey && e.target instanceof HTMLTextAreaElement) askRefocus();
+          }}
+          onClickCapture={(e) => {
+            if (e.target instanceof Element && e.target.closest('[data-testid="copilot-send-button"]')) askRefocus();
+          }}
+        >
+          {unreachable && (
+            <p
+              role="status"
+              data-testid="chat-unreachable"
+              className="border-b border-[var(--border)] px-3 py-2 text-xs text-[var(--text-secondary)]"
+            >
+              {t("chatUnreachable")}
+            </p>
+          )}
           <CopilotChat
-            className="h-full"
+            className="min-h-0 flex-1"
+            onError={(event) => {
+              // A stopped run (a second Enter, leaving the page) is not a failure
+              const error = "error" in event ? event.error : undefined;
+              if (!error?.message || error.name === "AbortError" || /aborted|unmounted/i.test(error.message)) {
+                return;
+              }
+              setUnreachable(true);
+            }}
             labels={{
               assistantMessageToolbarCopyMessageLabel: t("copyMessage"),
               userMessageToolbarCopyMessageLabel: t("copyMessage"),
@@ -135,9 +180,10 @@ export function SidePanel() {
             // CopilotKit's icon buttons have no accessible names of their own; the box stops
             // at the longest message the assistant reads (MAX_USER_MESSAGE_CHARS, #214)
             input={{
+              autoFocus: refocus,
               textArea: { maxLength: 4000 },
               sendButton: { "aria-label": t("send") },
-              addMenuButton: { "aria-label": t("moreOptions") },
+              addMenuButton: NoAddMenu,
             }}
           />
         </div>

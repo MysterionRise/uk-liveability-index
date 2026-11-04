@@ -2,6 +2,8 @@
 # data pack (`make data-download`). LIX_SERVE_DIR picks the data: ./data/serve by default,
 # ./fixtures/demo/serve for the small demo dataset.
 #   proxy   the one published address: web app, API and data files   http://localhost:3000
+#           (this machine only; LIX_BIND=0.0.0.0 opens it to the network, and anyone who
+#           reaches it can use the assistant on your key)
 #   api     REST + assistant (AG-UI) + MCP (reached through the proxy)
 #   web     the front end (reached through the proxy)
 # Images come from GitHub's registry (make up pulls them) or are built here (make up BUILD=1).
@@ -9,7 +11,7 @@
 
 services:
   api:
-    image: ghcr.io/mysterionrise/uk-liveability-index-api:${LIX_VERSION:-0.7.0}
+    image: ghcr.io/mysterionrise/uk-liveability-index-api:${LIX_VERSION:-0.7.1}
     build: { context: ., dockerfile: docker/api.Dockerfile }
     # Values come from the shell or ./.env (see .env.example); unset ones stay empty
     environment:
@@ -37,7 +39,7 @@ services:
     restart: on-failure
 
   web:
-    image: ghcr.io/mysterionrise/uk-liveability-index-web:${LIX_VERSION:-0.7.0}
+    image: ghcr.io/mysterionrise/uk-liveability-index-web:${LIX_VERSION:-0.7.1}
     build:
       context: .
       dockerfile: docker/web.Dockerfile
@@ -46,6 +48,8 @@ services:
     environment:
       # Server-side relay from the CopilotKit runtime to the assistant
       AGENT_URL: http://api:8000/agent
+    mem_limit: ${LIX_WEB_MEMORY:-1g}
+    restart: on-failure
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 10s
@@ -60,7 +64,11 @@ services:
     volumes:
       - ${LIX_SERVE_DIR:-./data/serve}:/srv:ro
       - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
-    ports: ["${LIX_PORT:-3000}:8080"]
+    # Loopback by default: on a shared Wi-Fi, 0.0.0.0 hands the assistant (and your key's
+    # budget) to everyone on it (v0.7.1 hardening pass)
+    ports: ["${LIX_BIND:-127.0.0.1}:${LIX_PORT:-3000}:8080"]
+    mem_limit: 256m
+    restart: on-failure
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/data/manifest.json"]
       interval: 10s
@@ -86,7 +94,7 @@ services:
     profiles: [local-llm]
     image: ollama/ollama:latest
     volumes: [ollama:/root/.ollama]
-    ports: ["11434:11434"]
+    ports: ["127.0.0.1:11434:11434"]
 
 volumes:
   ollama:

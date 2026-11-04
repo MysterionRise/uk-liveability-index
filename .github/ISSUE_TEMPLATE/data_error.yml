@@ -1,0 +1,36 @@
+name: A number looks wrong
+description: An area's score, measure or point of interest does not match what you know of the place.
+labels: [data-source]
+body:
+  - type: input
+    id: area
+    attributes:
+      label: Area
+      description: A postcode, place name or area code (the card shows it).
+      placeholder: LS6 3AA, or E01011395
+    validations:
+      required: true
+  - type: input
+    id: measure
+    attributes:
+      label: Measure
+      description: The theme, indicator or point of interest that looks wrong, as the card names it.
+      placeholder: Flood risk, Distance to a GP, a pub's name
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and why
+      description: What the value should be, as far as you know, and what that is based on (a published figure, local knowledge, the source's own website).
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source you checked
+      description: A link to the publisher's page or dataset, if you looked.
+  - type: markdown
+    attributes:
+      value: |
+        Every measure's source, date and caveats are on the methodology page and in [docs/data-sources.md](https://github.com/MysterionRise/uk-liveability-index/blob/master/docs/data-sources.md). A measure can be right for its source and still surprising: say so if that is what you found.

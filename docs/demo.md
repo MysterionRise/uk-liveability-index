@@ -23,9 +23,9 @@ make down           # stop
 | # | Do | You'll see | Say |
 |---|---|---|---|
 | 1 | Open the page | Every neighbourhood in the UK and Ireland coloured by its percentile across the build; the welcome card | "62,833 neighbourhoods, about 224 open datasets: police, NHS, Ofsted, Land Registry, air quality, flood risk, noise, tree cover, broadband, bus timetables, pubs." |
-| 2 | Click **Family with children** | The map recolours instantly | "Weights are a judgement, so they're yours to change. Scoring every area takes a tenth of a second in the browser." |
+| 2 | Click **Family with children** | The map recolours instantly | "Weights are a judgement, so they're yours to change. Scoring every area takes under a fifth of a second in the browser." |
 | 3 | **Weights** tab: drag *Safety* to 3 | The map recolours as you drag | "No server round trip: the scores are recomputed on the page." |
-| 4 | **Assistant**: *We have two young kids and a budget of £350k. Where should we look around Leeds?* | Sliders move to the family preset, a ranked list, outlined areas on the map; "close call" tags | "The assistant uses the same tools and data as the page. It never makes numbers up: every figure comes from a tool. 'Close call' means a slightly different weighting could swap that area out." |
+| 4 | **Assistant**: *We have two young kids and a budget of £350k. Where should we look around Leeds?* | Sliders move to the family preset, a ranked list, outlined areas on the map; "close call" tags | "The assistant uses the same tools and data as the page. Its figures come from the tools, and the evals check every number in a reply against the tool results. 'Close call' means a slightly different weighting could swap that area out." |
 | 5 | Click the top result | Its profile: theme bars with council and UK medians, strengths and weak spots, "better than X–Y% with slightly different weights" | "Transparent by design: a range, not a false precision, and the local benchmark." |
 | 6 | *Compare Far Headingley and Chapel Allerton* | A side-by-side table | "Neighbourhoods, not single streets, for named places." |
 | 7 | *Show me well-run pubs near LS6 3AA* | Pubs on the map and in a list | "Pubs that are open (in two independent sources) and rated 4–5 for food hygiene in the last three years (five in Scotland, where inspections are rarer). Honest about what it measures: how well run, not the beer." |
@@ -34,7 +34,7 @@ make down           # stop
 | 10 | *What are the best areas to live in Dublin?* | Dublin's Small Areas ranked and outlined; the card says "better than N% of Ireland" and shows schools and housing as limited data | "Ireland joined in v0.6.0 as the second country: its areas compare within Ireland, because it scores on fewer themes than the UK nations" |
 | 11 | Search **Hebden Bridge** (top bar) | Flood risk listed as a weak spot | "Data people care about but rarely see together: 39% of homes here are at real flood risk." |
 | 12 | Tick **Analyst**, open the **Analyst** tab | Distribution chart, indicator overlap heatmap, SQL console | "The same data for analysts: read-only SQL over every LSOA, exports with attribution." |
-| 13 | Click **How scores work** → **Validation** | The method, the face-validity review of 58 places, the assistant evals | "We test it: 168 face-validity checks across 58 places, 58 assistant eval cases, run on three models." |
+| 13 | Click **How scores work** → **Validation** | The method, the face-validity review of 58 places, the assistant evals | "We test it: 168 face-validity checks across 58 places, 58 assistant eval cases, run on three models (56, 56 and 52 passed on 4 November)." |
 
 Optional extras (also recorded): *Tell me about Hebden Bridge*, *What are the best
 areas in York for retirees?*, *Which areas of Birmingham have the fewest immigrants?*

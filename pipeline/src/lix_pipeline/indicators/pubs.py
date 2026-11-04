@@ -46,6 +46,9 @@ FHIS_MAX_AGE_DAYS = 5 * 365
 OVERTURE_MIN_CONFIDENCE = 0.8
 DUPLICATE_RADIUS_M = 60
 DUPLICATE_ANY_NAME_M = 20  # this close, a different name is still the same pub
+# Two pubs on one hygiene record this close are one pub mapped twice (a node and its
+# building, or an Overture place beyond DUPLICATE_RADIUS_M under a shorter name)
+SAME_RECORD_M = 150
 SOURCES = {
     "osm": ("OpenStreetMap + Food Standards Agency", "ODbL-1.0"),
     "overture": ("Overture Maps + Food Standards Agency", "CDLA-Permissive-2.0"),
@@ -157,6 +160,46 @@ def overture_additions(osm: pl.DataFrame, overture: pl.DataFrame) -> pl.DataFram
     return candidates.filter(pl.Series(keep))
 
 
+def one_pub_per_record(pubs: pl.DataFrame) -> pl.DataFrame:
+    """One pub per hygiene record. The November 2026 pack held 331 FSA records matched by
+    two or more pubs (Leeds's "The Skyrack" from OSM and "Skyrack" from Overture, 40 m
+    apart), so the pub counted twice in the measures and listed twice on the cards.
+
+    ``pubs``: _key, source ("osm" or "overture"), x, y and the match columns (fsa_id,
+    rating, rating_status, rating_date, match). Per record, the OSM pub with an explicit
+    fhrs:id link is kept first, then an OSM name match, then Overture. A second pub within
+    SAME_RECORD_M of it is the same pub and is dropped; one further away is another pub
+    whose tag or name borrowed the record, so it stays without the rating.
+    """
+    linked = pubs.filter(pl.col("fsa_id").is_not_null())
+    if linked.is_empty():
+        return pubs
+    primary = (
+        linked.sort(["fsa_id", pl.col("source") != "osm", pl.col("match") != "fhrs_id", "_key"])
+        .unique("fsa_id", keep="first", maintain_order=True)
+        .select(
+            "fsa_id",
+            pl.col("_key").alias("_pk"),
+            pl.col("x").alias("_px"),
+            pl.col("y").alias("_py"),
+        )
+    )
+    gap = ((pl.col("x") - pl.col("_px")) ** 2 + (pl.col("y") - pl.col("_py")) ** 2).sqrt()
+    second = pl.col("_pk").is_not_null() & (pl.col("_key") != pl.col("_pk"))
+    same = second & (gap.fill_null(0) <= SAME_RECORD_M)
+    borrowed = second & ~same
+    match_cols = ["fsa_id", "rating", "rating_status", "rating_date", "match"]
+    return (
+        pubs.join(primary, on="fsa_id", how="left")
+        .filter(~same)
+        .with_columns(
+            pl.when(borrowed).then(None).otherwise(pl.col(c)).alias(c) for c in match_cols
+        )
+        .drop("_pk", "_px", "_py")
+        .sort("_key")
+    )
+
+
 def build_pubs(ctx, as_of: date | None = None) -> pl.DataFrame:
     """Every pub in England (OSM, plus Overture's that OSM lacks) with its FSA match."""
     as_of = as_of or date.today()
@@ -186,7 +229,7 @@ def build_pubs(ctx, as_of: date | None = None) -> pl.DataFrame:
         pl.col("osm_id").alias("_key"), "fsa_id", "rating", "rating_status", "rating_date", "match"
     )
 
-    pubs = keyed.join(matched, on="_key", how="left").drop("_key")
+    pubs = one_pub_per_record(keyed.join(matched, on="_key", how="left")).drop("_key")
     max_age = (
         pl.when(pl.col("rating_status").is_in(FHIS_PASS))
         .then(FHIS_MAX_AGE_DAYS)

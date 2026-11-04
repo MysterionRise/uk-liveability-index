@@ -234,8 +234,10 @@ input[type="checkbox"] {
   [data-testid="analyst-label"],
   [data-testid="map-column"],
   [data-testid="side-panel"] [role="tablist"],
-  .copilotKitInput,
-  .copilotKitInputContainer {
+  /* CopilotKit 1.83's input and suggestion chips (the v1 class names are gone, #231) */
+  [data-testid="copilot-chat-input"],
+  [data-testid="copilot-suggestions"],
+  [data-testid="copilot-scroll-to-bottom"] {
     display: none !important;
   }
   /* The theme bars and the "above average" dots are colour, not decoration (#216) */

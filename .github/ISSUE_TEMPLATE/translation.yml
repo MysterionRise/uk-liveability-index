@@ -1,0 +1,42 @@
+name: Translation review
+description: A better term or a correction for the Cymraeg, Gàidhlig or Gaeilge interface (drafts until fluent speakers have reviewed them).
+labels: [i18n]
+body:
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - Cymraeg
+        - Gàidhlig
+        - Gaeilge
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where it appears
+      description: The screen or label, or the catalogue key if you know it (web/messages/*.json, config/i18n/*.yaml).
+    validations:
+      required: true
+  - type: input
+    id: current
+    attributes:
+      label: Current text
+    validations:
+      required: true
+  - type: input
+    id: suggested
+    attributes:
+      label: Suggested text
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: A termbase entry (TermCymru, Faclair na Pàrlamaid, téarma.ie), usage in official publications, or how the current text reads to a speaker.
+  - type: markdown
+    attributes:
+      value: |
+        How a review works, and how a language loses its draft label, is in [docs/i18n.md](https://github.com/MysterionRise/uk-liveability-index/blob/master/docs/i18n.md). Thank you.

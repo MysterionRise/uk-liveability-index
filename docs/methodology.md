@@ -317,8 +317,11 @@ last three years. Pubs OpenStreetMap lacks are added from Overture Maps Places
 match an FSA record in the same way, so every pub counted rests on two sources.
 Matching uses the `fhrs:id` tag OpenStreetMap mappers added to 63% of pubs, and
 otherwise the nearest pub, restaurant or hotel within 75m whose name is similar enough.
-19,959 pubs qualify: 18,193 of the 33,188 in OpenStreetMap and 1,766 of the 7,809 that
-only Overture lists. Pubs tagged with real ale, food, outdoor seating or a microbrewery
+22,635 pubs qualify across Great Britain and Northern Ireland (November 2026): 20,457 of
+the 42,874 in OpenStreetMap and 2,178 of the 11,099 that only Overture lists. A hygiene
+record counts one pub: when two map entries match the same record (a pub mapped as a point
+and as its building, or Overture's entry under a shorter name), the second is dropped
+within 150m and loses the borrowed rating beyond it. Pubs tagged with real ale, food, outdoor seating or a microbrewery
 count up to 30% more. Hygiene ratings say how well a pub is run, not how good the beer
 is, hence the name. Scotland's Food Hygiene Information Scheme grades Pass or
 Improvement Required rather than 0–5 and inspects on a longer risk-based cycle (in the

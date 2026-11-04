@@ -280,6 +280,29 @@ def test_overture_adds_only_pubs_osm_lacks():
     assert overture_additions(osm, overture)["id"].to_list() == ["c"]
 
 
+def test_one_pub_per_hygiene_record():
+    from lix_pipeline.indicators.pubs import one_pub_per_record
+
+    pubs = pl.DataFrame({
+        "_key": [0, 1, 2, 3, 4, 5],
+        "source": ["overture", "osm", "osm", "osm", "osm", "overture"],
+        "x": [500_040.0, 500_000.0, 600_000.0, 600_020.0, 602_000.0, 700_000.0],
+        "y": [200_000.0] * 6,
+        "fsa_id": [1, 1, 2, 2, 2, None],
+        "rating": [5, 5, 4, 4, 4, None],
+        "rating_status": [None] * 6,
+        "rating_date": [None] * 6,
+        "match": ["spatial", "spatial", "fhrs_id", "spatial", "fhrs_id", None],
+    }, schema_overrides={"rating_status": pl.Utf8, "rating_date": pl.Date})  # fmt: skip
+    out = one_pub_per_record(pubs)
+    # 0: Overture "Skyrack" 40 m from OSM's "The Skyrack" on the same record, dropped;
+    # 3: the same pub mapped twice in OSM, dropped (2 has the explicit link);
+    # 4: 2 km away with a copied tag, kept without the borrowed rating; 5: unrated, kept
+    assert out["_key"].to_list() == [1, 2, 4, 5]
+    assert out["fsa_id"].to_list() == [1, 2, None, None]
+    assert out["rating"].to_list() == [5, 4, None, None]
+
+
 def test_gp_quality_weights_ratings_by_where_patients_live():
     from lix_pipeline.indicators.health import gp_quality
 

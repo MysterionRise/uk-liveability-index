@@ -1,0 +1,92 @@
+# Dependency updates, grouped so a solo maintainer sees one pull request per ecosystem
+# a week (minors and patches together; a major gets its own). CI runs on every pull
+# request with the scripted model and no secrets, so a code update gets the full check.
+# CI does not build the Docker images or run the release workflow, so the docker and
+# release-action updates are only as safe as the ignore rules below.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/London
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # @copilotkit/runtime and react-core pin their own @ag-ui/client (1.0.2). A different
+      # top-level copy fails typecheck (TS2769). Move it by hand, with @copilotkit/*.
+      - dependency-name: "@ag-ui/client"
+      # typescript-eslint (via eslint-config-next) supports TypeScript <6.1: lint crashes on 7
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      # vitest 5 needs vite as a peer, and web/.npmrc (legacy-peer-deps) does not install it.
+      # Add vite as a devDependency, then drop this rule.
+      - dependency-name: vitest
+        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: deps
+    labels: [dependencies]
+
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/London
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # polars 2.0 changes lazy/streaming defaults (see pipeline/pyproject.toml): migrate deliberately
+      - dependency-name: polars
+        update-types: ["version-update:semver-major"]
+      # duckdb 2.0 drops fetch_arrow_table() and .pl() that the pipeline stages call
+      - dependency-name: duckdb
+        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: deps
+    labels: [dependencies]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      ci-actions:
+        patterns: ["actions/checkout", "actions/setup-*", "astral-sh/*"]
+      # Run only when a v* tag is pushed (release.yml), so no pull request exercises
+      # them: after merging one, rehearse a release before the next tag
+      release-actions:
+        patterns: ["docker/*", "actions/upload-artifact", "actions/download-artifact"]
+    commit-message:
+      prefix: deps
+    labels: [dependencies]
+
+  - package-ecosystem: docker
+    directory: /docker
+    schedule:
+      interval: monthly
+    ignore:
+      # Python and Node follow .python-version / .nvmrc, which CI tests (and which
+      # Dependabot cannot bump). python 3.15-slim fails `uv sync --frozen` (httptools has no
+      # cp315 wheel in uv.lock, and the slim image has no compiler).
+      - dependency-name: python
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: deps
+    labels: [dependencies]
+
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: deps
+    labels: [dependencies]

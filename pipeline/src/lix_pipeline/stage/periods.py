@@ -139,7 +139,12 @@ def _ros_prices(slug: str) -> Period | None:
 
 
 def _gtfs(slug: str) -> Period | None:
-    ref = _to_date(_column_max(_staged("bods_gtfs"), "reference_day"))
+    """The reference Tuesday of this feed's own timetable. The staged table merges every
+    feed, and Ireland's timetable runs a week ahead of Great Britain's, so its maximum
+    is not what the British feeds are for."""
+    from lix_pipeline.stage.transport import gtfs_reference_day
+
+    ref = gtfs_reference_day(data_dir("raw") / slug)
     return day(ref, f"timetable for {_day_label(ref)}") if ref else None
 
 
@@ -207,7 +212,7 @@ def period_of(slug: str, spec: DatasetSpec, lock_entry: dict) -> Period | None:
         found = STAGED_EXTRACTORS[slug](slug)
         if found:
             return found
-    if slug.startswith("bods_gtfs"):
+    if slug.startswith("bods_gtfs") or slug.endswith("_gtfs"):
         found = _gtfs(slug)
         if found:
             return found

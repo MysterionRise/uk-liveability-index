@@ -81,9 +81,10 @@ def build_model() -> Model:
 def _explain(problem: str):
     """Answers any message by saying how to configure the assistant."""
     text = (
-        "The assistant isn't configured with a model key, so it can only answer the "
-        "suggested questions (from recordings). The map, search, weights and area profiles "
-        "all work. To ask anything else, add a key to .env (see .env.example) and restart. "
+        "That question isn't one of the recorded answers: the assistant isn't configured "
+        "with a model key, so it replays recordings of the suggested questions. The map, "
+        "search, weights and area profiles all work. To ask anything else, add a key to "
+        ".env (see .env.example) and start the app again (make up, or make up-demo). "
         f"({problem})"
     )
 
@@ -179,7 +180,14 @@ _RULES: list[tuple[str, str, callable]] = [
 def _scripted(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
     """Deterministic stand-in for an LLM: one tool call per matching request, then a summary."""
     last = messages[-1]
-    retries = [p for p in last.parts if isinstance(p, RetryPromptPart)]
+    # pydantic-ai 2.60 reports a retried tool call as ToolReturnPart(outcome='retried'); earlier
+    # versions used RetryPromptPart
+    retries = [
+        p
+        for p in last.parts
+        if isinstance(p, RetryPromptPart)
+        or (isinstance(p, ToolReturnPart) and getattr(p, "outcome", "success") == "retried")
+    ]
     if retries:
         return ModelResponse(parts=[TextPart(f"Sorry, I couldn't do that: {retries[0].content}")])
     returns = [p for p in last.parts if isinstance(p, ToolReturnPart)]
