@@ -8,6 +8,10 @@ on:
   # The release workflow runs the same checks before publishing images
   workflow_call:
 
+# Dependabot's pull requests and everyone else's run with a read-only token
+permissions:
+  contents: read
+
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest

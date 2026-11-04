@@ -28,9 +28,15 @@ MAX_CELLS = 200_000
 MAX_CELL_CHARS = 1_000
 MAX_CHARS = 4_000_000
 TIMEOUT_S = 10.0
-# repeat('x', 1000000000) is one gigabyte that the memory limit does not see (#208)
+# repeat('x', 1000000000) is one gigabyte that the memory limit does not see (#208);
+# printf('%400000000s', 'x'), format('{:>N}', 'x') and bitstring('1', N) pad the same way,
+# and query()/query_table() run a query held in a string, out of this guard's sight
+# (v0.7.1 hardening pass). A blocklist leaks; a child process with its own memory cap is
+# the lasting fix (#235)
 STRING_BUILDERS = re.compile(
-    r"\b(repeat|rpad|lpad|list_resize|array_resize|list_repeat)\s*\(", re.IGNORECASE
+    r"\b(repeat|rpad|lpad|list_resize|array_resize|list_repeat|printf|format|bitstring"
+    r"|query|query_table|json_execute_serialized_sql)\s*\(",
+    re.IGNORECASE,
 )
 # A generated sequence is fine for a calendar or a histogram's bins; one of a hundred
 # million values (`unnest(range(100000000))`) killed the API container in the v0.7.0
@@ -116,7 +122,9 @@ class SqlGuard:
             raise SqlError("Only SELECT queries are allowed")
 
         if m := STRING_BUILDERS.search(sql):
-            raise SqlError(f"{m.group(1).lower()}() is not allowed: it builds a value of any size")
+            raise SqlError(
+                f"{m.group(1).lower()}() is not allowed: it can build a value of any size"
+            )
         if problem := _sequence_problem(sql):
             raise SqlError(problem)
 

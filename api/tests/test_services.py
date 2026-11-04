@@ -654,6 +654,12 @@ class TestQaCloseOut:
             "select repeat('x', 10)",
             "select RPAD('x', 5, 'y')",
             "select lpad(name, 3, '0') from places",
+            # the v0.7.1 hardening pass's bypasses
+            "select length(printf('%400000000s', 'x'))",
+            "select format('{:>50000000}', 'x')",
+            "select bitstring('1', 50000000)",
+            "select * from query('select length(rep' || 'eat(''x'', 50000000))')",
+            "select * from query_table('lsoa')",
         ):
             with pytest.raises(SqlError, match=r"\w+\(\) is not allowed"):
                 guard.run(q)

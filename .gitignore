@@ -10,8 +10,10 @@ __pycache__/
 .venv/
 *.egg-info/
 
-# Environment
-.env
+# Environment (keys): .env, .env.local, web/.env.production…, but the template
+.env*
+!.env.example
+*.pem
 
 # DuckDB
 *.duckdb
