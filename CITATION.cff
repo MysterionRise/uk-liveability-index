@@ -13,8 +13,8 @@ license: MIT
 abstract: >-
   Open-data liveability scores for 62,833 neighbourhoods across the UK and Ireland:
   a reproducible pipeline over about 224 open datasets, an API and MCP server, a map
-  interface in four languages and an AI assistant whose answers use only numbers from
-  the data. The data pack is published under the ODbL.
+  interface in four languages and an AI assistant whose replies are evaluated for
+  numbers that trace to its tool results. The data pack is published under the ODbL.
 keywords:
   - liveability
   - open data

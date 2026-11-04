@@ -13,10 +13,17 @@ v0.7.2. Ships with the November data release (`data-2026-11`).
 
 ### Added
 
-- A Dependabot configuration for npm, uv, GitHub Actions and the images: weekly for
-  the packages, monthly for the rest, minors and patches grouped into one pull request
-  per ecosystem; CI already runs on pull requests with the scripted model, so each update
-  gets the full check. Code scanning (CodeQL), secret scanning with push protection and
+- A Dependabot configuration: npm and uv weekly, with minors and patches grouped into
+  one pull request each; GitHub Actions monthly in two groups (the CI actions, and the
+  release-only ones a pull request never runs); the images monthly. CI runs on pull
+  requests with the scripted model and no secrets, so a code update gets the full check.
+  A rehearsal of the first run (the hardening pass) found what would have been red and
+  the config leaves it to a deliberate change: `@ag-ui/client` (CopilotKit pins its own
+  copy; a second one fails typecheck), the TypeScript 7 and vitest 5 majors (lint and
+  tests break), the duckdb 2 and polars 2 majors, and the Python and Node base images
+  (they follow `.python-version` and `.nvmrc`; python 3.15-slim cannot build the API).
+  The scripted model also reads pydantic-ai 2.60's retried tool returns, so the grouped
+  Python update passes. Code scanning (CodeQL), secret scanning with push protection and
   private vulnerability reporting are repository settings, free for a public repo,
   turned on at release (#224).
 - Issue forms (a bug, a number that looks wrong, a data source proposal, a translation
@@ -31,8 +38,9 @@ v0.7.2. Ships with the November data release (`data-2026-11`).
   the cards, not scored". Both engines add it; the context words are matched on a copy
   of the text, so the weighting's own reading of a word ("nature" → environment) is
   unchanged, and the model is told not to invent an id for such a wish (#223).
-- The MCP tools carry the REST API's bounds (a limit of 0 or a negative radius gave a
-  traceback; a weight of −5 was accepted), are annotated read-only so clients need not
+- The MCP tools are bounded like the REST API, a little tighter (at most 25 results; a
+  limit of 0 or a negative radius gave a traceback, a weight of −5 was accepted), are
+  annotated read-only so clients need not
   confirm each call, and the server reports the app's version (release pass).
 - `lix validate serve` runs the name check that `lix validate geo` gained in v0.6.3 over
   `areas`, `places` and `pois` as well, and both now refuse mojibake pairs (#222).
@@ -45,8 +53,9 @@ v0.7.2. Ships with the November data release (`data-2026-11`).
   map widget this app never renders, so `web/.npmrc` sets `legacy-peer-deps` and the
   web image copies it before `npm ci` (#206, #224).
 - Routine version bumps (react, maplibre, hyparquet, playwright, ruff, pytest and the
-  rest, all a minor or a patch behind) are left to Dependabot's first grouped pull
-  requests rather than bumped by hand here (#224).
+  rest: minors and patches, CopilotKit 1.84 among them) are left to Dependabot's first
+  grouped pull requests rather than bumped by hand here; eslint 10 comes as its own pull
+  request (it passes), typescript 7 and vitest 5 wait (#224).
 - Profiles: a description that mentions kids or children starts from the family preset
   (it took "family" or "families" before); "no kids" is still read first and clears
   education (release pass).
@@ -54,11 +63,17 @@ v0.7.2. Ships with the November data release (`data-2026-11`).
   extracts of 31 October, GIAS, the FSA ratings, ODS GPs and dentists, BSO dental,
   NaPTAN, the NTA timetable, Natural Resources Wales's river and sea flood maps, Open
   Charge Map for Great Britain and Ireland); 168/168 face-validity checks still pass,
-  and the demo fixture is re-cut from the new pack.
+  and the demo fixture is re-cut from the new pack. The pack was rebuilt on 4 November
+  with the release pass's and the hardening pass's fixes (no source changed).
 - The pitch line says the UK and Ireland; the package descriptions, the demo dataset
   comments, the walkthrough sentence ("with each feature release") and Haiku's speed
-  and cost (the evals' 5 s and $0.001) read the same everywhere; the TikTok end card
-  carries 62,833 neighbourhoods and 224 datasets (#226, #227).
+  and cost (the evals' 4 s and $0.001) read the same everywhere; the TikTok end card
+  carries 62,833 neighbourhoods and 224 datasets and its first caption says the UK or
+  Ireland; the build's download size reads about 35 GB (it said 20) (#226, #227).
+- The evals rerun on the v0.7.1 build, all 58 cases on each model: Haiku 5.5 56/58 (its
+  two misses passed three reruns each), Opus 5.5 56/58, Qwen 3.8 52/58; the README and
+  docs/evals.md list every miss, and the claims about the assistant's numbers say what is
+  checked (31 cases) rather than promise (hardening pass, #233, #234).
 
 ### Fixed
 
@@ -79,17 +94,74 @@ v0.7.2. Ships with the November data release (`data-2026-11`).
 - Points of interest: a lone "Â" before a space (a no-break space mangled upstream and
   then normalised), "N/A", and names without a letter or digit ("≈", "#") are no name;
   the validator refuses them too (release pass).
+- The assistant's chat after the CopilotKit upgrade: the "+" button that only ever
+  rendered disabled is gone (the app offers no attachments); the input keeps the focus
+  after the first message, when the welcome layout gives way to the chat (keyboard users
+  had to tab back; touch screens are left alone so the keyboard does not cover the
+  reply); printing hides the chat input and the suggestion chips again (the print rule
+  named class names CopilotKit 1.83 no longer has); the client asks for the route's REST
+  transport instead of retrying with a single-route envelope the route cannot serve. The
+  runtime's "listing and clearing threads need a caller identity" notice stays: opening
+  thread listing to anonymous callers would let anyone read other people's chats on a
+  shared server (#231, the rest of it in v0.7.2).
+- Profiles: "retiring", "about to retire" and "pensioners" start from the retiree preset,
+  as "retired" and "retirement" did (the hardening pass's eval rerun).
+- Well-run pubs: 331 Food Standards Agency records were matched by two or more pubs (a pub
+  mapped as a point and as its building, or Overture's entry under a shorter name, such as
+  "The Skyrack" and "Skyrack" 40 m apart), so the pub counted twice in the measure and
+  listed twice on the cards. A record now counts one pub: a second entry within 150 m is
+  dropped, one further away keeps its place but not the borrowed rating (hardening pass).
+- The suggested questions without a model key: two of the four English chips and every
+  Welsh, Gaelic and Irish chip answered "can only answer the suggested questions", because
+  their wording matched no recording, and the "explain" chip named Manchester, which the
+  six-city demo lacks. Every chip in every language now names a demo city and has a
+  recording, and a test keeps the chips and the recordings in step; a question with no
+  recording says so and how to add a key (hardening pass).
+- The demo printed "better than 34%" (among its six cities) beside the full build's
+  "60–81%"; the demo leaves the range out (hardening pass).
+- The assistant said cycle lanes, hills and beaches are not in the index (they are context
+  measures since v0.7.0) and named a context measure as the reason a score was low; the
+  instructions now say what context measures are (hardening pass).
+- With the API stopped, a message brought up CopilotKit's developer toast ("fetch
+  failed", a stack trace, in English), which is on by default on localhost; the side panel
+  now says the assistant can't be reached, in the page's language, until the next message
+  (hardening pass).
+- `make up` without a data pack started an API that could never become healthy; it now
+  says to run `make quickstart` or `make up-demo` (hardening pass).
 
 ### Security
 
-- `npm audit` on v0.7.0: 47 advisories, 22 high, no critical, every high chaining to
-  zod < 4.6.6 pinned inside the CopilotKit and ag-ui packages (no advisory names a
-  CopilotKit or ag-ui package itself). After the bump and `npm audit fix`: 39, 19 high,
-  the three direct ones all inherited from zod. With `"overrides": {"zod": "$zod"}` in
-  `web/package.json`, every copy resolves to the app's zod 4.6.6, and `npm audit fix`
-  takes `@hono/node-server` 1.19.17 for the last high: 22 advisories, none high or
-  critical, all transitive; verified with the unit checks and the browser suite against
-  the production image (#206).
+- `npm audit` on v0.7.0: 47 vulnerable packages (8 advisories), 22 high, no critical; 20
+  of the highs chain to zod < 4.6.6 pinned inside the CopilotKit and ag-ui packages (no
+  advisory names a CopilotKit or ag-ui package itself), the other two are
+  follow-redirects and graphql-scalars. With the bump, `npm audit fix` and
+  `"overrides": {"zod": "$zod"}` in `web/package.json` (every copy resolves to the app's
+  zod 4.6.6; `@hono/node-server` 1.19.17): 22 vulnerable packages (3 advisories), none
+  high or critical, all transitive; verified with the unit checks and the browser suite
+  against the production image (#206).
+- The hardening pass (4 November 2026: a live-model assistant tester, a newcomer
+  following the README, a security review, a dependency-automation check and a claims
+  audit) found and this release fixes:
+  - **The app listened on every network interface**, so anyone on the same Wi-Fi could
+    use the assistant on the owner's key. The proxy now binds 127.0.0.1 unless `LIX_BIND`
+    says otherwise (Ollama's port too).
+  - **A page on another site could run the assistant** (a cross-site POST to the
+    CopilotKit route got a 200) and DNS rebinding reached `/mcp`: the proxy refuses a
+    browser request whose Origin is another site. It also caps request bodies at 9 MB (a
+    24 MB post took the web app to about 300 MiB), and the web app and the proxy restart
+    on failure under a memory cap.
+  - **An image in a reply was fetched from any site**, a channel a prompt injection
+    planted in a place or pub name could use to send the conversation out: a content
+    security policy keeps images, scripts and requests to the app's own origin and the
+    basemap's tiles, with `nosniff`, a referrer policy and frame options.
+  - **The analyst SQL guard** let `printf('%400000000s', …)`, `format`, `bitstring` and
+    `query()` (SQL held in a string) build values of any size, the #208 crash by other
+    means; they are refused, and #235 moves guarded queries into a memory-capped worker.
+  - CI's token is read-only (Dependabot's pull requests included), the smoke test's
+    checkout keeps no credentials, `.env*` files other than the template are ignored by
+    git and Docker, and `make quickstart` creates `.env` readable by its owner only.
+  - A full-history secret scan (gitleaks, every ref and unreachable object, and the
+    images) found nothing, so GitHub's secret scanning can be turned on.
 
 ## [0.7.0] - 2026-10-30
 

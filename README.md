@@ -25,9 +25,10 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
   more.
 - **Your weights, computed in your browser**, from five ready-made presets, a sentence
   about yourself ("young professional, one child starting school, I need sunshine") or
-  any weighting of your own, with an honest range for how much a result depends on them.
-- **An assistant that shows its working**, tested on 58 cases, including that its replies
-  only use numbers from the data ([evals](docs/evals.md)).
+  any weighting of your own, with a range for how much a preset's result depends on the
+  exact weights.
+- **An assistant that shows its working**, tested on 58 cases, 31 of them also checking
+  that every number in the reply traces to a tool result ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.
 - **Built with** [Pydantic AI](https://ai.pydantic.dev) (the agent),
@@ -42,17 +43,20 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
 You need [Docker](https://docs.docker.com/get-docker/) (with Compose), `make` and `curl`.
 On Windows, use WSL (not tested yet).
 
-**Two minutes, no download:**
+**Two minutes, no data download:**
 
 ```bash
-git clone https://github.com/MysterionRise/uk-liveability-index.git
+git clone --depth 1 https://github.com/MysterionRise/uk-liveability-index.git
 cd uk-liveability-index
 make up-demo
 ```
 
 That runs the small dataset in the repo (Leeds, Brighton, Cardiff, Edinburgh, Belfast and
 Dublin) at http://localhost:3000, with the assistant answering its suggested questions from
-recordings. Stop it with `make down`.
+recordings. The first run pulls the app's images (about 0.6 GB); give Docker about 4 GB of
+memory. Stop it with `make down`. Port 3000 taken? `LIX_PORT=3100 make up-demo`. The app
+listens on this machine only: `LIX_BIND=0.0.0.0` opens it to your network, where anyone who
+reaches it can use the assistant on your key.
 
 **The whole of the UK and Ireland:**
 
@@ -65,7 +69,8 @@ areas are found by place name (Eircode is licensed, so there is no postcode sear
 
 **The assistant** needs a model key to answer anything you ask. Put an
 [OpenRouter](https://openrouter.ai) key in `.env` (`make quickstart` creates it from
-[.env.example](.env.example)) and run `make up`. See [Assistant](#assistant) for other
+[.env.example](.env.example)) and start the app again (`make up` on the full pack, `make
+up-demo` on the demo). See [Assistant](#assistant) for other
 providers, costs and the MCP server.
 
 ## What you can do
@@ -111,9 +116,9 @@ it scores on fewer themes and stand-ins than the UK nations.
 
 - **Fair to rural areas.** Access measures stop adding points beyond what a typical suburb
   has, and "compare like with like" ranks villages against villages.
-- **Uncertain where it should be.** Nudging every theme's weight shows how stable a result is:
-  "better than 72–95% of the UK" rather than a falsely precise 84%, and "close call" tags in
-  rankings.
+- **Uncertain where it should be.** Nudging every theme's weight (200 random draws around
+  each preset) shows how stable a result is: "better than 60–81% of the UK and Ireland"
+  rather than a falsely precise 72%, and "close call" tags in rankings.
 - **Checked.** A review of 58 contrasting places (168 checks, 109 of them run on every
   build) is in [docs/validation.md](docs/validation.md).
 
@@ -123,27 +128,30 @@ source with its licence and date is in [docs/data-sources.md](docs/data-sources.
 
 ## Assistant
 
-The assistant runs on any model [Pydantic AI](https://ai.pydantic.dev) supports. The
-default is Claude Haiku 5.5 through OpenRouter, with an open-weights model on another
-provider as the fallback:
+The assistant runs on any model [Pydantic AI](https://ai.pydantic.dev) supports; three are
+evaluated. The default is Claude Haiku 5.5 through OpenRouter, with an open-weights model
+as the fallback:
 
 | Model (via OpenRouter) | Eval cases passed | Typical answer | Cost per question |
 |---|---|---|---|
-| Claude Haiku 5.5 (default) | 58/58 | 5 s | about $0.001 |
-| Qwen 3.8 27B (fallback, open weights) | 32/32 (the October 2026 suite) | 6 s | about $0.0017 |
-| Claude Opus 5.5 | 32/32 (the October 2026 suite) | 7 s | about $0.05 |
+| Claude Haiku 5.5 (default) | 56/58 | 4 s | about $0.001 |
+| Qwen 3.8 27B (fallback, open weights) | 52/58 | 6 s | about $0.002 |
+| Claude Opus 5.5 | 56/58 | 6 s | about $0.03 |
 
-The $1 daily budget buys several hundred Haiku questions and about twenty Opus ones (the
-stable prefix is cached, so an Opus follow-up costs a few cents).
+One full run each on 4 November 2026; a case can pass on one run and fail on the next
+(Haiku's two misses passed three reruns each), and [docs/evals.md](docs/evals.md) lists
+every miss. The $1 daily budget buys several hundred Haiku questions and about thirty Opus
+ones (the stable prefix is cached, so an Opus follow-up costs a few cents).
 
 Set `LIX_MODEL` in `.env` to use another: `anthropic:claude-opus-5-5`, `openai:gpt-5`,
 `google:gemini-2.5-pro`, or a local model with Ollama (`ollama:llama3.1`,
 `docker compose --profile local-llm`).
 
-**Caps, so a key can't run up a bill.** By default: 30 questions per conversation, 20 a
+**Caps on what a key can spend.** By default: 30 questions per conversation, 20 a
 minute and $1 of spend a day, plus limits on each question's model requests, tool calls and
 tokens. A refused question gets a chat reply and the map keeps working. Change them in
-`.env`, and also set a credit limit on the key itself.
+`.env`. The caps are counted after each answer, so a burst can overshoot them a little: set
+a credit limit on the key itself too, which is the real backstop.
 
 ### From Claude Code, Claude Desktop or Cursor
 
@@ -165,7 +173,7 @@ Cursor (`.cursor/mcp.json`) and other clients that take a URL:
 Claude Desktop (`claude_desktop_config.json`) reaches a local URL through `mcp-remote`:
 
 ```json
-{ "mcpServers": { "liveability": { "command": "npx", "args": ["mcp-remote", "http://localhost:3000/mcp/"] } } }
+{ "mcpServers": { "liveability": { "command": "npx", "args": ["mcp-remote@0.16.0", "http://localhost:3000/mcp/"] } } }
 ```
 
 ## Limitations
@@ -183,7 +191,7 @@ Claude Desktop (`claude_desktop_config.json`) reaches a local URL through `mcp-r
 - **Neighbourhoods, not streets.** Scores describe areas of a few hundred to a few
   thousand residents, and distances are straight-line.
 - **Data has dates.** Each source's data period is shown on the explainer card and in
-  [docs/data-sources.md](docs/data-sources.md); the pack comes from a monthly data release
+  [docs/data-sources.md](docs/data-sources.md); the pack comes from a dated data release
   ([docs/data-releases.md](docs/data-releases.md)). Crime in Greater Manchester is
   estimated, because its police force publishes none.
 - **Judgement calls.** The weights, thresholds and choice of indicators are explained,
@@ -200,8 +208,8 @@ Claude Desktop (`claude_desktop_config.json`) reaches a local URL through `mcp-r
 
 ## Building the data yourself
 
-The `lix` pipeline rebuilds everything from the original publishers: about 20 GB of
-downloads, then staging, indicators, scores and map tiles.
+The `lix` pipeline rebuilds everything from the original publishers: about 35 GB of
+downloads (about 65 GB on disk), then staging, indicators, scores and map tiles.
 
 ```bash
 make install       # uv sync (needs uv and Python 3.11)

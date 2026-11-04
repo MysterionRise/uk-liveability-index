@@ -1,6 +1,6 @@
 /**
  * Browser port of lix_core.scoring: theme and overall scores from per-indicator
- * 0–100 scores, for any weighting, in a few milliseconds for every LSOA in the build.
+ * 0–100 scores, for any weighting, in under 200 ms for every area in the build (62,833).
  *
  * Must match the Python implementation exactly; both are tested against
  * contracts/fixtures/scoring_golden.json. Missing values are NaN.

@@ -167,7 +167,7 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.11+.
 
 ```bash
 make install    # uv sync
-make fetch      # download every dataset pinned in the lockfile (about 20 GB; Price Paid is 5.5 GB)
+make fetch      # download every dataset pinned in the lockfile (about 35 GB; Price Paid is 5.5 GB)
 make stage      # stage every downloaded dataset to data/staged/*.parquet
 make indicators # build the indicator table
 make score      # theme/overall scores, browser files and QA report in data/serve/

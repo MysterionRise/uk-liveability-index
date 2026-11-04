@@ -20,13 +20,30 @@ The assistant is tested with real models on the full build, using 58 cases in
 
 | Model (via OpenRouter) | Passed | Turn p50 | Turn p95 | Cost per question | Reply words (median) | Run |
 |---|---|---|---|---|---|---|
-| Claude Opus 5.5 | 32/32 | 7.33 s | 15.52 s | $0.0484 | 77.5 | 2026-10-08 |
-| Claude Haiku 5.5 (the default) | 58/58 | 4.65 s | 10.31 s | $0.0008 | 64 | 2026-10-20 |
-| Qwen 3.8 27B (open weights) | 32/32 | 6.44 s | 16.62 s | $0.0017 | 60.5 | 2026-10-08 |
+| Claude Opus 5.5 | 56/58 | 5.58 s | 11.48 s | $0.0274 | 82 | 2026-11-04 |
+| Claude Haiku 5.5 (the default) | 56/58 | 3.56 s | 7.33 s | $0.0007 | 69 | 2026-11-04 |
+| Qwen 3.8 27B (open weights) | 52/58 | 5.56 s | 13.38 s | $0.0021 | 67.5 | 2026-11-04 |
 
 Per-case detail (tools called, replies, failed checks) is in [docs/evals/](evals/).
-Costs are what OpenRouter billed. The 33rd case (ranking by one measure, #94) was added on
-2026-10-11 and the seven profile cases on 2026-10-15; the Opus and Qwen rows predate them.
+Costs are what OpenRouter billed. Each row is one full run of the v0.7.1 build; the checks
+are assertions on tool calls, arguments, the shared state and the reply text (no model
+grades another), so a case can pass on one run and fail on the next.
+
+The misses on 4 November 2026:
+
+- **Haiku:** `young_professional_london` wrote "around £440–475k", and no tool result
+  carried 440 (a rounded price, by the look of it), and `sunniest_areas` ranked by the whole
+  Climate theme rather than sunshine hours. Both passed three reruns each.
+- **Opus:** `retiree_devon` built a "quiet, safe retirement" profile from the Balanced
+  preset instead of the Retiree one, and ranked one Devon district, not the county (#233);
+  `gaelic_profile` explained the score instead of profiling the area.
+- **Qwen:** two of the seven profiles ran out of output tokens while reasoning and fell back
+  to the rules engine (#234); a price limit left out of the ranking, an ungrounded "430",
+  road and rail noise chosen over overall noise exposure for "least noise", and a profile
+  that raised the environment less than the case asks.
+
+Found and fixed from these runs: "retiring", "about to retire" and "pensioners" now start
+the rules engine from the retiree preset, as "retired" did.
 
 ## What the evals found and fixed
 
@@ -69,8 +86,9 @@ Costs are what OpenRouter billed. The 33rd case (ranking by one measure, #94) wa
 
 ## Choosing the model
 
-Opus and Qwen pass every case of the suite they ran; Haiku's one miss on 2026-10-18 was the Gaelic commuter's profile rationale, which the language heuristic read as English (it passed when run again). Claude Haiku 5.5 answers faster than Opus 5.5 at
-about 1/30 of the cost, with replies of similar quality; Opus frames trade-offs slightly
+Haiku and Opus pass the same share of the suite; Qwen misses more, mostly on profiles.
+Claude Haiku 5.5 answers faster than Opus 5.5 at about 1/40 of the cost, with replies of
+similar quality; Opus frames trade-offs slightly
 more carefully. Haiku 5.5 is the default, with the open-weights Qwen 3.8 27B, served by
 a different provider, as the fallback (.env.example):
 
@@ -86,5 +104,5 @@ For a stakeholder demo where every answer counts, Opus 5.5 is worth its cost.
 ```bash
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,compare_two
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 58 cases, about $0.05
-make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 58 cases, about $2
+make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 58 cases, about $1.60
 ```

@@ -11,7 +11,7 @@ Docker for the full stack.
 ```bash
 make install         # Python workspace: core, pipeline, api
 make web-install     # front end
-make data-download   # the release's data pack, instead of the 20 GB build
+make data-download   # the release's data pack, instead of the 35 GB build
 make dev             # API on :8000 and front end on :3000
 ```
 
