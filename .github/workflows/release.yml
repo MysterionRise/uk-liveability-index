@@ -32,7 +32,7 @@ jobs:
     env:
       IMAGE: ghcr.io/mysterionrise/uk-liveability-index-${{ matrix.image }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: docker/setup-buildx-action@v3
 
@@ -122,7 +122,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Release notes from CHANGELOG.md
         run: |

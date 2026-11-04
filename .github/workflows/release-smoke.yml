@@ -26,7 +26,7 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref || inputs.tag }}
           # The job's token can write releases; npm's install scripts need not see it
@@ -57,7 +57,7 @@ jobs:
           make up
           docker compose images
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
