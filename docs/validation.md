@@ -36,7 +36,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 | Harrogate | Central Harrogate, North Yorkshire | 68 | 93 | 51 | 67 | 66 | 79 | 90 | 34 | 41 | 82 |
 | Winchester | Winchester East, Winchester | 69 | 85 | 83 | 42 | 79 | 84 | 94 | 41 | 46 | 78 |
 | St Albans | St Albans Central, St Albans | 72 | 98 | 84 | 73 | 94 | 74 | 80 | 30 | 28 | 92 |
-| Royal Sutton Coldfield | Sutton Coldfield South & Central, Birmingham | 69 | 81 | 74 | 62 | 81 | 74 | 85 | 44 | 42 | 80 |
+| Royal Sutton Coldfield | Sutton Coldfield South & Central, Birmingham | 69 | 78 | 74 | 62 | 81 | 74 | 85 | 44 | 42 | 80 |
 | Cambridge | Central & West Cambridge, Cambridge | 70 | 90 | 79 | 95 | 84 | 79 | 87 | 13 | 33 | 77 |
 | Chipping Campden | Willersey, Chipping Campden & Blockley, Cotswold | 52 | 24 | 76 | 78 | 45 | 73 | 59 | 29 | 59 | 42 |
 | Holsworthy | Holsworthy, Bradworthy & Welcombe, Torridge | 48 | 30 | 62 | 53 | 24 | 80 | 52 | 34 | 76 | 27 |
@@ -238,7 +238,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 **Royal Sutton Coldfield** (Sutton Coldfield South & Central). Affluent suburb of Birmingham. Flags: broadcast_lad, broadcast_msoa, not_available.
 
 - ✅ community score ≥ 55: 62.2
-- ✅ overall score ≥ 50: 68.9
+- ✅ overall score ≥ 50: 68.6
 - ✅ coast_distance ≥ 70: 80.0 ⚓
 
 **Cambridge** (Central & West Cambridge). Expensive university city, cycling and rail. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.

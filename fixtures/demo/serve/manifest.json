@@ -1,8 +1,8 @@
 {
   "schema_version": 5,
-  "generated_at": "2026-11-02T01:57:59+00:00",
+  "generated_at": "2026-11-04T11:46:16+00:00",
   "data_release": null,
-  "data_to": "2026-11-02",
+  "data_to": "2026-11-04",
   "geography": {
     "build": {
       "working_crs": 27700,
@@ -7398,9 +7398,9 @@
       "fetched_version": "itm_all_gtfs.zip",
       "fetched_at": "2026-10-26T20:32:41.190131+00:00",
       "period": {
-        "label": "timetable for 17 November 2026",
-        "start": "2026-11-17",
-        "end": "2026-11-17",
+        "label": "timetable for 10 November 2026",
+        "start": "2026-11-10",
+        "end": "2026-11-10",
         "kind": "day"
       },
       "cadence": "daily",
@@ -7418,9 +7418,9 @@
       "fetched_version": "itm_scotland_gtfs.zip",
       "fetched_at": "2026-10-26T20:38:35.718645+00:00",
       "period": {
-        "label": "timetable for 17 November 2026",
-        "start": "2026-11-17",
-        "end": "2026-11-17",
+        "label": "timetable for 10 November 2026",
+        "start": "2026-11-10",
+        "end": "2026-11-10",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -7438,9 +7438,9 @@
       "fetched_version": "itm_wales_gtfs.zip",
       "fetched_at": "2026-10-26T20:37:55.491603+00:00",
       "period": {
-        "label": "timetable for 17 November 2026",
-        "start": "2026-11-17",
-        "end": "2026-11-17",
+        "label": "timetable for 10 November 2026",
+        "start": "2026-11-10",
+        "end": "2026-11-10",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -9797,10 +9797,10 @@
       "fetched_version": "Sat, 31 Oct 2026 23:21:32 GMT",
       "fetched_at": "2026-11-02T00:00:33.389297+00:00",
       "period": {
-        "label": "published October 2026",
-        "start": "2026-10-01",
-        "end": "2026-10-31",
-        "kind": "month"
+        "label": "timetable for 17 November 2026",
+        "start": "2026-11-17",
+        "end": "2026-11-17",
+        "kind": "day"
       },
       "cadence": "weekly",
       "stale_reason": "none",
@@ -11854,12 +11854,12 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "157d5bf0c97771fe347d9a5157a72f9efa2fd95cd36216338cc003d87f6e4b5f",
-      "bytes": 4802246
+      "sha256": "f414e59e2e00fab06755e302473628275cb0903b1e24efb5aa862bcac75393c1",
+      "bytes": 4803110
     },
     "scores.parquet": {
-      "sha256": "8465f756c76d96a280a97039b62051a8dd31cc7aa75b17196474d1489e9c35d8",
-      "bytes": 931452
+      "sha256": "55e32d110ddabf47e461cc4f79c76815306b0d23b9616b817e4245c2abf1c31e",
+      "bytes": 931456
     },
     "postcodes.parquet": {
       "sha256": "b40a92ce69ff836d7027cb36999445fcfc00e1f88e4acf1f6e2145f59fcde5e6",
@@ -11870,12 +11870,12 @@
       "bytes": 35114
     },
     "areas.parquet": {
-      "sha256": "e59c6053e3c1a31835e3aa5528e0462ba266cdb43cfa2be9337e0b8d7c4ece9f",
-      "bytes": 34466
+      "sha256": "ecda22243254f5d921cfdba137a40246eac320ea3c4a2060c8ec4267a28cda25",
+      "bytes": 34433
     },
     "pois.parquet": {
-      "sha256": "f69b3ca261236116d62c152a3164294efe3e1e185b230652cd8b2ccfaf130fa4",
-      "bytes": 2093178
+      "sha256": "d3de12f49d838051d79cdb0573fe3bd48f69bf3f49913c8cf657f54e8230df52",
+      "bytes": 2090850
     }
   },
   "correlations": {
