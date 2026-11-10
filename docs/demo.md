@@ -34,7 +34,7 @@ make down           # stop
 | 10 | *What are the best areas to live in Dublin?* | Dublin's Small Areas ranked and outlined; the card says "better than N% of Ireland" and shows schools and housing as limited data | "Ireland joined in v0.6.0 as the second country: its areas compare within Ireland, because it scores on fewer themes than the UK nations" |
 | 11 | Search **Hebden Bridge** (top bar) | Flood risk listed as a weak spot | "Data people care about but rarely see together: 39% of homes here are at real flood risk." |
 | 12 | Tick **Analyst**, open the **Analyst** tab | Distribution chart, indicator overlap heatmap, SQL console | "The same data for analysts: read-only SQL over every LSOA, exports with attribution." |
-| 13 | Click **How scores work** → **Validation** | The method, the face-validity review of 58 places, the assistant evals | "We test it: 168 face-validity checks across 58 places, 58 assistant eval cases, run on three models (56, 56 and 52 passed on 4 November)." |
+| 13 | Click **How scores work** → **Validation** | The method, the face-validity review of 58 places, the assistant evals | "We test it: 168 face-validity checks across 58 places, 61 assistant eval cases, run on three models (56, 56 and 52 passed on 4 November, of the 58 the suite had then)." |
 
 Optional extras (also recorded): *Tell me about Hebden Bridge*, *What are the best
 areas in York for retirees?*, *Which areas of Birmingham have the fewest immigrants?*
