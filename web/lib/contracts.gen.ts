@@ -101,6 +101,16 @@ export type PercentileWithin = "all" | "nation";
 export type Population = number;
 export type Preset = string;
 export type Region = string;
+export type Code = string;
+export type Kind = "msoa" | "lad";
+/**
+ * As the reference named it, or in the locale asked for
+ */
+export type Name = string;
+/**
+ * Its own overall score under the same weighting: the population-weighted mean of its small areas, the figure compare_areas and rank_areas give for it
+ */
+export type Overall1 = number | null;
 export type Strengths = IndicatorValue[];
 /**
  * Median score across the build
@@ -143,10 +153,10 @@ export type UrbanRural = string;
  */
 export type UrbanRuralLabel = string | null;
 export type Weaknesses = IndicatorValue[];
-export type Code = string;
+export type Code1 = string;
 export type Level = "lsoa" | "msoa" | "lad" | "region" | "nation";
-export type Name = string;
-export type Overall1 = number | null;
+export type Name1 = string;
+export type Overall2 = number | null;
 export type OverallPercentile1 = number | null;
 /**
  * What overall_percentile compares against (see AreaProfile)
@@ -169,8 +179,8 @@ export type WeightShare = number;
 export type Caveats = string[];
 export type Contributions = Contribution[];
 export type Lsoa21Cd1 = string;
-export type Name1 = string;
-export type Overall2 = number | null;
+export type Name2 = string;
+export type Overall3 = number | null;
 export type OverallPercentile2 = number | null;
 /**
  * What overall_percentile compares against (see AreaProfile)
@@ -191,7 +201,7 @@ export type End = string | null;
 /**
  * How to print the dates; 'text' means show the label
  */
-export type Kind = "year" | "month" | "day" | "range" | "text";
+export type Kind1 = "year" | "month" | "day" | "range" | "text";
 /**
  * English wording, e.g. 'September 2023 to August 2026'
  */
@@ -255,7 +265,7 @@ export type Layer = string;
 export type Category = string;
 export type DistanceM = number;
 export type Licence1 = string;
-export type Name2 = string | null;
+export type Name3 = string | null;
 export type Source = string;
 /**
  * Markers to show
@@ -271,28 +281,28 @@ export type Preset3 = string;
  * What the user typed; kept on the page, never stored
  */
 export type Description1 = string;
-export type Name3 = string;
-export type Rationale = string;
-export type Code1 = string;
 export type Name4 = string;
+export type Rationale = string;
+export type Code2 = string;
+export type Name5 = string;
 export type Note = string | null;
 export type Shortlist = ShortlistItem[];
 /**
  * west, south, east, north
  */
 export type Bbox2 = [unknown, unknown, unknown, unknown] | null;
-export type Code2 = string | null;
+export type Code3 = string | null;
 /**
  * Disambiguation, e.g. the local authority
  */
 export type Detail1 = string | null;
-export type Kind1 =
+export type Kind2 =
   "postcode" | "postcode_district" | "postcode_sector" | "place" | "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type Lsoa21Cd2 = string | null;
 /**
  * The form that matched (Welsh or Gaelic when the query was)
  */
-export type Name5 = string;
+export type Name6 = string;
 /**
  * The English name when `name` is another language's
  */
@@ -323,19 +333,19 @@ export type Preset4 = string;
  * Set when the scope is a radius around `place` rather than an area
  */
 export type RadiusKm = number | null;
-export type Code3 = string;
+export type Code4 = string;
 export type Level2 = "lsoa" | "msoa" | "lad" | "region" | "nation";
 export type LocalAuthority1 = string;
 export type MedianPrice = number | null;
 /**
  * In the locale asked for
  */
-export type Name6 = string;
+export type Name7 = string;
 /**
  * The English name when `name` is another language's
  */
 export type NameEn1 = string | null;
-export type Overall3 = number | null;
+export type Overall4 = number | null;
 export type OverallPercentile3 = number | null;
 /**
  * What overall_percentile compares against (see AreaProfile)
@@ -381,7 +391,7 @@ export type Engine = "model" | "rules";
  */
 export type EngineReason = ("free_model" | "no_key" | "budget" | "model_error") | null;
 export type Locale1 = "en" | "cy" | "gd" | "ga";
-export type Name7 = string;
+export type Name8 = string;
 /**
  * Base preset id
  */
@@ -422,6 +432,10 @@ export interface AreaProfile {
   population: Population;
   preset: Preset;
   region: Region;
+  /**
+   * Set when the reference named something larger than this small area: the profile is of one small area inside it, and this is the larger area's own score
+   */
+  resolved_from?: ResolvedFrom | null;
   strengths: Strengths;
   themes: Themes;
   urban_rural: UrbanRural;
@@ -454,6 +468,20 @@ export interface IndicatorValue {
   value?: Value;
 }
 /**
+ * The larger area a reference named (a neighbourhood, a council, or the neighbourhood
+ * a named town or suburb sits in) when a profile or explanation shows one small area of
+ * it.
+ *
+ * This interface was referenced by `Schemas`'s JSON-Schema
+ * via the `definition` "ResolvedFrom".
+ */
+export interface ResolvedFrom {
+  code: Code;
+  kind: Kind;
+  name: Name;
+  overall?: Overall1;
+}
+/**
  * This interface was referenced by `Schemas`'s JSON-Schema
  * via the `definition` "ThemeScore".
  */
@@ -474,11 +502,11 @@ export interface ThemeScore {
  * via the `definition` "ComparedArea".
  */
 export interface ComparedArea {
-  code: Code;
+  code: Code1;
   indicators: Indicators;
   level: Level;
-  name: Name;
-  overall: Overall1;
+  name: Name1;
+  overall: Overall2;
   overall_percentile: OverallPercentile1;
   percentile_within?: PercentileWithin1;
   themes: Themes1;
@@ -535,11 +563,15 @@ export interface Explanation {
   caveats: Caveats;
   contributions: Contributions;
   lsoa21cd: Lsoa21Cd1;
-  name: Name1;
-  overall: Overall2;
+  name: Name2;
+  overall: Overall3;
   overall_percentile: OverallPercentile2;
   percentile_within?: PercentileWithin2;
   preset: Preset2;
+  /**
+   * As on AreaProfile: the larger area the reference named, if any
+   */
+  resolved_from?: ResolvedFrom | null;
   sources: Sources;
 }
 /**
@@ -568,7 +600,7 @@ export interface SourceRef {
  */
 export interface SourcePeriod {
   end?: End;
-  kind?: Kind;
+  kind?: Kind1;
   label: Label3;
   start?: Start;
 }
@@ -637,7 +669,7 @@ export interface Poi {
   detail?: Detail;
   distance_m: DistanceM;
   licence: Licence1;
-  name: Name2;
+  name: Name3;
   point: Point;
   source: Source;
 }
@@ -652,7 +684,7 @@ export interface Detail {
  */
 export interface ProfileRef {
   description?: Description1;
-  name: Name3;
+  name: Name4;
   rationale?: Rationale;
 }
 /**
@@ -661,8 +693,8 @@ export interface ProfileRef {
  */
 export interface ShortlistItem {
   centre?: Point | null;
-  code: Code1;
-  name: Name4;
+  code: Code2;
+  name: Name5;
   note?: Note;
 }
 /**
@@ -680,11 +712,11 @@ export interface ThemeWeights {
 export interface Place {
   bbox?: Bbox2;
   centre?: Point | null;
-  code?: Code2;
+  code?: Code3;
   detail?: Detail1;
-  kind: Kind1;
+  kind: Kind2;
   lsoa21cd?: Lsoa21Cd2;
-  name: Name5;
+  name: Name6;
   name_en?: NameEn;
   place_type?: PlaceType;
 }
@@ -723,13 +755,13 @@ export interface RankResult {
  */
 export interface RankedArea {
   centre: Point;
-  code: Code3;
+  code: Code4;
   level: Level2;
   local_authority: LocalAuthority1;
   median_price?: MedianPrice;
-  name: Name6;
+  name: Name7;
   name_en?: NameEn1;
-  overall: Overall3;
+  overall: Overall4;
   overall_percentile: OverallPercentile3;
   percentile_within?: PercentileWithin3;
   population: Population1;
@@ -757,7 +789,7 @@ export interface WeightProfile {
   engine_reason?: EngineReason;
   indicator_weights?: IndicatorWeights1;
   locale?: Locale1;
-  name: Name7;
+  name: Name8;
   preset: Preset5;
   rationale: Rationale1;
   theme_weights?: ThemeWeights2;

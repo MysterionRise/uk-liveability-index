@@ -257,6 +257,8 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} cónaitheoir",
     "overallOf100": "/ 100 iomlán ({preset})",
+    "oneSmallArea": "Seo ceantar beag amháin. Faigheann {name} ina iomláine {overall}.",
+    "oneSmallAreaOnly": "Seo ceantar beag amháin; fiafraíodh faoi {name}.",
     "rangeTitle": "Raon 5–95% den pheircintíl nuair a bhogtar ualach gach téama thart ar an gceathrú cuid",
     "range": "Le hualaí beagán difriúil: níos fearr ná {lo, number}–{hi, number}% {of}",
     "betterThan": "Níos fearr ná {pct, number}% {of}",

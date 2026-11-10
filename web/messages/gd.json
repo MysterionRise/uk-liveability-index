@@ -257,6 +257,8 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} luchd-còmhnaidh",
     "overallOf100": "/ 100 iomlan ({preset})",
+    "oneSmallArea": "Seo aon sgìre bheag. Tha {name} gu h-iomlan a' faighinn {overall}.",
+    "oneSmallAreaOnly": "Seo aon sgìre bheag; chaidh faighneachd mu {name}.",
     "rangeTitle": "Raon 5–95% dhen cheudad nuair a thèid cuideam gach cuspair a ghluasad mu chairteal",
     "range": "Le cuideaman beagan eadar-dhealaichte: nas fheàrr na {lo, number}–{hi, number}% {of}",
     "betterThan": "Nas fheàrr na {pct, number}% {of}",

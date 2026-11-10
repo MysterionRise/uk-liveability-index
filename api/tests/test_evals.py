@@ -36,6 +36,63 @@ def test_grounding(reply, sources, unsupported):
     assert grounded_numbers(reply, sources) == unsupported
 
 
+def _judge(evaluator, *, returns, reply=""):
+    from types import SimpleNamespace
+
+    from evals.harness import Trace
+
+    return evaluator.evaluate(SimpleNamespace(output=Trace(reply=reply, returns=returns)))
+
+
+PROFILE = (
+    '{"lsoa21cd": "E01000001", "overall": 69.5, "resolved_from": '
+    '{"kind": "msoa", "code": "E02000001", "name": "Headingley", "overall": %s}}'
+)
+COMPARED = (
+    '{"areas": [{"level": "msoa", "code": "E02000001", "name": "Headingley", "overall": 68.28},'
+    ' {"level": "msoa", "code": "E02000002", "name": "Chapel Allerton", "overall": 70.53}]}'
+)
+
+
+def test_one_area_one_score():
+    from evals.evaluators import ConsistentScores, scored_areas
+
+    agree = [PROFILE % "68.28", COMPARED]
+    assert scored_areas(agree)[("msoa", "E02000001")] == [68.28, 68.28]
+    assert _judge(ConsistentScores(), returns=agree).value
+    # What #228 was: the profile's figure for the neighbourhood is not the comparison's
+    apart = _judge(ConsistentScores(), returns=[PROFILE % "69.5", COMPARED])
+    assert not apart.value and "E02000001" in apart.reason
+    # Rounding is not a disagreement (a ranking shows one decimal, a comparison two)
+    ranked = '{"results": [{"level": "msoa", "code": "E02000001", "overall": 68.3}]}'
+    assert _judge(ConsistentScores(), returns=[ranked, COMPARED]).value
+    # A case that scores no area twice has shown nothing, and text that is not JSON
+    # (an error message, "Final result processed.") is passed over
+    nothing = _judge(ConsistentScores(), returns=[COMPARED, "Unknown place 'Xyz'"])
+    assert not nothing.value and "two tool results" in nothing.reason
+
+
+def test_the_cheapest_of_a_ranking_is_the_one_named():
+    from evals.evaluators import CheapestNamed
+
+    ranking = (
+        '{"results": [{"name": "Clifton", "median_price": 410000.0},'
+        ' {"name": "Longwell Green", "median_price": 295000.0},'
+        ' {"name": "Henleaze", "median_price": null}]}'
+    )
+    right = "Longwell Green is the most affordable of those."
+    assert _judge(CheapestNamed(), returns=[ranking], reply=right).value
+    wrong = _judge(CheapestNamed(), returns=[ranking], reply="Clifton is the cheapest.")
+    assert not wrong.value and "Longwell Green" in wrong.reason
+    # The first ranking with prices is the list "those" refers to
+    later = (
+        '{"results": [{"name": "Clifton", "median_price": 1.0},'
+        ' {"name": "Elsewhere", "median_price": 2.0}]}'
+    )
+    assert _judge(CheapestNamed(), returns=[ranking, later], reply=right).value
+    assert not _judge(CheapestNamed(), returns=["Final result processed."], reply=right).value
+
+
 async def test_harness_runs_cases_on_the_scripted_model(store):
     from evals.harness import run_case
 

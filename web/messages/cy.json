@@ -257,6 +257,8 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} o drigolion",
     "overallOf100": "/ 100 cyffredinol ({preset})",
+    "oneSmallArea": "Dyma un ardal fach. Mae {name} yn ei gyfanrwydd yn sgorio {overall}.",
+    "oneSmallAreaOnly": "Dyma un ardal fach; holwyd am {name}.",
     "rangeTitle": "Yr ystod 5–95% o'r ganradd pan fydd pwysau pob thema'n cael ei symud tua chwarter",
     "range": "Gyda phwysau ychydig yn wahanol: yn well na {lo, number}–{hi, number}% {of}",
     "betterThan": "Yn well na {pct, number}% {of}",
