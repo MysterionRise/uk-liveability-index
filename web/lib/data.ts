@@ -138,6 +138,8 @@ export interface Manifest {
   lsoa_count?: number;
   /** A small cut of the full build (CI and quick starts): see `lix demo-data` */
   demo?: boolean;
+  /** The councils a demo cut keeps, in the order they were asked for */
+  demo_local_authorities?: string[];
   /** Checksums of the build's files, used to version their URLs */
   files?: Record<string, { sha256: string; bytes: number }>;
   /** Spearman correlations between scored indicators, ordered by theme */
@@ -320,6 +322,33 @@ export function coverageNations(
   if (!info?.coverage?.length || !active.length) return null;
   const covered = active.filter((n) => info.coverage.includes(n));
   return covered.length && covered.length < active.length ? covered : null;
+}
+
+/** The councils of the demo dataset (each nation's demo_upper in config/nations.yaml) by
+ * the city a visitor knows each as: a key of the catalogue's Demo.cities. */
+const DEMO_CITIES = {
+  E08000035: "leeds",
+  E06000043: "brighton",
+  W06000015: "cardiff",
+  S12000036: "edinburgh",
+  N09000003: "belfast",
+  I06000007: "dublin",
+} as const;
+
+export type DemoCity = (typeof DEMO_CITIES)[keyof typeof DEMO_CITIES];
+
+/**
+ * The cities of a demo dataset with the council each one is, in the manifest's order:
+ * what the search box names when a place is outside the demo and where the welcome card
+ * offers to go (#239). None on a full build, and none on a cut with a council that has no
+ * city here (`lix demo-data --lad …` takes any): naming the rest would leave it out.
+ */
+export function demoCities(manifest: Manifest | null | undefined): { council: string; city: DemoCity }[] {
+  if (!manifest?.demo) return [];
+  const councils = manifest.demo_local_authorities ?? [];
+  const known = councils.filter((c): c is keyof typeof DEMO_CITIES => Object.hasOwn(DEMO_CITIES, c));
+  if (known.length !== councils.length) return [];
+  return known.map((council) => ({ council, city: DEMO_CITIES[council] }));
 }
 
 /** West, south, east, north around every nation in this build. */

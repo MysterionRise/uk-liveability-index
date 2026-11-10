@@ -1,13 +1,15 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { useData, useLiveability } from "@/components/AppData";
 import { usePanel } from "@/components/PanelContext";
 import { ProfileBox } from "@/components/ProfileBox";
-import { useCoverageIn } from "@/lib/copy";
+import { searchPlaces } from "@/lib/api";
+import { useCoverageIn, useDemoCities } from "@/lib/copy";
 import { useLabels } from "@/lib/labels";
+import { bboxOf } from "@/lib/state";
 
 const KEY = "lix.welcomed";
 const listeners = new Set<() => void>();
@@ -46,7 +48,7 @@ function dismiss() {
 const PERSONAS = ["family", "young_professional", "retiree", "commuter", "balanced"] as const;
 
 /** First visit: pick who you are, or say it in a sentence (sets the weights), and how
- * to read the map. */
+ * to read the map. On the demo dataset, also where to look: its cities, a click away. */
 export function Onboarding() {
   const { manifest } = useData();
   const { update } = useLiveability();
@@ -55,6 +57,25 @@ export function Onboarding() {
   const coverageIn = useCoverageIn();
   const labels = useLabels();
   const welcomed = useWelcomed();
+  // The demo opens on two countries with six small clusters of colour (#239). A city's
+  // button takes the map to its council, whose box the API's search gives, as it does
+  // for a search result; the card stays, so who is looking can still be chosen
+  const cities = useDemoCities();
+  const [city, setCity] = useState<string | null>(null);
+  const wanted = useRef<string | null>(null);
+  const goTo = (council: string) => {
+    wanted.current = council;
+    setCity(council);
+    searchPlaces(council)
+      .then((places) => {
+        const bbox = bboxOf(places.find((p) => p.code === council)?.bbox);
+        // Two quick clicks: the answer to the first must not move the map last
+        if (wanted.current !== council) return;
+        if (bbox) update((s) => ({ ...s, map: { ...s.map, bbox } }));
+        else setCity(null);
+      })
+      .catch(() => wanted.current === council && setCity(null));
+  };
   // Escape closes the dialog, as a dialog should (#188); while it is open, Tab cycles
   // within it, and closing it hands the focus back to where it was (#216)
   useEffect(() => {
@@ -85,7 +106,8 @@ export function Onboarding() {
     };
     window.addEventListener("keydown", onKey);
     // A dialog takes the focus when it opens: the first persona, not the page behind
-    dialog()?.querySelector<HTMLElement>("button")?.focus();
+    // (and not a demo city, which is there or not by whether the manifest came first)
+    dialog()?.querySelector<HTMLElement>('[data-testid^="persona-"]')?.focus();
     return () => {
       window.removeEventListener("keydown", onKey);
       const back =
@@ -100,7 +122,7 @@ export function Onboarding() {
 
   return (
     <div
-      className="absolute left-3 top-3 z-20 w-[min(22rem,calc(100%-1.5rem))] rounded-lg border border-[var(--border)] bg-[var(--surface-1)] p-4 shadow-lg"
+      className="absolute left-3 top-3 z-[25] w-[min(22rem,calc(100%-1.5rem))] rounded-lg border border-[var(--border)] bg-[var(--surface-1)] p-4 shadow-lg"
       role="dialog"
       aria-modal="true"
       aria-labelledby="welcome-title"
@@ -110,6 +132,29 @@ export function Onboarding() {
         {t("title")}
       </h2>
       <p className="mt-1 text-xs text-[var(--text-secondary)]">{t("blurb", { coverageIn })}</p>
+      {cities.length > 0 && (
+        <div
+          className="mt-3 flex flex-wrap items-center gap-1.5"
+          role="group"
+          aria-labelledby="demo-cities-label"
+          data-testid="demo-cities"
+        >
+          <span id="demo-cities-label" className="text-xs font-medium text-[var(--text-secondary)]">
+            {t("demoCovers")}
+          </span>
+          {cities.map((c) => (
+            <button
+              key={c.council}
+              className="btn text-xs"
+              data-testid={`demo-city-${c.city}`}
+              aria-pressed={city === c.council}
+              onClick={() => goTo(c.council)}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      )}
       <p className="mt-3 text-xs font-medium text-[var(--text-secondary)]">{t("whoIsLooking")}</p>
       <div className="mt-1.5 flex flex-wrap gap-1.5">
         {presets.map((id) => (

@@ -62,6 +62,14 @@ measures and no data rebuild.
   out), and each model in the chain keeps its own provider settings on that call (#234).
 - Starting without a model key, the documented way to try the demo, no longer logs an
   error (#239).
+- The demo dataset spoke for the UK and Ireland. A search for a place it lacks (the
+  README's own Hebden Bridge) now says "Not in the demo: it covers Leeds, Brighton,
+  Cardiff, Edinburgh, Belfast and Dublin", where it said "No matches in the UK and
+  Ireland"; the legend reads "Against the demo's areas", which is what its percentiles are
+  among; and the welcome card, which said to zoom in over two countries with six small
+  patches of colour, lists the six cities as buttons that take the map to each. The card
+  also sits above the chat input on a phone, where the extra row would have put "Skip"
+  under it (#239).
 
 ### Added
 

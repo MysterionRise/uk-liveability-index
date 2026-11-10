@@ -1,6 +1,16 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { type Manifest, SCHEMA_VERSION, assertSchema, coverageName, coverageNations, coverageShape } from "./data";
+import {
+  type Manifest,
+  SCHEMA_VERSION,
+  assertSchema,
+  coverageName,
+  coverageNations,
+  coverageShape,
+  demoCities,
+} from "./data";
 
 describe("data pack schema check", () => {
   it("accepts the version this app reads", () => {
@@ -83,5 +93,44 @@ describe("coverageName groups the build's nations by country", () => {
     expect(coverageShape(build(["I"]))).toBe("I");
     expect(coverageShape(build(["E", "W"]))).toBe("E_W");
     expect(coverageShape(build(["E", "S"]))).toBeNull();
+  });
+});
+
+describe("demoCities names the cities of a demo dataset", () => {
+  const cut = (councils: string[] | undefined, demo = true) =>
+    ({ demo, demo_local_authorities: councils }) as unknown as Manifest;
+
+  it("gives each council's city in the manifest's order", () => {
+    expect(demoCities(cut(["W06000015", "E08000035"]))).toEqual([
+      { council: "W06000015", city: "cardiff" },
+      { council: "E08000035", city: "leeds" },
+    ]);
+  });
+
+  it("names none on a full build, or when the manifest lists no councils", () => {
+    expect(demoCities(null)).toEqual([]);
+    expect(demoCities(cut(["E08000035"], false))).toEqual([]);
+    expect(demoCities(cut(undefined))).toEqual([]);
+  });
+
+  it("names none on a cut with a council it has no city for, rather than leave it out", () => {
+    // Manchester is not one of the demo's councils; nor is a name every object inherits
+    expect(demoCities(cut(["E08000035", "E08000003"]))).toEqual([]);
+    expect(demoCities(cut(["E08000035", "constructor"]))).toEqual([]);
+  });
+
+  it("knows every council of the demo dataset in the repository", () => {
+    // A new demo_upper in config/nations.yaml needs its city here and in the catalogues
+    const manifest = JSON.parse(
+      readFileSync(path.resolve(import.meta.dirname, "../../fixtures/demo/serve/manifest.json"), "utf8"),
+    ) as Manifest;
+    expect(demoCities(manifest).map((c) => c.city)).toEqual([
+      "leeds",
+      "brighton",
+      "cardiff",
+      "edinburgh",
+      "belfast",
+      "dublin",
+    ]);
   });
 });

@@ -218,13 +218,22 @@ export function LiveabilityMap() {
         (!layerNations || layerNations.includes(code)),
     )
     .map(([code]) => code);
+  // The demo ranks its areas among themselves, not among every area of the countries
+  // it is cut from, and its legend says so (#239)
+  const everyArea = manifest?.demo
+    ? layerNations
+      ? tLegend("againstDemoIn", { coverageIn })
+      : tLegend("againstDemo")
+    : tLegend("against.uk", { coverageIn });
   const against =
-    state.compare_within === "uk" && ownNations.length
-      ? `${tLegend("against.uk", { coverageIn })} · ${tLegend("ownNation", {
-          nations: ownNations.map((c) => tn(c as "E" | "W" | "S" | "N" | "I")).join(", "),
-          in: ownNations.map((c) => tn(`in_${c}` as "in_E" | "in_W" | "in_S" | "in_N" | "in_I")).join(", "),
-        })}`
-      : tLegend(`against.${state.compare_within}`, { coverageIn });
+    state.compare_within !== "uk"
+      ? tLegend(`against.${state.compare_within}`, { coverageIn })
+      : ownNations.length
+        ? `${everyArea} · ${tLegend("ownNation", {
+            nations: ownNations.map((c) => tn(c as "E" | "W" | "S" | "N" | "I")).join(", "),
+            in: ownNations.map((c) => tn(`in_${c}` as "in_E" | "in_W" | "in_S" | "in_N" | "in_I")).join(", "),
+          })}`
+        : everyArea;
   const whereIn = layerNations ? coverageIn : null;
   const whereRef = useRef<string | null>(whereIn);
   useEffect(() => {
