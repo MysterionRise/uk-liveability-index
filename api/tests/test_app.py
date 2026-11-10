@@ -1,5 +1,6 @@
 """HTTP, AG-UI and MCP tests against the synthetic store."""
 
+import asyncio
 import json
 
 import pytest
@@ -165,6 +166,85 @@ async def test_mcp_tools_are_read_only_and_bounded(store):
                 await c.call_tool(name, args)
         ranked = await c.call_tool("rank_areas", {"within": "Leeds", "limit": 3})
         assert 1 <= len(ranked.structured_content["results"]) <= 3
+
+
+def _mcp_reply(response) -> dict:
+    """The JSON-RPC message of a streamable-HTTP reply (one server-sent event)."""
+    return json.loads(next(ln for ln in response.text.splitlines() if ln.startswith("data:"))[5:])
+
+
+def test_mcp_answers_a_call_whatever_session_it_names(client):
+    """#255, the upgrade itself: a client that connected to v0.7.1 goes on sending the
+    session id that server gave it, and was answered 404 "Session not found" by the next
+    process. The stateless mount answers the call, with that id or with none, and hands
+    out no id of its own; /mcp still redirects to /mcp/."""
+    call = {
+        "jsonrpc": "2.0", "id": 7, "method": "tools/call",
+        "params": {"name": "search_place", "arguments": {"query": "LS6 3HN"}},
+    }  # fmt: skip
+    plain = {"accept": "application/json, text/event-stream"}
+    stale = {**plain, "mcp-session-id": "0c402df12d76406ab6ab71883020a7c3"}
+    for headers in (stale, plain):
+        r = client.post("/mcp/", json=call, headers=headers)
+        assert r.status_code == 200 and "mcp-session-id" not in r.headers
+        found = _mcp_reply(r)["result"]["structuredContent"]["result"]
+        assert found[0]["kind"] == "postcode"
+    r = client.post("/mcp", json=call, headers=plain, follow_redirects=False)
+    assert (r.status_code, r.headers["location"]) == (307, "http://testserver/mcp/")
+
+
+@pytest.mark.parametrize("handshake", ["legacy", "auto"])
+async def test_mcp_client_keeps_working_when_the_api_restarts(store, handshake):
+    """#255: sessions lived in the process, so a client connected before a restart (an
+    upgrade, or a crash under ``restart: on-failure``) had to be added again. The same
+    client calls a tool on the restarted app: with the session handshake that met the 404
+    ("legacy") and with the sessionless one fastmcp's own client prefers ("auto")."""
+    import httpx2
+    from fastmcp import Client
+    from fastmcp.client.transports import StreamableHttpTransport
+
+    from lix_api.main import app
+
+    async def start():
+        """The app's startup and shutdown in a task of their own, so that it can stop
+        while the client stays open (a lifespan entered by the test itself could only be
+        left after the client's); returns what stops it."""
+        up, down = asyncio.Event(), asyncio.Event()
+
+        async def serve():
+            try:
+                async with app.router.lifespan_context(app):
+                    up.set()
+                    await down.wait()
+            finally:
+                up.set()  # a startup that fails ends the wait below too
+
+        task = asyncio.create_task(serve())
+        await up.wait()
+        if task.done():
+            await task  # the startup failed: raise what it raised
+
+        async def stop():
+            down.set()
+            await task
+
+        return stop
+
+    def in_process(**kwargs):
+        return httpx2.AsyncClient(transport=httpx2.ASGITransport(app=app), **kwargs)
+
+    transport = StreamableHttpTransport("http://api/mcp/", httpx_client_factory=in_process)
+    stop = await start()
+    try:
+        async with Client(transport, mode=handshake) as c:
+            before = await c.call_tool("search_place", {"query": "LS6 3HN"})
+            await stop()  # everything the process remembered of the client goes with it
+            stop = await start()
+            after = await c.call_tool("search_place", {"query": "LS6 3HN"})
+            assert after.structured_content == before.structured_content
+            assert after.structured_content["result"][0]["kind"] == "postcode"
+    finally:
+        await stop()
 
 
 def test_agent_turns_are_logged(client, tmp_path, monkeypatch):

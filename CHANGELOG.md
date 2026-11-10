@@ -20,6 +20,13 @@ measures and no data rebuild.
   and the page no longer treats its own pushes coming back as snapshots from the
   assistant. A browser case forces that order (it failed five runs of five before the
   change); v0.7.1's fix for this (#248) was not one (#252).
+- MCP: a client that was connected when the API restarted (an upgrade, or a crash under
+  `restart: on-failure`) was answered 404 "Session not found" on its next call and had to
+  be added again, because its session lived in the process that ended. The server at
+  `/mcp/` keeps no sessions now (its seven tools are read-only and remember nothing
+  between calls): the same client goes on calling them, whether it sends the session id an
+  earlier version gave it or none. The URL, and the redirect from `/mcp`, are unchanged
+  (#255).
 
 ### Added
 

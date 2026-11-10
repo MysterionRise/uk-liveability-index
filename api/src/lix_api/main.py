@@ -56,7 +56,10 @@ from lix_api.store import get_store
 from lix_core.paths import data_dir
 
 VERSION = version("lix-api")
-mcp_app = mcp.http_app(path="/")
+# Stateless: the tools are read-only and remember nothing between calls, and a session
+# kept in this process dies with it, so after a restart or an upgrade a connected client
+# was answered 404 "Session not found" until it was added again (#255)
+mcp_app = mcp.http_app(path="/", stateless_http=True)
 
 
 @asynccontextmanager
