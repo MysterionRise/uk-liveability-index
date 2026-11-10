@@ -126,6 +126,15 @@ def list_indicators(
     nations it covers; ``theme`` (safety, transport, ...) limits the list to one theme.
 
     ``detail`` adds descriptions, sources and caveats (a long caveat is cut short and
-    ends "…"): a long reply for the whole catalogue, so ask it of one theme.
+    ends "…") and needs a ``theme``: the whole catalogue in detail is about 70,000
+    characters, more than a question is worth.
     """
-    return catalogue.list_indicators(get_store(), theme, detail=detail, max_caveat=MAX_CAVEAT_CHARS)
+    store = get_store()
+    if detail and theme is None:
+        # Cutting the caveats saved 2,000 characters of 70,000; a theme at a time is 4,000
+        # to 20,000 (#230). REST's /indicators still gives everything at once
+        raise ValueError(
+            "detail needs a theme: list_indicators(theme=..., detail=true) with one of "
+            + ", ".join(store.themes)
+        )
+    return catalogue.list_indicators(store, theme, detail=detail, max_caveat=MAX_CAVEAT_CHARS)

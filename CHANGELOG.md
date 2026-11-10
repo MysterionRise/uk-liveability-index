@@ -41,8 +41,9 @@ measures and no data rebuild.
 - MCP `list_indicators` returned untyped text. It publishes an output schema like the
   other six tools (structured content beside the text, whose fields are unchanged), and
   with `detail` a caveat longer than 300 characters is cut at a word and ends "…". The
-  whole catalogue with `detail` is still about 68 KB (it was 70 KB) and one theme's is 4
-  to 20 KB, so the tool's description says to ask for detail a theme at a time (#230).
+  cut saves little (the whole catalogue with `detail` went from 70 KB to 68 KB), so
+  `detail` now needs a `theme` (4 to 20 KB each) and says which to ask for; REST's
+  `/indicators` still gives everything at once (#230).
 
 ### Added
 

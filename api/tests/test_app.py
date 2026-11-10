@@ -174,6 +174,7 @@ async def test_mcp_catalogue_is_typed_and_its_caveats_are_cut(store):
     fields, a theme pages the detail, and a long caveat is cut at a word (the service
     behind REST's /indicators still gives it whole)."""
     from fastmcp import Client
+    from fastmcp.exceptions import ToolError
 
     from lix_api.mcp_server import MAX_CAVEAT_CHARS, mcp
     from lix_api.services import catalogue
@@ -193,7 +194,12 @@ async def test_mcp_catalogue_is_typed_and_its_caveats_are_cut(store):
         assert all(set(n) == {"id", "theme", "label", "unit", "role", "coverage"} for n in names)
         safety = await cards(theme="safety", detail=True)
         assert {i["theme"] for i in safety} == {"safety"} and safety[0]["sources"]
-        for card in await cards(detail=True):
+        # The whole catalogue in detail is refused with the themes to ask for instead
+        with pytest.raises(ToolError, match="detail needs a theme.*safety"):
+            await cards(detail=True)
+        every_theme = [card for t in store.themes for card in await cards(theme=t, detail=True)]
+        assert {c["id"] for c in every_theme} == set(whole)
+        for card in every_theme:
             if card["id"] in long:
                 assert len(card["caveats"]) <= MAX_CAVEAT_CHARS
                 assert card["caveats"].endswith("…")
