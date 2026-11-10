@@ -25,6 +25,10 @@ The pipeline downloads, stages and joins the open datasets below:
   plus a QA report. The method, including how Greater Manchester's missing crime data and
   Ofsted's framework changes are handled, is in [docs/methodology.md](methodology.md)
 - CI runs ruff and pytest on every push and PR to `master` (tests never touch the network);
+  `lix docs --check` fails it when the generated source list is stale, or when a count
+  these pages state (neighbourhoods, indicators, datasets, eval cases and each model's
+  results, the review's places and checks) no longer matches the config and the committed
+  eval reports (`pipeline/src/lix_pipeline/claims.py` lists what is read);
   a nightly job checks every source is still reachable and whether a newer edition is
   out (the edition is the server's `Last-Modified`, else its `ETag`, else the file name
   it states; a 403 is reported as "not verified" rather than failed: some publishers
@@ -78,9 +82,9 @@ make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5    # all cases, about $0.05
 ```
 
-Claude Haiku 5.5 passes the suite; Claude Opus 5.5 and Qwen 3.8 27B (open weights) passed
-its October 2026 form; results, costs and what the evals caught
-are in [docs/evals.md](evals.md).
+Three models are evaluated on it (Claude Haiku 5.5, the default; Claude Opus 5.5; Qwen 3.8
+27B, open weights): results, costs, every miss and what the evals caught are in
+[docs/evals.md](evals.md).
 
 ## Stakeholder demo
 

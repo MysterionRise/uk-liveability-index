@@ -90,6 +90,11 @@ measures and no data rebuild.
   are looking. On Claude Haiku 5.5 the new eval case failed 3 runs of 3 without the
   instruction and passed 3 of 3 with it; cases that name a place still rank at once
   (#236).
+- Two stale statements about the evals, found by the claims check and while writing it:
+  the demo script gave Opus 5.5 an answer in about 7 seconds where its report of
+  4 November has a median of 5.58 (the README's 6), and docs/development.md still said
+  Opus and Qwen had passed the suite's October form, though all three models were rerun
+  on the 58 cases on 4 November (#253).
 
 ### Added
 
@@ -125,6 +130,18 @@ measures and no data rebuild.
   typical price (#236's wrong comparative: Haiku passed it 3 runs of 3 before any change
   to the instructions, so none was made). And the no-place profile case above. The three
   have run on Haiku only; the published results are of the 58 cases before them.
+- A claims check in `lix docs --check`, which CI already runs: the counts that README.md,
+  the hand-written docs, `CITATION.cff` and `.env.example` state are compared with what
+  the repository computes, and a stale one fails the pull request with its file, its line
+  and the right number. It reads the neighbourhoods and each nation's areas, indicators by
+  role, datasets registered and in use, themes, presets and languages (from `config/`),
+  the eval cases and each category's count (`api/evals/cases.yaml`), every model's row of
+  the results tables with its run date, answer time and cost (`docs/evals/*.json`), and
+  the face-validity review's places, checks and anchors. An unhedged number must be exact
+  and "about 224" passes within 2%; only phrases that name what they count are read, so
+  other figures in the prose are left alone; this changelog is never read, because past
+  releases state the numbers of their day. `lix docs` prints the same lines as warnings
+  (#253).
 
 ### Changed
 

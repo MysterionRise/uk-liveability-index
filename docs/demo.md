@@ -14,7 +14,7 @@ make down           # stop
 
 - Data: `data/serve` from `make build-data`, or a data pack (`make data-unpack PACK=...`).
 - Model: `OPENROUTER_API_KEY` in `.env`. Claude Haiku 5.5 answers in about 4 seconds,
-  and Opus 5.5 in about 7 ([evals](evals.md)).
+  and Opus 5.5 in about 6 ([evals](evals.md)).
 - Use a fresh browser profile (or clear site data) so the welcome card shows.
 - Re-record the offline conversations after changing data or prompts: `make demo-record`.
 
