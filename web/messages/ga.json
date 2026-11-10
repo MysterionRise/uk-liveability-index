@@ -33,6 +33,16 @@
     "of_uk_I": "den RA agus d'Éirinn",
     "of_E_W": "de Shasana agus den Bhreatain Bheag"
   },
+  "Demo": {
+    "cities": {
+      "leeds": "Leeds",
+      "brighton": "Brighton",
+      "cardiff": "Cardiff",
+      "edinburgh": "Edinburgh",
+      "belfast": "Béal Feirste",
+      "dublin": "Baile Átha Cliath"
+    }
+  },
   "Header": {
     "title": "Innéacs Inchónaitheachta na RA",
     "blurb": "{count, number} comharsanacht {coverageIn}, scóráilte ó shonraí oscailte",
@@ -83,6 +93,7 @@
   "Onboarding": {
     "title": "Aimsigh comharsanacht a oireann duit",
     "blurb": "Gach comharsanacht {coverageIn}, scóráilte ó shonraí oscailte. Tá ceantair ghormghlasa níos fearr ná an gnáth, ceantair oráiste níos measa. Zúmáil isteach agus cliceáil ar cheantar le fáil amach cén fáth, nó fiafraigh den chúntóir.",
+    "demoCovers": "Sonraí taispeána:",
     "whoIsLooking": "Cé atá ag breathnú?",
     "skip": "Léim thairis",
     "personas": {
@@ -97,6 +108,7 @@
   "Search": {
     "placeholder": "Postchód nó áit",
     "noMatches": "Gan aon mheaitseáil {coverageIn}",
+    "notInDemo": "Níl sé seo sna sonraí taispeána: clúdaíonn siad {cities}",
     "searching": "Ag cuardach…",
     "unavailable": "Níl an cuardach ar fáil",
     "kinds": {
@@ -184,6 +196,8 @@
       "nation": "I gcoinne ceantar sa náisiún céanna",
       "urban_rural": "I gcoinne ceantar den chineál uirbeach/tuaithe céanna"
     },
+    "againstDemo": "I gcoinne na gceantar sna sonraí taispeána",
+    "againstDemoIn": "I gcoinne na gceantar sna sonraí taispeána {coverageIn}",
     "worse": "níos measa",
     "typical": "tipiciúil",
     "better": "níos fearr",

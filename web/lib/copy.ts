@@ -4,7 +4,7 @@
 import { useLocale, useTranslations } from "next-intl";
 
 import { useData } from "@/components/AppData";
-import { coverageName, coverageShape } from "@/lib/data";
+import { type DemoCity, coverageName, coverageShape, demoCities } from "@/lib/data";
 
 type NationKey = "uk" | "IE" | "E" | "W" | "S" | "N" | "I";
 type InKey = "in_uk" | "in_uk_I" | "in_I" | "in_E" | "in_W" | "in_S" | "in_N" | "in_E_W";
@@ -47,6 +47,23 @@ export function useCoverageIn(codes?: string[]): string {
   const shape = coverageShape(manifest, codes);
   if (shape) return t(`in_${shape}` as InKey);
   return `${t("in")} ${list}`;
+}
+
+/** The demo dataset's cities by the name each has in the interface language ("Caerdydd"
+ * in Welsh), with the council each one is; none unless the build is the demo. */
+export function useDemoCities(): { council: string; city: DemoCity; name: string }[] {
+  const { manifest } = useData();
+  const t = useTranslations("Demo");
+  return demoCities(manifest).map((c) => ({ ...c, name: t(`cities.${c.city}`) }));
+}
+
+/** "Leeds, Brighton, Cardiff, Edinburgh, Belfast and Dublin": the demo's cities as a
+ * list in the interface language, or null when there are none to name. */
+export function useDemoCityList(): string | null {
+  const names = useDemoCities().map((c) => c.name);
+  const join = useListJoiner();
+  if (names.length === 0) return null;
+  return names.length === 1 ? names[0] : join(names);
 }
 
 /** "of the UK" / "of Ireland" / "of the UK and Ireland": what a percentile compares

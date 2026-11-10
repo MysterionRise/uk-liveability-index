@@ -30,6 +30,12 @@ body {
 .btn:disabled {
   color: var(--text-muted);
 }
+/* A choice that stays on show: the demo city the welcome card sent the map to (on a
+   phone the map is under the card, so the button is the only sign of it) */
+.btn[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--hover);
+}
 
 .input {
   border: 1px solid var(--border);

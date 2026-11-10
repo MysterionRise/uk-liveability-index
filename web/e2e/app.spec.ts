@@ -23,6 +23,10 @@ async function mapReady(page: Page) {
   );
 }
 
+/** Whether the data is the demo dataset (CI's, and `make up-demo`'s) rather than a full
+ * build: the header says so once the manifest is in, which mapReady waits for. */
+const onDemo = (page: Page) => page.getByTestId("demo-badge").isVisible();
+
 const featureValue = (page: Page, code: string) =>
   page.evaluate(
     (c) =>
@@ -402,12 +406,15 @@ test("the assistant builds a profile from how you describe yourself", async ({ p
 
 test("an indicator only one nation has is compared among that nation's areas", async ({ page }) => {
   await mapReady(page);
+  // The demo dataset ranks its areas among themselves, and its legend says so (#239)
+  const base = (await onDemo(page)) ? en.Legend.againstDemo : "Against every area";
   await page.getByTestId("tab-weights").click();
   // Domestic rates exist only in Northern Ireland: the legend says so (#136)
   await page.getByTestId("layer-select").selectOption("indicator:domestic_rates");
-  await expect(page.getByTestId("legend")).toContainText("Against every area in Northern Ireland");
+  await expect(page.getByTestId("legend")).toContainText(`${base} in Northern Ireland`);
   await page.getByTestId("layer-select").selectOption("overall");
-  await expect(page.getByTestId("legend")).toContainText("Against every area in the UK");
+  await expect(page.getByTestId("legend")).not.toContainText("in Northern Ireland");
+  await expect(page.getByTestId("legend")).toContainText(base);
 });
 
 test("a context measure colours the map and says so in the legend", async ({ page }) => {
@@ -664,5 +671,101 @@ test.describe("on a phone, the legend", () => {
     await page.getByTestId("legend-toggle").click();
     await expect(page.getByTestId("legend-body")).toBeVisible();
     await expect(page.getByTestId("legend-toggle")).toHaveAttribute("aria-expanded", "true");
+  });
+});
+
+// ---------------------------------------------------------------- v0.7.2
+
+// A newcomer's first run is `make up-demo`: six cities, which the page now says where it
+// used to speak for the UK and Ireland (#239). CI runs on that dataset; a run on a full
+// build skips these.
+test.describe("on the demo dataset", () => {
+  const CITIES = ["Leeds", "Brighton", "Cardiff", "Edinburgh", "Belfast", "Dublin"];
+
+  test.beforeEach(async ({ page }) => {
+    await mapReady(page);
+    test.skip(!(await onDemo(page)), "the data is a full build");
+  });
+
+  /** Whether the map has come to rest zoomed in around a point. */
+  const mapShows = (page: Page, lon: number, lat: number) =>
+    page.evaluate(
+      ([x, y]) => {
+        const m = (window as any).__map;
+        return !m.isMoving() && m.getZoom() > 9 && m.getBounds().contains([x, y]);
+      },
+      [lon, lat],
+    );
+
+  test("a place outside the demo is said to be outside it, with the cities it has", async ({ page }) => {
+    // The README's own example
+    await page.getByTestId("search").locator("input").fill("Hebden Bridge");
+    const results = page.getByRole("listbox");
+    await expect(results).toHaveText(`Not in the demo: it covers ${CITIES.slice(0, 5).join(", ")} and Dublin`, {
+      timeout: 15_000,
+    });
+    await expect(results.getByRole("option")).toHaveCount(0);
+  });
+
+  test("the legend compares against the demo's areas", async ({ page }) => {
+    const legend = page.getByTestId("legend");
+    await expect(legend).toContainText("Against the demo's areas");
+    await expect(legend).not.toContainText("Against every area");
+  });
+
+  test("the welcome card's cities take the map there, by mouse or keyboard", async ({ page }) => {
+    const card = page.getByTestId("onboarding");
+    await expect(card.getByTestId("demo-cities").getByRole("button")).toHaveText(CITIES);
+    // The opening view is both countries, with nothing to read at that zoom
+    expect(await page.evaluate(() => (window as any).__map.getZoom())).toBeLessThan(7);
+    await card.getByRole("button", { name: "Leeds" }).click();
+    await expect.poll(() => mapShows(page, -1.55, 53.8), { timeout: 15_000 }).toBe(true);
+    // The card stays, for who is looking; from the first persona the cities are one
+    // Shift+Tab back, and the focus shows
+    await page.getByTestId("persona-family").focus();
+    await page.keyboard.press("Shift+Tab");
+    const dublin = card.getByRole("button", { name: "Dublin" });
+    await expect(dublin).toBeFocused();
+    expect(await dublin.evaluate((el) => el.matches(":focus-visible") && getComputedStyle(el).outlineStyle)).toBe("solid");
+    await page.keyboard.press("Enter");
+    await expect.poll(() => mapShows(page, -6.26, 53.35), { timeout: 15_000 }).toBe(true);
+    await expect(dublin).toHaveAttribute("aria-pressed", "true");
+    await expect(card.getByRole("button", { name: "Leeds" })).toHaveAttribute("aria-pressed", "false");
+    await expect(card).toBeVisible();
+  });
+
+  test("the cities take their Welsh, Gaelic and Irish names where they have one", async ({ page }) => {
+    const toggle = page.getByTestId("locale-toggle");
+    const cities = page.getByTestId("demo-cities").getByRole("button");
+    const input = page.getByTestId("search").locator("input");
+    // The search box joins the same names with the language's own "and"
+    for (const [locale, names, ending] of [
+      ["cy", ["Leeds", "Brighton", "Caerdydd", "Edinburgh", "Belfast", "Dublin"], "Belfast a Dublin"],
+      ["gd", ["Leeds", "Brighton", "Cardiff", "Dùn Èideann", "Belfast", "Dublin"], "Belfast agus Dublin"],
+      ["ga", ["Leeds", "Brighton", "Cardiff", "Edinburgh", "Béal Feirste", "Baile Átha Cliath"], "Béal Feirste agus Baile Átha Cliath"],
+    ] as const) {
+      await toggle.selectOption(locale);
+      await expect(cities).toHaveText([...names]);
+      await input.fill(`Hebden Bridge ${locale}`);
+      await expect(page.getByRole("listbox")).toContainText(`${names.slice(0, 4).join(", ")}, ${ending}`, {
+        timeout: 15_000,
+      });
+    }
+    await toggle.selectOption("en");
+  });
+
+  test.describe("on a small phone", () => {
+    test.use({ viewport: { width: 375, height: 667 } });
+
+    test("the welcome card's last line stays above the chat input", async ({ page }) => {
+      // With the cities the card reaches down over the side panel, furthest in Irish; the
+      // chat input used to paint over it there. A click another element would get fails
+      await page.getByTestId("locale-toggle").selectOption("ga");
+      const card = page.getByTestId("onboarding");
+      await expect(card.getByTestId("demo-cities")).toContainText("Baile Átha Cliath");
+      await card.getByRole("button", { name: "Léim thairis" }).click({ timeout: 5_000 });
+      await expect(card).toBeHidden();
+      await page.getByTestId("locale-toggle").selectOption("en");
+    });
   });
 });

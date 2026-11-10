@@ -33,6 +33,16 @@
     "of_uk_I": "of the UK and Ireland",
     "of_E_W": "of England and Wales"
   },
+  "Demo": {
+    "cities": {
+      "leeds": "Leeds",
+      "brighton": "Brighton",
+      "cardiff": "Cardiff",
+      "edinburgh": "Edinburgh",
+      "belfast": "Belfast",
+      "dublin": "Dublin"
+    }
+  },
   "Header": {
     "title": "UK Liveability Index",
     "blurb": "{count, number} neighbourhoods {coverageIn}, scored from open data",
@@ -83,6 +93,7 @@
   "Onboarding": {
     "title": "Find a neighbourhood that suits you",
     "blurb": "Every neighbourhood {coverageIn}, scored from open data. Teal areas do better than typical, orange ones worse. Zoom in and click an area to see why, or ask the assistant.",
+    "demoCovers": "The demo covers:",
     "whoIsLooking": "Who's looking?",
     "skip": "Skip",
     "personas": {
@@ -97,6 +108,7 @@
   "Search": {
     "placeholder": "Postcode or place",
     "noMatches": "No matches {coverageIn}",
+    "notInDemo": "Not in the demo: it covers {cities}",
     "searching": "Searching…",
     "unavailable": "Search is unavailable",
     "kinds": {
@@ -184,6 +196,8 @@
       "nation": "Against areas in the same nation",
       "urban_rural": "Against areas of the same urban/rural type"
     },
+    "againstDemo": "Against the demo's areas",
+    "againstDemoIn": "Against the demo's areas {coverageIn}",
     "worse": "worse",
     "typical": "typical",
     "better": "better",
