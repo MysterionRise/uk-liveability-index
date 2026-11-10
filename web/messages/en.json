@@ -78,6 +78,8 @@
     "chatDisclaimer": "AI can make mistakes. Please verify important information.",
     "chatUnreachable": "The assistant can't be reached just now. The map, search and profiles still work; try your question again in a moment.",
     "send": "Send",
+    "stop": "Stop",
+    "chatRecorded": "Recorded answers: the assistant is replaying recordings of the suggested questions, not asking a model.",
     "suggestions": {
       "familyTitle": "Family-friendly near Leeds",
       "familyMessage": "We have two young kids and a budget of £350k. Where should we look around Leeds?",

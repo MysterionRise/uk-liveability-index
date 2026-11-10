@@ -784,3 +784,79 @@ test.describe("on the demo dataset", () => {
     });
   });
 });
+
+// The chat panel (#236, #231, #239)
+
+test("Enter on an empty box leaves a reply on its way alone, and the button says what it does", async ({ page }) => {
+  await mapReady(page);
+  // Hold the run, so that the second Enter lands while the reply is on its way. Held
+  // here it has not reached the runtime, so a stop cancels nothing and the reply always
+  // comes: what tells is whether a stop was asked for
+  await page.route("**/api/copilotkit/**", async (route) => {
+    const request = route.request();
+    if (request.method() === "POST" && request.url().endsWith("/run")) {
+      await new Promise((resolve) => setTimeout(resolve, 2_000));
+    }
+    await route.continue();
+  });
+  const stops: string[] = [];
+  page.on("request", (request) => {
+    if (request.method() === "POST" && new URL(request.url()).pathname.includes("/stop/")) {
+      stops.push(request.url());
+    }
+  });
+  const send = page.getByTestId("copilot-send-button");
+  await expect(send).toHaveAttribute("aria-label", en.SidePanel.send);
+  await ask(page, "What are the best areas in Leeds?");
+  // One button, two jobs: while the reply is on its way it stops it, and is named so
+  await expect(send).toHaveAttribute("aria-label", en.SidePanel.stop);
+  // The box is empty now. CopilotKit read Enter here as "stop": on a real model the
+  // question stayed, the answer never came, and nothing said why
+  await page.getByTestId("chat").locator("textarea").first().press("Enter");
+  await page.waitForTimeout(500);
+  expect(stops).toHaveLength(0);
+  // The button still stops
+  await send.click();
+  await expect.poll(() => stops.length).toBe(1);
+});
+
+test("recorded answers are marked as recordings", async ({ page }) => {
+  // The suite's API runs the scripted model, which is not a recording
+  await mapReady(page);
+  await expect(page.getByTestId("chat-recorded")).toHaveCount(0);
+  // Started without a model key, the API reports that only recordings answer
+  await page.route("**/health", async (route) => {
+    const response = await route.fetch();
+    const health = await response.json();
+    await route.fulfill({
+      response,
+      json: { ...health, assistant: { ...health.assistant, recorded_only: true } },
+    });
+  });
+  await page.reload();
+  await expect(page.getByTestId("chat-recorded")).toHaveText(en.SidePanel.chatRecorded);
+});
+
+test.describe("on a phone, a reply", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("opens at the question, not at the end of a tall card", async ({ page }) => {
+    await mapReady(page);
+    await page.getByTestId("onboarding").getByRole("button", { name: en.Onboarding.skip }).click();
+    await ask(page, "Tell me about Headingley");
+    const card = page.getByTestId("area-profile").first();
+    await expect(card).toBeVisible({ timeout: 30_000 });
+    // The question is pinned to the top of the panel and the reply starts under it.
+    // Following the bottom of the reply, as the default does, left its last lines on
+    // show and the question and the card's heading a scroll away
+    const chat = page.getByTestId("chat");
+    await expect(chat.getByText("Tell me about Headingley")).toBeInViewport();
+    await expect
+      .poll(async () => {
+        const [panel, reply] = [await chat.boundingBox(), await card.boundingBox()];
+        return reply!.y > panel!.y && reply!.y < panel!.y + panel!.height;
+      })
+      .toBe(true);
+    await expect(card.getByText(en.Profile.addToShortlist)).not.toBeInViewport();
+  });
+});

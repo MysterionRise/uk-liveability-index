@@ -78,6 +78,8 @@
     "chatDisclaimer": "Is féidir le IS botúin a dhéanamh. Deimhnigh eolas tábhachtach.",
     "chatUnreachable": "Níl teacht ar an gcúntóir faoi láthair. Oibríonn an léarscáil, an cuardach agus na próifílí fós; bain triail as do cheist arís i gceann tamaillín.",
     "send": "Seol",
+    "stop": "Stop",
+    "chatRecorded": "Freagraí taifeadta: tá an cúntóir ag athsheinm taifeadtaí de na ceisteanna molta, ní ag cur ceiste ar mhúnla.",
     "suggestions": {
       "familyTitle": "Oiriúnach do theaghlaigh i mBaile Átha Cliath",
       "familyMessage": "Tá beirt pháistí óga againn. Cá háit ar chóir dúinn breathnú timpeall Bhaile Átha Cliath?",
