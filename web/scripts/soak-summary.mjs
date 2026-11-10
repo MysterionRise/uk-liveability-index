@@ -37,7 +37,8 @@ if (!failing.length) {
 } else {
   console.log("| Case | Failed | Runs | First error |\n|---|---|---|---|");
   for (const [key, c] of failing) {
-    const error = [...c.errors][0].replace(/\|/g, "\\|");
+    // A table cell: backslashes first, then the column separator
+    const error = [...c.errors][0].replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
     console.log(`| \`${key}\` | ${c.failed} | ${c.runs} | ${error} |`);
   }
 }
