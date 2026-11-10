@@ -204,6 +204,11 @@ measures and no data rebuild.
   clip-recording page (`web/scripts/tiktok.html`, a local tool) loads frames only from a
   `file:` URL, and the SQL guard's statement check no longer begins with an unbounded `\s*`
   (bodies were already capped at 16 KB).
+- CodeQL's last open finding: the video script's page (`web/scripts/tiktok.html`, a local
+  tool that composes the vertical clip) took its frames folder from its own address, and
+  the `file:` prefix check added in #265 was not something the scanner accepts as
+  validation. The folder now arrives as an argument to `setup()` from
+  `scripts/tiktok.mjs`; the page reads nothing from its URL.
 
 ## [0.7.1] - 2026-11-04
 
