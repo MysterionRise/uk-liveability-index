@@ -70,9 +70,11 @@ measures and no data rebuild.
   Cardiff, Edinburgh, Belfast and Dublin", where it said "No matches in the UK and
   Ireland"; the legend reads "Against the demo's areas", which is what its percentiles are
   among; and the welcome card, which said to zoom in over two countries with six small
-  patches of colour, lists the six cities as buttons that take the map to each. The card
-  also sits above the chat input on a phone, where the extra row would have put "Skip"
-  under it (#239).
+  patches of colour, lists the six cities as buttons that take the map to each and opens
+  "A demo: 6 cities in the UK and Ireland". A profile and the map's tooltip say "better
+  than 31% of the demo's areas" (or "of the demo's areas in Ireland"), where they said
+  "of the UK and Ireland" of a percentile among six cities. The card also sits above the
+  chat input on a phone, where the extra row would have put "Skip" under it (#239).
 - One name, two scores. Asked about a town, a suburb, a neighbourhood's code or a
   council, the assistant's profile is of one small area, while a ranking and a comparison
   score a neighbourhood or a council whole: "Tell me about Headingley" showed 70 and

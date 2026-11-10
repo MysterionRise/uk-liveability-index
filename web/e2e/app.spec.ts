@@ -520,10 +520,16 @@ test("a shared link with an area opens its profile there, in Ireland's own terms
   const profile = page.getByTestId("area-profile");
   await expect(profile).toContainText("Rathmines East D", { timeout: 30_000 });
   await expect.poll(() => page.evaluate(() => (window as any).__map?.getZoom?.() ?? 0), { timeout: 30_000 }).toBeGreaterThan(8);
-  // An Irish area's headline compares within Ireland (#147); a Leeds one across the build
-  await expect(profile).toContainText("of Ireland");
+  // An Irish area's headline compares within Ireland (#147); a Leeds one across the
+  // build. The demo says what its percentiles are among: its own areas (#239)
+  const demo = await onDemo(page);
+  await expect(profile).toContainText(demo ? "of the demo's areas in Ireland" : "of Ireland");
   await page.goto(`/${encode({ p: "balanced", s: "E01011350" })}`);
-  await expect(page.getByTestId("area-profile")).toContainText("of the UK and Ireland", { timeout: 30_000 });
+  await expect(page.getByTestId("area-profile")).toContainText(
+    demo ? "of the demo's areas" : "of the UK and Ireland",
+    { timeout: 30_000 },
+  );
+  if (demo) await expect(page.getByTestId("area-profile")).not.toContainText("in Ireland");
 });
 
 test("the assistant connecting while a shared link's area is looked up keeps the flight", async ({ page }) => {
@@ -720,6 +726,17 @@ test.describe("on the demo dataset", () => {
       timeout: 15_000,
     });
     await expect(results.getByRole("option")).toHaveCount(0);
+  });
+
+  test("a profile and the welcome card speak for the demo, not for two countries", async ({ page }) => {
+    await expect(page.getByTestId("welcome-blurb")).toContainText("A demo: 6 cities");
+    await page.getByTestId("onboarding").getByRole("button", { name: en.Onboarding.skip }).click();
+    await openFromSearch(page, "LS6 3AA");
+    const card = page.getByTestId("area-profile").first();
+    await expect(card).toBeVisible({ timeout: 30_000 });
+    // "Better than N% of the UK and Ireland" was said of a percentile among six cities
+    await expect(card).toContainText(en.Demo.ofAreas);
+    await expect(card).not.toContainText("of the UK and Ireland");
   });
 
   test("the legend compares against the demo's areas", async ({ page }) => {

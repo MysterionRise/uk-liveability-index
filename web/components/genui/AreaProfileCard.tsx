@@ -93,7 +93,13 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
     (state.compare_within === "uk" && profile.percentile_within === "nation");
   const withinUrbanRural = state.compare_within === "urban_rural";
   const nationName = tn(profile.nation as "E" | "W" | "S" | "N" | "I");
-  const nationOf = tn(`of_${profile.nation}` as "of_E" | "of_W" | "of_S" | "of_N" | "of_I");
+  const td = useTranslations("Demo");
+  // "of Ireland"; on the demo "of the demo's areas in Ireland", which is what it is among
+  const nationOf = manifest?.demo
+    ? td("ofAreasIn", {
+        coverageIn: tn(`in_${profile.nation}` as "in_E" | "in_W" | "in_S" | "in_N" | "in_I"),
+      })
+    : tn(`of_${profile.nation}` as "of_E" | "of_W" | "of_S" | "of_N" | "of_I");
   // "of the UK and Ireland", "in the UK and Ireland": what the build's percentiles span
   const coverageOf = useCoverageOf();
   const coverageIn = useCoverageIn();

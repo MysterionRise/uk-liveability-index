@@ -71,8 +71,13 @@ export function useDemoCityList(): string | null {
 export function useCoverageOf(codes?: string[]): string {
   const { manifest } = useData();
   const t = useTranslations("Nations");
+  const td = useTranslations("Demo");
   const list = useCoverageName(codes);
+  const coverageIn = useCoverageIn(codes);
   const shape = coverageShape(manifest, codes);
+  // The demo ranks its areas among themselves: "better than 31% of the UK and Ireland"
+  // was said of a percentile among six cities (#239)
+  if (manifest?.demo) return codes?.length ? td("ofAreasIn", { coverageIn }) : td("ofAreas");
   if (shape) return t(`of_${shape}` as OfKey);
   return `${t("of")} ${list}`;
 }
