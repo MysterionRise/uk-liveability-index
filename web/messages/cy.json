@@ -78,6 +78,8 @@
     "chatDisclaimer": "Gall AI wneud camgymeriadau. Gwiriwch wybodaeth bwysig.",
     "chatUnreachable": "Does dim modd cyrraedd y cynorthwyydd ar hyn o bryd. Mae'r map, y chwilio a'r proffiliau'n dal i weithio; rhowch gynnig ar eich cwestiwn eto mewn munud.",
     "send": "Anfon",
+    "stop": "Stopio",
+    "chatRecorded": "Atebion wedi'u recordio: mae'r cynorthwyydd yn ailchwarae recordiadau o'r cwestiynau a awgrymir, nid yn holi model.",
     "suggestions": {
       "familyTitle": "Addas i deuluoedd ger Caerdydd",
       "familyMessage": "Mae gennym ddau o blant ifanc a chyllideb o £300k. Ble ddylen ni edrych o gwmpas Caerdydd?",
