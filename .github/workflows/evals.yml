@@ -1,0 +1,137 @@
+name: Assistant evals
+
+# The assistant's eval cases (api/evals/cases.yaml) against a real model on the full data
+# pack, several times over. The checks are assertions on what a model did, so a case can
+# pass one run and fail the next, and one run cannot tell a broken case from an unlucky
+# one. This runs the suite `repeats` times, writes how often each case passed to the run's
+# summary, and fails only when a case failed every time:
+#   gh workflow run evals.yml                          # Claude Haiku 5.5, three times
+#   gh workflow run evals.yml --ref my-branch -f model=openrouter:anthropic/claude-opus-5.5 -f repeats=2
+#   gh workflow run evals.yml -f model=test -f repeats=2
+# The last is the scripted model: no key and no cost, for trying the workflow itself (it
+# cannot pass the cases that need a real model, so that run ends red).
+#
+# It spends money, so it runs on demand only, never on a pull request or a push, and in
+# the `evals` environment, which holds the OpenRouter key (the secret OPENROUTER_API_KEY).
+# Give that environment a required reviewer and every run waits for a click; the reviewer
+# approves a ref as well as a spend, because the run executes that ref's code with the key
+# in reach. One pass over the suite cost about $0.05 on Claude Haiku 5.5 and about $1.60 on
+# Claude Opus 5.5 when measured on 4 November 2026 (docs/evals.md), so the default three
+# repeats of Haiku are about $0.15. Nothing here caps the spend beyond ten repeats: a
+# credit limit on the key at OpenRouter is the backstop.
+#
+# The reports go to an artifact, never to docs/evals: that folder holds the runs the docs
+# quote, and `lix docs --check` holds the docs to them.
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Model, as LIX_MODEL takes it (openrouter:..., or test for the scripted one)"
+        default: openrouter:anthropic/claude-haiku-5.5
+      repeats:
+        description: Times to run the suite (1 to 10)
+        default: "3"
+
+run-name: "Evals: ${{ inputs.model }}, ${{ inputs.repeats }} runs"
+
+permissions:
+  contents: read
+
+# One at a time: two runs would share the key's rate limit and its credit
+concurrency:
+  group: evals
+  cancel-in-progress: false
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    environment: evals
+    timeout-minutes: 60
+    env:
+      # Inputs reach the shell as variables, never as text pasted into a script
+      MODEL: ${{ inputs.model }}
+      REPEATS: ${{ inputs.repeats }}
+      RUNS: ${{ github.workspace }}/eval-runs
+    steps:
+      - name: Check the inputs, and that the environment holds a key
+        env:
+          HAS_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
+        run: |
+          ok=1
+          case "$MODEL" in *[!A-Za-z0-9._:/-]*) ok=0 ;; esac
+          case "$MODEL" in test | openrouter:?*) ;; *) ok=0 ;; esac
+          if [ "$ok" != 1 ]; then
+            echo "::error::model must be openrouter:<provider>/<model> (the key is an OpenRouter one), or test"
+            exit 1
+          fi
+          case "$REPEATS" in
+            [1-9] | 10) ;;
+            *)
+              echo "::error::repeats must be a whole number from 1 to 10"
+              exit 1
+              ;;
+          esac
+          # Without a key the assistant answers from its recordings, and the suite would
+          # run and report on those: refuse instead
+          if [ "$MODEL" != test ] && [ "$HAS_KEY" != true ]; then
+            echo "::error::The evals environment has no OPENROUTER_API_KEY secret"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v7
+        with:
+          # A later step holds a model key; none needs the repository's token
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - run: uv sync --locked
+
+      - name: Download the data pack (the cases run on the full build)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: make data-download
+
+      - name: Run the cases, repeated
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # No fallback: a model that fails must fail its cases, not be answered for
+          LIX_FALLBACK_MODELS: ""
+          # The evals package lives in api/ and is not installed (make eval runs it there)
+          PYTHONPATH: api
+        run: |
+          mkdir -p "$RUNS"
+          for i in $(seq 1 "$REPEATS"); do
+            out="$RUNS/run-$(printf '%02d' "$i")"
+            echo "::group::Run $i of $REPEATS"
+            # evals.run exits 1 when a case failed. That is a result, which the summary
+            # reads from the report; a run that leaves no report crashed, and stops here
+            uv run python -m evals.run --model "$MODEL" --out "$out" || true
+            echo "::endgroup::"
+            if ! ls "$out"/*.json > /dev/null 2>&1; then
+              echo "::error::Run $i wrote no report (see its log above)"
+              exit 1
+            fi
+          done
+
+      - name: Summarise (how often each case passed; fails on a case that failed every run)
+        run: |
+          code=0
+          python3 api/evals/repeats.py "$RUNS"/run-* > "$RUNS/summary.md" || code=$?
+          cat "$RUNS/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNS/summary.md"
+          exit "$code"
+
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: eval-runs
+          path: eval-runs/
+          retention-days: 30

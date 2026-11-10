@@ -90,6 +90,11 @@ measures and no data rebuild.
   are looking. On Claude Haiku 5.5 the new eval case failed 3 runs of 3 without the
   instruction and passed 3 of 3 with it; cases that name a place still rank at once
   (#236).
+- Two stale statements about the evals, found by the claims check and while writing it:
+  the demo script gave Opus 5.5 an answer in about 7 seconds where its report of
+  4 November has a median of 5.58 (the README's 6), and docs/development.md still said
+  Opus and Qwen had passed the suite's October form, though all three models were rerun
+  on the 58 cases on 4 November (#253).
 
 ### Added
 
@@ -125,6 +130,27 @@ measures and no data rebuild.
   typical price (#236's wrong comparative: Haiku passed it 3 runs of 3 before any change
   to the instructions, so none was made). And the no-place profile case above. The three
   have run on Haiku only; the published results are of the 58 cases before them.
+- A claims check in `lix docs --check`, which CI already runs: the counts that README.md,
+  the hand-written docs, `CITATION.cff` and `.env.example` state are compared with what
+  the repository computes, and a stale one fails the pull request with its file, its line
+  and the right number. It reads the neighbourhoods and each nation's areas, indicators by
+  role, datasets registered and in use, themes, presets and languages (from `config/`),
+  the eval cases and each category's count (`api/evals/cases.yaml`), every model's row of
+  the results tables with its run date, answer time and cost (`docs/evals/*.json`), and
+  the face-validity review's places, checks and anchors. An unhedged number must be exact
+  and "about 224" passes within 2%; only phrases that name what they count are read, so
+  other figures in the prose are left alone; this changelog is never read, because past
+  releases state the numbers of their day. `lix docs` prints the same lines as warnings
+  (#253).
+- The assistant evals on demand (`evals.yml`): the suite against a real model on the full
+  data pack, as many times as asked (three by default), with a summary of how often each
+  case passed, its first failed check, the mean pass rate, the cost and the median turn
+  time. A case that failed every run fails the job; one that passed some runs is listed as
+  flaky and does not, which one run could never tell apart. It never runs on a pull
+  request or a push: it is dispatched by hand, in an `evals` environment that holds the
+  OpenRouter key and waits for a reviewer, and the reports go to an artifact rather than
+  to `docs/evals/`. `api/evals/repeats.py` writes the same summary for any set of reports
+  (#253).
 
 ### Changed
 
