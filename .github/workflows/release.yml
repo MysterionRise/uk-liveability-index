@@ -6,6 +6,10 @@ name: Release
 # monthly data release (scripts/data-release.sh); the notes name the one this code reads,
 # and the job fails when no data release of this code's serve schema exists yet. Then
 # release-smoke.yml checks the draft end to end before it is published.
+# A tag with a pre-release suffix is a rehearsal: v0.7.2-rc.1 runs all of this, publishes
+# images tagged 0.7.2-rc.1 that testers can pull (`latest` stays where it is) and drafts a
+# GitHub pre-release titled "release candidate", with the notes of 0.7.2 so far. It is the
+# only way to run this workflow before the real tag: no pull request exercises it (#253).
 
 on:
   push:
@@ -98,14 +102,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # v0.1.0 → 0.1.0, plus latest
+      # v0.1.0 → 0.1.0, plus latest; a pre-release (v0.7.2-rc.1 → 0.7.2-rc.1) does not move
+      # latest. The rule is written out here (`latest=false` turns the action's own off)
+      # so that it does not rest on what `latest=auto` means in the action's next major
       - id: meta
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.IMAGE }}
+          flavor: |
+            latest=false
           tags: |
             type=semver,pattern={{version}}
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ !contains(github.ref_name, '-') }}
 
       - name: Tag the multi-platform image
         working-directory: digests
@@ -124,16 +132,34 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # A pre-release takes the notes of the version it rehearses (v0.7.2-rc.1 → 0.7.2),
+      # or what is under "Unreleased" while that version has no heading yet
       - name: Release notes from CHANGELOG.md
         run: |
-          version="${GITHUB_REF_NAME#v}"
-          # The section under "## [version]" up to the next "## ["
-          awk -v v="$version" '
-            $0 ~ "^## \\[" v "\\]" { on = 1; next }
-            on && /^## \[/ { exit }
-            on { print }
-          ' CHANGELOG.md > notes.md
-          test -s notes.md || { echo "No CHANGELOG.md section for $version"; exit 1; }
+          tag="${GITHUB_REF_NAME#v}"
+          version="${tag%%-*}"
+          # The section under "## [name]" up to the next "## ["
+          section() {
+            awk -v heading="## [$1]" '
+              index($0, heading) == 1 { on = 1; next }
+              on && /^## \[/ { exit }
+              on { print }
+            ' CHANGELOG.md
+          }
+          has_text() { grep -q '[^[:space:]]' "$1"; }
+          : > notes.md
+          section "$version" > section.md
+          where="## [$version]"
+          if [ "$tag" != "$version" ]; then
+            has_text section.md || section Unreleased > section.md
+            where="$where or ## [Unreleased]"
+            {
+              echo "A pre-release of $version for testing: \`LIX_VERSION=$tag make up\` runs its"
+              echo "images, and \`latest\` stays on the last full release. The notes of $version so far:"
+            } > notes.md
+          fi
+          has_text section.md || { echo "CHANGELOG.md has nothing under $where"; exit 1; }
+          cat section.md >> notes.md
 
       # Code releases carry no data pack: they read the newest data release with the serve
       # schema this code understands. None yet means the schema was bumped without a data
@@ -147,13 +173,22 @@ jobs:
           printf '\n### Data\n\nReads data release [%s](https://github.com/%s/releases/tag/%s) (serve schema %s): `make data-download` fetches it.\n' \
             "$data_tag" "$GITHUB_REPOSITORY" "$data_tag" "$schema" >> notes.md
 
+      # A tag with a suffix is drafted as a GitHub pre-release, so that publishing it never
+      # makes it the repository's latest release; v0.7.2-rc.1 is titled
+      # "v0.7.2 release candidate 1"
       - name: Draft the release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          title="$GITHUB_REF_NAME"
+          kind=()
+          case "$GITHUB_REF_NAME" in
+            *-rc.*) title="${GITHUB_REF_NAME%%-rc.*} release candidate ${GITHUB_REF_NAME##*-rc.}"; kind=(--prerelease) ;;
+            *-*) kind=(--prerelease) ;;
+          esac
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release edit "$GITHUB_REF_NAME" --notes-file notes.md
+            gh release edit "$GITHUB_REF_NAME" "${kind[@]}" --notes-file notes.md
           else
-            gh release create "$GITHUB_REF_NAME" --draft --verify-tag \
-              --title "$GITHUB_REF_NAME" --notes-file notes.md
+            gh release create "$GITHUB_REF_NAME" --draft --verify-tag "${kind[@]}" \
+              --title "$title" --notes-file notes.md
           fi

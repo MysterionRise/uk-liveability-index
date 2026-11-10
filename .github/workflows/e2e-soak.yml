@@ -24,6 +24,11 @@ permissions:
   contents: read
   issues: write
 
+env:
+  # @scarf/scarf (a dependency of the CopilotKit packages) reports each `npm ci` from a
+  # postinstall script unless told not to (#238)
+  SCARF_ANALYTICS: "false"
+
 jobs:
   soak:
     runs-on: ubuntu-latest

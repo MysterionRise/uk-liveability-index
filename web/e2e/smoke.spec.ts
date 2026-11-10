@@ -6,7 +6,9 @@ import { SCHEMA_VERSION } from "../lib/schema";
  * Release smoke test: the published images and data pack, as a new user gets them
  * (make quickstart, no model key). Runs against a running stack:
  *   LIX_SMOKE=1 LIX_E2E_STACK=docker npx playwright test smoke
- * Unlike app.spec.ts it needs no test hooks in the build.
+ * Unlike app.spec.ts it needs no test hooks in the build. docker.yml runs it too, on
+ * images built from the checkout and the demo dataset (make up-demo BUILD=1), so every
+ * case has to hold on both: the manifest's `demo` flag says which one is being served.
  */
 test.skip(
   !process.env.LIX_SMOKE,
@@ -43,7 +45,11 @@ test("the API and the data pack agree on the build", async ({ request }) => {
   expect(health.version).toMatch(/^\d+\.\d+\.\d+/);
 });
 
-test("the map loads and a postcode opens its profile", async ({ page }) => {
+test("the map loads and a postcode opens its profile", async ({
+  page,
+  request,
+}) => {
+  const manifest = await (await request.get("/data/manifest.json")).json();
   await open(page);
   await page.getByTestId("onboarding").getByText(en.Onboarding.skip).click();
   const search = page.getByTestId("search").locator("input");
@@ -55,9 +61,16 @@ test("the map loads and a postcode opens its profile", async ({ page }) => {
   const profile = page.getByTestId("area-profile").last();
   await expect(profile).toBeVisible({ timeout: 30_000 });
   await expect(profile.getByTestId("theme-bars")).toBeVisible();
-  await expect(profile.getByTestId("percentile-range")).toContainText(
-    "% of the UK",
-  );
+  // The band's "better than 34% of the UK…" is on every build's card
+  await expect(profile).toContainText("% of the UK");
+  const range = profile.getByTestId("percentile-range");
+  if (manifest.demo) {
+    // The demo's percentiles are among its own six cities and the range would be the full
+    // build's, so its card leaves the range out (AreaProfileCard)
+    await expect(range).toHaveCount(0);
+  } else {
+    await expect(range).toContainText("% of the UK");
+  }
 });
 
 test("without a key the assistant answers the suggested prompts from recordings", async ({

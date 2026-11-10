@@ -69,6 +69,50 @@ measures and no data rebuild.
   and on demand for one case on any branch, which is how a fix for an intermittent failure
   is proven. Both web servers' output now reaches the test log, and a failure keeps its
   trace (#253).
+- A production-image job (`.github/workflows/docker.yml`). CI's required browser tests run
+  `next dev`, so until now nothing built an image or ran `next build` before a release tag:
+  a base-image or lockfile update could be green on its pull request and still break the
+  release (#240). On pull requests that touch a Dockerfile, the compose file, a lockfile,
+  `web/package.json` or the Makefile, weekly and on demand, the job builds the api and web
+  images from the checkout, starts the stack as a newcomer would (`make up-demo BUILD=1`:
+  the demo dataset, no model key), runs the release smoke test and the security checks
+  below against it, checks that the proxy is published on loopback only, and builds the
+  pipeline image. It is not a required check: its path filter skips most pull requests.
+  The smoke test now holds on the demo dataset as well as on the full pack (the demo's
+  profile card leaves the percentile range out by design, which the test now expects
+  rather than fails on) (#253).
+- A security regression spec (`web/e2e/security.spec.ts`) for what the proxy gained in
+  v0.7.1, run against a Docker stack by the new job and by `release-smoke.yml`: a POST
+  from another site's `Origin` (a look-alike host name and `null` among them) gets the 403
+  on the assistant's relay and on the SQL endpoint, while the stack's own origin and a
+  client that sends none are let through; replies carry the content security policy
+  (`default-src 'self'`, no wildcard source, images from the page's own origin only),
+  `nosniff`, `X-Frame-Options` and `Referrer-Policy`; a 12 MB body gets 413; and the API's
+  `/agent` cannot be reached through the proxy. Each check was seen to fail against a
+  weakened Caddyfile (#253).
+
+### Changed
+
+- Release candidates: a `vX.Y.Z-rc.N` tag rehearses the release workflow, which until now
+  could only run for real (the six action majors merged in #244 had never run). It
+  publishes images tagged `X.Y.Z-rc.N` without moving `latest` (the workflow tagged
+  `latest` on every tag; the rule is now written out for tags without a suffix), takes
+  its notes from the changelog's `X.Y.Z` section, or from "Unreleased" while that heading
+  is not written, and drafts a GitHub pre-release titled "vX.Y.Z release candidate N"
+  (#253).
+- uv is a named build stage (`FROM ghcr.io/astral-sh/uv:0.9 AS uv`) in the api and
+  pipeline Dockerfiles. Dependabot reads `FROM` lines only, so the image named in
+  `COPY --from=` was never offered an update (#253).
+- `SCARF_ANALYTICS=false` in the web image's build and in every workflow that runs
+  `npm ci`: `@scarf/scarf`, a dependency of the CopilotKit packages, reported each install
+  from a postinstall script (#238).
+- Dependabot: npm and uv updates wait out a cooldown (a major is proposed 21 days after its
+  release, a minor after 7, a patch after 3; security updates are not held back); the
+  assistant's stack has a group of its own in each ecosystem (`@copilotkit/*` and
+  `@ag-ui/*`; `pydantic-ai*`, `pydantic-evals`, `pydantic-graph`, `fastmcp*` and
+  `ag-ui-protocol`), declared before the minor-and-patch group, because those updates need
+  a live chat check that the scripted CI cannot give; and at most 3 pull requests are open
+  per ecosystem, down from 5 (#253).
 
 ### Security
 

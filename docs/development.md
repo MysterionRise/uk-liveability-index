@@ -101,6 +101,9 @@ README's GIFs and the release's walkthrough video the same way (needs ffmpeg), a
 stack the same way (`LIX_E2E_STACK=docker npx playwright test`) once the web image is built
 with `LIX_EXPOSE_MAP=1 make up BUILD=1`, which exposes the map to the tests; without it every
 map test times out. `LIX_SMOKE=1` adds the smoke spec the release workflow runs.
+`security.spec.ts` runs only against a stack, since it checks what the proxy enforces
+(cross-site posts refused, the content security policy and the other headers, the body
+cap, `/agent` not published): `LIX_E2E_STACK=docker npx playwright test security`.
 
 ## Docker
 
@@ -114,6 +117,16 @@ make down
 One Caddy proxy ([docker/Caddyfile](../docker/Caddyfile)) is the only published port: it
 serves the data files under `/data`, sends `/api/v1`, `/health` and `/mcp` to the API and
 everything else to the web app, so the same images work on any host.
+
+CI's browser tests run the dev servers, not the images. The `Docker images` workflow
+([docker.yml](../.github/workflows/docker.yml)) does `make up-demo BUILD=1` and runs the
+smoke and security specs against the stack, on pull requests that touch a Dockerfile, the
+compose file, a lockfile or `web/package.json`, and weekly; it is not a required check, so
+read its result on a dependency update before merging. A release can be rehearsed with a
+candidate tag: `v0.7.2-rc.1` runs the whole release workflow, publishes images tagged
+`0.7.2-rc.1` without moving `latest`, and drafts a GitHub pre-release from the changelog's
+`0.7.2` section (or "Unreleased" while that heading is not written), which
+`release-smoke.yml -f tag=v0.7.2-rc.1` then checks like any other.
 
 The data pack: `make data-pack` on a machine with a full build writes
 `dist/lix-serve.tar.gz` (about 250 MB, with the licence notices). The api container is
