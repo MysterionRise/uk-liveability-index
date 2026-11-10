@@ -39,7 +39,8 @@ the repository says, and the sentence is corrected by hand.
 
 If you change the assistant's instructions or tools, run the evals on a cheap model
 (`make eval MODEL=openrouter:anthropic/claude-haiku-5.5`, about $0.05) and say how they
-went in the pull request.
+went in the pull request. A maintainer can run them on GitHub instead, several times over
+(the `evals.yml` workflow), which shows whether a case fails every time or now and then.
 
 ## Adding a data source
 

@@ -84,7 +84,10 @@ make eval MODEL=openrouter:anthropic/claude-haiku-5.5    # all cases, about $0.0
 
 Three models are evaluated on it (Claude Haiku 5.5, the default; Claude Opus 5.5; Qwen 3.8
 27B, open weights): results, costs, every miss and what the evals caught are in
-[docs/evals.md](evals.md).
+[docs/evals.md](evals.md). The `evals.yml` workflow runs the suite on GitHub on demand
+(never on a pull request; each run waits for a reviewer's approval): it repeats the cases
+and reports how often each one passed, which tells a case that fails every time from one
+that fails now and then.
 
 ## Stakeholder demo
 

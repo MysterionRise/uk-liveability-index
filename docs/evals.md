@@ -109,3 +109,17 @@ make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 61 cases, about $0.05
 make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 61 cases, about $1.60
 ```
+
+On GitHub, the `evals.yml` workflow runs the suite on demand and several times over
+(never on a pull request; it runs in the `evals` environment, where each run waits for a
+reviewer, because it spends money):
+
+```bash
+gh workflow run evals.yml -f model=openrouter:anthropic/claude-haiku-5.5 -f repeats=3
+```
+
+Its summary lists every case that failed at least once with how many runs it passed and
+its first failed check, then the mean pass rate, the cost and the median turn time. It
+fails only on a case that failed every run; one that passed some runs is listed as flaky.
+The reports are kept as an artifact, not in `docs/evals/`. The same summary for any set
+of reports: `python3 api/evals/repeats.py run-1/ run-2/ run-3/`.

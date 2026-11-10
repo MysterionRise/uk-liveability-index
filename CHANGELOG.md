@@ -142,6 +142,15 @@ measures and no data rebuild.
   other figures in the prose are left alone; this changelog is never read, because past
   releases state the numbers of their day. `lix docs` prints the same lines as warnings
   (#253).
+- The assistant evals on demand (`evals.yml`): the suite against a real model on the full
+  data pack, as many times as asked (three by default), with a summary of how often each
+  case passed, its first failed check, the mean pass rate, the cost and the median turn
+  time. A case that failed every run fails the job; one that passed some runs is listed as
+  flaky and does not, which one run could never tell apart. It never runs on a pull
+  request or a push: it is dispatched by hand, in an `evals` environment that holds the
+  OpenRouter key and waits for a reviewer, and the reports go to an artifact rather than
+  to `docs/evals/`. `api/evals/repeats.py` writes the same summary for any set of reports
+  (#253).
 
 ### Changed
 
