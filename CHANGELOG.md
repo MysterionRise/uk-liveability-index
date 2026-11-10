@@ -4,6 +4,26 @@ All notable changes to this project. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+Polish and reliability after the launch kit (#201, the review of 10 November 2026). No new
+measures and no data rebuild.
+
+### Security
+
+- The repository's scanners are on: secret scanning with push protection, Dependabot alerts
+  and security updates, CodeQL, private vulnerability reporting (#224). Their first run saw
+  what `npm audit` cannot: 19 advisories in six transitive Python packages. Three are not on
+  a path the app runs (authlib comes with FastMCP's OAuth support, which is not enabled;
+  pyasn1 with the Google client; dnspython with email validation); urllib3 is what the
+  pipeline downloads with, where its advisories mean a hostile or broken publisher could
+  stall a fetch. The lockfile takes authlib 1.9.5, urllib3 2.8.0, pyasn1 0.6.5, dnspython
+  2.9.2, joserfc 1.8.0 and Pygments 2.21.0.
+- CodeQL's first three findings, none reachable in the app, fixed rather than dismissed: the
+  clip-recording page (`web/scripts/tiktok.html`, a local tool) loads frames only from a
+  `file:` URL, and the SQL guard's statement check no longer begins with an unbounded `\s*`
+  (bodies were already capped at 16 KB).
+
 ## [0.7.1] - 2026-11-04
 
 The launch kit (#201, decided 2026-11-01): what a visitor sees first, the assistant's

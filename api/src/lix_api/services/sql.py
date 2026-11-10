@@ -117,7 +117,7 @@ class SqlGuard:
             raise SqlError("Send exactly one statement")
         # PRAGMA table functions parse as a SELECT: the keyword says what they are
         if statements[0].type != duckdb.StatementType.SELECT or re.match(
-            r"\s*(pragma|call|set|load|install)\b", sql, re.IGNORECASE
+            r"(pragma|call|set|load|install)\b", sql.lstrip(), re.IGNORECASE
         ):
             raise SqlError("Only SELECT queries are allowed")
 
