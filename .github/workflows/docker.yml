@@ -1,0 +1,107 @@
+name: Docker images
+
+# CI's required e2e check runs `next dev` and the API from the checkout, so nothing built
+# an image or ran `next build` until a release tag was pushed: a base-image or lockfile
+# update could be green on its pull request and still break the release (#240), and a
+# fault only the production build has (#217) could not show. This builds the api and web
+# images from the checkout and starts the stack as a newcomer would (`make up-demo`: the
+# committed six-city demo dataset, no .env and so no model key), then runs the release
+# smoke test and the security checks (web/e2e/security.spec.ts) against it, checks that
+# the proxy is published on loopback only, and builds the pipeline image as well (#253).
+# It runs on pull requests that touch how an image is built or what this job runs, weekly
+# (a base image moves without a commit here, and a change to the app's own code does not
+# match the `paths` below: the weekly run is its first production build) and on demand:
+#   gh workflow run docker.yml --ref my-branch
+# NOT a required check, and it must not become one: `paths` skips it on most pull
+# requests, and a required check that is skipped stays pending and blocks the merge.
+# The build is cold, with no layer cache: the weekly run is there to notice a base image
+# that moved, which a cached layer would hide, and a few minutes on the pull requests
+# that reach this job is cheap.
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - docker/**
+      - docker-compose.yml
+      - .dockerignore
+      - Makefile
+      - uv.lock
+      - "**/pyproject.toml"
+      - web/package.json
+      - web/package-lock.json
+      - web/.npmrc
+      - web/next.config.ts
+      - web/playwright.config.ts
+      - web/e2e/smoke.spec.ts
+      - web/e2e/security.spec.ts
+      - .github/workflows/docker.yml
+  schedule:
+    - cron: "11 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # @scarf/scarf (a dependency of the CopilotKit packages) reports each `npm ci` from a
+  # postinstall script unless told not to (#238)
+  SCARF_ANALYTICS: "false"
+
+jobs:
+  stack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Build the images and start the stack on the demo dataset (no .env, so no model key)
+        run: |
+          make up-demo BUILD=1
+          docker compose images
+
+      # Loopback unless LIX_BIND says otherwise (docker-compose.yml): on 0.0.0.0 everyone
+      # on the network could use the assistant. A test cannot see this from inside
+      - name: The proxy is published on this machine only
+        run: |
+          bound="$(docker compose port proxy 8080)"
+          echo "The proxy's port 8080 is published at $bound"
+          case "$bound" in
+            127.0.0.1:*) ;;
+            *) echo "::error::The proxy is published at $bound, not on 127.0.0.1"; exit 1 ;;
+          esac
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Playwright smoke test and security checks
+        working-directory: web
+        env:
+          LIX_SMOKE: "1"
+          LIX_E2E_STACK: docker
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npx playwright test smoke security --reporter=line
+
+      # Not part of the stack (the `build` profile) and not published by a release: a
+      # lockfile or uv update that breaks it would otherwise wait for someone to need it
+      - name: The pipeline image builds and runs
+        if: success() || failure()
+        run: |
+          docker compose --profile build build pipeline
+          docker compose --profile build run --rm pipeline --help
+
+      - if: failure()
+        run: docker compose logs --tail 200
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: docker-results
+          path: web/test-results/
+          retention-days: 7

@@ -3,7 +3,8 @@ name: Release smoke test
 # A release as a new user gets it: the published images and the newest data release the
 # code reads (or a given one), no model key, on a fresh Linux (amd64) machine. Run it on
 # the draft: gh workflow run release-smoke.yml -f tag=v0.4.0 [-f data_tag=data-2026-10]
-# [-f ref=master] (ref: where the test code comes from, when the tag's own needs a fix)
+# [-f ref=master] (ref: where the test code comes from, when the tag's own needs a fix).
+# The security checks (web/e2e/security.spec.ts) run against the published images too.
 
 on:
   workflow_dispatch:
@@ -68,7 +69,7 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
 
-      - name: Playwright smoke test
+      - name: Playwright smoke test and security checks
         working-directory: web
         env:
           LIX_SMOKE: "1"
@@ -76,7 +77,7 @@ jobs:
         run: |
           npm ci
           npx playwright install --with-deps chromium
-          npx playwright test smoke --reporter=line
+          npx playwright test smoke security --reporter=line
 
       - if: failure()
         run: docker compose logs --tail 200
