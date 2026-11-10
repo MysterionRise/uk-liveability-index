@@ -1,8 +1,10 @@
-# Dependency updates, grouped so a solo maintainer sees one pull request per ecosystem
-# a week (minors and patches together; a major gets its own). CI runs on every pull
-# request with the scripted model and no secrets, so a code update gets the full check.
-# CI does not build the Docker images or run the release workflow, so the docker and
-# release-action updates are only as safe as the ignore rules below.
+# Dependency updates, grouped so a solo maintainer sees a few pull requests per ecosystem
+# a week (minors and patches together; the assistant's stack on its own; a major gets its
+# own). CI runs on every pull request with the scripted model and no secrets, so a code
+# update gets the full check, and docker.yml builds the images and runs the stack when a
+# pull request touches a lockfile, a Dockerfile or the compose file. No pull request runs
+# the release workflow: an update to its actions is only as safe as the ignore rules
+# below until a release candidate tag (vX.Y.Z-rc.N) has rehearsed it.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -12,7 +14,21 @@ updates:
       day: monday
       time: "06:00"
       timezone: Europe/London
+    # A version has to have been out for a while before it is proposed: a bad release is
+    # usually yanked or patched within days, a major's first fixes take longer. Security
+    # updates are not held back (the cooldown is for version updates only).
+    cooldown:
+      default-days: 7
+      semver-major-days: 21
+      semver-minor-days: 7
+      semver-patch-days: 3
     groups:
+      # The assistant's stack, declared first so that it gets a pull request of its own (a
+      # dependency goes to the first group it matches). CI's scripted model cannot show
+      # that a real chat still streams and still calls its tools: check one live (make up
+      # BUILD=1 with a model key) before merging
+      agent-stack:
+        patterns: ["@copilotkit/*", "@ag-ui/*"]
       minor-and-patch:
         update-types: [minor, patch]
     ignore:
@@ -26,7 +42,7 @@ updates:
       # Add vite as a devDependency, then drop this rule.
       - dependency-name: vitest
         update-types: ["version-update:semver-major"]
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     commit-message:
       prefix: deps
     labels: [dependencies]
@@ -38,7 +54,18 @@ updates:
       day: monday
       time: "06:00"
       timezone: Europe/London
+    # The same waiting periods as npm above
+    cooldown:
+      default-days: 7
+      semver-major-days: 21
+      semver-minor-days: 7
+      semver-patch-days: 3
     groups:
+      # The assistant's stack on the Python side, first for the same reason as npm's: a
+      # live chat check before merging. pydantic-graph is released with pydantic-ai, which
+      # pins it to its own version
+      agent-stack:
+        patterns: ["pydantic-ai*", "pydantic-evals", "pydantic-graph", "fastmcp*", "ag-ui-protocol"]
       minor-and-patch:
         update-types: [minor, patch]
     ignore:
@@ -48,7 +75,7 @@ updates:
       # duckdb 2.0 drops fetch_arrow_table() and .pl() that the pipeline stages call
       - dependency-name: duckdb
         update-types: ["version-update:semver-major"]
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     commit-message:
       prefix: deps
     labels: [dependencies]
@@ -61,7 +88,8 @@ updates:
       ci-actions:
         patterns: ["actions/checkout", "actions/setup-*", "astral-sh/*"]
       # Run only when a v* tag is pushed (release.yml), so no pull request exercises
-      # them: after merging one, rehearse a release before the next tag
+      # them: after merging one, push a release candidate tag (vX.Y.Z-rc.N) before the
+      # next release's
       release-actions:
         patterns: ["docker/*", "actions/upload-artifact", "actions/download-artifact"]
     commit-message:
