@@ -4,7 +4,8 @@ name: Release smoke test
 # code reads (or a given one), no model key, on a fresh Linux (amd64) machine. Run it on
 # the draft: gh workflow run release-smoke.yml -f tag=v0.4.0 [-f data_tag=data-2026-10]
 # [-f ref=master] (ref: where the test code comes from, when the tag's own needs a fix).
-# The security checks (web/e2e/security.spec.ts) run against the published images too.
+# A release candidate's tag (v0.7.2-rc.1) works the same way. The security checks
+# (web/e2e/security.spec.ts) run against the published images too.
 
 on:
   workflow_dispatch:
