@@ -104,13 +104,14 @@ class IndicatorValue(BaseModel):
 
 
 class ResolvedFrom(BaseModel):
-    """The larger area a reference named (a neighbourhood, a council, or the neighbourhood
-    a named town or suburb sits in) when a profile or explanation shows one small area of
-    it."""
+    """The larger area a reference led to (a neighbourhood, a council, or the neighbourhood
+    a named town or suburb's point falls in) when a profile or explanation shows one small
+    area of it. It is that neighbourhood or council, by its own name: asked about a city,
+    it is the one neighbourhood at the city's centre, not the city."""
 
     kind: Literal["msoa", "lad"]
     code: str
-    name: str = Field(description="As the reference named it, or in the locale asked for")
+    name: str = Field(description="The area's own name, in the locale asked for")
     overall: float | None = Field(
         None,
         description="Its own overall score under the same weighting: the population-weighted "

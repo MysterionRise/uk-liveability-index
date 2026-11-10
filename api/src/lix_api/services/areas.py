@@ -168,11 +168,13 @@ def resolved_from(
     level, area_code = area
     column, name_col = {"msoa": ("msoa21cd", "msoa_name"), "lad": ("lad_cd", "lad_nm")}[level]
     inside = store.features[column] == area_code
-    if not inside.any():
+    members = store.features.filter(inside)
+    # "One small area of X" is said only of a small area that is in X
+    if code not in set(members["lsoa21cd"]):
         return None
-    first = store.features.filter(inside).row(0, named=True)
-    # A town or suburb keeps the name it was asked by; a neighbourhood or council its own
-    name = named.name if named.kind == "place" else localised(first, name_col, locale)
+    # The area's own name, whatever it was asked by: the score is the neighbourhood's, and
+    # "Edinburgh as a whole scores 63" was said of the one its centre point falls in
+    name = localised(members.row(0, named=True), name_col, locale)
     return ResolvedFrom(
         kind=level,
         code=area_code,

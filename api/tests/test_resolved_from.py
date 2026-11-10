@@ -41,7 +41,7 @@ def test_a_neighbourhoods_score_is_the_one_a_ranking_gives_it(store):
     named = area_profile(store, "Headingley").resolved_from
     ranked = rank_areas(store, level="msoa", limit=50).results
     row = next(r for r in ranked if r.code == named.code)
-    assert row.overall == pytest.approx(named.overall, abs=0.05)
+    assert row.overall == named.overall
 
 
 def test_the_weighting_asked_for_is_the_weighting_of_both_scores(store):
@@ -66,3 +66,80 @@ def test_resolve_lsoa_is_unchanged_and_named_area_is_compares_rule(store):
     assert named_area(store, suburb) == ("msoa", "E02000001")
     postcode = search_place(store, "LS6 3HN", limit=1)[0]
     assert named_area(store, postcode) is None
+
+
+# ---------------------------------------------------------------- found by the v0.7.2 pass
+
+
+def test_a_council_is_profiled_by_a_small_area_inside_it(store, monkeypatch):
+    """A council with no point of its own takes its namesake place's small area ("Leeds"
+    the city). The first namesake was taken wherever it was: "Croydon" was profiled as a
+    village of that name in Cambridgeshire, and the card then called it one small area of
+    Croydon, with the borough's score. 24 of 481 council names on the full pack."""
+    from lix_api.models import Place
+    from lix_api.services import areas, search
+    from lix_api.services.scoring import resolve_weights, scores_for
+
+    council = Place(kind="lad", name="Cardiff", code="W06000015")
+    elsewhere = Place(kind="place", name="Cardiff", lsoa21cd="E01000007", detail="Bristol")
+    at_home = Place(kind="place", name="Cardiff", lsoa21cd="W01001880", detail="Cardiff")
+    inside = {"W01001880", "W01001881"}
+
+    monkeypatch.setattr(search, "search_place", lambda *a, **k: [council, elsewhere, at_home])
+    assert search.resolve_area(store, "Cardiff")[0] == "W01001880"
+    # No namesake inside: the council's most populous small area, never the one elsewhere
+    monkeypatch.setattr(search, "search_place", lambda *a, **k: [council, elsewhere])
+    assert search.resolve_area(store, "Cardiff")[0] in inside
+    # And nothing says "one small area of X" about a small area that is not in X
+    _, themes, multipliers = resolve_weights(store)
+    every = scores_for(store, themes, multipliers)
+    assert areas.resolved_from(store, council, "E01000007", every) is None
+    assert areas.resolved_from(store, council, "W01001880", every).code == "W06000015"
+
+
+def test_the_larger_area_goes_by_its_own_name(store):
+    """ "Edinburgh as a whole scores 63" was the score of the one neighbourhood the city's
+    point falls in. The score is that neighbourhood's, so the name is too: a place name
+    is kept only where the neighbourhood bears it (Headingley)."""
+    by_code = {r["msoa21cd"]: r["msoa_name"] for r in store.features.iter_rows(named=True)}
+    for ref in ("Headingley", "Brighton", "Ranelagh", "Dalkey", "E02000002"):
+        named = area_profile(store, ref).resolved_from
+        if named is None or named.kind != "msoa":
+            continue
+        assert named.name == by_code[named.code], (ref, named)
+    # Brighton's point is in the neighbourhood Hanover: it is Hanover that scores this
+    brighton = area_profile(store, "Brighton").resolved_from
+    assert brighton and (brighton.kind, brighton.name) == ("msoa", "Hanover")
+
+
+def test_a_ranking_scores_a_neighbourhood_whole_whatever_the_scope_cuts(store):
+    """A circle that takes in one small area of a neighbourhood ranked the neighbourhood
+    by that small area alone: "Guiseley East & South" 75 in a ranking near Headingley, 70
+    on its own card. A row is the neighbourhood's own score, to the same two decimals a
+    comparison gives it."""
+    whole = {
+        a.code: a.overall
+        for a in compare_areas(store, ["E02000001", "E02000002", "Hanover", "Cathays"]).areas
+    }
+    # 300 m around Leeds 044A takes in one of Headingley's two small areas
+    near = rank_areas(store, within="E01000001", radius_km=0.3, level="msoa").results
+    assert [r.code for r in near] == ["E02000001"]
+    assert near[0].overall == whole["E02000001"]
+    # Unscoped, every neighbourhood's row is the comparison's figure, digit for digit
+    for row in rank_areas(store, level="msoa", limit=50).results:
+        if row.code in whole:
+            assert row.overall == whole[row.code], row.code
+    # The urban filter keeps or drops a neighbourhood whole: a row is never its urban part
+    for urban in (True, False):
+        for row in rank_areas(store, level="msoa", urban=urban, limit=50).results:
+            if row.code in whole:
+                assert row.overall == whole[row.code], (urban, row.code)
+
+
+def test_a_small_area_has_one_score_to_one_decimal_everywhere(store):
+    profile = area_profile(store, "LS6 3HN")
+    compared = compare_areas(store, ["LS6 3HN", "Hanover"]).areas[0]
+    assert (compared.level, compared.code) == ("lsoa", profile.lsoa21cd)
+    assert compared.overall == profile.overall
+    ranked = rank_areas(store, level="lsoa", limit=50).results
+    assert next(r for r in ranked if r.code == profile.lsoa21cd).overall == profile.overall

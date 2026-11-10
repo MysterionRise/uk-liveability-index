@@ -33,7 +33,8 @@ measures and no data rebuild.
   stripped first, and what is left must be 3 to 500 characters (#230).
 - A 422 quoted the refused value whole: 300 characters of `q`, or the entire body when a
   field was missing. The body keeps its shape and quotes the first 80 characters of any
-  text the caller sent (#230).
+  text the caller sent, four levels of nesting and eight entries of a list or map; a body
+  nested hundreds deep is refused like any other (#230).
 - Search: a name decoded wrongly on its way in ("Ynys MÃ´n" for "Ynys Môn") found the
   village Ynys first, and nothing at all with a scope after it ("Ynys MÃ´n, Wales"). The
   query is repaired before it is matched, with the helper that repairs the names
@@ -55,7 +56,9 @@ measures and no data rebuild.
   for noise.
 - The daily budget: a paid model that neither the provider nor Pydantic AI could price
   never reached it (its tokens now count at a cautious price), and after a restart it
-  counted eval and recording runs made on the same machine (#254).
+  counted eval and recording runs made on the same machine. A run that only the
+  recordings or the scripted model answered counts nothing, whatever model is configured:
+  the keyless demo cannot spend (#254).
 - The fallback model's profiles: Qwen 3.8 does not keep to the low reasoning effort it is
   asked for and ran out of tokens before answering two profiles in seven, so the rules
   engine answered instead. The profile call has room for it now (none of 21 calls ran
@@ -71,19 +74,33 @@ measures and no data rebuild.
   also sits above the chat input on a phone, where the extra row would have put "Skip"
   under it (#239).
 - One name, two scores. Asked about a town, a suburb, a neighbourhood's code or a
-  council, the assistant's profile is of one small area inside it, while a ranking and a
-  comparison score the larger place itself: "Tell me about Headingley" showed 70 and
+  council, the assistant's profile is of one small area, while a ranking and a comparison
+  score a neighbourhood or a council whole: "Tell me about Headingley" showed 70 and
   "compare it with Chapel Allerton" showed 68 for the same name, with nothing to say why.
-  A profile and an explanation now carry `resolved_from` when the reference was to
-  something larger than the small area returned: what was named (kind, code, name) and
-  its own overall score under the same weighting, from the one population-weighted mean
-  that comparisons use (`scoring.weighted_mean`; the ranking's figure agrees with it).
-  The card says "This is one small area of Headingley. Headingley as a whole scores 68"
-  in four languages, the REST and MCP profiles carry the field, and the assistant is told
-  to use it when it speaks of the larger place. A postcode or a small area's own code
-  names itself, and nothing is added. The explanation card carries the same line. The
-  Area tab is unchanged: the page looks its profile up by the small area selected, so the
-  line appears on the assistant's cards. A profile of the whole neighbourhood is #256
+  A profile and an explanation now carry `resolved_from` when the reference led to
+  something larger than the small area returned: the neighbourhood or council that small
+  area belongs to (kind, code, its own name) and that area's overall score under the
+  same weighting. The profile and explanation cards say "This is one small area of
+  Headingley, which scores 68 as a whole" in four languages, and the REST and MCP
+  profiles carry the field. A postcode or a small area's own code names itself, and
+  nothing is added. Asked about a city by name, the area named is the one neighbourhood
+  at its centre ("Old Town, Princes Street and Leith Street" for Edinburgh), by its own
+  name: nothing claims a city's score. The Area tab is unchanged: the page looks its
+  profile up by the small area selected, so the line appears on the assistant's cards. A
+  profile of the whole neighbourhood is #256 (#228).
+- That one score is now the same wherever it is printed. A ranking scored a neighbourhood
+  from the small areas inside its scope only, so a circle that cut one ("near
+  Headingley", "within 2 km of BN1 1AA") ranked it by the part inside: Goldsmid West 72 in
+  the list, 68 on its own card. A row is now the neighbourhood's or the council's own
+  score; the scope chooses which are listed (any small area inside), and "urban" or
+  "rural" keeps one whole by where most of its people live. An average of small areas
+  has two decimals in a ranking as in a comparison, and one small area has one decimal
+  in a comparison as in its profile, so each card rounds the same figure once: on the
+  full pack the whole numbers printed for 489 neighbourhoods and councils differed in 27
+  cases and now differ in none (#228).
+- A council was sometimes profiled by a village elsewhere that shares its name: "Croydon"
+  opened a small area in South Cambridgeshire, "Islington" one in Leeds (24 of the 481
+  council names). A namesake stands for a council or a neighbourhood only from inside it
   (#228).
 - The assistant rewrote what you said about yourself before building your profile. "I'm
   28, work in tech and love going out" reached the profile builder as "…nightlife, bars,
@@ -190,6 +207,10 @@ measures and no data rebuild.
   its notes from the changelog's `X.Y.Z` section, or from "Unreleased" while that heading
   is not written, and drafts a GitHub pre-release titled "vX.Y.Z release candidate N"
   (#253).
+- The release workflow refuses a tag before it builds anything: a `notes` job checks that
+  the tag is `vX.Y.Z` or `vX.Y.Z-suffix`, that the changelog has its section and that a
+  data release of this code's schema exists. Those checks ran last, after the images and
+  `latest` were public (#253).
 - uv is a named build stage (`FROM ghcr.io/astral-sh/uv:0.9 AS uv`) in the api and
   pipeline Dockerfiles. Dependabot reads `FROM` lines only, so the image named in
   `COPY --from=` was never offered an update (#253).

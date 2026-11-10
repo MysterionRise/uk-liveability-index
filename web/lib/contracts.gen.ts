@@ -104,7 +104,7 @@ export type Region = string;
 export type Code = string;
 export type Kind = "msoa" | "lad";
 /**
- * As the reference named it, or in the locale asked for
+ * The area's own name, in the locale asked for
  */
 export type Name = string;
 /**
@@ -468,9 +468,10 @@ export interface IndicatorValue {
   value?: Value;
 }
 /**
- * The larger area a reference named (a neighbourhood, a council, or the neighbourhood
- * a named town or suburb sits in) when a profile or explanation shows one small area of
- * it.
+ * The larger area a reference led to (a neighbourhood, a council, or the neighbourhood
+ * a named town or suburb's point falls in) when a profile or explanation shows one small
+ * area of it. It is that neighbourhood or council, by its own name: asked about a city,
+ * it is the one neighbourhood at the city's centre, not the city.
  *
  * This interface was referenced by `Schemas`'s JSON-Schema
  * via the `definition` "ResolvedFrom".

@@ -157,15 +157,28 @@ async def bad_request(request: Request, exc: ValueError):
     return JSONResponse({"detail": str(exc)}, status_code=400)
 
 
-def _clipped(value):
+# How far into a refused value a 422 quotes it: levels of nesting, and entries of one list
+# or map. Beyond either there is an ellipsis
+ECHO_DEPTH, ECHO_ITEMS = 4, 8
+
+
+def _clipped(value, depth: int = 0):
     """``value`` as a refusal quotes it back: every string in it, a map's keys too, cut
-    to MAX_ECHO characters."""
+    to MAX_ECHO characters, and what lies deep or far along left out. Walking a value to
+    its bottom made 1.2 KB of nested brackets a RecursionError, and so a 500."""
     if isinstance(value, str):
         return value if len(value) <= MAX_ECHO else value[: MAX_ECHO - 1] + "…"
-    if isinstance(value, dict):
-        return {_clipped(k): _clipped(v) for k, v in value.items()}
-    if isinstance(value, list):
-        return [_clipped(v) for v in value]
+    if isinstance(value, dict | list | tuple):
+        if depth >= ECHO_DEPTH:
+            return "…"
+        if isinstance(value, dict):
+            kept = {
+                _clipped(k, depth + 1): _clipped(v, depth + 1)
+                for k, v in list(value.items())[:ECHO_ITEMS]
+            }
+            return kept | {"…": "…"} if len(value) > ECHO_ITEMS else kept
+        kept = [_clipped(v, depth + 1) for v in value[:ECHO_ITEMS]]
+        return [*kept, "…"] if len(value) > ECHO_ITEMS else kept
     return value
 
 
@@ -174,10 +187,16 @@ async def unprocessable(request: Request, exc: RequestValidationError):
     # FastAPI's own 422 body, which quotes the offending value whole: 300 characters of a
     # query, or the entire body when a field is missing. Enough of it to recognise is
     # kept (#230); "loc" is clipped too, since a weights map's key is the caller's text
-    errors = [
-        {k: _clipped(v) if k in ("input", "loc") else v for k, v in error.items()}
-        for error in jsonable_encoder(exc.errors())
-    ]
+    try:
+        errors = [
+            {k: _clipped(v) if k in ("input", "loc") else v for k, v in error.items()}
+            for error in jsonable_encoder(
+                [{**e, "input": _clipped(e.get("input"))} for e in exc.errors()]
+            )
+        ]
+    except RecursionError:
+        # Refused is refused, whatever shape defeated the quoting
+        errors = [{"type": "value_error", "loc": ["body"], "msg": "Input is nested too deeply"}]
     return JSONResponse({"detail": errors}, status_code=422)
 
 

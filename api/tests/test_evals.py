@@ -63,9 +63,11 @@ def test_one_area_one_score():
     # What #228 was: the profile's figure for the neighbourhood is not the comparison's
     apart = _judge(ConsistentScores(), returns=[PROFILE % "69.5", COMPARED])
     assert not apart.value and "E02000001" in apart.reason
-    # Rounding is not a disagreement (a ranking shows one decimal, a comparison two)
-    ranked = '{"results": [{"level": "msoa", "code": "E02000001", "overall": 68.3}]}'
-    assert _judge(ConsistentScores(), returns=[ranked, COMPARED]).value
+    # Every tool gives the same figure to the same decimals: a ranking that rounded apart
+    # (68.3 for 68.28) printed a different whole number on one card in twenty
+    ranked = '{"results": [{"level": "msoa", "code": "E02000001", "overall": %s}]}'
+    assert _judge(ConsistentScores(), returns=[ranked % "68.28", COMPARED]).value
+    assert not _judge(ConsistentScores(), returns=[ranked % "68.3", COMPARED]).value
     # A case that scores no area twice has shown nothing, and text that is not JSON
     # (an error message, "Final result processed.") is passed over
     nothing = _judge(ConsistentScores(), returns=[COMPARED, "Unknown place 'Xyz'"])

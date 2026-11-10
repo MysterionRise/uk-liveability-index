@@ -119,6 +119,12 @@ class Limits:
         cost = record.get("cost")
         if cost is not None or self.daily_budget <= 0 or is_free(str(record.get("model") or "")):
             return cost
+        # No provider took part: a recording answered. Started without a key, the
+        # configured model keeps its paid name, and the keyless demo spent its day's
+        # budget on recordings (107 answers) and then refused
+        answered = record.get("models")
+        if answered and set(answered) <= FUNCTION_MODELS:
+            return None
         tokens_in = record.get("input_tokens") or 0
         tokens_out = record.get("output_tokens") or 0
         if not self._warned_unpriced:
@@ -161,6 +167,11 @@ class Limits:
             "session_turns": self.session_turns,
             "rate_per_minute": self.rate_per_minute,
         }
+
+
+# The models that answer without a provider (their ``model_name``): the recordings, the
+# scripted model, and the reply that says a limit was reached
+FUNCTION_MODELS = frozenset({"replay", "scripted", "limits"})
 
 
 def is_free(model: str) -> bool:

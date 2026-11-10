@@ -756,6 +756,27 @@ def test_a_refusal_quotes_80_characters_of_what_was_sent(client):
     assert short["input"] == "lots"
 
 
+def test_a_refusal_of_deep_or_wide_input_is_still_a_422(client):
+    """The handler that clips what a 422 quotes walked the refused value to its bottom:
+    1.2 KB of nested brackets was a RecursionError and a 500, where FastAPI's own handler
+    answered 422 (found by the v0.7.2 pass). What lies deep or far along is cut too."""
+    json_body = {"content-type": "application/json"}
+    for depth in (50, 400, 600, 900):
+        lists = "[" * depth + "]" * depth
+        maps = '{"theme_weights":' + '{"a":' * depth + "1" + "}" * depth + "}"
+        for body in (lists, maps):
+            r = client.post("/api/v1/rank", content=body, headers=json_body)
+            assert r.status_code == 422, (depth, body[:20], r.status_code)
+            assert len(r.content) < 4_000
+    wide = client.post("/api/v1/profile", json={"descriptio": ["z"] * 500})
+    assert wide.status_code == 422 and len(wide.content) < 4_000
+    (missing,) = wide.json()["detail"]
+    assert (
+        missing["input"]["descriptio"][:2] == ["z", "z"]
+        and missing["input"]["descriptio"][-1] == "…"
+    )
+
+
 def test_one_message_longer_than_the_assistant_reads_is_refused_in_words(client):
     """A 20 KB message was answered normally, and 8 MiB of one would be about two million
     input tokens (#214): the newest message is capped, in the interface language."""

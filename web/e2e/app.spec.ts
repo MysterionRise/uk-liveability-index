@@ -144,7 +144,7 @@ test("area profile, comparison and pubs render as components", async ({
   // place's own score, the one the comparison then shows for it (#228: two numbers for
   // one name)
   const whole = page.getByTestId("resolved-from").first();
-  await expect(whole).toContainText("Headingley as a whole scores");
+  await expect(whole).toContainText("one small area of Headingley, which scores");
   const said = (await whole.textContent())!.match(/scores (\d+)/)![1];
   await ask(page, "Compare Headingley and Chapel Allerton");
   await expect(page.getByTestId("comparison")).toContainText(
@@ -826,7 +826,7 @@ test("an explanation of a named place says it is one small area of it", async ({
   const card = page.getByTestId("explainer").first();
   await expect(card).toBeVisible({ timeout: 30_000 });
   // The explanation is of one small area, as the profile is: the card says so (#228)
-  await expect(card.getByTestId("resolved-from")).toContainText("Headingley as a whole scores");
+  await expect(card.getByTestId("resolved-from")).toContainText("one small area of Headingley, which scores");
 });
 
 test("recorded answers are marked as recordings", async ({ page }) => {

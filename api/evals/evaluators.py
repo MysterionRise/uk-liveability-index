@@ -282,14 +282,14 @@ class ConsistentScores(Evaluator):
     numbers for one name). For cases that keep one weighting; it fails too when no area
     was scored twice, since such a case is written so that one is."""
 
-    tolerance: float = 0.06  # a profile rounds to one decimal, a comparison to two
-
     def evaluate(self, ctx: EvaluatorContext) -> EvaluationReason:
         areas = scored_areas(ctx.output.returns)
         twice = {k: v for k, v in areas.items() if len(v) > 1}
         if not twice:
             return _ok(False, "no area was scored by two tool results")
-        apart = {k: v for k, v in twice.items() if max(v) - min(v) > self.tolerance}
+        # Every tool gives a small area one decimal and an average of small areas two, so
+        # the figures are equal, not close: a tolerance hid a ranking that rounded apart
+        apart = {k: v for k, v in twice.items() if max(v) - min(v) > 1e-9}
         return _ok(not apart, f"one area, two scores: {apart}" if apart else "")
 
 

@@ -76,3 +76,23 @@ def test_a_restart_counts_the_apps_runs_of_today_only(tmp_path):
     limits.load(log)
     unpriced = 10_000 * INPUT_PRICE_PER_TOKEN + 1_000 * OUTPUT_PRICE_PER_TOKEN
     assert abs(limits.spent - (0.10 + 0.03 + unpriced)) < 1e-9
+
+
+def test_a_recording_costs_nothing_whatever_model_is_configured():
+    """Started without a key, the configured model is still the paid one by name, and the
+    recordings answer (``models: ["replay"]``). Counted at the cautious price, a newcomer's
+    keyless demo spent its day's budget in 107 recorded answers and then refused (found
+    by the v0.7.2 pass)."""
+    limits = Limits(daily_budget=1.0)
+    recorded = _record(model="openrouter:anthropic/claude-haiku-5.5", cost=None)
+    recorded["models"] = ["replay"]
+    for _ in range(200):
+        limits.spend_run(recorded)
+    assert limits.spent == 0.0 and not limits.budget_spent()
+    # ... and the scripted model, and the reply that says a limit was reached
+    for name in ("scripted", "limits"):
+        limits.spend_run({**recorded, "models": [name]})
+    assert limits.spent == 0.0
+    # A run a paid model took part in is still counted, priced or not
+    limits.spend_run({**recorded, "models": ["replay", "anthropic/claude-haiku-5.5"]})
+    assert limits.spent > 0

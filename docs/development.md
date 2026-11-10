@@ -175,8 +175,9 @@ With a model key in `.env`, `make dev` uses the real model from `.env`.
 
 ## Planned
 
-- More open datasets: private rents, jobs density, overcrowding, energy use and energy
-  performance certificates, mobile coverage (v0.7.1)
+- More open datasets: private rents, overcrowding, students and the age mix, and
+  rankings by ceremonial county (v0.7.3); jobs density, energy use and energy performance
+  certificates, mobile coverage (later)
 - Answers composed as a page of cards rather than a chat reply (v0.8.0)
 - Walking-network travel times instead of straight-line distances (v0.8.x), built on the
   OpenStreetMap ways table (`osm_ways`) that v0.7.0 stages
