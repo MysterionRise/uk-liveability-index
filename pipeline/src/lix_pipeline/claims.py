@@ -306,7 +306,9 @@ CLAIMS: tuple[Claim, ...] = (
     # --- themes, presets, languages (the docs spell these out, so words count). A nation
     # with declared gaps scores on fewer themes, and the methodology says how many
     _claim("themes.N", r"\bNorthern\s+Ireland" + _SCORES_ON),
+    _claim("themes.N", r"\bNorthern\s+Ireland['’]s\s+<W>\s+themes"),
     _claim("themes.I", r"(?<!Northern\s)\b(?:Ireland|Irish)" + _SCORES_ON),
+    _claim("themes.I", r"(?<!Northern\s)\bIreland['’]s\s+<W>\s+themes"),
     _claim("themes", r"<W>\s+(?:scored\s+)?themes\b"),
     _claim("presets", r"<W>\s+(?:ready-made\s+|persona\s+|built-in\s+)?presets\b"),
     # English and the translations; "the other three languages" is the translations alone
@@ -360,9 +362,9 @@ _PROSE = (
         "p50",
         re.compile(
             rf"\bin\s+(?:about\s+)?(?P<n>{_DECIMAL})\s+(?:seconds?|s)\b"
-            # "... and Opus 5.5 in about 7": the unit was given a clause earlier
-            rf"|\bin\s+about\s+(?P<m>{_DECIMAL})"
-            r"(?![\d.,]*\d|\s*(?:%|ms\b|minutes?\b|hours?\b|days?\b|cases\b|words\b))",
+            # "... and Opus 5.5 in about 6 (evals)": the unit came a clause earlier, so
+            # the number must end the phrase
+            rf"|\bin\s+about\s+(?P<m>{_DECIMAL})(?=\s*(?:[(),;]|and\b|\Z))",
             re.IGNORECASE,
         ),
     ),
