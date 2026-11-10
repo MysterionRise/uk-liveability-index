@@ -118,7 +118,12 @@
     <div id="progress"></div>
 
     <script>
-      const FRAMES = new URL(location.href).searchParams.get("frames");
+      // scripts/tiktok.mjs passes the frames folder as a file: URL; nothing else is loaded
+      const FRAMES = (() => {
+        const given = new URL(location.href).searchParams.get("frames") ?? "";
+        if (!given.startsWith("file:///")) throw new Error("frames must be a file: URL");
+        return given;
+      })();
       const END = 3.2; // seconds of end card
       let fps, count, segs, clip, total, captions, stickers, zooms, flashes, shakes, M, F;
 
