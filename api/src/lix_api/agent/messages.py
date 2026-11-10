@@ -59,6 +59,11 @@ MESSAGES: dict[str, dict[str, str]] = {
         "profile_rationale_plain": "Nothing in the description matched a theme or measure, so "
         "it starts from {preset}.",
         # Measures the cards show but the score cannot weigh, named in a description (#223)
+        # What counts less, said after what counts more when a description does both (#229)
+        "profile_less_note": "{themes} count less.",
+        "profile_less_note_one": "{themes} counts less.",
+        "profile_less_indicators_note": "{indicators} weigh less within their themes.",
+        "profile_less_indicators_note_one": "{indicators} weighs less within its theme.",
         "profile_context_note": "{measures} are shown on the cards, not scored.",
         "profile_context_note_one": "{measures} is shown on the cards, not scored.",
         "profile_rationale_context_only": "Starts from {preset}; {measures} are shown on the "
@@ -140,6 +145,9 @@ MESSAGES: dict[str, dict[str, str]] = {
         "{indicators} yn pwyso llai o fewn ei thema.",
         "profile_rationale_plain": "Nid oedd dim yn y disgrifiad yn cyfateb i thema na mesur, "
         "felly mae'n dechrau o {preset}.",
+        "profile_less_note": "Mae {themes} yn cyfrif llai.",
+        "profile_less_indicators_note": "Mae {indicators} yn pwyso llai o fewn eu themâu.",
+        "profile_less_indicators_note_one": "Mae {indicators} yn pwyso llai o fewn ei thema.",
         "profile_context_note": "Dangosir {measures} ar y cardiau, heb eu sgorio.",
         "profile_context_note_one": "Dangosir {measures} ar y cardiau, heb ei sgorio.",
         "profile_rationale_context_only": "Yn dechrau o {preset}; dangosir {measures} ar y "
@@ -211,6 +219,9 @@ MESSAGES: dict[str, dict[str, str]] = {
         "{indicators} nas aotruime am broinn a chuspair.",
         "profile_rationale_plain": "Cha do mhaids dad san tuairisgeul cuspair no tomhas, mar sin "
         "tha e a' tòiseachadh bho {preset}.",
+        "profile_less_note": "Tha {themes} a' cunntadh nas lugha.",
+        "profile_less_indicators_note": "Tha {indicators} nas aotruime am broinn an cuspairean.",
+        "profile_less_indicators_note_one": "Tha {indicators} nas aotruime am broinn a chuspair.",
         "profile_context_note": "Chithear {measures} air na cairtean, gun sgòr.",
         "profile_rationale_context_only": "A' tòiseachadh bho {preset}; chithear {measures} "
         "air na cairtean, gun sgòr.",
@@ -276,6 +287,10 @@ MESSAGES: dict[str, dict[str, str]] = {
         "meáchain ag {indicators} laistigh dá théama.",
         "profile_rationale_plain": "Níor mheaitseáil aon rud sa chur síos téama ná tomhas, mar "
         "sin tosaíonn sé ó {preset}.",
+        "profile_less_note": "Comhaireann {themes} níos lú.",
+        "profile_less_indicators_note": "Tá níos lú meáchain ag {indicators} laistigh dá dtéamaí.",
+        "profile_less_indicators_note_one": "Tá níos lú meáchain ag {indicators} laistigh dá "
+        "théama.",
         "profile_context_note": "Taispeántar {measures} ar na cártaí, gan scór.",
         "profile_rationale_context_only": "Ag tosú ó {preset}; taispeántar {measures} ar na "
         "cártaí, gan scór.",

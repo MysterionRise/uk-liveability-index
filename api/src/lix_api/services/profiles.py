@@ -46,6 +46,15 @@ from lix_api.store import Store
 logger = logging.getLogger(__name__)
 
 NAME_MAX, RATIONALE_MAX = 40, 200
+# Output tokens for the profile call, reasoning included. Not every model keeps to the
+# effort it is asked for: at "low", Qwen 3.8 (the fallback) thinks for anything up to
+# 1,900 tokens before a 200-token answer, and at 1,200 it ran out on two profiles in seven
+# and the rules engine answered instead (#234). Reasoning off ("none" is the only setting
+# it honours; "minimal" and a reasoning token cap are ignored) fits in 250 tokens and
+# passes as many eval cases (12 of 21 against 36 of 56), but in two runs of three it
+# turned the climate down for "I need sunshine", which no run with reasoning did. So the
+# reasoning stays and gets room: at 3,000, none of 21 calls ran out (the largest used 1,742)
+PROFILE_MAX_TOKENS = 3_000
 # The longest description either engine reads (the endpoint's cap; the chat tool's too)
 DESCRIPTION_MAX = 500
 # How far a theme moves for a plain everyday word ("schools"), and how much an indicator
@@ -247,6 +256,8 @@ PROBLEM_WORDS = frozenset({
     "trosedd", "llifogydd", "glaw", "swn", "eucoir", "tuil", "uisge", "fuaim", "coireacht",
     "tuile", "torann",
 })  # fmt: skip
+# Units of "how far to the nearest…": measures of an asset, though lower is better
+DISTANCE_UNITS = frozenset({"metres", "km"})
 ASSET_WORDS = frozenset({
     "quiet", "safe", "safety", "security", "sunshine", "sunny", "sun", "warm", "mild",
     "affordability", "affordable", "cheap",
@@ -506,8 +517,13 @@ def _effect(
         return "down"
     if phrase in _word_forms(PROBLEM_WORDS, locale):
         return "up"
-    if kind == "indicator" and store.indicators[ident].direction == "lower_better":
-        return "up"
+    if kind == "indicator":
+        spec = store.indicators[ident]
+        # Lower is better for a problem (noise, crime: "no noise" asks for less of it) and
+        # for the distance to something wanted (a GP, a supermarket: "no need for a GP"
+        # asks for nothing). A distance names an asset
+        if spec.direction == "lower_better" and spec.unit not in DISTANCE_UNITS:
+            return "up"
     return "down"
 
 
@@ -521,12 +537,18 @@ def match_rules(store: Store, description: str, locale: str = "en") -> Matches:
     for phrase, meanings in _phrase_table(store, locale):
         for m in re.finditer(rf"\b{re.escape(phrase)}\b", text):
             negation = _negation(written, m.start(), m.end(), locale)
+            names_measure = any(kind == "indicator" for kind, _ in meanings)
             for kind, payload in meanings:
                 effect = (
                     "up"
                     if kind in ("rule", "preset")
                     else _effect(store, phrase, kind, str(payload), negation, locale)
                 )
+                # A word for one measure that is also a word for its theme ("broadband",
+                # "pubs", "gp") turns only the measure down: not needing broadband is no
+                # verdict on buses and trains. Wanting it still lifts the theme
+                if kind == "theme" and effect == "down" and names_measure:
+                    continue
                 found.append((m.start(), kind, payload, effect))
             text = text[: m.start()] + " " * (m.end() - m.start()) + text[m.end() :]
     found.sort(key=lambda f: f[0])
@@ -686,6 +708,39 @@ def _with_context(text: str, shown: list[str], locale: str) -> str:
     return text
 
 
+def _with_less(text: str, themes: list[str], measures: list[str], locale: str, reserve: int) -> str:
+    """``text`` (what counts more) with what counts less said after it: a description
+    that turned one theme up and another down used to name only the first (#229). Fewer
+    are named when the whole would not fit, measures going before themes; ``reserve``
+    keeps room for the note about context measures."""
+    themes, measures = list(themes), list(measures)
+    while themes or measures:
+        notes = []
+        if themes:
+            notes.append(
+                message(
+                    "profile_less_note" + ("_one" if len(themes) == 1 else ""),
+                    locale,
+                    fallback="profile_less_note",
+                    themes=", ".join(themes),
+                )
+            )
+        if measures:
+            notes.append(
+                message(
+                    "profile_less_indicators_note" + ("_one" if len(measures) == 1 else ""),
+                    locale,
+                    fallback="profile_less_indicators_note",
+                    indicators=", ".join(measures),
+                )
+            )
+        joined = " ".join([text, *notes])
+        if len(joined) + reserve <= RATIONALE_MAX:
+            return joined
+        (measures or themes).pop()
+    return text
+
+
 def _context_only(preset_label: str, shown: list[str], locale: str) -> str:
     """The sentence for a description that named only context measures."""
     shown = list(shown)
@@ -765,6 +820,11 @@ def _rationale(
             break
         text = render(up, inds)
     text = _cut(text, RATIONALE_MAX)
+    # The sentence above names what counts less only when nothing counts more
+    if up or inds:
+        text = _with_less(text, down, inds_down, locale, reserve)
+    elif down:
+        text = _with_less(text, [], inds_down, locale, reserve)
     return _with_context(text, shown, locale) if shown else text
 
 
@@ -889,8 +949,10 @@ def profile_agent() -> Agent:
     global _AGENT
     if _AGENT is None:
         # The output is small (two short maps, a name, a sentence) but a provider's
-        # reasoning tokens count against the cap; the chat allows 4000
-        settings = {**agent_models.model_settings(), "max_tokens": 1200}
+        # reasoning tokens count against the cap; the chat allows 4000. Only the generic
+        # caps are set for the run: settings given to a run override each model's own, so
+        # a fallback used to take the primary's provider settings here
+        settings = agent_models.generic_settings(max_tokens=PROFILE_MAX_TOKENS)
         _AGENT = Agent(
             agent_models.build_model(),
             deps_type=ProfileDeps,
@@ -992,14 +1054,15 @@ async def profile_run(
             deps=ProfileDeps(store, locale),
             model=model,
             # The catalogue prompt is about 4,000 tokens a request; one retry allowed
-            usage_limits=UsageLimits(request_limit=2, total_tokens_limit=12000),
+            usage_limits=UsageLimits(
+                request_limit=2, total_tokens_limit=2 * (5_000 + PROFILE_MAX_TOKENS)
+            ),
         )
         profile = _from_draft(store, result.output, locale, "model", description=description)
     except Exception as e:  # noqa: BLE001 - any model trouble falls back to the rules
         logger.warning(f"profile model failed ({type(e).__name__}: {e}); using the rules")
         return profile_by_rules(store, description, locale, "model_error"), None
-    record = log_run(result, started, kind="profile")
-    limits.spend(record and record["cost"])
+    limits.spend_run(log_run(result, started, kind="profile"))
     return profile, result
 
 

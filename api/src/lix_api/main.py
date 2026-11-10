@@ -371,8 +371,7 @@ async def run_agent(request: Request) -> Response:
         )
 
     def done(result) -> None:
-        record = log_run(result, started)
-        limits.spend(record and record["cost"])
+        limits.spend_run(log_run(result, started))
 
     return await FriendlyAGUIAdapter.dispatch_request(
         request,

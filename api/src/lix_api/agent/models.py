@@ -48,9 +48,10 @@ MODEL_PROBLEM: str | None = None
 
 
 def build_model() -> Model:
-    """The model from LIX_MODEL (plus fallbacks). If it can't be built (no key, say), the
-    recorded conversations answer what they can and anything else gets an explanation,
-    so a missing key doesn't stop the map and API from starting."""
+    """The model from LIX_MODEL (plus fallbacks), each carrying its own provider's
+    settings. If it can't be built (no key, say), the recorded conversations answer what
+    they can and anything else gets an explanation, so a missing key doesn't stop the map
+    and API from starting."""
     global MODEL_PROBLEM
     from pydantic_ai.exceptions import UserError
 
@@ -65,11 +66,14 @@ def build_model() -> Model:
         m.strip() for m in os.environ.get("LIX_FALLBACK_MODELS", "").split(",") if m.strip()
     ]
     try:
-        primary = _model(name)
-        return FallbackModel(primary, *[_model(m) for m in fallbacks]) if fallbacks else primary
+        primary = model_for(name)
+        others = [model_for(m) for m in fallbacks]
+        return FallbackModel(primary, *others) if others else primary
     except (UserError, ValueError, ImportError) as e:
         MODEL_PROBLEM = f"{name}: {e}"
-        logger.error(
+        # No key is the documented way to try the demo; anything else is a fault to see
+        keyless = isinstance(e, UserError) and "_API_KEY" in str(e)
+        (logger.info if keyless else logger.error)(
             f"The assistant's model can't be used ({MODEL_PROBLEM}); answering "
             "the recorded prompts only"
         )
@@ -94,8 +98,8 @@ def _explain(problem: str):
     return reply
 
 
-def _model(name: str) -> Model:
-    """A model carrying its own provider settings, so a fallback never inherits the
+def model_for(name: str) -> Model:
+    """A named model carrying its own provider settings, so a fallback never inherits the
     primary's (an OpenRouter Qwen fallback once asked for Anthropic's endpoint)."""
     from pydantic_ai.models import infer_model
 
@@ -137,10 +141,15 @@ def provider_settings(name: str) -> ModelSettings:
     return settings  # type: ignore[return-value]
 
 
+def generic_settings(max_tokens: int = 4000) -> ModelSettings:
+    """The caps every provider understands."""
+    return {"max_tokens": max_tokens, "timeout": float(os.environ.get("LIX_MODEL_TIMEOUT", 60))}
+
+
 def model_settings() -> ModelSettings:
     """The run's settings for the configured model: the generic caps plus its provider's
-    (a fallback carries its own, see ``_model``)."""
-    settings: dict = {"max_tokens": 4000, "timeout": float(os.environ.get("LIX_MODEL_TIMEOUT", 60))}
+    (a fallback carries its own, see ``model_for``)."""
+    settings: dict = dict(generic_settings())
     settings.update(provider_settings(model_name()))
     return settings  # type: ignore[return-value]
 

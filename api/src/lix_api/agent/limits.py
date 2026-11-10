@@ -7,7 +7,10 @@ LIX_SESSION_TURNS     questions per conversation (default 30)
 LIX_RATE_PER_MINUTE   questions per minute across everyone using this server (default 20)
 LIX_DAILY_BUDGET      spend per UTC day, in the provider's currency (default 1.00; 0 turns
                       the cap off). It counts the cost the provider reports (OpenRouter
-                      does) and survives restarts by re-reading today's turn log.
+                      does), else Pydantic AI's list-price estimate, else (a paid model
+                      neither can price) the run's tokens at a cautious price, and
+                      survives restarts by re-reading today's turn log (the app's own
+                      runs: evals and recordings on the same machine are not counted).
 
 A refused question gets a chat reply saying why; the map, search and weights carry on.
 """
@@ -47,10 +50,13 @@ class Limits:
         self.recent: deque[float] = deque()
         self.day = today()
         self.spent = 0.0
+        self._warned_unpriced = False
 
     # Models that cost nothing: the scripted answers of the tests and the recorded
     # conversations of the demo. They are never held back by a budget real models spent
     FREE_MODELS = ("test", "replay")
+    # Providers that run on the owner's own hardware
+    FREE_PROVIDERS = ("ollama:",)
 
     @classmethod
     def from_env(cls) -> "Limits":
@@ -101,6 +107,28 @@ class Limits:
             self._roll()
             self.spent += cost
 
+    def spend_run(self, record: dict | None) -> None:
+        """Count a finished run (a ``runlog`` record) against the day."""
+        if record:
+            self.spend(self._cost(record))
+
+    def _cost(self, record: dict) -> float | None:
+        """What a logged run counts for: its cost where one was reported or estimated; for
+        a paid model nobody could price, its tokens at a cautious price. Without this such
+        a model never reached the budget at all (#254)."""
+        cost = record.get("cost")
+        if cost is not None or self.daily_budget <= 0 or is_free(str(record.get("model") or "")):
+            return cost
+        tokens_in = record.get("input_tokens") or 0
+        tokens_out = record.get("output_tokens") or 0
+        if not self._warned_unpriced:
+            self._warned_unpriced = True
+            logger.warning(
+                f"{record.get('model')} reports no cost and has no list price here: counting "
+                "its tokens at a cautious price against LIX_DAILY_BUDGET"
+            )
+        return tokens_in * INPUT_PRICE_PER_TOKEN + tokens_out * OUTPUT_PRICE_PER_TOKEN
+
     def load(self, path: Path) -> None:
         """Add up today's spend from the turn log (after a restart)."""
         self._roll()
@@ -113,8 +141,13 @@ class Limits:
                     record = json.loads(line)
                 except json.JSONDecodeError:
                     continue
-                if str(record.get("at", "")).startswith(self.day) and record.get("cost"):
-                    total += record["cost"]
+                # Evals and recordings run on the same machine write the same log: they
+                # are not the app's spend (a background Opus eval once put $0.18 on a
+                # restarted stack's counter)
+                if record.get("source", "app") != "app":
+                    continue
+                if str(record.get("at", "")).startswith(self.day):
+                    total += self._cost(record) or 0.0
         self.spent = total
         if total:
             logger.info(f"Spent {total:.4f} on the assistant so far today")
@@ -130,6 +163,11 @@ class Limits:
         }
 
 
+def is_free(model: str) -> bool:
+    """A model whose runs cost nothing: scripted, recorded, or served locally."""
+    return model in Limits.FREE_MODELS or model.startswith(Limits.FREE_PROVIDERS)
+
+
 def user_turns(body: dict) -> int:
     """User messages in an AG-UI run input."""
     return sum(1 for m in body.get("messages") or [] if m.get("role") == "user")
@@ -141,6 +179,8 @@ MAX_USER_MESSAGE_CHARS = 4_000
 # $15 per million input tokens (Opus-class; cheaper models only make it stricter)
 CHARS_PER_TOKEN = 4.0
 INPUT_PRICE_PER_TOKEN = 15.0 / 1_000_000
+# What an answer's tokens count for when a paid model reports no cost: Opus-class output
+OUTPUT_PRICE_PER_TOKEN = 75.0 / 1_000_000
 # A run sends the conversation to the model once per step (a tool call and the answer
 # after it): three is typical, the usage limit allows eight
 REQUESTS_PER_RUN = 3

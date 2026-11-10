@@ -145,6 +145,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # The agent reads LIX_MODEL when imported (settings, fallbacks): set it first
     os.environ["LIX_MODEL"] = args.model
+    os.environ["LIX_RUN_SOURCE"] = "eval"  # the app's budget does not count these runs
     os.environ.setdefault("PYDANTIC_AI_NO_BANNER", "1")
     from evals.harness import run_case
     from lix_api.agent.models import build_model
