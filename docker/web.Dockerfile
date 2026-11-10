@@ -11,6 +11,9 @@ ARG NEXT_PUBLIC_EXPOSE_MAP=0
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL NEXT_PUBLIC_DATA_URL=$NEXT_PUBLIC_DATA_URL \
     NEXT_PUBLIC_EXPOSE_MAP=$NEXT_PUBLIC_EXPOSE_MAP \
     NEXT_TELEMETRY_DISABLED=1 COPILOTKIT_TELEMETRY_DISABLED=true
+# @scarf/scarf (a dependency of the CopilotKit packages) reports each install from a
+# postinstall script unless told not to (#238)
+ENV SCARF_ANALYTICS=false
 COPY web/package.json web/package-lock.json web/.npmrc ./
 RUN npm ci
 COPY web ./

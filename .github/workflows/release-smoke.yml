@@ -22,6 +22,11 @@ permissions:
   contents: write # reading a draft release needs write access
   packages: read
 
+env:
+  # @scarf/scarf (a dependency of the CopilotKit packages) reports each `npm ci` from a
+  # postinstall script unless told not to (#238)
+  SCARF_ANALYTICS: "false"
+
 jobs:
   smoke:
     runs-on: ubuntu-latest

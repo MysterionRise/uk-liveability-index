@@ -1,6 +1,10 @@
 # API + assistant + MCP. Installs only lix-core and lix-api (no GDAL/osmium stack).
+# uv is a named stage, not `COPY --from=<image>`: Dependabot's docker updater reads FROM
+# lines only, so the image named in a COPY was never bumped (#253)
+FROM ghcr.io/astral-sh/uv:0.9 AS uv
+
 FROM python:3.11-slim
-COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /uvx /bin/
+COPY --from=uv /uv /uvx /bin/
 WORKDIR /app
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PROJECT_ENVIRONMENT=/app/.venv
 
