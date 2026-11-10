@@ -248,15 +248,15 @@ class Grounded(Evaluator):
         return _ok(not bad, f"unsupported numbers {bad}" if bad else "")
 
 
-def scored_areas(returns: list[str]) -> dict[tuple[str, str], list[float]]:
+def scored_areas(returns: list[str]) -> dict[tuple[str, str], list[tuple[str, float]]]:
     """Every area the run's tool results scored, by (level, code), with each overall it
-    was given: a profile or explanation's small area and the larger area it names
-    (``resolved_from``), a comparison's areas, a ranking's rows."""
-    out: dict[tuple[str, str], list[float]] = {}
+    was given and the kind of result that gave it: "profile" (a profile or explanation's
+    small area, and the larger area it names in ``resolved_from``), "compare", "rank"."""
+    out: dict[tuple[str, str], list[tuple[str, float]]] = {}
 
-    def add(level, code, overall) -> None:
+    def add(source: str, level, code, overall) -> None:
         if level and code and overall is not None:
-            out.setdefault((str(level), str(code)), []).append(float(overall))
+            out.setdefault((str(level), str(code)), []).append((source, float(overall)))
 
     for raw in returns:
         try:
@@ -266,12 +266,13 @@ def scored_areas(returns: list[str]) -> dict[tuple[str, str], list[float]]:
         if not isinstance(data, dict):
             continue
         if "lsoa21cd" in data:
-            add("lsoa", data["lsoa21cd"], data.get("overall"))
+            add("profile", "lsoa", data["lsoa21cd"], data.get("overall"))
             named = data.get("resolved_from") or {}
-            add(named.get("kind"), named.get("code"), named.get("overall"))
-        for area in [*(data.get("areas") or []), *(data.get("results") or [])]:
-            if isinstance(area, dict):
-                add(area.get("level"), area.get("code"), area.get("overall"))
+            add("profile", named.get("kind"), named.get("code"), named.get("overall"))
+        for source, key in (("compare", "areas"), ("rank", "results")):
+            for area in data.get(key) or []:
+                if isinstance(area, dict):
+                    add(source, area.get("level"), area.get("code"), area.get("overall"))
     return out
 
 
@@ -279,25 +280,35 @@ def scored_areas(returns: list[str]) -> dict[tuple[str, str], list[float]]:
 class ConsistentScores(Evaluator):
     """One area, one score: every overall the run's tools gave the same area agrees
     (#228: a town profiled as one of its small areas and compared as the whole showed two
-    numbers for one name). For cases that keep one weighting; it fails too when no area
-    was scored twice, since such a case is written so that one is."""
+    numbers for one name). For cases that keep one weighting. It fails too unless some
+    area was scored by two kinds of result (a profile and a comparison, say): the same
+    profile fetched twice agrees with itself and shows nothing."""
 
     def evaluate(self, ctx: EvaluatorContext) -> EvaluationReason:
         areas = scored_areas(ctx.output.returns)
-        twice = {k: v for k, v in areas.items() if len(v) > 1}
-        if not twice:
-            return _ok(False, "no area was scored by two tool results")
+        crossed = {k: v for k, v in areas.items() if len({source for source, _ in v}) > 1}
+        if not crossed:
+            return _ok(False, "no area was scored by two kinds of tool result")
         # Every tool gives a small area one decimal and an average of small areas two, so
         # the figures are equal, not close: a tolerance hid a ranking that rounded apart
-        apart = {k: v for k, v in twice.items() if max(v) - min(v) > 1e-9}
+        apart = {
+            k: [score for _, score in v]
+            for k, v in areas.items()
+            if max(s for _, s in v) - min(s for _, s in v) > 1e-9
+        }
         return _ok(not apart, f"one area, two scores: {apart}" if apart else "")
+
+
+def _plain(text: str) -> str:
+    """Lower case, "&" as "and", one space: a name as a reply may write it."""
+    return re.sub(r"\s+", " ", text.lower().replace("&", " and ")).strip()
 
 
 @dataclass
 class CheapestNamed(Evaluator):
     """Asked which of the areas just ranked is the most affordable, the reply names the
-    one with the lowest typical price in that list (#236: a reply once named two dearer
-    ones)."""
+    one with the lowest typical price in that list, and names it first (#236: a reply once
+    named two dearer ones; "X is cheapest, Longwell Green is dearer" names it too)."""
 
     def evaluate(self, ctx: EvaluatorContext) -> EvaluationReason:
         for raw in ctx.output.returns:
@@ -311,9 +322,19 @@ class CheapestNamed(Evaluator):
         else:
             return _ok(False, "no ranking with prices to choose from")
         cheapest = min(priced, key=lambda r: r["median_price"])
-        names = {str(cheapest.get(k)).lower() for k in ("name", "name_en") if cheapest.get(k)}
-        said = any(n in ctx.output.reply.lower() for n in names)
-        return _ok(said, f"the cheapest listed is {cheapest.get('name')}, not named in the reply")
+        reply = _plain(ctx.output.reply)
+
+        def first_mention(row: dict) -> int | None:
+            at = [reply.find(_plain(str(row[k]))) for k in ("name", "name_en") if row.get(k)]
+            at = [i for i in at if i >= 0]
+            return min(at) if at else None
+
+        mentions = {r.get("name"): first_mention(r) for r in priced}
+        where = mentions[cheapest.get("name")]
+        if where is None:
+            return _ok(False, f"the cheapest listed is {cheapest.get('name')}, not named")
+        earlier = [n for n, i in mentions.items() if i is not None and i < where]
+        return _ok(not earlier, f"{earlier} named before the cheapest, {cheapest.get('name')}")
 
 
 @dataclass

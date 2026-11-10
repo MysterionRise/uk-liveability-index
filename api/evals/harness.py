@@ -158,7 +158,7 @@ async def run_case(inputs: CaseInput, model=None) -> Trace:
                 break
             trace.turn_seconds.append(time.monotonic() - started)
             history = result.all_messages()
-            usage = result.usage() if callable(result.usage) else result.usage
+            usage = result.usage if hasattr(result.usage, "requests") else result.usage()
             trace.input_tokens += usage.input_tokens
             trace.output_tokens += usage.output_tokens
             responses = [m for m in result.new_messages() if isinstance(m, ModelResponse)]

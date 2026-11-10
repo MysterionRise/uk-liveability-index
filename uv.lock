@@ -1261,7 +1261,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "duckdb", specifier = ">=1.0" },
+    { name = "duckdb", specifier = ">=1.0,<2" },
     { name = "fastapi", specifier = ">=0.115" },
     { name = "fastmcp", specifier = ">=4.0" },
     { name = "lix-core", editable = "core" },
@@ -1325,7 +1325,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "duckdb", specifier = ">=1.0" },
+    { name = "duckdb", specifier = ">=1.0,<2" },
     { name = "fastexcel", specifier = ">=0.12" },
     { name = "geopandas", specifier = ">=1.0" },
     { name = "lix-core", editable = "core" },

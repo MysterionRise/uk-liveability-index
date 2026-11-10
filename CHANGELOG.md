@@ -224,6 +224,15 @@ measures and no data rebuild.
   `ag-ui-protocol`), declared before the minor-and-patch group, because those updates need
   a live chat check that the scripted CI cannot give; and at most 3 pull requests are open
   per ecosystem, down from 5 (#253).
+- duckdb is capped below 2 in the api and pipeline packages, as polars already was: 2.0
+  drops the result methods six stager calls use, and only Dependabot's ignore rule stood
+  between a re-lock and that (#240). pydantic-ai's deprecations now fail a test: they are
+  `UserWarning`s, so one (`usage` called as a method) printed in the API's log on the
+  first chat turn of the release candidate.
+- The eval tooling, from the pass: a check that raised was left out of the report and its
+  case counted as passed (it now fails the case); `consistent` wants an area scored by
+  two kinds of tool result, to the same decimals, and `cheapest_named` wants the
+  cheapest area named first.
 
 ### Security
 

@@ -58,7 +58,7 @@ def test_one_area_one_score():
     from evals.evaluators import ConsistentScores, scored_areas
 
     agree = [PROFILE % "68.28", COMPARED]
-    assert scored_areas(agree)[("msoa", "E02000001")] == [68.28, 68.28]
+    assert scored_areas(agree)[("msoa", "E02000001")] == [("profile", 68.28), ("compare", 68.28)]
     assert _judge(ConsistentScores(), returns=agree).value
     # What #228 was: the profile's figure for the neighbourhood is not the comparison's
     apart = _judge(ConsistentScores(), returns=[PROFILE % "69.5", COMPARED])
@@ -71,7 +71,9 @@ def test_one_area_one_score():
     # A case that scores no area twice has shown nothing, and text that is not JSON
     # (an error message, "Final result processed.") is passed over
     nothing = _judge(ConsistentScores(), returns=[COMPARED, "Unknown place 'Xyz'"])
-    assert not nothing.value and "two tool results" in nothing.reason
+    assert not nothing.value and "two kinds" in nothing.reason
+    # ... and so has the same profile fetched twice: it agrees with itself
+    assert not _judge(ConsistentScores(), returns=[PROFILE % "68.28", PROFILE % "68.28"]).value
 
 
 def test_the_cheapest_of_a_ranking_is_the_one_named():
@@ -93,6 +95,32 @@ def test_the_cheapest_of_a_ranking_is_the_one_named():
     )
     assert _judge(CheapestNamed(), returns=[ranking, later], reply=right).value
     assert not _judge(CheapestNamed(), returns=["Final result processed."], reply=right).value
+    # Named, but as the dearer one: the area a reply names first is its answer
+    backwards = "Clifton is the cheapest; Longwell Green is dearer."
+    assert not _judge(CheapestNamed(), returns=[ranking], reply=backwards).value
+    # A name is the same with "&" or "and"
+    amp = ranking.replace("Longwell Green", "Longwell Green & Oldland Common")
+    spelt = "Longwell Green and Oldland Common is the most affordable."
+    assert _judge(CheapestNamed(), returns=[amp], reply=spelt).value
+
+
+def test_a_check_that_raises_fails_its_case():
+    """An evaluator that raised was left out of the report's assertions, and its case
+    counted as passed on what remained."""
+    from types import SimpleNamespace
+
+    from evals.harness import Trace
+
+    case = SimpleNamespace(
+        name="x",
+        metadata={"category": "lookup"},
+        output=Trace(reply="fine"),
+        assertions={"NoError": SimpleNamespace(value=True, reason="")},
+        evaluator_failures=[SimpleNamespace(name="Grounded", error_message="KeyError: 'a'")],
+    )
+    summary = summarise(SimpleNamespace(cases=[case], failures=[]), "test")
+    (row,) = summary["results"]
+    assert not row["passed"] and row["failed_checks"] == {"Grounded (raised)": "KeyError: 'a'"}
 
 
 async def test_harness_runs_cases_on_the_scripted_model(store):
