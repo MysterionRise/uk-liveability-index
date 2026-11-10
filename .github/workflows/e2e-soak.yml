@@ -1,0 +1,117 @@
+name: Browser suite soak
+
+# The required e2e check runs every case once, so a case that fails one run in seven
+# passes most pull requests and blocks the unlucky ones (#252). This repeats the suite:
+# nightly on master (five times over), and on demand for one case on any branch, which is
+# how a fix for an intermittent failure is proven (a 3-in-22 failure survives 20 repeats
+# one time in twenty, and 50 repeats less than one in a thousand):
+#   gh workflow run e2e-soak.yml --ref my-branch -f grep="a shared link" -f repeat=50
+# The nightly run keeps one open issue, "Browser suite soak failing", which it rewrites
+# while a case fails and closes when a run is clean.
+on:
+  schedule:
+    - cron: "43 3 * * *"
+  workflow_dispatch:
+    inputs:
+      grep:
+        description: Only cases whose title matches (empty for the whole app suite)
+        default: ""
+      repeat:
+        description: Times to run each case
+        default: "5"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  soak:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      LIX_DATA_DIR: ${{ github.workspace }}/fixtures/demo
+      LIX_MODEL: test
+      GREP: ${{ inputs.grep }}
+      REPEAT: ${{ inputs.repeat || '5' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - run: uv sync --locked
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install web dependencies and Chromium
+        working-directory: web
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Playwright, repeated
+        id: soak
+        working-directory: web
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: soak.json
+        run: |
+          set +e
+          if [ -n "$GREP" ]; then
+            npx playwright test app --repeat-each="$REPEAT" --reporter=line,json -g "$GREP"
+          else
+            npx playwright test app --repeat-each="$REPEAT" --reporter=line,json
+          fi
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Summarise
+        working-directory: web
+        run: |
+          node scripts/soak-summary.mjs soak.json "$REPEAT" > body.md
+          cat body.md >> "$GITHUB_STEP_SUMMARY"
+          cat body.md
+
+      - uses: actions/upload-artifact@v7
+        if: steps.soak.outputs.code != '0'
+        with:
+          name: soak-results
+          path: |
+            web/test-results/
+            web/soak.json
+          retention-days: 7
+
+      - name: Open, rewrite or close the "Browser suite soak failing" issue
+        if: github.event_name == 'schedule'
+        working-directory: web
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CODE: ${{ steps.soak.outputs.code }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create flaky --color fbca04 \
+            --description "A check that fails some runs and passes others" 2>/dev/null || true
+          title="Browser suite soak failing"
+          number="$(gh issue list --label flaky --state open --search "in:title \"$title\"" \
+            --json number,title --jq "[.[] | select(.title == \"$title\")][0].number // empty")"
+          if [ "$CODE" != 0 ]; then
+            printf '\nRun: %s (traces in the soak-results artifact, kept 7 days)\n' "$RUN_URL" >> body.md
+            if [ -n "$number" ]; then
+              gh issue edit "$number" --body-file body.md
+            else
+              gh issue create --title "$title" --label flaky --label bug --body-file body.md
+            fi
+          elif [ -n "$number" ]; then
+            gh issue close "$number" --comment "The last nightly soak was clean: $RUN_URL"
+          fi
+
+      - name: Fail when a case failed
+        run: exit "${{ steps.soak.outputs.code }}"
