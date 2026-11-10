@@ -1,5 +1,6 @@
 """HTTP, AG-UI and MCP tests against the synthetic store."""
 
+import asyncio
 import json
 
 import pytest
@@ -165,6 +166,126 @@ async def test_mcp_tools_are_read_only_and_bounded(store):
                 await c.call_tool(name, args)
         ranked = await c.call_tool("rank_areas", {"within": "Leeds", "limit": 3})
         assert 1 <= len(ranked.structured_content["results"]) <= 3
+
+
+async def test_mcp_catalogue_is_typed_and_its_caveats_are_cut(store):
+    """#230: the catalogue came back as untyped text, 70 KB of it with ``detail``. The
+    tool publishes an output schema like the other six, the name cards keep their six
+    fields, a theme pages the detail, and a long caveat is cut at a word (the service
+    behind REST's /indicators still gives it whole)."""
+    from fastmcp import Client
+    from fastmcp.exceptions import ToolError
+
+    from lix_api.mcp_server import MAX_CAVEAT_CHARS, mcp
+    from lix_api.services import catalogue
+
+    whole = {i.id: i.caveats for i in catalogue.list_indicators(store, detail=True)}
+    long = {k for k, v in whole.items() if v and len(v) > MAX_CAVEAT_CHARS}
+    assert long  # the real catalogue's longest caveats run past 500 characters
+
+    async def cards(**args) -> list[dict]:
+        return (await c.call_tool("list_indicators", args)).structured_content["result"]
+
+    async with Client(mcp) as c:
+        tools = await c.list_tools()
+        assert all(t.output_schema for t in tools)
+        names = await cards()
+        assert len(names) == len(whole)
+        assert all(set(n) == {"id", "theme", "label", "unit", "role", "coverage"} for n in names)
+        safety = await cards(theme="safety", detail=True)
+        assert {i["theme"] for i in safety} == {"safety"} and safety[0]["sources"]
+        # The whole catalogue in detail is refused with the themes to ask for instead
+        with pytest.raises(ToolError, match="detail needs a theme.*safety"):
+            await cards(detail=True)
+        every_theme = [card for t in store.themes for card in await cards(theme=t, detail=True)]
+        assert {c["id"] for c in every_theme} == set(whole)
+        for card in every_theme:
+            if card["id"] in long:
+                assert len(card["caveats"]) <= MAX_CAVEAT_CHARS
+                assert card["caveats"].endswith("…")
+                # Cut between words: what is left is the start of the caveat
+                assert " ".join(whole[card["id"]].split()).startswith(card["caveats"][:-1] + " ")
+            else:
+                assert card["caveats"] == whole[card["id"]]
+
+
+def _mcp_reply(response) -> dict:
+    """The JSON-RPC message of a streamable-HTTP reply (one server-sent event)."""
+    return json.loads(next(ln for ln in response.text.splitlines() if ln.startswith("data:"))[5:])
+
+
+def test_mcp_answers_a_call_whatever_session_it_names(client):
+    """#255, the upgrade itself: a client that connected to v0.7.1 goes on sending the
+    session id that server gave it, and was answered 404 "Session not found" by the next
+    process. The stateless mount answers the call, with that id or with none, and hands
+    out no id of its own; /mcp still redirects to /mcp/."""
+    call = {
+        "jsonrpc": "2.0", "id": 7, "method": "tools/call",
+        "params": {"name": "search_place", "arguments": {"query": "LS6 3HN"}},
+    }  # fmt: skip
+    plain = {"accept": "application/json, text/event-stream"}
+    stale = {**plain, "mcp-session-id": "0c402df12d76406ab6ab71883020a7c3"}
+    for headers in (stale, plain):
+        r = client.post("/mcp/", json=call, headers=headers)
+        assert r.status_code == 200 and "mcp-session-id" not in r.headers
+        found = _mcp_reply(r)["result"]["structuredContent"]["result"]
+        assert found[0]["kind"] == "postcode"
+    r = client.post("/mcp", json=call, headers=plain, follow_redirects=False)
+    assert (r.status_code, r.headers["location"]) == (307, "http://testserver/mcp/")
+
+
+@pytest.mark.parametrize("handshake", ["legacy", "auto"])
+async def test_mcp_client_keeps_working_when_the_api_restarts(store, handshake):
+    """#255: sessions lived in the process, so a client connected before a restart (an
+    upgrade, or a crash under ``restart: on-failure``) had to be added again. The same
+    client calls a tool on the restarted app: with the session handshake that met the 404
+    ("legacy") and with the sessionless one fastmcp's own client prefers ("auto")."""
+    import httpx2
+    from fastmcp import Client
+    from fastmcp.client.transports import StreamableHttpTransport
+
+    from lix_api.main import app
+
+    async def start():
+        """The app's startup and shutdown in a task of their own, so that it can stop
+        while the client stays open (a lifespan entered by the test itself could only be
+        left after the client's); returns what stops it."""
+        up, down = asyncio.Event(), asyncio.Event()
+
+        async def serve():
+            try:
+                async with app.router.lifespan_context(app):
+                    up.set()
+                    await down.wait()
+            finally:
+                up.set()  # a startup that fails ends the wait below too
+
+        task = asyncio.create_task(serve())
+        await up.wait()
+        if task.done():
+            await task  # the startup failed: raise what it raised
+
+        async def stop():
+            down.set()
+            await task
+
+        return stop
+
+    def in_process(**kwargs):
+        return httpx2.AsyncClient(transport=httpx2.ASGITransport(app=app), **kwargs)
+
+    transport = StreamableHttpTransport("http://api/mcp/", httpx_client_factory=in_process)
+    stop = await start()
+    try:
+        async with Client(transport, mode=handshake) as c:
+            before = await c.call_tool("search_place", {"query": "LS6 3HN"})
+            await stop()  # everything the process remembered of the client goes with it
+            stop = await start()
+            after = await c.call_tool("search_place", {"query": "LS6 3HN"})
+            assert after.structured_content == before.structured_content
+            assert after.structured_content["result"][0]["kind"] == "postcode"
+    finally:
+        await stop()
 
 
 def test_agent_turns_are_logged(client, tmp_path, monkeypatch):
@@ -490,6 +611,20 @@ def test_profile_endpoint_uses_the_rules_on_the_test_model(client):
     assert client.post("/api/v1/profile", json={"description": "ab"}).status_code == 422
 
 
+def test_a_description_is_measured_once_it_is_stripped(client):
+    """#230: the 500-character limit counted the spaces around a description, so 497
+    characters and eight spaces were refused, and a description of spaces alone was
+    answered "Nothing matched" instead of refused."""
+    text = ("quiet streets, good schools; " * 18)[:497]
+    assert len(text) == 497 and text == text.strip()
+    padded = client.post("/api/v1/profile", json={"description": f"\n{text}" + " " * 8})
+    assert padded.status_code == 200
+    assert padded.json() == client.post("/api/v1/profile", json={"description": text}).json()
+    for blank in ("   ", " \n\t  ", " a \n"):
+        assert client.post("/api/v1/profile", json={"description": blank}).status_code == 422
+    assert client.post("/api/v1/profile", json={"description": text + "abcd"}).status_code == 422
+
+
 def test_profile_endpoint_refuses_when_rate_limited(client, monkeypatch):
     from lix_api import main
     from lix_api.services import profiles
@@ -596,6 +731,31 @@ def test_references_and_bodies_are_bounded(client):
     assert r.status_code == 200 and r.json()[0]["name"] == "Headingley"
 
 
+def test_a_refusal_quotes_80_characters_of_what_was_sent(client):
+    """#230: a 422 echoed the offending value whole, 300 characters of ``q`` or a whole
+    body. The body keeps FastAPI's shape and quotes the first 80, wherever the caller's
+    text sits: the value, a string inside it, or a map key in ``loc``."""
+    r = client.get("/api/v1/search", params={"q": "x" * 300})
+    assert r.status_code == 422 and list(r.json()) == ["detail"]
+    (long,) = r.json()["detail"]
+    assert set(long) == {"type", "loc", "msg", "input", "ctx"}
+    assert (long["type"], long["loc"], long["ctx"]) == (
+        "string_too_long",
+        ["query", "q"],
+        {"max_length": 200},
+    )
+    assert long["input"] == "x" * 79 + "…"
+    (missing,) = client.post("/api/v1/profile", json={"descriptio": "y" * 5000}).json()["detail"]
+    assert missing["type"] == "missing" and missing["input"] == {"descriptio": "y" * 79 + "…"}
+    r = client.post("/api/v1/rank", json={"theme_weights": {"k" * 300: 9}, "limit": 0})
+    by_field = {e["loc"][1]: e for e in r.json()["detail"]}
+    assert by_field["theme_weights"]["loc"] == ["body", "theme_weights", "k" * 79 + "…"]
+    # What is short, or no text at all, comes back as it was sent
+    assert by_field["theme_weights"]["input"] == 9 and by_field["limit"]["input"] == 0
+    (short,) = client.get("/api/v1/search", params={"q": "Leeds", "limit": "lots"}).json()["detail"]
+    assert short["input"] == "lots"
+
+
 def test_one_message_longer_than_the_assistant_reads_is_refused_in_words(client):
     """A 20 KB message was answered normally, and 8 MiB of one would be about two million
     input tokens (#214): the newest message is capped, in the interface language."""
@@ -642,6 +802,22 @@ def test_search_and_profile_speak_the_interface_language(client):
     assert welsh["urban_rural_label"] == "Trefol: yn nes at dref neu ddinas fawr"
     english = client.get("/api/v1/areas/W01001880").json()
     assert english["urban_rural_label"] == "Urban"
+
+
+def test_a_query_decoded_wrongly_on_its_way_here_is_read_as_typed(client):
+    """#230: "Ynys MÃ´n" (UTF-8 read as Windows-1252, once or twice over) folded to
+    "ynys ma n", which found the village Ynys ahead of Ynys Môn and nothing at all with
+    a scope after it. Every route that takes a name repairs it first."""
+    typed = client.get("/api/v1/search", params={"q": "Ynys Môn"}).json()
+    assert [p["name"] for p in typed] == ["Ynys Môn"]
+    for mangled in ("Ynys MÃ´n", "Ynys MÃƒÂ´n", "  Ynys MÃ´n "):
+        assert client.get("/api/v1/search", params={"q": mangled}).json() == typed, mangled
+    assert client.get("/api/v1/search", params={"q": "Ynys MÃ´n, Wales"}).json() == typed
+    # The village is still there for the query that means it
+    assert client.get("/api/v1/search", params={"q": "Ynys"}).json()[0]["detail"] == "Gwynedd"
+    assert client.get("/api/v1/areas/Ynys MÃ´n").json()["lsoa21cd"] == "W01001881"
+    near = client.get("/api/v1/pois", params={"category": "gp", "near": "Ynys MÃ´n"}).json()
+    assert near["origin"] == {"lat": 53.27, "lon": -4.33}
 
 
 def test_a_language_tag_on_a_get_is_as_short_as_a_bodys(client):

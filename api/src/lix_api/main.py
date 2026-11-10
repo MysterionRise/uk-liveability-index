@@ -15,11 +15,13 @@ from importlib.metadata import version
 from typing import Annotated, Literal
 
 from fastapi import Body, FastAPI, HTTPException, Path, Query, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field, TypeAdapter, ValidationError
+from pydantic import BaseModel, Field, StringConstraints, TypeAdapter, ValidationError
 from pydantic_ai.ui import StateDeps
 
 from lix_api.agent.agent import agent
@@ -56,7 +58,10 @@ from lix_api.store import get_store
 from lix_core.paths import data_dir
 
 VERSION = version("lix-api")
-mcp_app = mcp.http_app(path="/")
+# Stateless: the tools are read-only and remember nothing between calls, and a session
+# kept in this process dies with it, so after a restart or an upgrade a connected client
+# was answered 404 "Session not found" until it was added again (#255)
+mcp_app = mcp.http_app(path="/", stateless_http=True)
 
 
 @asynccontextmanager
@@ -76,6 +81,8 @@ MAX_BODY_BYTES = 16_384
 MAX_AGENT_BODY_BYTES = 8 * 1024 * 1024
 # A weights map in a query string: a few ids and numbers, never a thousand brackets
 MAX_WEIGHTS_CHARS = 2_000
+# How much of a refused value a 422 quotes back: enough to recognise it by
+MAX_ECHO = 80
 
 app = FastAPI(
     title="UK Liveability Index API",
@@ -148,6 +155,30 @@ async def not_found(request: Request, exc: LookupError):
 @app.exception_handler(ValueError)
 async def bad_request(request: Request, exc: ValueError):
     return JSONResponse({"detail": str(exc)}, status_code=400)
+
+
+def _clipped(value):
+    """``value`` as a refusal quotes it back: every string in it, a map's keys too, cut
+    to MAX_ECHO characters."""
+    if isinstance(value, str):
+        return value if len(value) <= MAX_ECHO else value[: MAX_ECHO - 1] + "…"
+    if isinstance(value, dict):
+        return {_clipped(k): _clipped(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_clipped(v) for v in value]
+    return value
+
+
+@app.exception_handler(RequestValidationError)
+async def unprocessable(request: Request, exc: RequestValidationError):
+    # FastAPI's own 422 body, which quotes the offending value whole: 300 characters of a
+    # query, or the entire body when a field is missing. Enough of it to recognise is
+    # kept (#230); "loc" is clipped too, since a weights map's key is the caller's text
+    errors = [
+        {k: _clipped(v) if k in ("input", "loc") else v for k, v in error.items()}
+        for error in jsonable_encoder(exc.errors())
+    ]
+    return JSONResponse({"detail": errors}, status_code=422)
 
 
 @app.get("/health")
@@ -289,7 +320,11 @@ def compare_areas(
 
 
 class ProfileRequest(BaseModel):
-    description: str = Field(min_length=3, max_length=500)
+    # Measured once stripped (#230): 497 characters and a trailing newline are a
+    # 497-character description, and one of spaces alone is no description at all
+    description: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=3, max_length=500)
+    ]
     locale: Locale = "en"
 
 
@@ -301,7 +336,7 @@ async def generate_profile(req: ProfileRequest) -> WeightProfile:
     engine, _ = profiles.engine_choice()
     if engine == "model" and (refusal := limits.admit(1, req.locale)):
         raise HTTPException(status_code=429, detail=refusal)
-    return await profiles.profile_from_description(get_store(), req.description.strip(), req.locale)
+    return await profiles.profile_from_description(get_store(), req.description, req.locale)
 
 
 @app.get(f"{api}/pois")

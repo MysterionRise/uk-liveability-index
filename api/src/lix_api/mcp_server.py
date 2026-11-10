@@ -16,6 +16,8 @@ from lix_api.models import (
     AreaProfile,
     Comparison,
     Explanation,
+    IndicatorBrief,
+    IndicatorInfo,
     Level,
     Place,
     PoiResult,
@@ -33,6 +35,10 @@ READ_ONLY = {
 }
 Ref = Annotated[str, Field(min_length=1, max_length=200)]
 Preset = Annotated[str, Field(max_length=40)] | None
+# The model on the client's side reads every character of a reply, and the catalogue's
+# longest caveats run past 500: the detail cards carry the start of each (REST's
+# /indicators has them whole)
+MAX_CAVEAT_CHARS = 300
 
 mcp = FastMCP(
     "UK Liveability Index",
@@ -115,7 +121,20 @@ def explain_score(
 @mcp.tool(annotations=READ_ONLY)
 def list_indicators(
     theme: Annotated[str, Field(max_length=40)] | None = None, detail: bool = False
-) -> list:
-    """What the index measures: ids, labels, themes and units; ``detail`` adds
-    descriptions, sources and caveats."""
-    return catalogue.list_indicators(get_store(), theme, detail=detail)
+) -> list[IndicatorBrief] | list[IndicatorInfo]:
+    """What the index measures: each indicator's id, label, theme, unit, role and the
+    nations it covers; ``theme`` (safety, transport, ...) limits the list to one theme.
+
+    ``detail`` adds descriptions, sources and caveats (a long caveat is cut short and
+    ends "…") and needs a ``theme``: the whole catalogue in detail is about 70,000
+    characters, more than a question is worth.
+    """
+    store = get_store()
+    if detail and theme is None:
+        # Cutting the caveats saved 2,000 characters of 70,000; a theme at a time is 4,000
+        # to 20,000 (#230). REST's /indicators still gives everything at once
+        raise ValueError(
+            "detail needs a theme: list_indicators(theme=..., detail=true) with one of "
+            + ", ".join(store.themes)
+        )
+    return catalogue.list_indicators(store, theme, detail=detail, max_caveat=MAX_CAVEAT_CHARS)

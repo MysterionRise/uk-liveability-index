@@ -20,6 +20,30 @@ measures and no data rebuild.
   and the page no longer treats its own pushes coming back as snapshots from the
   assistant. A browser case forces that order (it failed five runs of five before the
   change); v0.7.1's fix for this (#248) was not one (#252).
+- MCP: a client that was connected when the API restarted (an upgrade, or a crash under
+  `restart: on-failure`) was answered 404 "Session not found" on its next call and had to
+  be added again, because its session lived in the process that ended. The server at
+  `/mcp/` keeps no sessions now (its seven tools are read-only and remember nothing
+  between calls): the same client goes on calling them, whether it sends the session id an
+  earlier version gave it or none. The URL, and the redirect from `/mcp`, are unchanged
+  (#255).
+- `POST /api/v1/profile` measured a description before stripping it: 497 characters and
+  eight trailing spaces were refused as longer than 500, and a description of spaces alone
+  got a profile ("Nothing in the description matched…") rather than a refusal. It is
+  stripped first, and what is left must be 3 to 500 characters (#230).
+- A 422 quoted the refused value whole: 300 characters of `q`, or the entire body when a
+  field was missing. The body keeps its shape and quotes the first 80 characters of any
+  text the caller sent (#230).
+- Search: a name decoded wrongly on its way in ("Ynys MÃ´n" for "Ynys Môn") found the
+  village Ynys first, and nothing at all with a scope after it ("Ynys MÃ´n, Wales"). The
+  query is repaired before it is matched, with the helper that repairs the names
+  themselves, for every route and tool that takes a place (#230).
+- MCP `list_indicators` returned untyped text. It publishes an output schema like the
+  other six tools (structured content beside the text, whose fields are unchanged), and
+  with `detail` a caveat longer than 300 characters is cut at a word and ends "…". The
+  cut saves little (the whole catalogue with `detail` went from 70 KB to 68 KB), so
+  `detail` now needs a `theme` (4 to 20 KB each) and says which to ask for; REST's
+  `/indicators` still gives everything at once (#230).
 
 - Profiles: a description that turned one theme up and another down ("pubs and gigs, not
   bothered about schools") got a rationale naming only what counts more; what counts less

@@ -10,6 +10,7 @@ from lix_api.models import Place, Point
 from lix_api.services.names import base_locale, council_name
 from lix_api.services.text import fold
 from lix_api.store import Store, to_bng
+from lix_core.text import repair_mojibake
 
 POSTCODE = re.compile(r"^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$")
 # A district ("LS6", "EC1A") is the outward code; a sector ("LS6 3") adds the inward
@@ -422,7 +423,10 @@ def search_place(
     comma ("LS6, Leeds") is kept when the scope agrees. "Rye East Sussex" without the
     comma is tried as "Rye, East Sussex" when the whole finds nothing.
     """
-    query = query.strip()
+    # A query pasted from a page or a file that was decoded wrongly ("Ynys MÃ´n") is read
+    # as it was written: folded as it came it is "ynys ma n", which finds the village
+    # Ynys before Ynys Môn (#230). Every lookup by name, postcode or code starts here
+    query = repair_mojibake(query).strip()
     if not query:
         return []
     if len(query) > MAX_QUERY:

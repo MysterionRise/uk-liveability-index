@@ -175,26 +175,28 @@ def build_serve_dir(path) -> None:
     }).write_parquet(path / "postcodes.parquet")  # fmt: skip
 
     pl.DataFrame({
-        "place_id": ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10"],
+        "place_id": ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10", "p11"],
         "name": ["Headingley", "Leeds", "Leeds", "Brighton", "Cardiff", "Ynys Môn", "Derry",
                  # Two Dublin suburbs in different councils, and a hamlet called Ireland
-                 "Ranelagh", "Dalkey", "Ireland"],
+                 "Ranelagh", "Dalkey", "Ireland",
+                 # A village whose name is the first word of another's ("Ynys Môn", #230)
+                 "Ynys"],
         # OpenStreetMap names the city "Derry/Londonderry": the second form is name_alt
-        "name_alt": [None, None, None, None, None, None, "Londonderry", None, None, None],
-        "name_cy": [None, None, None, None, "Caerdydd", None, None, None, None, None],
-        "name_gd": [None, None, None, None, None, None, None, None, None, None],
-        "name_ga": [None, None, None, None, None, None, None, "Raghnallach", "Deilginis", None],
+        "name_alt": [None, None, None, None, None, None, "Londonderry", None, None, None, None],
+        "name_cy": [None, None, None, None, "Caerdydd", None, None, None, None, None, None],
+        "name_gd": [None, None, None, None, None, None, None, None, None, None, None],
+        "name_ga": [None, None, None, None, None, None, None, "Raghnallach", "Deilginis", None, None],
         "place_type": ["Suburban Area", "City", "Village", "Other Settlement", "City", "Village", "City",
-                       "Suburban Area", "Village", "Hamlet"],
-        "postcode_district": ["LS6", "LS1", "ME17", "BN1", "CF10", "LL77", "BT48", None, None, "LS7"],
+                       "Suburban Area", "Village", "Hamlet", "Village"],
+        "postcode_district": ["LS6", "LS1", "ME17", "BN1", "CF10", "LL77", "BT48", None, None, "LS7", "LL47"],
         "local_authority": ["Leeds", "Leeds", "Maidstone", "Brighton and Hove", "Cardiff", "Isle of Anglesey",
-                            "Derry City and Strabane", "Dublin City", "Dún Laoghaire-Rathdown", "Leeds"],
+                            "Derry City and Strabane", "Dublin City", "Dún Laoghaire-Rathdown", "Leeds", "Gwynedd"],
         "region": ["Yorkshire", "Yorkshire", "South East", "South East", "Wales", "Wales", "Northern Ireland",
-                   "Ireland", "Ireland", "Yorkshire"],
-        "lon": [-1.5766, -1.5500, 0.6070, -0.1370, -3.1790, -4.3300, -7.3100, -6.2560, -6.1050, -1.5380],
-        "lat": [53.8196, 53.8000, 51.2467, 50.8220, 51.4850, 53.2700, 54.9970, 53.3260, 53.2770, 53.8310],
+                   "Ireland", "Ireland", "Yorkshire", "Wales"],
+        "lon": [-1.5766, -1.5500, 0.6070, -0.1370, -3.1790, -4.3300, -7.3100, -6.2560, -6.1050, -1.5380, -4.0850],
+        "lat": [53.8196, 53.8000, 51.2467, 50.8220, 51.4850, 53.2700, 54.9970, 53.3260, 53.2770, 53.8310, 52.9050],
         "lsoa21cd": ["E01000001", "E01000002", "E01000002", "E01000005", "W01001880", "W01001881", "E01000002",
-                     "I01000002", "I01000003", "E01000004"],
+                     "I01000002", "I01000003", "E01000004", "W01001880"],
     }).write_parquet(path / "places.parquet")  # fmt: skip
 
     df = df.with_columns(

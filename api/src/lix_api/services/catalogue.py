@@ -1,5 +1,7 @@
 """What the index measures: indicators, themes, presets and sources."""
 
+from textwrap import shorten
+
 from lix_api.models import IndicatorBrief, IndicatorInfo
 from lix_api.store import Store
 
@@ -24,13 +26,29 @@ def _in_locale(store: Store, locale: str | None):
 
 
 def list_indicators(
-    store: Store, theme: str | None = None, detail: bool = True, locale: str | None = None
+    store: Store,
+    theme: str | None = None,
+    detail: bool = True,
+    locale: str | None = None,
+    max_caveat: int | None = None,
 ) -> list[IndicatorInfo] | list[IndicatorBrief]:
     """Every indicator (or one theme's): the full card, or without ``detail`` the name
     card alone (id, label, theme, unit, role, coverage), a tenth of the size; labels,
     descriptions, caveats and units in ``locale`` where its catalogue has them, so the
-    assistant quotes the drafted wording rather than translating the English (v0.7.0)."""
+    assistant quotes the drafted wording rather than translating the English (v0.7.0).
+    ``max_caveat`` cuts each caveat of the full card to that many characters, at a word
+    and with an ellipsis, for a reader that pays for every character (#230)."""
     text, unit = _in_locale(store, locale)
+
+    def caveats(i) -> str | None:
+        if not i.caveats:
+            return None
+        whole = text(i, "caveats")
+        if max_caveat is None:
+            return whole
+        # Between words only: "long-term" is never left as "long-…"
+        return shorten(whole, max_caveat, placeholder="…", break_on_hyphens=False)
+
     if theme is not None:
         from lix_api.services.scoring import match_theme
 
@@ -65,7 +83,7 @@ def list_indicators(
             unit_code=i.unit_code,
             benchmark=i.benchmark,
             coverage=i.coverage or [],
-            caveats=text(i, "caveats") if i.caveats else None,
+            caveats=caveats(i),
             sources=i.sources,
         )  # fmt: skip
         for i in store.indicators.values()
