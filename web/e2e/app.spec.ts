@@ -820,6 +820,15 @@ test("Enter on an empty box leaves a reply on its way alone, and the button says
   await expect.poll(() => stops.length).toBe(1);
 });
 
+test("an explanation of a named place says it is one small area of it", async ({ page }) => {
+  await mapReady(page);
+  await ask(page, "Why is the score low in Headingley?");
+  const card = page.getByTestId("explainer").first();
+  await expect(card).toBeVisible({ timeout: 30_000 });
+  // The explanation is of one small area, as the profile is: the card says so (#228)
+  await expect(card.getByTestId("resolved-from")).toContainText("Headingley as a whole scores");
+});
+
 test("recorded answers are marked as recordings", async ({ page }) => {
   // The suite's API runs the scripted model, which is not a recording
   await mapReady(page);

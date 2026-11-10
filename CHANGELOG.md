@@ -81,9 +81,19 @@ measures and no data rebuild.
   The card says "This is one small area of Headingley. Headingley as a whole scores 68"
   in four languages, the REST and MCP profiles carry the field, and the assistant is told
   to use it when it speaks of the larger place. A postcode or a small area's own code
-  names itself, and nothing is added. The Area tab is unchanged: the page looks its
-  profile up by the small area selected, so the line appears on the assistant's cards.
-  A profile of the whole neighbourhood is #256 (#228).
+  names itself, and nothing is added. The explanation card carries the same line. The
+  Area tab is unchanged: the page looks its profile up by the small area selected, so the
+  line appears on the assistant's cards. A profile of the whole neighbourhood is #256
+  (#228).
+- The assistant rewrote what you said about yourself before building your profile. "I'm
+  28, work in tech and love going out" reached the profile builder as "…nightlife, bars,
+  restaurants and good transport for commuting", and the profile came out on the Commuter
+  or the Balanced preset: on Claude Haiku 5.5 the Young professional preset was chosen 1
+  time in 8 (2 in 8 on v0.7.1: the published single run of 4 November had happened to
+  pass). `set_profile` is now told to pass your words as written and to add nothing, and
+  the assistant to rank with the profile as it is: 16 runs of 16 on the right preset, one
+  ranking each. The description the page keeps is yours again. Found by the release
+  evals, the first with repeats (#282).
 - A description of yourself with no place in it ("I'm retired, I have asthma and a dog,
   and I want somewhere quiet") was answered with a ranking of the whole of the UK and
   Ireland, Cork and Dublin first. The assistant now builds the profile and asks where you

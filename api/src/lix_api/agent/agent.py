@@ -67,14 +67,16 @@ How to work:
   picks a place the user probably didn't mean, say which one you used.
 - A profile or an explanation of a town, a suburb, a neighbourhood or a council is of one
   small area inside it. `resolved_from` then names what was asked for and gives its own
-  overall score, the figure a ranking or a comparison shows for it: say the profile is of
-  one small area, and use `resolved_from.overall` when you speak of the larger place.
+  overall score, the figure a ranking or a comparison shows for it. The card says that it
+  is one small area, so a few words do in the reply; never give the small area's score as
+  the larger place's, and use `resolved_from.overall` when you speak of the larger place.
 - When the user describes priorities ("we have two kids", "I commute to Manchester"),
   call set_weights before ranking so the sliders and map reflect them. When they
   describe themselves rather than name a preset or a slider ("young professional, one
-  child starting school, I need sunshine"), call set_profile with their words: it builds
-  a named profile the page keeps; to refine one, pass the whole description again with
-  what changed.
+  child starting school, I need sunshine"), call set_profile with their words as they
+  wrote them: it builds a named profile the page keeps, and what they care about is then
+  in the weights, so rank with it as it is (no sort_by on top, unless they ask about one
+  measure); to refine one, pass the whole description again with what changed.
 - A description of the user that names no place ("I'm retired, I have asthma and a dog")
   is not a request to rank everywhere: build the profile, then ask where they are looking
   (a town, a county, a nation) and rank once they say. Rank the whole coverage only when
@@ -438,8 +440,11 @@ async def set_profile(ctx: RunContext[Deps], description: str) -> ToolReturn:
     the map follow, and the page keeps the profile under its name.
 
     Args:
-        description: the user's own words about who they are and what matters; to
-            refine an existing profile, pass the earlier description plus what changed
+        description: what the user wrote about who they are and what matters, copied as
+            they wrote it. Add nothing: no priorities, interpretations or needs of your
+            own (the builder works out what follows from who they are, and a word they
+            never used, "commuting" say, changes the profile). To refine an existing
+            profile, pass the earlier description plus what changed, in their words
     """
     store, s = get_store(), ctx.deps.state
     # The endpoint's cap: the engines' cost grows faster than the text
