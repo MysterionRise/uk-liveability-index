@@ -140,11 +140,24 @@ test("area profile, comparison and pubs render as components", async ({
     "Headingley",
     { timeout: 30_000 },
   );
+  // A named place is profiled as one small area of it: the card says so and gives the
+  // place's own score, the one the comparison then shows for it (#228: two numbers for
+  // one name)
+  const whole = page.getByTestId("resolved-from").first();
+  await expect(whole).toContainText("Headingley as a whole scores");
+  const said = (await whole.textContent())!.match(/scores (\d+)/)![1];
   await ask(page, "Compare Headingley and Chapel Allerton");
   await expect(page.getByTestId("comparison")).toContainText(
     en.Comparison.title,
     { timeout: 30_000 },
   );
+  await expect(
+    page
+      .getByTestId("comparison")
+      .getByRole("row", { name: en.Comparison.overall })
+      .getByRole("cell")
+      .nth(1),
+  ).toHaveText(said);
   await ask(page, "Show me well-run pubs near LS6 3AA");
   await expect(page.getByTestId("poi-list")).toContainText(
     en.Poi.titles.well_run_pub,
@@ -198,6 +211,8 @@ test("searching a postcode opens its profile with benchmarks", async ({
   const bars = page.getByTestId("theme-bars");
   await expect(bars).toBeVisible({ timeout: 30_000 });
   await expect(bars).toContainText(en.Profile.ukMedian.replace("{in}", "").trim());
+  // A postcode names its own small area: nothing larger was asked about (#228)
+  await expect(page.getByTestId("resolved-from")).toHaveCount(0);
 });
 
 test("the welcome card's personas set the weights", async ({ page }) => {

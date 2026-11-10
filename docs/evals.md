@@ -1,20 +1,20 @@
 # Assistant evals
 
-The assistant is tested with real models on the full build, using 58 cases in
+The assistant is tested with real models on the full build, using 61 cases in
 [api/evals/cases.yaml](../api/evals/cases.yaml):
 
 | Category | Cases | What is checked |
 |---|---|---|
 | Ranking | 14 | Weights set before ranking (family, commuter, retiree, young professional), place and price filters, the Republic of Ireland by any of its names, ranking by one measure (the quietest areas in London, the sunniest in the South East) with the map coloured by it, worst first (the areas of Highland furthest from an A&E), areas highlighted on the map; Edinburgh, Belfast and Dublin now that Scotland, Northern Ireland and Ireland are covered; Ireland for retirees |
 | Look-ups | 15 | The right tool and arguments for profiles (including a BT postcode, Ranelagh in Dublin and "Ranelagh, Dublin"), comparisons, nearby pubs and GPs, score explanations, map layers, the shortlist and the indicator catalogue |
-| Follow-ups | 2 | "Compare the top two", "now do that for retirees" |
+| Follow-ups | 4 | "Compare the top two", "now do that for retirees"; a place profiled and then compared shows one score for it, not two (#228); "which of those is the most affordable?" names the cheapest of the list just shown |
 | Ambiguity | 2 | Says which Clapham it used; profiles Newport now that Wales is covered |
 | Scope and ethics | 6 | Paris is out of scope, Dublin's schools are a declared gap and a Dublin price limit is explained rather than answered with an empty list; it declines to rank by immigration or religion; off-topic requests use no tools |
-| Grounding | 2 (+29) | Every number in a reply appears in a tool result, the prompt or the model's own tool arguments (checked on 31 cases) |
+| Grounding | 2 (+31) | Every number in a reply appears in a tool result, the prompt or the model's own tool arguments (checked on 33 cases) |
 | Analyst | 2 | SQL only in analyst mode |
 | Injection | 1 | A pub name carrying "ignore all previous instructions…" isn't obeyed |
 | Languages | 7 | With the page in Welsh, Gaelic or Irish, a profile and a nearby-pubs question are answered in that language (checked by the share of its stopwords in the reply) |
-| Profiles | 7 | A description of the user through the profile generator (`kind: profile`): the owner's example, a retired couple with asthma, a developer working from home without children, a Welsh night-shift nurse and a Gaelic commuter on a budget answered in their language, and a description that tries to steer by immigration or religion (ignored; the rationale never repeats it). On a real model the profile must come from the model, not the rules fallback; the checks are on the effective weights, so the same cases pass on the rules engine with the scripted model. The seventh is the same description in the chat, which must call `set_profile` rather than rank |
+| Profiles | 8 | A description of the user through the profile generator (`kind: profile`): the owner's example, a retired couple with asthma, a developer working from home without children, a Welsh night-shift nurse and a Gaelic commuter on a budget answered in their language, and a description that tries to steer by immigration or religion (ignored; the rationale never repeats it). On a real model the profile must come from the model, not the rules fallback; the checks are on the effective weights, so the same cases pass on the rules engine with the scripted model. The seventh is the same description in the chat, which must call `set_profile` rather than rank; and a description with no place in it, which builds the profile and asks where rather than ranking everywhere |
 
 ## Results
 
@@ -25,7 +25,10 @@ The assistant is tested with real models on the full build, using 58 cases in
 | Qwen 3.8 27B (open weights) | 52/58 | 5.56 s | 13.38 s | $0.0021 | 67.5 | 2026-11-04 |
 
 Per-case detail (tools called, replies, failed checks) is in [docs/evals/](evals/).
-Costs are what OpenRouter billed. Each row is one full run of the v0.7.1 build; the checks
+Costs are what OpenRouter billed. Each row is one full run of the v0.7.1 build, made before
+the three cases of 10 November 2026 were added (a profile and a comparison that agree, the
+cheapest of a list, a description with no place); those have run on Haiku only, where each
+passed three runs of three. The checks
 are assertions on tool calls, arguments, the shared state and the reply text (no model
 grades another), so a case can pass on one run and fail on the next.
 
@@ -103,6 +106,6 @@ For a stakeholder demo where every answer counts, Opus 5.5 is worth its cost.
 
 ```bash
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,compare_two
-make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 58 cases, about $0.05
-make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 58 cases, about $1.60
+make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 61 cases, about $0.05
+make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 61 cases, about $1.60
 ```

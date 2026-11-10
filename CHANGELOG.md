@@ -70,6 +70,26 @@ measures and no data rebuild.
   patches of colour, lists the six cities as buttons that take the map to each. The card
   also sits above the chat input on a phone, where the extra row would have put "Skip"
   under it (#239).
+- One name, two scores. Asked about a town, a suburb, a neighbourhood's code or a
+  council, the assistant's profile is of one small area inside it, while a ranking and a
+  comparison score the larger place itself: "Tell me about Headingley" showed 70 and
+  "compare it with Chapel Allerton" showed 68 for the same name, with nothing to say why.
+  A profile and an explanation now carry `resolved_from` when the reference was to
+  something larger than the small area returned: what was named (kind, code, name) and
+  its own overall score under the same weighting, from the one population-weighted mean
+  that comparisons use (`scoring.weighted_mean`; the ranking's figure agrees with it).
+  The card says "This is one small area of Headingley. Headingley as a whole scores 68"
+  in four languages, the REST and MCP profiles carry the field, and the assistant is told
+  to use it when it speaks of the larger place. A postcode or a small area's own code
+  names itself, and nothing is added. The Area tab is unchanged: the page looks its
+  profile up by the small area selected, so the line appears on the assistant's cards.
+  A profile of the whole neighbourhood is #256 (#228).
+- A description of yourself with no place in it ("I'm retired, I have asthma and a dog,
+  and I want somewhere quiet") was answered with a ranking of the whole of the UK and
+  Ireland, Cork and Dublin first. The assistant now builds the profile and asks where you
+  are looking. On Claude Haiku 5.5 the new eval case failed 3 runs of 3 without the
+  instruction and passed 3 of 3 with it; cases that name a place still rank at once
+  (#236).
 
 ### Added
 
@@ -98,6 +118,13 @@ measures and no data rebuild.
   `nosniff`, `X-Frame-Options` and `Referrer-Policy`; a 12 MB body gets 413; and the API's
   `/agent` cannot be reached through the proxy. Each check was seen to fail against a
   weakened Caddyfile (#253).
+- Two eval checks and three cases (61 in all). `consistent`: every overall score a run's
+  tools gave the same area agrees, and at least one area was scored twice (a profile of
+  Headingley, then a comparison: #228 as a test). `cheapest_named`: asked which of the
+  areas just listed is the most affordable, the reply names the row with the lowest
+  typical price (#236's wrong comparative: Haiku passed it 3 runs of 3 before any change
+  to the instructions, so none was made). And the no-place profile case above. The three
+  have run on Haiku only; the published results are of the 58 cases before them.
 
 ### Changed
 

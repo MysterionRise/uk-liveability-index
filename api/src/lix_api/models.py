@@ -103,9 +103,29 @@ class IndicatorValue(BaseModel):
     )
 
 
+class ResolvedFrom(BaseModel):
+    """The larger area a reference named (a neighbourhood, a council, or the neighbourhood
+    a named town or suburb sits in) when a profile or explanation shows one small area of
+    it."""
+
+    kind: Literal["msoa", "lad"]
+    code: str
+    name: str = Field(description="As the reference named it, or in the locale asked for")
+    overall: float | None = Field(
+        None,
+        description="Its own overall score under the same weighting: the population-weighted "
+        "mean of its small areas, the figure compare_areas and rank_areas give for it",
+    )
+
+
 class AreaProfile(BaseModel):
     lsoa21cd: str
     lsoa_name: str
+    resolved_from: ResolvedFrom | None = Field(
+        None,
+        description="Set when the reference named something larger than this small area: "
+        "the profile is of one small area inside it, and this is the larger area's own score",
+    )
     neighbourhood: str | None = Field(
         None, description="Friendly mid-area name, in the locale asked for"
     )
@@ -300,6 +320,9 @@ class SourceRef(BaseModel):
 class Explanation(BaseModel):
     lsoa21cd: str
     name: str
+    resolved_from: ResolvedFrom | None = Field(
+        None, description="As on AreaProfile: the larger area the reference named, if any"
+    )
     preset: str
     overall: float | None
     overall_percentile: float | None
