@@ -27,6 +27,22 @@ measures and no data rebuild.
   between calls): the same client goes on calling them, whether it sends the session id an
   earlier version gave it or none. The URL, and the redirect from `/mcp`, are unchanged
   (#255).
+- `POST /api/v1/profile` measured a description before stripping it: 497 characters and
+  eight trailing spaces were refused as longer than 500, and a description of spaces alone
+  got a profile ("Nothing in the description matched…") rather than a refusal. It is
+  stripped first, and what is left must be 3 to 500 characters (#230).
+- A 422 quoted the refused value whole: 300 characters of `q`, or the entire body when a
+  field was missing. The body keeps its shape and quotes the first 80 characters of any
+  text the caller sent (#230).
+- Search: a name decoded wrongly on its way in ("Ynys MÃ´n" for "Ynys Môn") found the
+  village Ynys first, and nothing at all with a scope after it ("Ynys MÃ´n, Wales"). The
+  query is repaired before it is matched, with the helper that repairs the names
+  themselves, for every route and tool that takes a place (#230).
+- MCP `list_indicators` returned untyped text. It publishes an output schema like the
+  other six tools (structured content beside the text, whose fields are unchanged), and
+  with `detail` a caveat longer than 300 characters is cut at a word and ends "…". The
+  whole catalogue with `detail` is still about 68 KB (it was 70 KB) and one theme's is 4
+  to 20 KB, so the tool's description says to ask for detail a theme at a time (#230).
 
 ### Added
 
