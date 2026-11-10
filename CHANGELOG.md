@@ -21,6 +21,24 @@ measures and no data rebuild.
   assistant. A browser case forces that order (it failed five runs of five before the
   change); v0.7.1's fix for this (#248) was not one (#252).
 
+- Profiles: a description that turned one theme up and another down ("pubs and gigs, not
+  bothered about schools") got a rationale naming only what counts more; what counts less
+  now follows as its own sentence, in the four languages (#229). Saying it showed two
+  misreadings the silence had hidden, both fixed: a negated word that names one measure
+  and its theme ("no need for broadband", "not bothered about pubs") turned the whole
+  theme down, so buses and trains went to nothing with the broadband; and "no need for a
+  GP" weighed the distance to one more, because lower is better for a distance as it is
+  for noise.
+- The daily budget: a paid model that neither the provider nor Pydantic AI could price
+  never reached it (its tokens now count at a cautious price), and after a restart it
+  counted eval and recording runs made on the same machine (#254).
+- The fallback model's profiles: Qwen 3.8 does not keep to the low reasoning effort it is
+  asked for and ran out of tokens before answering two profiles in seven, so the rules
+  engine answered instead. The profile call has room for it now (none of 21 calls ran
+  out), and each model in the chain keeps its own provider settings on that call (#234).
+- Starting without a model key, the documented way to try the demo, no longer logs an
+  error (#239).
+
 ### Added
 
 - A soak run for the browser suite (`e2e-soak.yml`): nightly on master, five times over,
