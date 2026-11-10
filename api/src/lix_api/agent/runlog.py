@@ -61,6 +61,8 @@ def run_record(result, started: float, kind: str = "chat") -> dict:
     return {
         "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "kind": kind,
+        # Who ran it: the app, or an eval or recording run sharing its log (LIX_RUN_SOURCE)
+        "source": os.environ.get("LIX_RUN_SOURCE", "app"),
         "model": model_name(),
         "models": sorted({m.model_name for m in responses if m.model_name}),
         "tools": tools,

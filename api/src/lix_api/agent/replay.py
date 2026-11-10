@@ -155,6 +155,7 @@ def main() -> None:
     args = parser.parse_args()
     if args.cmd == "record":
         os.environ["LIX_MODEL"] = args.model  # model_settings() follows the model
+        os.environ["LIX_RUN_SOURCE"] = "record"  # not the app's spend
         os.environ.setdefault("PYDANTIC_AI_NO_BANNER", "1")
         asyncio.run(record(args.model))
         print(f"Wrote {CASSETTES}")
