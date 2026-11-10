@@ -521,12 +521,18 @@ def match_rules(store: Store, description: str, locale: str = "en") -> Matches:
     for phrase, meanings in _phrase_table(store, locale):
         for m in re.finditer(rf"\b{re.escape(phrase)}\b", text):
             negation = _negation(written, m.start(), m.end(), locale)
+            names_measure = any(kind == "indicator" for kind, _ in meanings)
             for kind, payload in meanings:
                 effect = (
                     "up"
                     if kind in ("rule", "preset")
                     else _effect(store, phrase, kind, str(payload), negation, locale)
                 )
+                # A word for one measure that is also a word for its theme ("broadband",
+                # "pubs", "gp") turns only the measure down: not needing broadband is no
+                # verdict on buses and trains. Wanting it still lifts the theme
+                if kind == "theme" and effect == "down" and names_measure:
+                    continue
                 found.append((m.start(), kind, payload, effect))
             text = text[: m.start()] + " " * (m.end() - m.start()) + text[m.end() :]
     found.sort(key=lambda f: f[0])
@@ -686,6 +692,39 @@ def _with_context(text: str, shown: list[str], locale: str) -> str:
     return text
 
 
+def _with_less(text: str, themes: list[str], measures: list[str], locale: str, reserve: int) -> str:
+    """``text`` (what counts more) with what counts less said after it: a description
+    that turned one theme up and another down used to name only the first (#229). Fewer
+    are named when the whole would not fit, measures going before themes; ``reserve``
+    keeps room for the note about context measures."""
+    themes, measures = list(themes), list(measures)
+    while themes or measures:
+        notes = []
+        if themes:
+            notes.append(
+                message(
+                    "profile_less_note" + ("_one" if len(themes) == 1 else ""),
+                    locale,
+                    fallback="profile_less_note",
+                    themes=", ".join(themes),
+                )
+            )
+        if measures:
+            notes.append(
+                message(
+                    "profile_less_indicators_note" + ("_one" if len(measures) == 1 else ""),
+                    locale,
+                    fallback="profile_less_indicators_note",
+                    indicators=", ".join(measures),
+                )
+            )
+        joined = " ".join([text, *notes])
+        if len(joined) + reserve <= RATIONALE_MAX:
+            return joined
+        (measures or themes).pop()
+    return text
+
+
 def _context_only(preset_label: str, shown: list[str], locale: str) -> str:
     """The sentence for a description that named only context measures."""
     shown = list(shown)
@@ -765,6 +804,11 @@ def _rationale(
             break
         text = render(up, inds)
     text = _cut(text, RATIONALE_MAX)
+    # The sentence above names what counts less only when nothing counts more
+    if up or inds:
+        text = _with_less(text, down, inds_down, locale, reserve)
+    elif down:
+        text = _with_less(text, [], inds_down, locale, reserve)
     return _with_context(text, shown, locale) if shown else text
 
 

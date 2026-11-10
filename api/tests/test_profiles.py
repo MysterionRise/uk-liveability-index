@@ -329,10 +329,44 @@ class TestNamesAndRationales:
     def test_lowered_measures_do_not_weigh_more(self, store):
         p = profile_by_rules(store, "I work from home", "en")
         assert p.indicator_weights["rail_service"] == 0.5
-        assert "Rail service" not in p.rationale and "weigh" in p.rationale
+        # Turned down: named among what weighs less (#229), never among what weighs more
+        more, _, less = p.rationale.partition("counts less.")
+        assert "Rail service" not in more and "weighs more" in more
+        assert "Rail service" in less and "weighs less within its theme" in less
         # "fibre" names the measure alone ("broadband" is the transport theme as well)
         only_down = profile_by_rules(store, "I don't care about fibre", "en").rationale
         assert "weighs less within its theme" in only_down
+
+    def test_what_counts_less_is_said_after_what_counts_more(self, store):
+        # #229: a description that turned one theme up and another down named only the first
+        r = profile_by_rules(store, "pubs and gigs, not bothered about schools", "en").rationale
+        assert "counts more" in r and r.endswith("Schools & childcare counts less.")
+        assert len(r) <= profiles.RATIONALE_MAX
+        cy = profile_by_rules(store, "dim ots am ysgolion, tafarndai da", "cy").rationale
+        assert "yn pwyso mwy" in cy and "yn cyfrif llai." in cy
+        gd = profile_by_rules(store, "ag obair bhon taigh, gun chlann", "gd").rationale
+        assert "nas truime" in gd and "a' cunntadh nas lugha." in gd
+        ga = profile_by_rules(store, "ag obair ón mbaile, gan pháistí", "ga").rationale
+        assert "níos mó meáchain" in ga and ga.endswith("níos lú.")
+
+    def test_the_less_note_gives_way_before_what_counts_more(self, store):
+        # Room is short: every theme that counts more is still named, the rest is dropped
+        text = "safety, schools, transport and health matter, not bothered about pubs or broadband"
+        r = profile_by_rules(store, text, "en").rationale
+        assert len(r) <= profiles.RATIONALE_MAX and "count more" in r
+        assert profiles._with_less("x" * 190, ["Safety"], ["Broadband"], "en", 0) == "x" * 190
+
+    def test_not_wanting_one_measure_leaves_its_theme_alone(self, store):
+        # "broadband", "pubs" and "gp" are words for a theme as well as for one measure:
+        # "no need for broadband" used to set Transport & connectivity to 0
+        p = profile_by_rules(store, "no need for broadband", "en")
+        assert p.indicator_weights["gigabit_broadband"] == 0.5
+        assert "transport" not in p.theme_weights
+        q = profile_by_rules(store, "not bothered about pubs, schools matter", "en")
+        assert q.indicator_weights["well_run_pubs"] == 0.5 and "amenities" not in q.theme_weights
+        assert q.theme_weights["education"] == 2
+        # Wanting it still lifts the theme
+        assert profile_by_rules(store, "broadband matters", "en").theme_weights["transport"] == 2
 
     def test_a_long_gaelic_rationale_ends_on_a_sentence(self, store):
         for text in ("buthan agus cinema", "buthan, theatre"):
