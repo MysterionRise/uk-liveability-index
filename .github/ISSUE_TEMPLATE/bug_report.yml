@@ -14,7 +14,7 @@ body:
     attributes:
       label: Version
       description: The release tag or commit (the About page shows it), and the data release if you know it.
-      placeholder: v0.7.1, data-2026-11
+      placeholder: v0.7.2, data-2026-11
     validations:
       required: true
   - type: dropdown

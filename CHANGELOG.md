@@ -166,6 +166,10 @@ measures and no data rebuild.
   OpenRouter key and waits for a reviewer, and the reports go to an artifact rather than
   to `docs/evals/`. `api/evals/repeats.py` writes the same summary for any set of reports
   (#253).
+- `qa/README.md`: how a release's test pass is run and where it lives. Each tester gets a
+  brief from the template there; findings and evidence stay in the git-ignored
+  `qa/<release>/`, and what was found goes to a "Test pass vX.Y.Z" issue (the 4 November
+  pass's evidence sat in a temp folder that the system cleaned).
 
 ### Changed
 
