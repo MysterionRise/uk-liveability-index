@@ -2,10 +2,16 @@
 
 import polars as pl
 
-from lix_api.models import AreaProfile, IndicatorValue, Point, ThemeScore
+from lix_api.models import AreaProfile, IndicatorValue, Place, Point, ResolvedFrom, ThemeScore
 from lix_api.services.names import base_locale, english_if_different, localised, ruc_label
-from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
-from lix_api.services.search import distinct_name, resolve_lsoa
+from lix_api.services.scoring import (
+    ThemeWeights,
+    percentile,
+    resolve_weights,
+    scores_for,
+    weighted_mean,
+)
+from lix_api.services.search import distinct_name, named_area, resolve_area
 from lix_api.store import Store
 from lix_core.scoring import band_of
 
@@ -145,6 +151,38 @@ def indicator_value(store: Store, row: dict, indicator_id: str) -> IndicatorValu
     )  # fmt: skip
 
 
+def resolved_from(
+    store: Store,
+    named: Place | None,
+    code: str,
+    every: pl.DataFrame,
+    locale: str | None = None,
+) -> ResolvedFrom | None:
+    """The larger area ``named`` by the reference a profile or explanation of the small
+    area ``code`` answers, with its own overall under the same weighting (``every``: the
+    scores of every small area). None when the reference named the small area itself,
+    or a nation's small area is its own neighbourhood (Northern Ireland)."""
+    area = named_area(store, named) if named else None
+    if area is None or area == ("msoa", code):
+        return None
+    level, area_code = area
+    column, name_col = {"msoa": ("msoa21cd", "msoa_name"), "lad": ("lad_cd", "lad_nm")}[level]
+    inside = store.features[column] == area_code
+    if not inside.any():
+        return None
+    first = store.features.filter(inside).row(0, named=True)
+    # A town or suburb keeps the name it was asked by; a neighbourhood or council its own
+    name = named.name if named.kind == "place" else localised(first, name_col, locale)
+    return ResolvedFrom(
+        kind=level,
+        code=area_code,
+        name=name or named.name,
+        overall=weighted_mean(
+            every.filter(inside)["overall"], store.features.filter(inside)["population"]
+        ),
+    )
+
+
 def area_profile(
     store: Store,
     ref: str,
@@ -153,7 +191,7 @@ def area_profile(
     locale: str | None = None,
     indicator_weights: dict[str, float] | None = None,
 ) -> AreaProfile:
-    code = resolve_lsoa(store, ref)
+    code, named = resolve_area(store, ref)
     row = store.features.row(store.lsoa_index[code], named=True)
     name, themes, multipliers = resolve_weights(store, preset, theme_weights, indicator_weights)
     every = scores_for(store, themes, multipliers)
@@ -214,6 +252,7 @@ def area_profile(
     lo, hi = row.get(f"pct_lo__{preset_id}"), row.get(f"pct_hi__{preset_id}")
     return AreaProfile(
         lsoa21cd=code,
+        resolved_from=resolved_from(store, named, code, every, locale),
         lsoa_name=distinct_name(
             store,
             "lsoa",

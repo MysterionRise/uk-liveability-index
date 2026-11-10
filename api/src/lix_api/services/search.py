@@ -503,28 +503,48 @@ def resolve_lsoa(store: Store, ref: str) -> str:
     city, whose point is the city centre) rather than the middle of its bounding box,
     which is often a suburb.
     """
+    return resolve_area(store, ref)[0]
+
+
+def resolve_area(store: Store, ref: str) -> tuple[str, Place | None]:
+    """The LSOA that stands for a reference (see ``resolve_lsoa``) and, when the reference
+    named something larger than one small area (a neighbourhood, a council, a town or a
+    suburb), the place it named: a profile of "Hebden Bridge" is of one small area in it,
+    and should say so (#228)."""
     places = search_place(store, ref, limit=6)
     if not places:
         raise LookupError(f"Couldn't find an area for {ref!r}")
     top = places[0]
     _reject_wide(top)  # the middle of a nation is not a neighbourhood
+    larger = top if top.kind in ("msoa", "lad", "place") else None
     if top.lsoa21cd:
-        return top.lsoa21cd
+        return top.lsoa21cd, larger
     namesake = next(
         (p for p in places[1:] if p.lsoa21cd and p.name.lower() == top.name.lower()), None
     )
     if namesake:
-        return namesake.lsoa21cd
+        return namesake.lsoa21cd, larger
     # A neighbourhood or council without a namesake place: its most populous area, which
     # is inside it (the middle of its bounding box may be a bay or the next council)
     column = {"msoa": "msoa21cd", "lad": "lad_cd"}.get(top.kind)
     if column and top.code:
         inside = store.features.filter(pl.col(column) == top.code)
         if inside.height:
-            return inside.sort("population", descending=True)["lsoa21cd"][0]
+            return inside.sort("population", descending=True)["lsoa21cd"][0], larger
     if top.centre:
-        return nearest_lsoa(store, top.centre)
+        return nearest_lsoa(store, top.centre), larger
     raise LookupError(f"Couldn't find an area for {ref!r}")
+
+
+def named_area(store: Store, place: Place) -> tuple[str, str] | None:
+    """The (level, code) a place means wherever areas are averaged or compared: a
+    neighbourhood or a council is itself; a named town or suburb is the neighbourhood it
+    sits in, not one small area of it. The rule compare_areas applies."""
+    if place.kind in ("msoa", "lad") and place.code:
+        return place.kind, place.code
+    if place.kind == "place" and place.lsoa21cd in store.lsoa_index:
+        return "msoa", store.features["msoa21cd"][store.lsoa_index[place.lsoa21cd]]
+    return None
 
 
 def nearest_lsoa(store: Store, point: Point) -> str:
