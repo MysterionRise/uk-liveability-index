@@ -368,6 +368,19 @@ class TestNamesAndRationales:
         # Wanting it still lifts the theme
         assert profile_by_rules(store, "broadband matters", "en").theme_weights["transport"] == 2
 
+    def test_not_needing_something_nearby_turns_its_distance_down(self, store):
+        # Lower is better for a distance as it is for noise, so "no need for a GP" was read
+        # like "no noise" and weighed the distance to a GP more
+        assert (
+            profile_by_rules(store, "no need for a GP", "en").indicator_weights["gp_distance"]
+            == 0.5
+        )
+        shop = profile_by_rules(store, "we don't need a supermarket", "en").indicator_weights
+        assert shop["supermarket_distance"] == 0.5
+        # A problem is still a problem
+        assert profile_by_rules(store, "no noise", "en").indicator_weights["noise_exposure"] == 2
+        assert profile_by_rules(store, "no crime", "en").theme_weights["safety"] == 2
+
     def test_a_long_gaelic_rationale_ends_on_a_sentence(self, store):
         for text in ("buthan agus cinema", "buthan, theatre"):
             r = profile_by_rules(store, text, "gd").rationale

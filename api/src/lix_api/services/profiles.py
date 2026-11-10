@@ -247,6 +247,8 @@ PROBLEM_WORDS = frozenset({
     "trosedd", "llifogydd", "glaw", "swn", "eucoir", "tuil", "uisge", "fuaim", "coireacht",
     "tuile", "torann",
 })  # fmt: skip
+# Units of "how far to the nearest…": measures of an asset, though lower is better
+DISTANCE_UNITS = frozenset({"metres", "km"})
 ASSET_WORDS = frozenset({
     "quiet", "safe", "safety", "security", "sunshine", "sunny", "sun", "warm", "mild",
     "affordability", "affordable", "cheap",
@@ -506,8 +508,13 @@ def _effect(
         return "down"
     if phrase in _word_forms(PROBLEM_WORDS, locale):
         return "up"
-    if kind == "indicator" and store.indicators[ident].direction == "lower_better":
-        return "up"
+    if kind == "indicator":
+        spec = store.indicators[ident]
+        # Lower is better for a problem (noise, crime: "no noise" asks for less of it) and
+        # for the distance to something wanted (a GP, a supermarket: "no need for a GP"
+        # asks for nothing). A distance names an asset
+        if spec.direction == "lower_better" and spec.unit not in DISTANCE_UNITS:
+            return "up"
     return "down"
 
 
