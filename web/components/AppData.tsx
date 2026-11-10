@@ -9,7 +9,16 @@
 import { UseAgentUpdate, useAgent } from "@copilotkit/react-core/v2";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { searchPlaces } from "@/lib/api";
 import {
@@ -86,13 +95,25 @@ interface StateContext {
 
 const StateCtx = createContext<StateContext>({ state: DEFAULT_STATE, update: () => {} });
 
+/** What the page itself has handed to an agent. An agent keeps a copy of what it is given,
+ * so the page sees its own push come back as a new object: that is an echo, not a snapshot
+ * from the assistant, and must never replace page state that has moved on since (#252). */
+const pushedByPage = new WeakSet<object>();
+
+/** Gives an agent the page's state and remembers the copy it made of it. */
+function push(agent: { setState: (state: LiveabilityState) => void; state?: unknown }, next: LiveabilityState) {
+  agent.setState(next);
+  if (agent.state && typeof agent.state === "object") pushedByPage.add(agent.state);
+}
+
 /**
  * The page owns the view state (preset, weights, map, shortlist) and mirrors it into the
  * assistant's shared AG-UI state:
  * - user changes update the page state and are pushed to the agent;
  * - the agent's snapshots (the assistant set weights or highlighted areas) update the page;
  * - a new agent instance (CopilotKit swaps in the runtime's agent once it connects, a few
- *   seconds after load) is given the current state, so early changes aren't lost;
+ *   seconds after load) is given the current state, so early changes aren't lost; every
+ *   change goes to the agent of the moment (`commit`), never to one captured earlier;
  * - the URL hash mirrors the shareable part, and a shared link seeds the first state;
  *   without one, the profile this browser keeps (lix.profile) does, and while a profile
  *   is active the saved copy follows the sliders;
@@ -111,6 +132,20 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
   const pushedTo = useRef<unknown>(null);
   const { scores } = useData();
 
+  // The agent of the moment. Anything asynchronous (the lookup below) must not keep the
+  // agent it started with: after the swap a write to the placeholder is lost, and the page
+  // used to take the new agent's copy of the older state as news, undoing the write (#252)
+  const agentRef = useRef(agent);
+  useLayoutEffect(() => {
+    agentRef.current = agent;
+  }, [agent]);
+  // Every change the page makes: its own state, and the agent's copy of it
+  const commit = useCallback((next: LiveabilityState) => {
+    latest.current = next;
+    setState(next);
+    push(agentRef.current, next);
+  }, []);
+
   // A shared link names an area but no view: take the recipient there once the data is
   // in (the hash never carries the map's position)
   const flownTo = useRef<string | null>(null);
@@ -128,13 +163,14 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
             ? ([hit.centre.lon - 0.02, hit.centre.lat - 0.012, hit.centre.lon + 0.02, hit.centre.lat + 0.012] as const)
             : null);
         if (!bbox || latest.current.map.selected !== code) return;
-        const next = { ...latest.current, map: { ...latest.current.map, bbox: [...bbox] as [number, number, number, number] } };
-        latest.current = next;
-        setState(next);
-        agent.setState(next);
+        commit({ ...latest.current, map: { ...latest.current.map, bbox: [...bbox] as [number, number, number, number] } });
       })
-      .catch(() => {});
-  }, [scores, agent]);
+      .catch((error) => {
+        // Not final: the next link or hash change may try again
+        if (flownTo.current === code) flownTo.current = null;
+        if (process.env.NODE_ENV !== "production") console.warn("Couldn't look up the selected area's position", error);
+      });
+  }, [scores, commit]);
   useEffect(() => {
     flyToSelected();
   }, [flyToSelected]);
@@ -156,23 +192,24 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
         mode: s.mode,
         locale: s.locale,
       } as Partial<WireState>);
-      latest.current = next;
-      setState(next);
-      agent.setState(next);
+      commit(next);
       flownTo.current = null;
       flyToSelected();
       window.dispatchEvent(new CustomEvent(LINK_ARRIVED, { detail: next.map.selected }));
     };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
-  }, [agent, flyToSelected]);
+  }, [commit, flyToSelected]);
 
-  // Snapshots from the agent replace the page state (adjusted during render, not in an effect)
+  // Snapshots from the assistant replace the page state (adjusted during render, not in an
+  // effect). The page's own pushes coming back are not snapshots: see pushedByPage
   const [seenAgentState, setSeenAgentState] = useState<unknown>(agent.state);
   if (agent.state !== seenAgentState) {
     setSeenAgentState(agent.state);
     const incoming = agent.state as Partial<WireState> | undefined;
-    if (incoming && Object.keys(incoming).length) setState(normaliseState(incoming));
+    if (incoming && Object.keys(incoming).length && !pushedByPage.has(incoming)) {
+      setState(normaliseState(incoming));
+    }
   }
 
   const restored = useRef(false);
@@ -195,7 +232,7 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
   useEffect(() => {
     if (pushedTo.current === agent) return;
     pushedTo.current = agent;
-    agent.setState(latest.current);
+    push(agent, latest.current);
   }, [agent]);
 
   // The shortlist this browser keeps joins the state right after mount (not in the first
@@ -211,21 +248,13 @@ export function LiveabilityStateProvider({ children }: { children: React.ReactNo
     if (!saved.length) return;
     const s = latest.current;
     const codes = new Set(s.shortlist.map((i) => i.code));
-    const next = { ...s, shortlist: [...saved.filter((i) => !codes.has(i.code)), ...s.shortlist] };
-    latest.current = next;
-    setState(next);
-    agent.setState(next);
+    commit({ ...s, shortlist: [...saved.filter((i) => !codes.has(i.code)), ...s.shortlist] });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const update = useCallback(
-    (fn: (s: LiveabilityState) => LiveabilityState) => {
-      const next = fn(latest.current);
-      latest.current = next;
-      setState(next);
-      agent.setState(next);
-    },
-    [agent],
+    (fn: (s: LiveabilityState) => LiveabilityState) => commit(fn(latest.current)),
+    [commit],
   );
 
   const value = useMemo(() => ({ state, update }), [state, update]);

@@ -504,6 +504,61 @@ test("a shared link with an area opens its profile there, in Ireland's own terms
   await expect(page.getByTestId("area-profile")).toContainText("of the UK and Ireland", { timeout: 30_000 });
 });
 
+test("the assistant connecting while a shared link's area is looked up keeps the flight", async ({ page }) => {
+  // #252: CopilotKit hands the page a placeholder agent until its runtime answers /info,
+  // then a different one. The lookup that finds the area's position used to write it to
+  // whichever agent it had started with, and the page then took the new agent's echo of
+  // the older state as news: the profile opened and the map stayed on the whole country.
+  // It failed about one CI run in seven. This forces that order instead of waiting for it.
+  const CODE = "I01018469";
+  // 1. /info waits until the page has asked where the area is, so the lookup starts
+  //    while the placeholder agent is current
+  let sent!: () => void;
+  const lookupSent = new Promise<void>((resolve) => (sent = resolve));
+  page.on("request", (r) => {
+    if (r.url().includes("/api/v1/search") && r.url().includes(CODE)) sent();
+  });
+  await page.route("**/api/copilotkit/info", async (route) => {
+    await lookupSent;
+    await route.continue();
+  });
+  // 2. The lookup's answer is held in the page until the runtime's agent has been handed
+  //    the page's state (still without a position), then delivered in the same turn of
+  //    the event loop, before the page renders again
+  await page.addInitScript((code) => {
+    const w = window as any;
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    let infoAnswered = false;
+    const clone = w.structuredClone.bind(w);
+    // An agent's setState clones what it is given
+    w.structuredClone = (value: any, options?: any) => {
+      if (infoAnswered && value?.map?.selected === code && value.map.bbox == null) release();
+      return clone(value, options);
+    };
+    const realFetch = w.fetch.bind(w);
+    w.fetch = async (input: any, init?: any) => {
+      const url = String(input?.url ?? input);
+      if (url.includes("/api/copilotkit/info")) {
+        const response = await realFetch(input, init);
+        infoAnswered = true;
+        return response;
+      }
+      if (url.includes("/api/v1/search") && url.includes(code)) {
+        const data = await (await realFetch(input, init)).json();
+        await gate;
+        return { ok: true, status: 200, json: async () => data };
+      }
+      return realFetch(input, init);
+    };
+  }, CODE);
+  await page.goto(`/${encode({ p: "balanced", s: CODE })}`);
+  await expect(page.getByTestId("area-profile")).toContainText("Rathmines East D", { timeout: 30_000 });
+  await expect
+    .poll(() => page.evaluate(() => (window as any).__map?.getZoom?.() ?? 0), { timeout: 15_000 })
+    .toBeGreaterThan(8);
+});
+
 test("the first click on the map opens the area's profile", async ({ page }) => {
   await mapReady(page);
   await page.evaluate(() => (window as any).__map.jumpTo({ center: [-1.539, 53.829], zoom: 12 }));

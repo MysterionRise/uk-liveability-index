@@ -9,6 +9,25 @@ All notable changes to this project. The format follows
 Polish and reliability after the launch kit (#201, the review of 10 November 2026). No new
 measures and no data rebuild.
 
+### Fixed
+
+- A shared link that names an area sometimes opened its profile and left the map on the
+  whole-country view (about one load in seven on CI's runners, where it failed a required
+  check four times). CopilotKit hands the page a placeholder agent until its runtime
+  answers, then a different one; the lookup that finds the area's position wrote it to
+  whichever agent it had started with, and the page then took the new agent's copy of the
+  older state as news. Every change the page makes now goes to the agent of the moment,
+  and the page no longer treats its own pushes coming back as snapshots from the
+  assistant. A browser case forces that order (it failed five runs of five before the
+  change); v0.7.1's fix for this (#248) was not one (#252).
+
+### Added
+
+- A soak run for the browser suite (`e2e-soak.yml`): nightly on master, five times over,
+  and on demand for one case on any branch, which is how a fix for an intermittent failure
+  is proven. Both web servers' output now reaches the test log, and a failure keeps its
+  trace (#253).
+
 ### Security
 
 - The repository's scanners are on: secret scanning with push protection, Dependabot alerts
