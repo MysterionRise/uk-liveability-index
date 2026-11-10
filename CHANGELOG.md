@@ -95,6 +95,21 @@ measures and no data rebuild.
   4 November has a median of 5.58 (the README's 6), and docs/development.md still said
   Opus and Qwen had passed the suite's October form, though all three models were rerun
   on the 58 cases on 4 November (#253).
+- The chat panel, four things found by the v0.7.1 pass (#236, #231, #239):
+  - **A second Enter cancelled the answer.** CopilotKit's input reads Enter on an empty
+    box as "stop" while a reply is on its way: the question stayed, no answer came and
+    nothing said why. Enter on an empty box now does nothing; the Stop button stops.
+  - **The Stop button was called "Send"** to a screen reader, in all four languages: an
+    `aria-label` on the button's slot overrode CopilotKit's own switch. The two names
+    now go through its labels ("Stop", "Stopio", "Stad", "Stop").
+  - **A reply opens at the question.** The view followed the bottom of the reply, so
+    after a tall card only its last lines showed (`autoScroll="pin-to-send"`). On a
+    390×844 phone the chat still has only about 110 px for messages, and a card's heading
+    sits behind the input until scrolled: #278.
+  - **Recorded answers are marked.** Started without a model key (or as the offline
+    demo, `LIX_MODEL=replay`), the assistant replays recordings of the suggested
+    questions; the panel now says so in a line above the chat, read from the API's
+    `/health` (`assistant.recorded_only`).
 
 ### Added
 
