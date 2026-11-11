@@ -104,6 +104,14 @@ measures and no data rebuild.
   opened a small area in South Cambridgeshire, "Islington" one in Leeds (24 of the 481
   council names). A namesake stands for a council or a neighbourhood only from inside it
   (#228).
+- The assistant's reply put a small area's percentile on its neighbourhood's score. The
+  card was right ("This is one small area of Headingley, which scores 68 as a whole"),
+  and the prose under it read "Headingley scores 68.3 overall, better than 84% of the UK
+  and Ireland" in 13 of the pass's 17 live replies: 84% belongs to the small area's 69.5.
+  The result gave the larger area a score and no percentile, and nothing said whose the
+  rest was. The instructions now say that everything else in a profile is the small
+  area's and that the percentile goes with the small area's score. On Haiku the new eval
+  case passed 8 runs of 12 without the sentence and 16 of 16 with it (#290).
 - The assistant rewrote what you said about yourself before building your profile. "I'm
   28, work in tech and love going out" reached the profile builder as "…nightlife, bars,
   restaurants and good transport for commuting", and the profile came out on the Commuter
@@ -167,13 +175,14 @@ measures and no data rebuild.
   `nosniff`, `X-Frame-Options` and `Referrer-Policy`; a 12 MB body gets 413; and the API's
   `/agent` cannot be reached through the proxy. Each check was seen to fail against a
   weakened Caddyfile (#253).
-- Two eval checks and three cases (61 in all). `consistent`: every overall score a run's
+- Three eval checks and four cases (62 in all). `consistent`: every overall score a run's
   tools gave the same area agrees, and at least one area was scored twice (a profile of
   Headingley, then a comparison: #228 as a test). `cheapest_named`: asked which of the
   areas just listed is the most affordable, the reply names the row with the lowest
   typical price (#236's wrong comparative: Haiku passed it 3 runs of 3 before any change
-  to the instructions, so none was made). And the no-place profile case above. The three
-  have run on Haiku only; the published results are of the 58 cases before them.
+  to the instructions, so none was made). `percentile_of_its_score`: in a reply about a
+  place's profile, the score written last before the small area's percentile is not the
+  larger area's (#290). And the no-place profile case above.
 - A claims check in `lix docs --check`, which CI already runs: the counts that README.md,
   the hand-written docs, `CITATION.cff` and `.env.example` state are compared with what
   the repository computes, and a stale one fails the pull request with its file, its line
@@ -202,6 +211,12 @@ measures and no data rebuild.
 
 ### Changed
 
+- The app answers to `localhost` alone. A request under any other host name gets a 421
+  that names the setting to change. An install opened to a network with
+  `LIX_BIND=0.0.0.0`, or behind another proxy or a tunnel, must now say what it is
+  reached by: `LIX_HOSTS="192.168.1.20 mybox.local"` (space-separated; in `.env` or on
+  the command line). Nothing changes for `make up` on your own machine. Why: see Security
+  below (#291).
 - Release candidates: a `vX.Y.Z-rc.N` tag rehearses the release workflow, which until now
   could only run for real (the six action majors merged in #244 had never run). It
   publishes images tagged `X.Y.Z-rc.N` without moving `latest` (the workflow tagged
@@ -238,6 +253,16 @@ measures and no data rebuild.
 
 ### Security
 
+- DNS rebinding passed the proxy's cross-site rule, which v0.7.1's notes said stopped it.
+  The rule compares a request's `Origin` with its `Host`; after a rebind the attacker's
+  page and its requests carry one name, so the two agree. The pass's API tester showed it
+  with a raw request and with a real browser page under a foreign name: 200 from the SQL
+  endpoint, from `/mcp` and from the assistant's run route, which runs on the owner's
+  key up to the day's budget. The proxy now refuses a `Host` that is not `localhost`,
+  `127.0.0.1`, `::1` or named in `LIX_HOSTS`, before anything else is looked at, and the
+  security spec has the case (a foreign `Host` with a matching `Origin`), which fails on
+  v0.7.1's configuration. Not measured: a real rebind, and what current browsers do
+  about a public page reaching a loopback address (#291).
 - The repository's scanners are on: secret scanning with push protection, Dependabot alerts
   and security updates, CodeQL, private vulnerability reporting (#224). Their first run saw
   what `npm audit` cannot: 19 advisories in six transitive Python packages. Three are not on
