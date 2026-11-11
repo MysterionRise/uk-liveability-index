@@ -8,7 +8,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from evals.evaluators import grounded_numbers  # noqa: E402
-from evals.run import build_dataset, load_cases, summarise  # noqa: E402
+from evals.run import build_dataset, load_cases, summarise, thinking_refusals  # noqa: E402
 
 
 def test_cases_file_is_well_formed():
@@ -160,6 +160,20 @@ def test_the_cheapest_of_a_ranking_is_the_one_named():
     amp = ranking.replace("Longwell Green", "Longwell Green & Oldland Common")
     spelt = "Longwell Green and Oldland Common is the most affordable."
     assert _judge(CheapestNamed(), returns=[amp], reply=spelt).value
+
+
+def test_refused_thinking_blocks_are_counted_over_a_run(recwarn):
+    """Every one, from the same place in the code too; other warnings are left alone."""
+    import warnings
+
+    from pydantic_ai.models.anthropic import AnthropicStaleThinkingBlockWarning
+
+    with thinking_refusals() as refused:
+        for _ in range(3):
+            warnings.warn("refused and re-sent", AnthropicStaleThinkingBlockWarning)
+        warnings.warn("something else", RuntimeWarning)
+    assert refused == [3]
+    assert [str(w.message) for w in recwarn.list] == ["something else"]
 
 
 def test_a_check_that_raises_fails_its_case():

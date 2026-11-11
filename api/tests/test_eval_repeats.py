@@ -163,6 +163,15 @@ def test_costs_missing_or_estimated_are_said(tmp_path):
     assert "- Total cost: $0.0010 (estimated from list prices)" in markdown(merge([estimated]))
 
 
+def test_refused_thinking_blocks_are_added_up_and_said():
+    quiet = markdown(merge([report(result("steady")), report(result("steady"))]))
+    assert "refused" not in quiet
+    runs = [report(result("steady"), thinking_refusals=2), report(result("steady"))]
+    assert "- Requests refused over a replayed thinking block and re-sent: 2" in markdown(
+        merge(runs)
+    )
+
+
 def test_unusable_input_is_an_error_not_a_pass(tmp_path, capsys):
     (tmp_path / "empty").mkdir()
     assert main([str(tmp_path / "empty")]) == 2
