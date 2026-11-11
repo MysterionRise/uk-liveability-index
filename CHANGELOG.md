@@ -214,7 +214,10 @@ measures and no data rebuild.
   typical price (#236's wrong comparative: Haiku passed it 3 runs of 3 before any change
   to the instructions, so none was made). `percentile_of_its_score`: in a reply about a
   place's profile, the score written last before the small area's percentile is not the
-  larger area's (#290). And the no-place profile case above.
+  larger area's (#290). And the no-place profile case above. The release's runs, on
+  11 November: Opus 61 of the 62; Haiku 60, 60 and 61 over three runs, no case failing
+  all three; Qwen 54 and 54 over two. `docs/evals.md` lists every miss, three kinds of
+  which are the checks' own (#301), and says what the runs found and fixed.
 - A claims check in `lix docs --check`, which CI already runs: the counts that README.md,
   the hand-written docs, `CITATION.cff` and `.env.example` state are compared with what
   the repository computes, and a stale one fails the pull request with its file, its line

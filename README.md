@@ -135,13 +135,13 @@ as the fallback:
 
 | Model (via OpenRouter) | Eval cases passed | Typical answer | Cost per question |
 |---|---|---|---|
-| Claude Haiku 5.5 (default) | 56/58 | 4 s | about $0.001 |
-| Qwen 3.8 27B (fallback, open weights) | 52/58 | 6 s | about $0.002 |
-| Claude Opus 5.5 | 56/58 | 6 s | about $0.03 |
+| Claude Haiku 5.5 (default) | 60/62 | 4 s | about $0.001 |
+| Qwen 3.8 27B (fallback, open weights) | 54/62 | 7 s | about $0.002 |
+| Claude Opus 5.5 | 61/62 | 5 s | about $0.03 |
 
-One full run each on 4 November 2026; a case can pass on one run and fail on the next
-(Haiku's two misses passed three reruns each), and [docs/evals.md](docs/evals.md) lists
-every miss. The $1 daily budget buys several hundred Haiku questions and about thirty Opus
+One full run each on 11 November 2026; a case can pass on one run and fail on the next
+(two more runs of the default passed 60 and 61, a second of the fallback 54), and
+[docs/evals.md](docs/evals.md) lists every miss. The $1 daily budget buys several hundred Haiku questions and about thirty Opus
 ones (the stable prefix is cached, so an Opus follow-up costs a few cents).
 
 Set `LIX_MODEL` in `.env` to use another: `anthropic:claude-opus-5-5`, `openai:gpt-5`,
