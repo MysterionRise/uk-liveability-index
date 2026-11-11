@@ -263,6 +263,35 @@ measures and no data rebuild.
   security spec has the case (a foreign `Host` with a matching `Origin`), which fails on
   v0.7.1's configuration. Not measured: a real rebind, and what current browsers do
   about a public page reaching a loopback address (#291).
+- Four ways one request, or one line in a file, could stop the API, found by the pass's
+  API tester on the release candidate and fixed before the tag. None needs a key; each
+  needs a caller on the machine, or a page that reaches it (above) (#293):
+  - **An MCP tool call could be 8 MiB.** The 16 KB cap on REST bodies did not cover
+    `/mcp`: one 4 MB `tools/call` with 420,000 theme weights stopped `/health` for 8 to
+    14 s, and twelve in parallel got the container OOM-killed. `/mcp` now has the REST
+    cap, and a weights map takes at most 32 themes or 512 indicators.
+  - **A SELECT could switch on DuckDB's logging.** `select * from enable_logging()` is
+    one SELECT, and the locked configuration did not stop it: every caller's queries were
+    then kept where any caller could read them, and pointed at a file it broke every
+    later query (a 500) and aborted the process a few queries on. Analyst SQL now reads
+    the function names from the engine's own parse of the statement as well as from its
+    text, so a quoted name or a comment before the bracket hides nothing (`"repeat"(…)`,
+    `repeat/**/(…)` and `"range"(100000000)` all ran before). The functions that change
+    the engine or read its log are refused, and the table functions are three:
+    `generate_series`, `range` and `unnest`. `duckdb_settings()`, `duckdb_tables()`,
+    `pragma_table_info()`, `json_each()` and the like are no longer callable; `describe`,
+    `show`, `summarize` and `information_schema` still read the catalogue. An engine that
+    fails while a query is set up answers 400, not 500, and so does a query holding half
+    of a surrogate pair. Plain concatenation can still build a value of any size: that
+    is #235's worker process.
+  - **`/health` waited behind busy workers**: 10 s behind sixty slow queries, 39 s
+    behind 120. It now answers from the event loop.
+  - **One odd line in `data/logs/agent.jsonl` kept the API from starting**, in a restart
+    loop: a line reading `null`, a cost that is text, a byte that is not UTF-8. A
+    negative or NaN cost loaded and switched the day's budget off. The app never writes
+    such a line; a hand or another tool can. Nothing in the log raises now: a line that
+    is not a run record is left out, a cost that is not a plain amount is counted by its
+    tokens at the cautious price, and one warning gives the number of such lines.
 - The repository's scanners are on: secret scanning with push protection, Dependabot alerts
   and security updates, CodeQL, private vulnerability reporting (#224). Their first run saw
   what `npm audit` cannot: 19 advisories in six transitive Python packages. Three are not on
