@@ -2,6 +2,7 @@
 a model's draft, the engine choice and the model path."""
 
 import json
+import logging
 import os
 
 import pytest
@@ -9,11 +10,27 @@ from pydantic import ValidationError
 from pydantic_ai.messages import ModelResponse, TextPart, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 
+from lix_api.agent.messages import message
 from lix_api.models import ProfileDraft, WeightProfile
 from lix_api.services import profiles
 from lix_api.services.profiles import _from_draft, engine_choice, profile_by_rules, profile_run
+from lix_core.config import load_label_catalogues
 
 OWNER = "I'm a young professional with one child going into primary school and I have a sun deficit"
+LOCALES = ["en", "cy", "gd", "ga"]
+
+
+@pytest.fixture
+def translated(store, monkeypatch):
+    """The store with the label catalogues of config/i18n, as the pipeline writes them
+    into a pack's manifest. The test pack carries next to none, and the Welsh, Gaelic
+    and Irish labels are what makes a note run out of room."""
+    catalogues = {
+        locale: {k: v for k, v in labels.items() if k != "_meta"}
+        for locale, labels in load_label_catalogues().items()
+    }
+    monkeypatch.setitem(store.manifest, "i18n", catalogues)
+    return store
 
 
 class TestRules:
@@ -349,12 +366,154 @@ class TestNamesAndRationales:
         ga = profile_by_rules(store, "ag obair ón mbaile, gan pháistí", "ga").rationale
         assert "níos mó meáchain" in ga and ga.endswith("níos lú.")
 
-    def test_the_less_note_gives_way_before_what_counts_more(self, store):
-        # Room is short: every theme that counts more is still named, the rest is dropped
-        text = "safety, schools, transport and health matter, not bothered about pubs or broadband"
-        r = profile_by_rules(store, text, "en").rationale
-        assert len(r) <= profiles.RATIONALE_MAX and "count more" in r
-        assert profiles._with_less("x" * 190, ["Safety"], ["Broadband"], "en", 0) == "x" * 190
+    @pytest.mark.parametrize("locale", LOCALES)
+    def test_single_measures_give_way_before_a_theme_that_counts_less(
+        self, translated, monkeypatch, locale
+    ):
+        """When the 200 characters run out, names are given room in this order: one
+        theme that counts more, one that counts less, the other themes, then single
+        measures (one that weighs more, those that weigh less, the rest). It used to be
+        the other way round for what counts less (its sentence was added only if room
+        was left), and "pubs and gigs, no kids" never said in Welsh, Gaelic or Irish that
+        schools were switched off: a theme turned down changes the ranking more than the
+        third measure turned up, so the note must say it (v0.7.2 test pass). A name is
+        left out only when it would not fit beside what outranks it."""
+        labels = profiles._labels(translated, locale)
+        base = dict(translated.presets["balanced"].themes)
+        up, down = ["safety", "health", "transport"], ["education", "amenities"]
+        more, less = ["gigabit_broadband", "gp_distance"], ["well_run_pubs", "rail_service"]
+
+        def label(ident: str) -> str:
+            return labels["themes" if ident in up + down else "indicators"][ident]
+
+        def note(ids: list[str], room: int = profiles.RATIONALE_MAX) -> str:
+            themes = {t: 2.0 if t in up else 0.0 for t in ids if t in up + down}
+            measures = {i: 2.0 if i in more else 0.5 for i in ids if i in more + less}
+            with monkeypatch.context() as m:
+                m.setattr(profiles, "RATIONALE_MAX", room)
+                return profiles._rationale(translated, locale, "balanced", themes, base, measures)
+
+        sizes = [
+            (a, b, c, d) for a in (1, 2, 3) for b in (0, 1, 2) for c in (0, 1, 2) for d in (0, 1, 2)
+        ]
+        for n_up, n_down, n_more, n_less in sizes:
+            lists = {"up": up[:n_up], "down": down[:n_down]}
+            lists |= {"more": more[:n_more], "less": less[:n_less]}
+            # Each list's names, in the order they are given room
+            ranked = [("up", 0, 1), ("down", 0, 1), ("up", 1, 9), ("down", 1, 9)]
+            ranked += [("more", 0, 1), ("less", 0, 9), ("more", 1, 9)]
+            r = note([i for key, a, b in ranked for i in lists[key][a:b]])
+            assert len(r) <= profiles.RATIONALE_MAX and r.endswith("."), r
+            # A theme turned down is always said
+            assert not n_down or label(down[0]) in r, r
+            said: list[str] = []
+            ended: set[str] = set()
+            for key, a, b in ranked:
+                for ident in lists[key][a:b]:
+                    if key in ended:
+                        # A list loses names from its end
+                        assert label(ident) not in r, r
+                    elif label(ident) in r:
+                        said.append(ident)
+                    else:
+                        # Left out: it would not have fitted beside what outranks it
+                        whole = note([*said, ident], room=10_000)
+                        assert len(whole) > profiles.RATIONALE_MAX, (r, whole)
+                        ended.add(key)
+
+    def test_a_name_gives_way_only_for_one_that_then_fits(self, store, monkeypatch):
+        # Working from home, no children, noise: broadband and noise weigh more, rail
+        # less. With room for all but the sentence about rail, the second measure that
+        # weighs more stays: dropping it would not have made room for that sentence
+        themes = {"transport": 0.5, "education": 0.0}
+        base = dict(store.presets["balanced"].themes)
+
+        def note(measures: dict[str, float]) -> str:
+            return profiles._rationale(store, "en", "balanced", themes, base, measures)
+
+        without_rail = note({"gigabit_broadband": 2.0, "noise_exposure": 2.0})
+        assert without_rail.endswith("Transport & connectivity, Schools & childcare count less.")
+        without_noise = note({"gigabit_broadband": 2.0, "rail_service": 0.5})
+        assert len(without_noise) > len(without_rail)
+        monkeypatch.setattr(profiles, "RATIONALE_MAX", len(without_rail))
+        every = {"gigabit_broadband": 2.0, "rail_service": 0.5, "noise_exposure": 2.0}
+        assert note(every) == without_rail
+
+    @pytest.mark.parametrize("locale", ["cy", "gd", "ga"])
+    def test_one_measure_reads_singular_beside_one_theme(self, store, locale):
+        # Welsh, Gaelic and Irish have one form for a single measure, whatever the number
+        # of themes: with one theme as well, the plural form was picked ("eu themâu")
+        base = dict(store.presets["balanced"].themes)
+        labels = profiles._labels(store, locale)
+        r = profiles._rationale(
+            store, locale, "balanced", {"amenities": 2.0}, base, {"well_run_pubs": 2.0}
+        )
+        assert r == message(
+            "profile_rationale_one_indicator",
+            locale,
+            preset=labels["presets"]["balanced"],
+            themes=labels["themes"]["amenities"],
+            indicators=labels["indicators"]["well_run_pubs"],
+        )
+
+    @pytest.mark.parametrize("locale", LOCALES)
+    def test_pubs_and_gigs_no_kids_says_schools_count_less(self, translated, locale):
+        # The weights this description comes to, by the model and by the rules alike
+        themes = {"amenities": 2.0, "education": 0.0}
+        measures = {"well_run_pubs": 2.0, "culture": 2.0}
+        labels = profiles._labels(translated, locale)
+        if locale != "en":  # the catalogue is in: the labels are this language's
+            assert labels["themes"] != profiles._labels(translated, "en")["themes"]
+        base = dict(translated.presets["balanced"].themes)
+        r = profiles._rationale(translated, locale, "balanced", themes, base, measures)
+        more = message(
+            "profile_rationale_themes_one_theme",
+            locale,
+            fallback="profile_rationale_themes",
+            preset=labels["presets"]["balanced"],
+            themes=labels["themes"]["amenities"],
+        )
+        less = message(
+            "profile_less_note_one",
+            locale,
+            fallback="profile_less_note",
+            themes=labels["themes"]["education"],
+        )
+        assert r.startswith(more.rstrip(".")), r  # Amenities still counts more
+        assert r.endswith(less), r  # and Schools & childcare counts less
+        assert len(r) <= profiles.RATIONALE_MAX
+        said = [labels["indicators"][i] in r for i in measures]
+        assert said == sorted(said, reverse=True)  # the measures go from the end
+        if locale == "en":  # it all fits: nothing is dropped
+            assert all(said) and len(r) == 188
+        # By the rules, and as the model path gives it when a draft carries no weights
+        assert profile_by_rules(translated, "pubs and gigs, no kids", locale).rationale == r
+
+    def test_a_theme_that_counts_less_is_said_beside_a_context_measure(self, store):
+        # The note about measures the cards show keeps its room (#223); what counts less
+        # is said before any single measure that weighs more
+        r = profile_by_rules(store, "pubs and gigs, no kids, near a beach", "en").rationale
+        assert r.startswith("Starts from Balanced; Amenities & nightlife counts more")
+        assert "Schools & childcare counts less." in r
+        assert r.endswith("Distance to a bathing water is shown on the cards, not scored.")
+        assert len(r) <= profiles.RATIONALE_MAX
+
+    def test_a_long_list_of_what_counts_less_loses_names_not_its_ending(self, translated):
+        # Nothing counts more here, so the first sentence is the one that names what counts
+        # less: it is shortened by a name, not cut in the middle of one
+        ids = ["safety", "environment", "health", "education", "transport", "amenities"]
+        base = dict(translated.presets["balanced"].themes)
+        labels = profiles._labels(translated, "gd")
+        r = profiles._rationale(translated, "gd", "balanced", dict.fromkeys(ids, 0.0), base, {})
+        assert len(r) <= profiles.RATIONALE_MAX
+        kept = [labels["themes"][t] for t in ids if labels["themes"][t] in r]
+        assert 1 < len(kept) < len(ids)
+        assert r == message(
+            "profile_rationale_less",
+            "gd",
+            preset=labels["presets"]["balanced"],
+            themes=", ".join(kept),
+        )
 
     def test_not_wanting_one_measure_leaves_its_theme_alone(self, store):
         # "broadband", "pubs" and "gp" are words for a theme as well as for one measure:
@@ -519,3 +678,180 @@ class TestMutatedProblemWords:
         assert profile_by_rules(store, "llai o drosedd", "cy").theme_weights["safety"] == 2
         assert profile_by_rules(store, "dim llawer o drosedd", "cy").theme_weights["safety"] == 2
         assert profile_by_rules(store, "trosedd isel", "cy").theme_weights["safety"] == 2
+
+
+STATION = "not bothered about schools, no need for a station within 500 metres"
+
+
+class TestEnglishOnAnotherLanguagesPage:
+    """The v0.7.2 test pass sent one English sentence under each of the four locales,
+    and "no need for a station" weighed rail more in Welsh, Gaelic and Irish: Welsh "a"
+    (and) ended the negator's reach at the article, and "no" is no negator where it
+    means "or". An English negator stops at English conjunctions only, and the phrases
+    that open with "no" are read whole."""
+
+    @pytest.mark.parametrize("locale", LOCALES)
+    def test_no_need_for_a_station(self, store, locale):
+        p = profile_by_rules(store, STATION, locale)
+        assert p.indicator_weights == {"rail_service": 0.5}
+        assert p.theme_weights == {"education": 0}
+
+    @pytest.mark.parametrize("locale", LOCALES)
+    def test_no_interest_in_nightlife(self, store, locale):
+        p = profile_by_rules(store, "I never go out, no interest in nightlife", locale)
+        assert p.theme_weights == {"amenities": 0}
+
+    def test_each_language_keeps_its_own_reading(self, store):
+        # A Welsh conjunction still ends a Welsh negator's reach
+        cy = profile_by_rules(store, "dim tafarndai ac ysgolion da", "cy")
+        assert cy.indicator_weights["well_run_pubs"] == 0.5 and cy.theme_weights["education"] == 2
+        # "no" is still "or" in Gaelic and Irish, before an English word as well
+        assert profile_by_rules(store, "bùthan no cinema", "gd").indicator_weights["culture"] == 2
+        assert profile_by_rules(store, "siopaí nó gigs", "ga").indicator_weights["culture"] == 2
+        # Wanting a station is still wanting one
+        for locale in LOCALES:
+            wanted = profile_by_rules(store, "I need a station within 500 metres", locale)
+            assert wanted.indicator_weights == {"rail_service": 2}
+
+    @pytest.mark.parametrize("locale", LOCALES)
+    def test_a_draft_without_weights_takes_that_reading(self, store, locale):
+        # What the model's drafts were in the pass: a name, a sentence and two empty
+        # maps, so the profile is the rules engine's under the model's name
+        draft = ProfileDraft(
+            preset="balanced", theme_weights={}, indicator_weights={},
+            name="No schools, no station", rationale="Schools and rail are turned down.",
+        )  # fmt: skip
+        p = _from_draft(store, draft, locale, "model", description=STATION)
+        rules = profile_by_rules(store, STATION, locale)
+        assert p.indicator_weights == {"rail_service": 0.5} and p.theme_weights == {"education": 0}
+        assert p.rationale == rules.rationale and p.name == "No schools, no station"
+
+
+class TestADraftIsHeldToTheDescription:
+    """A model's draft is held to what the description disowns outright ("no need for a
+    station", "not bothered about schools", "no kids"): what it turned up against that
+    takes the rules' value, and the sentence is written again from the weights. Only a
+    contradiction is corrected: a draft that agrees in direction keeps its own value,
+    and where the rules read nothing disowned the draft stands."""
+
+    @staticmethod
+    def draft(themes: dict, measures: dict) -> ProfileDraft:
+        return ProfileDraft(
+            preset="balanced", theme_weights=themes, indicator_weights=measures,
+            name="A model's name", rationale="The model's own sentence.",
+        )  # fmt: skip
+
+    @pytest.mark.parametrize("locale", LOCALES)
+    def test_no_need_for_a_station_turned_up(self, store, locale):
+        draft = self.draft({"education": 0}, {"rail_service": 2})
+        p = _from_draft(store, draft, locale, "model", description=STATION)
+        assert p.indicator_weights == {"rail_service": 0.5} and p.theme_weights == {"education": 0}
+        # The sentence agrees with the weights: rail weighs less, nothing weighs more
+        labels = profiles._labels(store, locale)
+        base = dict(store.presets["balanced"].themes)
+        assert p.rationale == profiles._rationale(
+            store, locale, "balanced", {"education": 0}, base, {"rail_service": 0.5}
+        )
+        less = message(
+            "profile_less_indicators_note_one",
+            locale,
+            fallback="profile_less_indicators_note",
+            indicators=labels["indicators"]["rail_service"],
+        )
+        assert p.rationale.endswith(less) and p.name == "A model's name"
+
+    def test_a_theme_turned_up_takes_the_rules_value(self, store):
+        p = _from_draft(
+            store, self.draft({"education": 2}, {}), "en", "model",
+            description="not bothered about schools",
+        )  # fmt: skip
+        assert p.theme_weights == {"education": 0}  # 1 - 1, as the rules have it
+        assert p.rationale == "Starts from Balanced; Schools & childcare counts less."
+        # From the preset's own weight: Climate starts at a half
+        q = _from_draft(
+            store, self.draft({"climate": 1.5}, {}), "en", "model",
+            description="the weather doesn't matter to me",
+        )  # fmt: skip
+        assert q.theme_weights == {"climate": 0}
+        # A phrase that only turns things down is a negation too
+        r = _from_draft(
+            store, self.draft({"education": 2, "amenities": 2}, {}), "en", "model",
+            description="pubs and gigs, no kids",
+        )  # fmt: skip
+        assert r.theme_weights == {"education": 0, "amenities": 2}
+
+    def test_a_wish_turned_up_is_left_alone(self, store):
+        draft = self.draft({}, {"rail_service": 2})
+        for locale in LOCALES:
+            p = _from_draft(
+                store, draft, locale, "model", description="I need a station within 500 metres"
+            )
+            assert p.indicator_weights == {"rail_service": 2} and p.theme_weights == {}
+            assert p.rationale == "The model's own sentence."
+
+    def test_a_draft_stands_where_the_rules_read_no_negation(self, store):
+        draft = self.draft({"climate": 2, "housing": 0.5}, {"sunshine": 3, "house_price": 0.5})
+        p = _from_draft(store, draft, "en", "model", description="sun please, schools matter")
+        assert p.theme_weights == {"climate": 2, "housing": 0.5}
+        assert p.indicator_weights == {"sunshine": 3, "house_price": 0.5}
+        assert p.rationale == "The model's own sentence."
+        # Nor does the guard add what a draft left out: "gan páistí" is not a phrase the
+        # rules know (they know the lenited "gan pháistí"), and the draft stands
+        ga = _from_draft(
+            store, self.draft({}, {"well_run_pubs": 2}), "ga", "model",
+            description="tithe tábhairne agus ceol beo, gan páistí",
+        )  # fmt: skip
+        assert ga.theme_weights == {} and ga.indicator_weights == {"well_run_pubs": 2}
+        assert ga.rationale == "The model's own sentence."
+
+    def test_a_draft_that_agrees_in_direction_keeps_its_own_value(self, store):
+        draft = self.draft({"education": 0.5}, {"rail_service": 0.25})
+        p = _from_draft(store, draft, "en", "model", description=STATION)
+        assert p.theme_weights == {"education": 0.5}  # the rules say 0
+        assert p.indicator_weights == {"rail_service": 0.25}  # the rules say 0.5
+        assert p.rationale == "The model's own sentence."
+
+    @pytest.mark.parametrize(
+        ("description", "measure"),
+        [
+            # Each is read as turned down by the rules, and each asks for the thing
+            ("not far from a station", "rail_service"),
+            ("I have no car so the bus matters", "connectivity_overall"),
+            ("no kids so pubs and gigs matter", "well_run_pubs"),
+            ("I can't live without a park nearby", "green_space_access"),
+        ],
+    )
+    def test_a_bare_no_or_not_does_not_overrule_a_draft(self, store, description, measure):
+        # The rules take any "no", "not" or "without" within four words for a negation,
+        # and are wrong often enough: only what a description says outright ("no need
+        # for", "not bothered about", "no kids") holds a model's draft
+        assert profile_by_rules(store, description, "en").indicator_weights[measure] == 0.5
+        p = _from_draft(store, self.draft({}, {measure: 2}), "en", "model", description=description)
+        assert p.indicator_weights == {measure: 2}
+        assert p.rationale == "The model's own sentence."
+
+    def test_a_trade_is_not_a_negation(self, store):
+        # Working from home turns transport and rail down by the rules, beside broadband
+        # up: a judgement, not a negation. Broadband is in the transport theme, and a
+        # model may raise the theme for it
+        rules = profile_by_rules(store, "I work from home", "en")
+        assert rules.theme_weights == {"transport": 0.5}
+        draft = self.draft({"transport": 1.5}, {"gigabit_broadband": 2})
+        p = _from_draft(store, draft, "en", "model", description="I work from home")
+        assert p.theme_weights == {"transport": 1.5}
+        assert p.indicator_weights == {"gigabit_broadband": 2}
+        assert p.rationale == "The model's own sentence."
+
+    def test_a_correction_is_logged_by_id_only(self, store, caplog):
+        draft = self.draft({"education": 2}, {"rail_service": 2})
+        with caplog.at_level(logging.INFO):
+            _from_draft(store, draft, "en", "model", description=STATION)
+        (line,) = [r.getMessage() for r in caplog.records if "disowns" in r.getMessage()]
+        assert "education" in line and "rail_service" in line
+        assert "station" not in line and "bothered" not in line  # never the description
+
+    def test_the_log_lines_reach_the_servers_log(self):
+        # INFO lines from a logger outside "lix" are dropped by the server's logging: the
+        # line saying the rules stood in for a draft without weights was never printed
+        assert profiles.logger.name.startswith("lix.")
+        assert profiles.logger.isEnabledFor(logging.INFO)
