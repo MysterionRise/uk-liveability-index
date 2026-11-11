@@ -87,3 +87,12 @@ export const generateProfile = (description: string, locale: string) =>
 
 export const runSql = (query: string) =>
   post<{ columns: string[]; rows: unknown[][]; truncated: boolean }>("/sql", { query });
+
+/** Whether the assistant is replaying recordings rather than asking a model: no working
+ * model key (the API's /health says `recorded_only`), or the offline demo (the "replay"
+ * model). False when the API cannot say. */
+export const assistantIsRecorded = (): Promise<boolean> =>
+  fetch(`${API_URL}/health`)
+    .then((res) => res.json())
+    .then((health) => Boolean(health?.assistant?.recorded_only) || health?.assistant?.model === "replay")
+    .catch(() => false);

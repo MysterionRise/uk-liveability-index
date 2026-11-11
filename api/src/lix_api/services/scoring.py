@@ -122,6 +122,17 @@ def percentile(v: float | None) -> float | None:
     return shown_percentile_of(v)
 
 
+def weighted_mean(values: pl.Series, weights: pl.Series) -> float | None:
+    """The population-weighted mean an area larger than one small area is scored by
+    (compare, and the larger area a profile was asked about); None when no small area
+    has a value."""
+    ok = values.is_not_null()
+    if not ok.any():
+        return None
+    w = weights.cast(pl.Float64)
+    return round(float((values.filter(ok) * w.filter(ok)).sum() / w.filter(ok).sum()), 2)
+
+
 def match_preset(store: Store, preset: str) -> str:
     name = _match(preset, store.presets, PRESET_WORDS)
     if name is None:

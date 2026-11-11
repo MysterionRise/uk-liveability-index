@@ -34,6 +34,8 @@
     "of_E_W": "o Loegr a Chymru"
   },
   "Demo": {
+    "ofAreas": "o ardaloedd y data enghreifftiol",
+    "ofAreasIn": "o ardaloedd y data enghreifftiol {coverageIn}",
     "cities": {
       "leeds": "Leeds",
       "brighton": "Brighton",
@@ -78,6 +80,8 @@
     "chatDisclaimer": "Gall AI wneud camgymeriadau. Gwiriwch wybodaeth bwysig.",
     "chatUnreachable": "Does dim modd cyrraedd y cynorthwyydd ar hyn o bryd. Mae'r map, y chwilio a'r proffiliau'n dal i weithio; rhowch gynnig ar eich cwestiwn eto mewn munud.",
     "send": "Anfon",
+    "stop": "Stopio",
+    "chatRecorded": "Atebion wedi'u recordio: mae'r cynorthwyydd yn ailchwarae recordiadau o'r cwestiynau a awgrymir, nid yn holi model.",
     "suggestions": {
       "familyTitle": "Addas i deuluoedd ger Caerdydd",
       "familyMessage": "Mae gennym ddau o blant ifanc a chyllideb o £300k. Ble ddylen ni edrych o gwmpas Caerdydd?",
@@ -93,6 +97,7 @@
   "Onboarding": {
     "title": "Dewch o hyd i gymdogaeth sy'n addas i chi",
     "blurb": "Pob cymdogaeth {coverageIn}, wedi'i sgorio o ddata agored. Mae ardaloedd gwyrddlas yn gwneud yn well na'r arfer, rhai oren yn waeth. Chwyddwch i mewn a chliciwch ar ardal i weld pam, neu gofynnwch i'r cynorthwyydd.",
+    "blurbDemo": "Data enghreifftiol: {count, number} dinas {coverageIn}, wedi'u sgorio o ddata agored. Mae ardaloedd gwyrddlas yn gwneud yn well na'r arfer, rhai oren yn waeth. Dewiswch ddinas, cliciwch ar ardal i weld pam, neu gofynnwch i'r cynorthwyydd.",
     "demoCovers": "Data enghreifftiol:",
     "whoIsLooking": "Pwy sy'n chwilio?",
     "skip": "Hepgor",
@@ -257,6 +262,8 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} o drigolion",
     "overallOf100": "/ 100 cyffredinol ({preset})",
+    "oneSmallArea": "Dyma un ardal fach. Mae {name} yn ei gyfanrwydd yn sgorio {overall}.",
+    "oneSmallAreaOnly": "Dyma un ardal fach; holwyd am {name}.",
     "rangeTitle": "Yr ystod 5–95% o'r ganradd pan fydd pwysau pob thema'n cael ei symud tua chwarter",
     "range": "Gyda phwysau ychydig yn wahanol: yn well na {lo, number}–{hi, number}% {of}",
     "betterThan": "Yn well na {pct, number}% {of}",

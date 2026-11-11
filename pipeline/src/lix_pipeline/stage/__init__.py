@@ -279,6 +279,12 @@ BACKBONE_INPUTS: list[str] = sorted(
 )
 
 
+def credited_sources(catalogue) -> list[str]:
+    """The sources a pack is built from and credits in its manifest: every indicator's,
+    and the backbone's. The docs' "datasets in use" is this list's length."""
+    return sorted({s for i in catalogue.indicators for s in i.sources} | set(BACKBONE_INPUTS))
+
+
 def save_staged(df: pl.LazyFrame | pl.DataFrame, slug: str) -> Path:
     """Write a DataFrame to data/staged/{slug}.parquet with Snappy compression."""
     if isinstance(df, pl.LazyFrame):

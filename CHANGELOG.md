@@ -6,8 +6,23 @@ All notable changes to this project. The format follows
 
 ## [Unreleased]
 
-Polish and reliability after the launch kit (#201, the review of 10 November 2026). No new
-measures and no data rebuild.
+### Changed
+
+- The evals workflow (`evals.yml`) takes a model on Anthropic's own API as well as one
+  through OpenRouter: `-f model=anthropic:claude-haiku-5-5` reads the `evals`
+  environment's `ANTHROPIC_API_KEY`, as `openrouter:…` reads `OPENROUTER_API_KEY`. It
+  refused anything but OpenRouter before, so a maintainer with only an Anthropic key
+  could not run it.
+
+## [0.7.2] - 2026-11-11
+
+Polish and reliability after the launch kit (#201, the review of 10 November 2026), and
+what the release's five-tester pass found in it (#289). No new measures and no data
+rebuild: it reads the November data release (`data-2026-11`). One thing changes for an
+install that other machines reach: it must name the host names it answers to
+(`LIX_HOSTS`, under Changed). And profiles built with a model key are the model's again
+(under Fixed): since v0.6.3 on Opus, and on Haiku since a dependency update after
+v0.7.1, they were the rules engine's under a name the model wrote.
 
 ### Fixed
 
@@ -33,7 +48,8 @@ measures and no data rebuild.
   stripped first, and what is left must be 3 to 500 characters (#230).
 - A 422 quoted the refused value whole: 300 characters of `q`, or the entire body when a
   field was missing. The body keeps its shape and quotes the first 80 characters of any
-  text the caller sent (#230).
+  text the caller sent, four levels of nesting and eight entries of a list or map; a body
+  nested hundreds deep is refused like any other (#230).
 - Search: a name decoded wrongly on its way in ("Ynys MÃ´n" for "Ynys Môn") found the
   village Ynys first, and nothing at all with a scope after it ("Ynys MÃ´n, Wales"). The
   query is repaired before it is matched, with the helper that repairs the names
@@ -55,7 +71,9 @@ measures and no data rebuild.
   for noise.
 - The daily budget: a paid model that neither the provider nor Pydantic AI could price
   never reached it (its tokens now count at a cautious price), and after a restart it
-  counted eval and recording runs made on the same machine (#254).
+  counted eval and recording runs made on the same machine. A run that only the
+  recordings or the scripted model answered counts nothing, whatever model is configured:
+  the keyless demo cannot spend (#254).
 - The fallback model's profiles: Qwen 3.8 does not keep to the low reasoning effort it is
   asked for and ran out of tokens before answering two profiles in seven, so the rules
   engine answered instead. The profile call has room for it now (none of 21 calls ran
@@ -67,9 +85,115 @@ measures and no data rebuild.
   Cardiff, Edinburgh, Belfast and Dublin", where it said "No matches in the UK and
   Ireland"; the legend reads "Against the demo's areas", which is what its percentiles are
   among; and the welcome card, which said to zoom in over two countries with six small
-  patches of colour, lists the six cities as buttons that take the map to each. The card
-  also sits above the chat input on a phone, where the extra row would have put "Skip"
-  under it (#239).
+  patches of colour, lists the six cities as buttons that take the map to each and opens
+  "A demo: 6 cities in the UK and Ireland". A profile and the map's tooltip say "better
+  than 31% of the demo's areas" (or "of the demo's areas in Ireland"), where they said
+  "of the UK and Ireland" of a percentile among six cities. The card also sits above the
+  chat input on a phone, where the extra row would have put "Skip" under it (#239).
+- One name, two scores. Asked about a town, a suburb, a neighbourhood's code or a
+  council, the assistant's profile is of one small area, while a ranking and a comparison
+  score a neighbourhood or a council whole: "Tell me about Headingley" showed 70 and
+  "compare it with Chapel Allerton" showed 68 for the same name, with nothing to say why.
+  A profile and an explanation now carry `resolved_from` when the reference led to
+  something larger than the small area returned: the neighbourhood or council that small
+  area belongs to (kind, code, its own name) and that area's overall score under the
+  same weighting. The profile and explanation cards say "This is one small area of
+  Headingley, which scores 68 as a whole" in four languages, and the REST and MCP
+  profiles carry the field. A postcode or a small area's own code names itself, and
+  nothing is added. Asked about a city by name, the area named is the one neighbourhood
+  at its centre ("Old Town, Princes Street and Leith Street" for Edinburgh), by its own
+  name: nothing claims a city's score. The Area tab is unchanged: the page looks its
+  profile up by the small area selected, so the line appears on the assistant's cards. A
+  profile of the whole neighbourhood is #256 (#228).
+- That one score is now the same wherever it is printed. A ranking scored a neighbourhood
+  from the small areas inside its scope only, so a circle that cut one ("near
+  Headingley", "within 2 km of BN1 1AA") ranked it by the part inside: Goldsmid West 72 in
+  the list, 68 on its own card. A row is now the neighbourhood's or the council's own
+  score; the scope chooses which are listed (any small area inside), and "urban" or
+  "rural" keeps one whole by where most of its people live. An average of small areas
+  has two decimals in a ranking as in a comparison, and one small area has one decimal
+  in a comparison as in its profile, so each card rounds the same figure once: on the
+  full pack the whole numbers printed for 489 neighbourhoods and councils differed in 27
+  cases and now differ in none (#228).
+- A council was sometimes profiled by a village elsewhere that shares its name: "Croydon"
+  opened a small area in South Cambridgeshire, "Islington" one in Leeds (24 of the 481
+  council names). A namesake stands for a council or a neighbourhood only from inside it
+  (#228).
+- The assistant's reply put a small area's percentile on its neighbourhood's score. The
+  card was right ("This is one small area of Headingley, which scores 68 as a whole"),
+  and the prose under it read "Headingley scores 68.3 overall, better than 84% of the UK
+  and Ireland" in 13 of the pass's 17 live replies: 84% belongs to the small area's 69.5.
+  The result gave the larger area a score and no percentile, and nothing said whose the
+  rest was. The instructions now say that everything else in a profile is the small
+  area's and that the percentile goes with the small area's score. On Haiku the new eval
+  case passed 8 runs of 12 without the sentence and 16 of 16 with it (#290).
+- "Describe yourself" profiles built by a model were the rules engine's, under a name the
+  model wrote. The draft's two weight maps take any id as a key, which strict structured
+  output cannot express; asked for the draft that way, a model was sent maps with no
+  properties and returned them empty, and the rules' reading of the description stood
+  in, reported as the model's. Opus has been asked that way since v0.6.3 (its empty maps
+  were put down to an "economical model"); Haiku since the Pydantic AI update that
+  followed v0.7.1, where the pass's assistant tester saw it as 54 profiles in 54 whose
+  weights matched the rules exactly. The draft is now asked for as a tool call, whose
+  arguments may be free-form: Haiku, Opus and Qwen each fill the maps (Haiku 3 drafts of
+  3 empty before, 0 of 19 after), and the tester's descriptions come back right in four
+  languages ("no need for a station" turns rail down on the Welsh, Gaelic and Irish
+  pages; "I don't care about the weather" no longer turns Climate up; Irish "gan
+  páistí" is read). A profile whose weights are the rules' now says so (`engine:
+  "rules"`, `engine_reason: "model_error"`, "by rules" on the page), so the evals fail
+  on a paid model rather than pass on the rules' work, and the line that reports a
+  stand-in reaches the server's log, which it never did (#292).
+- The rules engine, which builds profiles without a key and stands in for a model:
+  - An English sentence on the Welsh, Gaelic or Irish page lost its negation: "no need
+    for a station" turned rail **up** there (Welsh "a", and, ended the negator's reach
+    at the English article; "no" is Gaelic and Irish "or"). An English negator now stops
+    at English conjunctions, and "no need" and "no interest" are read as phrases.
+  - The note left out what counts less when room ran short, which in Welsh, Gaelic and
+    Irish was always: "pubs and gigs, no kids" switched Schools & childcare off and said
+    so in English alone. Names are now given room in the order of what changes a
+    ranking most (a theme that counts more, a theme that counts less, the other themes,
+    then single measures), each kept if the whole still fits the 200 characters, and
+    one measure beside one theme reads in the singular in the three languages.
+  - A model's draft that turns up what the description disowns outright ("no need for",
+    "not bothered about", "no kids") takes the rules' value, and the note is rebuilt.
+  Still wrong, and filed: "I don't care about the weather" is not read as a negation
+  by the rules (the contraction uses up the negator's reach), and a theme at 0 is said
+  to "count less" (#292, #300).
+- The assistant rewrote what you said about yourself before building your profile. "I'm
+  28, work in tech and love going out" reached the profile builder as "…nightlife, bars,
+  restaurants and good transport for commuting", and the profile came out on the Commuter
+  or the Balanced preset: on Claude Haiku 5.5 the Young professional preset was chosen 1
+  time in 8 (2 in 8 on v0.7.1: the published single run of 4 November had happened to
+  pass). `set_profile` is now told to pass your words as written and to add nothing, and
+  the assistant to rank with the profile as it is: 16 runs of 16 on the right preset, one
+  ranking each. The description the page keeps is yours again. Found by the release
+  evals, the first with repeats (#282).
+- A description of yourself with no place in it ("I'm retired, I have asthma and a dog,
+  and I want somewhere quiet") was answered with a ranking of the whole of the UK and
+  Ireland, Cork and Dublin first. The assistant now builds the profile and asks where you
+  are looking. On Claude Haiku 5.5 the new eval case failed 3 runs of 3 without the
+  instruction and passed 3 of 3 with it; cases that name a place still rank at once
+  (#236).
+- Two stale statements about the evals, found by the claims check and while writing it:
+  the demo script gave Opus 5.5 an answer in about 7 seconds where its report of
+  4 November has a median of 5.58 (the README's 6), and docs/development.md still said
+  Opus and Qwen had passed the suite's October form, though all three models were rerun
+  on the 58 cases on 4 November (#253).
+- The chat panel, four things found by the v0.7.1 pass (#236, #231, #239):
+  - **A second Enter cancelled the answer.** CopilotKit's input reads Enter on an empty
+    box as "stop" while a reply is on its way: the question stayed, no answer came and
+    nothing said why. Enter on an empty box now does nothing; the Stop button stops.
+  - **The Stop button was called "Send"** to a screen reader, in all four languages: an
+    `aria-label` on the button's slot overrode CopilotKit's own switch. The two names
+    now go through its labels ("Stop", "Stopio", "Stad", "Stop").
+  - **A reply opens at the question.** The view followed the bottom of the reply, so
+    after a tall card only its last lines showed (`autoScroll="pin-to-send"`). On a
+    390×844 phone the chat still has only about 110 px for messages, and a card's heading
+    sits behind the input until scrolled: #278.
+  - **Recorded answers are marked.** Started without a model key (or as the offline
+    demo, `LIX_MODEL=replay`), the assistant replays recordings of the suggested
+    questions; the panel now says so in a line above the chat, read from the API's
+    `/health` (`assistant.recorded_only`).
 
 ### Added
 
@@ -98,9 +222,51 @@ measures and no data rebuild.
   `nosniff`, `X-Frame-Options` and `Referrer-Policy`; a 12 MB body gets 413; and the API's
   `/agent` cannot be reached through the proxy. Each check was seen to fail against a
   weakened Caddyfile (#253).
+- Three eval checks and four cases (62 in all). `consistent`: every overall score a run's
+  tools gave the same area agrees, and at least one area was scored twice (a profile of
+  Headingley, then a comparison: #228 as a test). `cheapest_named`: asked which of the
+  areas just listed is the most affordable, the reply names the row with the lowest
+  typical price (#236's wrong comparative: Haiku passed it 3 runs of 3 before any change
+  to the instructions, so none was made). `percentile_of_its_score`: in a reply about a
+  place's profile, the score written last before the small area's percentile is not the
+  larger area's (#290). And the no-place profile case above. The release's runs, on
+  11 November: Opus 61 of the 62; Haiku 60, 60 and 61 over three runs, no case failing
+  all three; Qwen 54 and 54 over two. `docs/evals.md` lists every miss, three kinds of
+  which are the checks' own (#301), and says what the runs found and fixed.
+- A claims check in `lix docs --check`, which CI already runs: the counts that README.md,
+  the hand-written docs, `CITATION.cff` and `.env.example` state are compared with what
+  the repository computes, and a stale one fails the pull request with its file, its line
+  and the right number. It reads the neighbourhoods and each nation's areas, indicators by
+  role, datasets registered and in use, themes, presets and languages (from `config/`),
+  the eval cases and each category's count (`api/evals/cases.yaml`), every model's row of
+  the results tables with its run date, answer time and cost (`docs/evals/*.json`), and
+  the face-validity review's places, checks and anchors. An unhedged number must be exact
+  and "about 224" passes within 2%; only phrases that name what they count are read, so
+  other figures in the prose are left alone; this changelog is never read, because past
+  releases state the numbers of their day. `lix docs` prints the same lines as warnings
+  (#253).
+- The assistant evals on demand (`evals.yml`): the suite against a real model on the full
+  data pack, as many times as asked (three by default), with a summary of how often each
+  case passed, its first failed check, the mean pass rate, the cost and the median turn
+  time. A case that failed every run fails the job; one that passed some runs is listed as
+  flaky and does not, which one run could never tell apart. It never runs on a pull
+  request or a push: it is dispatched by hand, in an `evals` environment that holds the
+  OpenRouter key and waits for a reviewer, and the reports go to an artifact rather than
+  to `docs/evals/`. `api/evals/repeats.py` writes the same summary for any set of reports
+  (#253).
+- `qa/README.md`: how a release's test pass is run and where it lives. Each tester gets a
+  brief from the template there; findings and evidence stay in the git-ignored
+  `qa/<release>/`, and what was found goes to a "Test pass vX.Y.Z" issue (the 4 November
+  pass's evidence sat in a temp folder that the system cleaned).
 
 ### Changed
 
+- The app answers to `localhost` alone. A request under any other host name gets a 421
+  that names the setting to change. An install opened to a network with
+  `LIX_BIND=0.0.0.0`, or behind another proxy or a tunnel, must now say what it is
+  reached by: `LIX_HOSTS="192.168.1.20 mybox.local"` (space-separated; in `.env` or on
+  the command line). Nothing changes for `make up` on your own machine. Why: see Security
+  below (#291).
 - Release candidates: a `vX.Y.Z-rc.N` tag rehearses the release workflow, which until now
   could only run for real (the six action majors merged in #244 had never run). It
   publishes images tagged `X.Y.Z-rc.N` without moving `latest` (the workflow tagged
@@ -108,6 +274,10 @@ measures and no data rebuild.
   its notes from the changelog's `X.Y.Z` section, or from "Unreleased" while that heading
   is not written, and drafts a GitHub pre-release titled "vX.Y.Z release candidate N"
   (#253).
+- The release workflow refuses a tag before it builds anything: a `notes` job checks that
+  the tag is `vX.Y.Z` or `vX.Y.Z-suffix`, that the changelog has its section and that a
+  data release of this code's schema exists. Those checks ran last, after the images and
+  `latest` were public (#253).
 - uv is a named build stage (`FROM ghcr.io/astral-sh/uv:0.9 AS uv`) in the api and
   pipeline Dockerfiles. Dependabot reads `FROM` lines only, so the image named in
   `COPY --from=` was never offered an update (#253).
@@ -121,9 +291,57 @@ measures and no data rebuild.
   `ag-ui-protocol`), declared before the minor-and-patch group, because those updates need
   a live chat check that the scripted CI cannot give; and at most 3 pull requests are open
   per ecosystem, down from 5 (#253).
+- duckdb is capped below 2 in the api and pipeline packages, as polars already was: 2.0
+  drops the result methods six stager calls use, and only Dependabot's ignore rule stood
+  between a re-lock and that (#240). pydantic-ai's deprecations now fail a test: they are
+  `UserWarning`s, so one (`usage` called as a method) printed in the API's log on the
+  first chat turn of the release candidate.
+- The eval tooling, from the pass: a check that raised was left out of the report and its
+  case counted as passed (it now fails the case); `consistent` wants an area scored by
+  two kinds of tool result, to the same decimals, and `cheapest_named` wants the
+  cheapest area named first.
 
 ### Security
 
+- DNS rebinding passed the proxy's cross-site rule, which v0.7.1's notes said stopped it.
+  The rule compares a request's `Origin` with its `Host`; after a rebind the attacker's
+  page and its requests carry one name, so the two agree. The pass's API tester showed it
+  with a raw request and with a real browser page under a foreign name: 200 from the SQL
+  endpoint, from `/mcp` and from the assistant's run route, which runs on the owner's
+  key up to the day's budget. The proxy now refuses a `Host` that is not `localhost`,
+  `127.0.0.1`, `::1` or named in `LIX_HOSTS`, before anything else is looked at, and the
+  security spec has the case (a foreign `Host` with a matching `Origin`), which fails on
+  v0.7.1's configuration. Not measured: a real rebind, and what current browsers do
+  about a public page reaching a loopback address (#291).
+- Four ways one request, or one line in a file, could stop the API, found by the pass's
+  API tester on the release candidate and fixed before the tag. None needs a key; each
+  needs a caller on the machine, or a page that reaches it (above) (#293):
+  - **An MCP tool call could be 8 MiB.** The 16 KB cap on REST bodies did not cover
+    `/mcp`: one 4 MB `tools/call` with 420,000 theme weights stopped `/health` for 8 to
+    14 s, and twelve in parallel got the container OOM-killed. `/mcp` now has the REST
+    cap, and a weights map takes at most 32 themes or 512 indicators.
+  - **A SELECT could switch on DuckDB's logging.** `select * from enable_logging()` is
+    one SELECT, and the locked configuration did not stop it: every caller's queries were
+    then kept where any caller could read them, and pointed at a file it broke every
+    later query (a 500) and aborted the process a few queries on. Analyst SQL now reads
+    the function names from the engine's own parse of the statement as well as from its
+    text, so a quoted name or a comment before the bracket hides nothing (`"repeat"(…)`,
+    `repeat/**/(…)` and `"range"(100000000)` all ran before). The functions that change
+    the engine or read its log are refused, and the table functions are three:
+    `generate_series`, `range` and `unnest`. `duckdb_settings()`, `duckdb_tables()`,
+    `pragma_table_info()`, `json_each()` and the like are no longer callable; `describe`,
+    `show`, `summarize` and `information_schema` still read the catalogue. An engine that
+    fails while a query is set up answers 400, not 500, and so does a query holding half
+    of a surrogate pair. Plain concatenation can still build a value of any size: that
+    is #235's worker process.
+  - **`/health` waited behind busy workers**: 10 s behind sixty slow queries, 39 s
+    behind 120. It now answers from the event loop.
+  - **One odd line in `data/logs/agent.jsonl` kept the API from starting**, in a restart
+    loop: a line reading `null`, a cost that is text, a byte that is not UTF-8. A
+    negative or NaN cost loaded and switched the day's budget off. The app never writes
+    such a line; a hand or another tool can. Nothing in the log raises now: a line that
+    is not a run record is left out, a cost that is not a plain amount is counted by its
+    tokens at the cautious price, and one warning gives the number of such lines.
 - The repository's scanners are on: secret scanning with push protection, Dependabot alerts
   and security updates, CodeQL, private vulnerability reporting (#224). Their first run saw
   what `npm audit` cannot: 19 advisories in six transitive Python packages. Three are not on
@@ -136,6 +354,11 @@ measures and no data rebuild.
   clip-recording page (`web/scripts/tiktok.html`, a local tool) loads frames only from a
   `file:` URL, and the SQL guard's statement check no longer begins with an unbounded `\s*`
   (bodies were already capped at 16 KB).
+- CodeQL's last open finding: the video script's page (`web/scripts/tiktok.html`, a local
+  tool that composes the vertical clip) took its frames folder from its own address, and
+  the `file:` prefix check added in #265 was not something the scanner accepts as
+  validation. The folder now arrives as an argument to `setup()` from
+  `scripts/tiktok.mjs`; the page reads nothing from its URL.
 
 ## [0.7.1] - 2026-11-04
 
@@ -1148,6 +1371,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.7.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.2
 [0.7.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.1
 [0.7.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.0
 [0.6.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.3

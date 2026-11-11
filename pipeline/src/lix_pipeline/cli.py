@@ -315,17 +315,30 @@ def _data_release(args: argparse.Namespace) -> int:
 
 
 def _docs(args: argparse.Namespace) -> int:
+    from lix_pipeline.claims import check_claims
     from lix_pipeline.docs import check_docs, write_docs
 
     if args.check:
-        stale = check_docs()
-        for path in stale:
-            print(f"{path} is out of date: run make docs and commit it")
-        if not stale:
-            print("docs/data-sources.md and ATTRIBUTION.md are up to date")
-        return 1 if stale else 0
+        problems = check_docs()
+        for problem in problems:
+            print(problem)
+        if problems:
+            print(
+                "make docs regenerates the two generated files; a stated number is corrected "
+                "by hand (pipeline/src/lix_pipeline/claims.py says what is read and how a "
+                "line opts out)"
+            )
+        else:
+            print(
+                "docs/data-sources.md and ATTRIBUTION.md are up to date, and the counts the "
+                "docs state match the repository"
+            )
+        return 1 if problems else 0
     for path in write_docs():
         print(f"wrote {path}")
+    # Regenerating cannot fix a sentence: say what the check would fail on, and carry on
+    for claim in check_claims():
+        print(f"warning: {claim}")
     return 0
 
 
@@ -443,7 +456,8 @@ def main(argv: list[str] | None = None) -> None:
         "--check",
         action="store_true",
         help='Fail if the committed files differ (the "Data for" column aside, which is read '
-        "from the data on the build machine)",
+        "from the data on the build machine), or if a count stated in README.md, docs/, "
+        "CITATION.cff or .env.example no longer matches the config and the eval reports",
     )
     docs.set_defaults(func=_docs)
 

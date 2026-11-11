@@ -25,6 +25,10 @@ The pipeline downloads, stages and joins the open datasets below:
   plus a QA report. The method, including how Greater Manchester's missing crime data and
   Ofsted's framework changes are handled, is in [docs/methodology.md](methodology.md)
 - CI runs ruff and pytest on every push and PR to `master` (tests never touch the network);
+  `lix docs --check` fails it when the generated source list is stale, or when a count
+  these pages state (neighbourhoods, indicators, datasets, eval cases and each model's
+  results, the review's places and checks) no longer matches the config and the committed
+  eval reports (`pipeline/src/lix_pipeline/claims.py` lists what is read);
   a nightly job checks every source is still reachable and whether a newer edition is
   out (the edition is the server's `Last-Modified`, else its `ETag`, else the file name
   it states; a 403 is reported as "not verified" rather than failed: some publishers
@@ -52,7 +56,7 @@ Datasets ingested so far (full list with licences: [docs/data-sources.md](data-s
 
 - a REST API under `/api/v1`: place search, area profiles, rankings with any weights and
   filters or by one measure, comparisons, nearest places (GPs, schools, well-run pubs, ...), score explanations,
-  the indicator catalogue and read-only SQL (docs at `/docs`)
+  the indicator catalogue and read-only SQL (docs at `/api/v1/docs`)
 - an AI assistant at `/agent` speaking [AG-UI](https://docs.ag-ui.com), built with
   [Pydantic AI](https://ai.pydantic.dev): its tools return typed results the front end renders as
   maps, cards and tables, and it moves the map and weight sliders through shared state
@@ -68,7 +72,7 @@ spend per day (`api/src/lix_api/agent/limits.py`); a refusal, a failure or a mis
 explained in the chat while the map keeps working, and every turn is logged to
 `data/logs/agent.jsonl` (tools called, latency, tokens, what the provider billed).
 
-The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 58 cases
+The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 62 cases
 covering ranking with constraints, look-ups, follow-ups, ambiguous places, out-of-scope and
 discriminatory requests, numbers grounded in tool results, analyst SQL, prompt injection,
 profiles from a description, and replies in Welsh, Gaelic and Irish):
@@ -78,9 +82,12 @@ make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5    # all cases, about $0.05
 ```
 
-Claude Haiku 5.5 passes the suite; Claude Opus 5.5 and Qwen 3.8 27B (open weights) passed
-its October 2026 form; results, costs and what the evals caught
-are in [docs/evals.md](evals.md).
+Three models are evaluated on it (Claude Haiku 5.5, the default; Claude Opus 5.5; Qwen 3.8
+27B, open weights): results, costs, every miss and what the evals caught are in
+[docs/evals.md](evals.md). The `evals.yml` workflow runs the suite on GitHub on demand
+(never on a pull request; each run waits for a reviewer's approval): it repeats the cases
+and reports how often each one passed, which tells a case that fails every time from one
+that fails now and then.
 
 ## Stakeholder demo
 
@@ -168,8 +175,9 @@ With a model key in `.env`, `make dev` uses the real model from `.env`.
 
 ## Planned
 
-- More open datasets: private rents, jobs density, overcrowding, energy use and energy
-  performance certificates, mobile coverage (v0.7.1)
+- More open datasets: private rents, overcrowding, students and the age mix, and
+  rankings by ceremonial county (v0.7.3); jobs density, energy use and energy performance
+  certificates, mobile coverage (later)
 - Answers composed as a page of cards rather than a chat reply (v0.8.0)
 - Walking-network travel times instead of straight-line distances (v0.8.x), built on the
   OpenStreetMap ways table (`osm_ways`) that v0.7.0 stages

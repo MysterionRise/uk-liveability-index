@@ -28,3 +28,8 @@ data-ie/
 
 # The scripted model's eval run is a smoke test, not a report
 docs/evals/test.json
+
+# Test passes: each release's briefs, findings and evidence stay on the machine that ran
+# them (qa/README.md is the brief every tester starts from)
+qa/*
+!qa/README.md

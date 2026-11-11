@@ -293,7 +293,7 @@ def manifest(
 ) -> dict:
     import os
 
-    from lix_pipeline.stage import BACKBONE_INPUTS
+    from lix_pipeline.stage import credited_sources
     from lix_pipeline.stage.periods import data_to, period_of
 
     catalogue = load_indicators()
@@ -301,7 +301,7 @@ def manifest(
     registry = load_registry()
     lock = read_lock()
 
-    used = sorted({s for i in catalogue.indicators for s in i.sources} | set(BACKBONE_INPUTS))
+    used = credited_sources(catalogue)
     periods = {slug: period_of(slug, registry[slug], lock.get(slug, {})) for slug in used}
     return {
         "schema_version": SERVE_SCHEMA_VERSION,

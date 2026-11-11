@@ -16,6 +16,7 @@ A refused question gets a chat reply saying why; the map, search and weights car
 """
 
 import json
+import math
 import os
 import time
 from collections import deque
@@ -119,6 +120,12 @@ class Limits:
         cost = record.get("cost")
         if cost is not None or self.daily_budget <= 0 or is_free(str(record.get("model") or "")):
             return cost
+        # No provider took part: a recording answered. Started without a key, the
+        # configured model keeps its paid name, and the keyless demo spent its day's
+        # budget on recordings (107 answers) and then refused
+        answered = record.get("models")
+        if answered and set(answered) <= FUNCTION_MODELS:
+            return None
         tokens_in = record.get("input_tokens") or 0
         tokens_out = record.get("output_tokens") or 0
         if not self._warned_unpriced:
@@ -130,24 +137,53 @@ class Limits:
         return tokens_in * INPUT_PRICE_PER_TOKEN + tokens_out * OUTPUT_PRICE_PER_TOKEN
 
     def load(self, path: Path) -> None:
-        """Add up today's spend from the turn log (after a restart)."""
+        """Add up today's spend from the turn log (after a restart).
+
+        The log is a file on disk that a crash, another tool or a hand can have left in
+        any state, and the API reads it as it starts: one line reading ``null`` kept it
+        from starting at all, and a negative or NaN cost switched the day's budget off
+        (v0.7.2 pass). So nothing in it raises: a line that is not a run record is left
+        out, a cost or token count that is not a plain amount is not counted, and one
+        warning says how many lines that was (never what they held)."""
         self._roll()
-        if not path.exists():
+        total, odd = 0.0, 0
+        try:
+            # A byte that is not UTF-8 spoils its own line at most, not the start-up
+            with open(path, encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    # A line cut short by a crash is not JSON; nor, to Python, is one of
+                    # 5,000 digits (a ValueError) or 100,000 brackets (a RecursionError)
+                    try:
+                        record = json.loads(line)
+                    except (ValueError, RecursionError):
+                        record = None
+                    if not isinstance(record, dict):
+                        odd += 1
+                        continue
+                    # Evals and recordings run on the same machine write the same log:
+                    # they are not the app's spend (a background Opus eval once put $0.18
+                    # on a restarted stack's counter)
+                    if record.get("source", "app") != "app":
+                        continue
+                    if str(record.get("at", "")).startswith(self.day):
+                        record, whole = _as_logged(record)
+                        if not whole:
+                            odd += 1
+                        total += self._cost(record) or 0.0
+        except FileNotFoundError:
             return
-        total = 0.0
-        with open(path) as f:
-            for line in f:
-                try:
-                    record = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                # Evals and recordings run on the same machine write the same log: they
-                # are not the app's spend (a background Opus eval once put $0.18 on a
-                # restarted stack's counter)
-                if record.get("source", "app") != "app":
-                    continue
-                if str(record.get("at", "")).startswith(self.day):
-                    total += self._cost(record) or 0.0
+        except OSError as e:  # no permission, a directory in its place
+            logger.warning(
+                f"{path.name} could not be read ({e}): what the assistant spent earlier "
+                "today is not counted"
+            )
+        if odd:
+            logger.warning(
+                f"{odd} line{'s' if odd > 1 else ''} of {path.name} could not be read as the "
+                "app writes them: today's spend counts only what could be read"
+            )
         self.spent = total
         if total:
             logger.info(f"Spent {total:.4f} on the assistant so far today")
@@ -163,9 +199,43 @@ class Limits:
         }
 
 
+# The models that answer without a provider (their ``model_name``): the recordings, the
+# scripted model, and the reply that says a limit was reached
+FUNCTION_MODELS = frozenset({"replay", "scripted", "limits"})
+
+
 def is_free(model: str) -> bool:
     """A model whose runs cost nothing: scripted, recorded, or served locally."""
     return model in Limits.FREE_MODELS or model.startswith(Limits.FREE_PROVIDERS)
+
+
+def _amount(value) -> float | None:
+    """A cost or a token count read from the log, if it is one: a finite number that is
+    not negative. Text, a list, ``true``, NaN, a hand-edited -100: None."""
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return None
+    try:
+        number = float(value)
+    except OverflowError:  # a whole number of four hundred digits
+        return None
+    return number if math.isfinite(number) and number >= 0 else None
+
+
+def _as_logged(record: dict) -> tuple[dict, bool]:
+    """A record read from the log with only what can be counted, and whether that was
+    all of it. A cost that is no amount is no cost, so the run counts by its tokens like
+    one nobody priced (too much rather than nothing); a token count that is no amount
+    counts for nothing; ``models`` is a list of names or it is not known who answered."""
+    read, whole = dict(record), True
+    for field in ("cost", "input_tokens", "output_tokens"):
+        read[field] = _amount(record.get(field))
+        if read[field] is None and record.get(field) is not None:
+            whole = False
+    models = record.get("models")
+    named = isinstance(models, list) and all(isinstance(m, str) for m in models)
+    if models is not None and not named:
+        read["models"], whole = None, False
+    return read, whole
 
 
 def user_turns(body: dict) -> int:

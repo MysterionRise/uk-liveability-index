@@ -264,9 +264,17 @@ def rank_areas(
         how="horizontal",
     )
     where, label, bbox, place_name, radius = _within(store, within, radius_km, lang)
-    df = df.filter(where)
-    if urban is not None:
-        df = df.filter(pl.col("urban") == urban)
+    if level in AGGREGATE_LEVELS:
+        # A row is the neighbourhood's or the council's own score, the one its card and
+        # a comparison give it. The scope says which of them are listed, not which of
+        # their small areas count: a circle that took in one small area of a
+        # neighbourhood ranked it by that one alone (and "urban" by its urban part)
+        touched = df.filter(where).select(AGGREGATE_LEVELS[level][0]).unique()
+        df = df.join(touched, on=AGGREGATE_LEVELS[level][0], how="semi")
+    else:
+        df = df.filter(where)
+        if urban is not None:
+            df = df.filter(pl.col("urban") == urban)
 
     theme_cols = [f"theme__{t}" for t in store.themes]
     numeric = list(dict.fromkeys(["overall", *theme_cols, *measure.feature_columns]))
@@ -289,8 +297,13 @@ def rank_areas(
             pl.col("lad_nm").first().alias("lad_nm_en"),
             pl.col("nation").first(),
             w.sum().alias("population"),
-            *[((pl.col(c) * w).sum() / w.filter(pl.col(c).is_not_null()).sum()).alias(c)
+            # In 64 bits, as scoring.weighted_mean has it: the same sum, the same digits
+            *[((pl.col(c).cast(pl.Float64) * w).sum()
+               / w.filter(pl.col(c).is_not_null()).sum()).alias(c)
               for c in numeric if c != "raw__house_price"],
+            # The share of its people in urban small areas: urban or rural as a whole
+            ((pl.col("urban").cast(pl.Float64) * w).sum()
+             / w.filter(pl.col("urban").is_not_null()).sum()).alias("urban_share"),
             pl.col("raw__house_price").median(),  # the price itself: a median, once
             ((pl.col("pwc_lat") * w).sum() / w.sum()).alias("pwc_lat"),
             ((pl.col("pwc_lon") * w).sum() / w.sum()).alias("pwc_lon"),
@@ -301,6 +314,9 @@ def rank_areas(
             pl.lit(None, pl.Float64).alias("overall_pct"),
             *[pl.col(c).fill_nan(None) for c in numeric if c in df.columns],
         )
+        if urban is not None:
+            mostly_urban = pl.col("urban_share") >= 0.5
+            df = df.filter(pl.col("urban_share").is_not_nan() & (mostly_urban == urban))
     else:
         # "Area (neighbourhood)", or the area alone where it is its own tier
         own_tier = pl.col("msoa21cd") == pl.col("code")
@@ -379,6 +395,7 @@ def rank_areas(
     else:
         shares = np.ones(df.height)
     top = df.head(limit).with_columns(pl.Series("stability", shares[:limit]))
+    decimals = 2 if level in AGGREGATE_LEVELS else 1
     results = [
         RankedArea(
             rank=i + 1,
@@ -387,7 +404,10 @@ def rank_areas(
             name=_ranked_name(store, level, r),
             name_en=r["name_en"] if r["name_en"] != r["name"] else None,
             local_authority=r["lad_nm"],
-            overall=None if r["overall"] is None else round(r["overall"], 1),
+            # Two decimals for an average of small areas, as a comparison and a profile's
+            # resolved_from give it; one for a small area, as its profile does: each
+            # card then rounds the same figure once
+            overall=None if r["overall"] is None else round(r["overall"], decimals),
             overall_percentile=percentile(r["overall_pct"]),
             percentile_within=r.get("headline_within") or "all",
             themes={

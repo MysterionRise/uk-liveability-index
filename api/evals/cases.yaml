@@ -16,6 +16,11 @@
 #     reply_none:     the reply must contain none of these
 #     grounded:       every number in the reply comes from a tool result or the prompt
 #     no_tools:       no tool may be called
+#     consistent:     every overall score the run's tools gave one area agrees, and at
+#                     least one area was scored twice (a case that keeps one weighting)
+#     cheapest_named: the reply names the lowest-priced area of the run's first ranking
+#     percentile_of_its_score: a profile of a place gives the small area's percentile
+#                     after the small area's score, never after the larger area's
 
 cases:
   # ------------------------------------------------------------ ranking with constraints
@@ -208,6 +213,35 @@ cases:
       tools: [compare_areas]
       args:
         - {tool: compare_areas, arg: areas, op: len, value: 2}
+      grounded: true
+
+  # A town is profiled as one small area of it and compared as the whole: the profile
+  # says so and carries the whole's own score, so the two answers show one number (#228)
+  - name: profile_then_compare_agree
+    category: multi_turn
+    turns: ["Tell me about Headingley in Leeds", "Compare it with Chapel Allerton"]
+    expect:
+      tools: [compare_areas]
+      consistent: true
+      grounded: true
+
+  # The percentile and band are the small area's; the neighbourhood it names has a score
+  # and no percentile. 13 of 17 live replies in the v0.7.2 pass read "Headingley scores
+  # 68.3 overall, better than 84%": 84% is the small area's 69.5 (#290)
+  - name: profile_percentile_is_the_small_areas
+    category: lookup
+    turns: ["Tell me about Headingley in Leeds"]
+    expect:
+      tools: [get_area_profile]
+      percentile_of_its_score: true
+      grounded: true
+
+  # "Of those" means the list just shown: a reply once named two dearer areas (#236)
+  - name: cheapest_of_those
+    category: multi_turn
+    turns: ["What are the best areas for retirees around Bristol?", "Which of those is the most affordable?"]
+    expect:
+      cheapest_named: true
       grounded: true
 
   - name: reweight_followup
@@ -559,6 +593,18 @@ cases:
 
   # The same from the chat: a description of oneself is a set_profile call (a model may
   # go on to rank areas for it; the profile must be built first)
+  # A description with no place: the profile is built and the reply asks where, rather
+  # than ranking the whole of the UK and Ireland, which put Cork and Dublin first (#236)
+  - name: profile_no_place_asks_where
+    category: profile
+    turns: ["I'm retired, I have asthma and a dog, and I want somewhere quiet"]
+    expect:
+      tools: [set_profile]
+      forbid_tools: [rank_areas]
+      state:
+        - {path: profile.name, op: truthy}
+      reply_any: ["where", "which area", "which part", "which town", "which city", "location"]
+
   - name: profile_via_chat
     category: profile
     turns: ["I'm a young professional with one child going into primary school and I have a sun deficit"]

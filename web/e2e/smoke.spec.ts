@@ -61,8 +61,11 @@ test("the map loads and a postcode opens its profile", async ({
   const profile = page.getByTestId("area-profile").last();
   await expect(profile).toBeVisible({ timeout: 30_000 });
   await expect(profile.getByTestId("theme-bars")).toBeVisible();
-  // The band's "better than 34% of the UK…" is on every build's card
-  await expect(profile).toContainText("% of the UK");
+  // The band names what the percentile is among: the build's countries, or on the demo
+  // its own six cities ("better than 34% of the demo's areas")
+  await expect(profile).toContainText(
+    manifest.demo ? `% ${en.Demo.ofAreas}` : "% of the UK",
+  );
   const range = profile.getByTestId("percentile-range");
   if (manifest.demo) {
     // The demo's percentiles are among its own six cities and the range would be the full
