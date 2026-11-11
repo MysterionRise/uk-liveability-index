@@ -6,8 +6,15 @@ All notable changes to this project. The format follows
 
 ## [Unreleased]
 
-Polish and reliability after the launch kit (#201, the review of 10 November 2026). No new
-measures and no data rebuild.
+## [0.7.2] - 2026-11-11
+
+Polish and reliability after the launch kit (#201, the review of 10 November 2026), and
+what the release's five-tester pass found in it (#289). No new measures and no data
+rebuild: it reads the November data release (`data-2026-11`). One thing changes for an
+install that other machines reach: it must name the host names it answers to
+(`LIX_HOSTS`, under Changed). And profiles built with a model key are the model's again
+(under Fixed): since v0.6.3 on Opus, and on Haiku since a dependency update after
+v0.7.1, they were the rules engine's under a name the model wrote.
 
 ### Fixed
 
@@ -1356,6 +1363,7 @@ Run it with `make quickstart` (Docker, make and curl; see the README).
 - Each source has its own date (shown in the app); the data pack was built on
   7 October 2026.
 
+[0.7.2]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.2
 [0.7.1]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.1
 [0.7.0]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.7.0
 [0.6.3]: https://github.com/MysterionRise/uk-liveability-index/releases/tag/v0.6.3
