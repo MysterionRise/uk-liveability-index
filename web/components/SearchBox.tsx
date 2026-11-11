@@ -7,7 +7,7 @@ import { useLiveability } from "@/components/AppData";
 import { usePanel } from "@/components/PanelContext";
 import { searchPlaces } from "@/lib/api";
 import type { Place } from "@/lib/contracts.gen";
-import { useCoverageIn } from "@/lib/copy";
+import { useCoverageIn, useDemoCityList } from "@/lib/copy";
 import { nationOf, useLevelWords } from "@/lib/levels";
 
 // Kinds with a word of their own; an area tier takes its nation's word (lib/levels)
@@ -32,6 +32,9 @@ export function SearchBox() {
   const t = useTranslations("Search");
   const locale = useLocale();
   const coverageIn = useCoverageIn();
+  // The demo holds six cities: a place it lacks is not missing from the UK and Ireland,
+  // and the README's own example (Hebden Bridge) is one (#239)
+  const demoCities = useDemoCityList();
   const level = useLevelWords();
   const { update } = useLiveability();
   const { setTab } = usePanel();
@@ -141,9 +144,11 @@ export function SearchBox() {
         >
           {results.length === 0 && (
             <li className="px-3 py-2 text-[var(--text-muted)]">
-              {found.query === query.trim()
-                ? t("noMatches", { coverageIn })
-                : t("searching")}
+              {found.query !== query.trim()
+                ? t("searching")
+                : demoCities
+                  ? t("notInDemo", { cities: demoCities })
+                  : t("noMatches", { coverageIn })}
             </li>
           )}
           {results.map((p, i) => (

@@ -93,7 +93,13 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
     (state.compare_within === "uk" && profile.percentile_within === "nation");
   const withinUrbanRural = state.compare_within === "urban_rural";
   const nationName = tn(profile.nation as "E" | "W" | "S" | "N" | "I");
-  const nationOf = tn(`of_${profile.nation}` as "of_E" | "of_W" | "of_S" | "of_N" | "of_I");
+  const td = useTranslations("Demo");
+  // "of Ireland"; on the demo "of the demo's areas in Ireland", which is what it is among
+  const nationOf = manifest?.demo
+    ? td("ofAreasIn", {
+        coverageIn: tn(`in_${profile.nation}` as "in_E" | "in_W" | "in_S" | "in_N" | "in_I"),
+      })
+    : tn(`of_${profile.nation}` as "of_E" | "of_W" | "of_S" | "of_N" | "of_I");
   // "of the UK and Ireland", "in the UK and Ireland": what the build's percentiles span
   const coverageOf = useCoverageOf();
   const coverageIn = useCoverageIn();
@@ -128,6 +134,20 @@ export function AreaProfileCard({ profile }: { profile: AreaProfile }) {
           {t("overallOf100", { preset: presetName(profile.preset) })}
         </span>
       </div>
+      {/* Asked about a town, a neighbourhood or a council, the card is one small area of
+          it: say so, with the larger place's own score, which is the figure a ranking or
+          a comparison shows for it (#228) */}
+      {profile.resolved_from && (
+        <p className="mt-1 text-xs text-[var(--text-muted)]" data-testid="resolved-from">
+          {profile.resolved_from.overall == null
+            ? t("oneSmallAreaOnly", { name: profile.resolved_from.name })
+            : t("oneSmallArea", {
+                name: profile.resolved_from.name,
+                // The digits a ranking and a comparison print for it
+                overall: profile.resolved_from.overall.toFixed(0),
+              })}
+        </p>
+      )}
       <div className="mt-1">
         <Band
           band={profile.band}

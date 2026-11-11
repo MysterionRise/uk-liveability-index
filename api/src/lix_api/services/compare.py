@@ -5,7 +5,13 @@ import polars as pl
 from lix_api.models import ComparedArea, Comparison
 from lix_api.services.areas import stand_in
 from lix_api.services.names import localised
-from lix_api.services.scoring import ThemeWeights, percentile, resolve_weights, scores_for
+from lix_api.services.scoring import (
+    ThemeWeights,
+    percentile,
+    resolve_weights,
+    scores_for,
+    weighted_mean,
+)
 from lix_api.services.search import distinct_name, resolve_lsoa, search_place, small_area_label
 from lix_api.store import Store
 
@@ -86,14 +92,15 @@ def compare_areas(
         if (level, code) in seen:  # the same area under another reference
             continue
         seen.add((level, code))
-        w = rows["population"].cast(pl.Float64)
 
-        def wmean(col: str) -> float | None:
-            vals = rows[col]
-            ok = vals.is_not_null()
-            if not ok.any():
-                return None
-            return round(float((vals.filter(ok) * w.filter(ok)).sum() / w.filter(ok).sum()), 2)
+        def wmean(col: str, rows: pl.DataFrame = rows) -> float | None:
+            return weighted_mean(rows[col], rows["population"])
+
+        # One small area keeps the one decimal its profile shows; an average keeps two,
+        # as a ranking and a profile's resolved_from do
+        overall = wmean("overall")
+        if level == "lsoa" and overall is not None:
+            overall = round(overall, 1)
 
         # What each nation lacks is flagged on every one of its rows alike, so the
         # first row says which indicator (or substitute) this area can show
@@ -103,7 +110,7 @@ def compare_areas(
             pick = stand_in(store, first, i)
             shown[i] = (pick, wmean(f"raw__{pick}") if pick else None)
         picked.append((
-            code, label, level, wmean("overall"),
+            code, label, level, overall,
             percentile(wmean("overall_pct")) if level == "lsoa" else None,
             {t: wmean(f"theme__{t}") for t in store.themes}, shown,
         ))  # fmt: skip

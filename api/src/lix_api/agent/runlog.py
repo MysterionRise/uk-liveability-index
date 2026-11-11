@@ -56,7 +56,9 @@ def run_record(result, started: float, kind: str = "chat") -> dict:
     messages = result.new_messages()
     responses = [m for m in messages if isinstance(m, ModelResponse)]
     tools = [p.tool_name for m in responses for p in m.parts if isinstance(p, ToolCallPart)]
-    usage = result.usage() if callable(result.usage) else result.usage
+    # A property since pydantic-ai 2.66 (still callable there, with a warning that reached
+    # the API's log on the first chat turn); a method before
+    usage = result.usage if hasattr(result.usage, "requests") else result.usage()
     cost = run_cost(responses, usage)
     return {
         "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),

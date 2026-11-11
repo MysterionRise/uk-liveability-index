@@ -1,7 +1,7 @@
 """Why an area scores what it does: each theme's share of the score and its indicators."""
 
 from lix_api.models import Contribution, Explanation, SourceRef
-from lix_api.services.areas import indicator_value, with_substitutes
+from lix_api.services.areas import indicator_value, resolved_from, with_substitutes
 from lix_api.services.names import indicator_caveats, localised
 from lix_api.services.scoring import (
     ThemeWeights,
@@ -10,7 +10,7 @@ from lix_api.services.scoring import (
     resolve_weights,
     scores_for,
 )
-from lix_api.services.search import resolve_lsoa, small_area_label
+from lix_api.services.search import resolve_area, small_area_label
 from lix_api.store import Store
 
 
@@ -24,11 +24,12 @@ def explain_score(
     indicator_weights: dict[str, float] | None = None,
 ) -> Explanation:
     """``locale`` names the area in the interface language where the pack has it."""
-    code = resolve_lsoa(store, ref)
+    code, named = resolve_area(store, ref)
     i = store.lsoa_index[code]
     row = store.features.row(i, named=True)
     name, themes, multipliers = resolve_weights(store, preset, theme_weights, indicator_weights)
-    scores = scores_for(store, themes, multipliers).row(i, named=True)
+    every = scores_for(store, themes, multipliers)
+    scores = every.row(i, named=True)
 
     if theme is not None:
         matched = match_theme(store, theme)
@@ -104,6 +105,7 @@ def explain_score(
     ]
     return Explanation(
         lsoa21cd=code,
+        resolved_from=resolved_from(store, named, code, every, locale),
         name=small_area_label(
             store,
             localised(row, "lsoa21nm", locale),

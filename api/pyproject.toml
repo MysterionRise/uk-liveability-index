@@ -1,6 +1,6 @@
 [project]
 name = "lix-api"
-version = "0.7.1"
+version = "0.7.2"
 description = "UK Liveability Index: REST API, AI agent (AG-UI) and MCP server"
 requires-python = ">=3.11"
 dependencies = [
@@ -10,7 +10,8 @@ dependencies = [
     "numpy>=1.26",
     "scipy>=1.13",
     "pyproj>=3.6",
-    "duckdb>=1.0",
+    # 2.0 drops fetch_arrow_table() and .pl() on a result, which the stagers call (#240)
+    "duckdb>=1.0,<2",
     "rapidfuzz>=3.9",
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",

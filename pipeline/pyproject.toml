@@ -1,12 +1,13 @@
 [project]
 name = "lix-pipeline"
-version = "0.7.1"
+version = "0.7.2"
 description = "UK Liveability Index: fetch, stage and score open data for every small area of the UK and Ireland"
 requires-python = ">=3.11"
 dependencies = [
     "lix-core",
     "polars>=1.38,<2",  # 2.0 changes lazy/streaming defaults; migrate deliberately
-    "duckdb>=1.0",
+    # 2.0 drops fetch_arrow_table() and .pl() on a result, which the stagers call (#240)
+    "duckdb>=1.0,<2",
     "geopandas>=1.0",
     "shapely>=2.0",
     "pyproj>=3.6",

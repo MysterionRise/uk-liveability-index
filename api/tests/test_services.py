@@ -844,6 +844,246 @@ def test_sql_bounds_generated_sequences(store):
     assert out.rows == [[10]]
 
 
+# A name in double quotes, a comment between a name and its bracket, or a schema in
+# front of it got each of these past the patterns on the query's text (v0.7.2 pass).
+# The engine's own parser says which functions a query calls, however it is written
+BUILDERS_ANYHOW = [
+    ("select length(\"repeat\"('x', 10))", "repeat"),
+    ("select length(repeat/**/('x', 10))", "repeat"),
+    ("select length(repeat -- a note\n('x', 10))", "repeat"),
+    ("select length(main.\"repeat\"('x', 10))", "repeat"),
+    ("select ('x').\"repeat\"(10)", "repeat"),
+    ("select \"rpad\"('x', 5, 'y')", "rpad"),
+    ("select \"lpad\"(name, 3, '0') from places", "lpad"),
+    ("select \"printf\"('%5s', 'x')", "printf"),
+    ("select \"format\"('{:>5}', 'x')", "format"),
+    ('select "list_resize"([1], 5)', "list_resize"),
+    ("select \"bitstring\"('1', 5)", "bitstring"),
+    ("select * from \"query\"('select 42')", "query"),
+    ("select * from query/**/('select 42')", "query"),
+    ("select * from \"query_table\"('lsoa')", "query_table"),
+    (
+        "select * from \"json_execute_serialized_sql\"(json_serialize_sql('select 42'))",
+        "json_execute_serialized_sql",
+    ),
+    # ... and inside the statements that wrap a query
+    ("summarize select \"repeat\"('x', 10) as s", "repeat"),
+    ("select * from (describe select \"repeat\"('x', 10) as s)", "repeat"),
+]
+
+
+@pytest.mark.parametrize(("query", "name"), BUILDERS_ANYHOW)
+def test_sql_refuses_a_string_builder_however_it_is_written(store, query, name):
+    with pytest.raises(SqlError, match=rf"^{name}\(\) is not allowed: it can build"):
+        SqlGuard(store).run(query)
+
+
+@pytest.mark.parametrize(
+    ("query", "problem"),
+    [
+        ('select len("range"(2000000)) as n', "at most 1,000,000"),
+        ("select count(*) from range/**/(2000000)", "at most 1,000,000"),
+        ('select count(*) from "generate_series"(1, 2000000)', "at most 1,000,000"),
+        ('select count(*) from "range"(-1000000, 1000001)', "at most 1,000,000"),
+        ('select len((2000000)."range"()) as n', "at most 1,000,000"),
+        ('select unnest("range"(power(10, 3)::int)) as n', "whole-number bounds"),
+        ('select count(*) from "range"(1 + 1)', "whole-number bounds"),
+    ],
+)
+def test_sql_bounds_a_sequence_however_it_is_written(store, query, problem):
+    with pytest.raises(SqlError, match=rf"^(range|generate_series)\(\) .*{problem}"):
+        SqlGuard(store).run(query)
+
+
+def test_sql_still_builds_the_sequences_it_built(store):
+    guard = SqlGuard(store)
+    for query, n in [
+        ('select count(*) as n from "range"(10)', 10),
+        ("select count(*) as n from range(-5, 5)", 10),
+        ('select count(*) as n from "generate_series"(-5, 4)', 10),
+        ("select count(*) as n from range/* to ten */(10)", 10),
+        ("select count(*) as n from generate_series(1, 1000000)", 1_000_000),
+        ("select count(*) as n from range(0, 3000000, 3)", 1_000_000),
+        ("select sum(n) as n from (select unnest(range(4)) as n)", 6),
+        ("select count(*) as n from unnest([1, 2, 3]) as t(n)", 3),
+    ]:
+        assert guard.run(query).rows == [[n]], query
+
+
+# Functions that change the engine for whoever asks next, or read what others asked
+ENGINE_STATE_ANYHOW = [
+    "select * from enable_logging()",
+    'select * from "enable_logging"()',
+    "select * from enable_logging/**/()",
+    "select * from enable_logging -- a note\n()",
+    "select * from \"enable_logging\"(storage = 'memory', level = 'trace')",
+    'summarize select * from "enable_logging"()',
+    'select * from "disable_logging"()',
+    'select * from "truncate_duckdb_logs"()',
+    'select * from "enable_profiling"()',
+    'select * from "disable_profiling"()',
+    'select * from "checkpoint"()',
+    'select * from "force_checkpoint"()',
+    "select \"write_log\"('a line in the log')",
+    'select * from "duckdb_logs"()',
+    'select * from "duckdb_log_contexts"()',
+    "select * from duckdb_logs",
+    'select * from main."duckdb_logs"',
+    # In a string it is refused too, as repeat( in a string always was: the patterns
+    # read the query's text
+    "select 'enable_logging(' as s",
+]
+
+
+@pytest.mark.parametrize("query", ENGINE_STATE_ANYHOW)
+def test_sql_cannot_change_the_engine_for_the_next_caller(store, query):
+    """``select * from enable_logging()`` is a SELECT, so it ran: from then on everyone's
+    queries were kept in a log anyone could read, and with ``storage = 'file'`` every
+    later query was a 500 and the process aborted a few queries on (v0.7.2 pass)."""
+    guard = SqlGuard(store)
+
+    def settings() -> list:
+        return guard.con.execute("select name, value from duckdb_settings() order by 1").fetchall()
+
+    before = settings()
+    assert ("enable_logging", "0") in before
+    with pytest.raises(SqlError, match=r"^\w+(\(\))? is not (allowed|available)"):
+        guard.run(query)
+    assert settings() == before
+    assert guard.run("select 1 as one").rows == [[1]]
+
+
+def test_sql_reads_a_name_in_a_string_as_it_always_did(store):
+    """The patterns read the query's text, strings included: ``repeat(`` in a string was
+    refused before the parsed names were checked, and still is. A quoted name in a string
+    is no call, to the patterns or to the parser."""
+    guard = SqlGuard(store)
+    with pytest.raises(SqlError, match=r"repeat\(\) is not allowed"):
+        guard.run("select 'repeat(' as s")
+    assert guard.run("select '\"repeat\"(' as s").rows == [['"repeat"(']]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "select * from duckdb_settings()",
+        "select function_name from duckdb_functions() limit 1",
+        "select * from pragma_table_info('lsoa')",
+        "select * from duckdb_memory()",
+        "select * from json_each('{\"a\": 1}')",
+        "select lsoa21cd from lsoa, lateral (select * from duckdb_tables())",
+        "select * from read_csv('/etc/passwd')",
+    ],
+)
+def test_sql_calls_three_table_functions_and_no_other(store, query):
+    """Eighty-odd table functions come with the engine: some switch its logging on, some
+    read its memory or its settings. The tables are what is offered here, with range(),
+    generate_series() and unnest() to build rows."""
+    with pytest.raises(SqlError, match=r"^\w+\(\) is not available here"):
+        SqlGuard(store).run(query)
+
+
+def test_sql_still_describes_shows_and_summarizes(store):
+    """DESCRIBE, SHOW and SUMMARIZE are statements, not functions: the catalogue is still
+    there to read."""
+    guard = SqlGuard(store)
+    assert "lsoa21cd" in [row[0] for row in guard.run("describe lsoa").rows]
+    assert {row[0] for row in guard.run("show tables").rows} >= {"lsoa", "pois", "areas"}
+    described = guard.run("describe select lad_nm, count(*) as n from lsoa group by 1")
+    assert [row[0] for row in described.rows] == ["lad_nm", "n"]
+    assert guard.run("summarize select overall from lsoa").rows[0][0] == "overall"
+    columns = guard.run(
+        "select count(*) as n from information_schema.columns where table_name = 'lsoa'"
+    )
+    assert columns.rows[0][0] > 20
+
+
+def test_sql_on_a_broken_engine_is_a_refusal_with_nothing_left_open(store, monkeypatch):
+    """With logging sent to a file it could not write, the engine failed every query
+    where the tables are attached to the cursor: outside the ``try``, so a 500, with
+    the cursor left open. Whatever the engine raises is a refusal, and the cursor and
+    the timer are let go."""
+    import threading
+
+    import duckdb
+
+    import lix_api.services.sql as sql
+
+    timers, closed = [], []
+
+    class Timer(threading.Timer):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            timers.append(self)
+
+    class Cursor:
+        def __init__(self, cursor):
+            self._cursor = cursor
+
+        def __getattr__(self, name):
+            return getattr(self._cursor, name)
+
+        def register(self, name, table):
+            raise duckdb.PermissionException(
+                f"Failed to create view '{name}': Cannot access directory \"/app\""
+            )
+
+        def close(self):
+            closed.append(self)
+            self._cursor.close()
+
+    class Connection:
+        def __init__(self, con, cursor_fails=False):
+            self._con, self._cursor_fails = con, cursor_fails
+
+        def __getattr__(self, name):
+            return getattr(self._con, name)
+
+        def cursor(self):
+            if self._cursor_fails:
+                raise duckdb.ConnectionException("Connection Error: the database is gone")
+            return Cursor(self._con.cursor())
+
+    monkeypatch.setattr(sql.threading, "Timer", Timer)
+    guard = SqlGuard(store)
+    real = guard.con
+    guard.con = Connection(real)
+    with pytest.raises(SqlError, match="Failed to create view 'lsoa'"):
+        guard.run("select 1")
+    assert len(closed) == 1 and len(timers) == 1 and timers[0].finished.is_set()
+    guard.con = Connection(real, cursor_fails=True)
+    with pytest.raises(SqlError, match="the database is gone"):
+        guard.run("select 1")
+    assert len(timers) == 1  # no cursor, so no timer was started for it
+
+
+def test_sql_refuses_what_it_cannot_send_or_read(store, monkeypatch):
+    """Half of a surrogate pair cannot be sent to the engine as text: that was a
+    TypeError, and a 500 (v0.7.2 pass). And a query the engine's parser takes but cannot
+    hand back as a tree, or hands back nested deeper than can be walked, is not run
+    unchecked."""
+    import lix_api.services.sql as sql
+
+    guard = SqlGuard(store)
+    for query in ('select 1 as "\ud800"', "select '\udfff' as s", "select 1 \ud83d"):
+        with pytest.raises(SqlError, match="^Couldn't parse the query") as refused:
+            guard.run(query)
+        assert "codec" not in str(refused.value) and "\\ud" not in ascii(str(refused.value))
+    # 700 calls deep: within the engine's own limit of 1,000, past what Python 3.11 reads
+    # back from JSON. It runs or it is refused in words; it is never a RecursionError
+    deep = "select " + "abs(" * 700 + "1" + ")" * 700 + " as n"
+    try:
+        assert guard.run(deep).rows == [[1]]
+    except SqlError as e:
+        assert "nested too deeply" in str(e)
+    assert guard.run("select " + "abs(" * 100 + "1" + ")" * 100 + " as n").rows == [[1]]
+    monkeypatch.setattr(
+        sql, "_parsed", lambda cursor, query: {"error": True, "error_message": "no tree"}
+    )
+    with pytest.raises(SqlError, match="^Couldn't parse the query: no tree"):
+        guard.run("select 1")
+
+
 def test_a_repeated_small_area_name_carries_its_code_in_one_bracket():
     from lix_api.services.search import small_area_label
 

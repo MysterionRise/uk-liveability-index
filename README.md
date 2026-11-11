@@ -27,7 +27,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
   about yourself ("young professional, one child starting school, I need sunshine") or
   any weighting of your own, with a range for how much a preset's result depends on the
   exact weights.
-- **An assistant that shows its working**, tested on 58 cases, 31 of them also checking
+- **An assistant that shows its working**, tested on 62 cases, 34 of them also checking
   that every number in the reply traces to a tool result ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.
@@ -56,7 +56,8 @@ Dublin) at http://localhost:3000, with the assistant answering its suggested que
 recordings. The first run pulls the app's images (about 0.6 GB); give Docker about 4 GB of
 memory. Stop it with `make down`. Port 3000 taken? `LIX_PORT=3100 make up-demo`. The app
 listens on this machine only: `LIX_BIND=0.0.0.0` opens it to your network, where anyone who
-reaches it can use the assistant on your key.
+reaches it can use the assistant on your key. It answers to `localhost` alone, so name what
+others reach it by as well: `LIX_BIND=0.0.0.0 LIX_HOSTS="192.168.1.20 mybox.local" make up`.
 
 **The whole of the UK and Ireland:**
 
@@ -134,13 +135,13 @@ as the fallback:
 
 | Model (via OpenRouter) | Eval cases passed | Typical answer | Cost per question |
 |---|---|---|---|
-| Claude Haiku 5.5 (default) | 56/58 | 4 s | about $0.001 |
-| Qwen 3.8 27B (fallback, open weights) | 52/58 | 6 s | about $0.002 |
-| Claude Opus 5.5 | 56/58 | 6 s | about $0.03 |
+| Claude Haiku 5.5 (default) | 60/62 | 4 s | about $0.001 |
+| Qwen 3.8 27B (fallback, open weights) | 54/62 | 7 s | about $0.002 |
+| Claude Opus 5.5 | 61/62 | 5 s | about $0.03 |
 
-One full run each on 4 November 2026; a case can pass on one run and fail on the next
-(Haiku's two misses passed three reruns each), and [docs/evals.md](docs/evals.md) lists
-every miss. The $1 daily budget buys several hundred Haiku questions and about thirty Opus
+One full run each on 11 November 2026; a case can pass on one run and fail on the next
+(two more runs of the default passed 60 and 61, a second of the fallback 54), and
+[docs/evals.md](docs/evals.md) lists every miss. The $1 daily budget buys several hundred Haiku questions and about thirty Opus
 ones (the stable prefix is cached, so an Opus follow-up costs a few cents).
 
 Set `LIX_MODEL` in `.env` to use another: `anthropic:claude-opus-5-5`, `openai:gpt-5`,

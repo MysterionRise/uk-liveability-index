@@ -31,9 +31,16 @@ make e2e         # Playwright against the local build
 make schemas     # after changing API models: regenerate contracts/ and web types
 ```
 
+`uv run lix docs --check` also runs in CI. It fails when the generated source list is
+stale (`make docs`) and when a count the README or the docs state (neighbourhoods,
+indicators, datasets, eval cases and results, the review's places and checks) no longer
+matches the config and the committed eval reports: it names the file, the line and what
+the repository says, and the sentence is corrected by hand.
+
 If you change the assistant's instructions or tools, run the evals on a cheap model
 (`make eval MODEL=openrouter:anthropic/claude-haiku-5.5`, about $0.05) and say how they
-went in the pull request.
+went in the pull request. A maintainer can run them on GitHub instead, several times over
+(the `evals.yml` workflow), which shows whether a case fails every time or now and then.
 
 ## Adding a data source
 

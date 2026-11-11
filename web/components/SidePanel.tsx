@@ -11,6 +11,7 @@ import { AnalystPanel } from "@/components/panels/AnalystPanel";
 import { AreaPanel } from "@/components/panels/AreaPanel";
 import { ShortlistPanel } from "@/components/panels/ShortlistPanel";
 import { WeightPanel } from "@/components/panels/WeightPanel";
+import { assistantIsRecorded } from "@/lib/api";
 import { useCoverageName } from "@/lib/copy";
 
 const SUGGESTION_KEYS = ["family", "pubs", "compare", "explain"] as const;
@@ -69,6 +70,16 @@ export function SidePanel() {
     setUnreachable(false);
     if (!refocus && window.matchMedia("(pointer: fine)").matches) setRefocus(true);
   };
+  // Without a working model key (or in the offline demo) the replies are recordings of
+  // the suggested questions, and the panel says so (#239)
+  const [recorded, setRecorded] = useState(false);
+  useEffect(() => {
+    let live = true;
+    assistantIsRecorded().then((is) => live && setRecorded(is));
+    return () => {
+      live = false;
+    };
+  }, []);
 
   const tabs: [Tab, string][] = [
     ["assistant", t("tabs.assistant")],
@@ -145,7 +156,17 @@ export function SidePanel() {
           id="panel-assistant"
           role="tabpanel"
           onKeyDownCapture={(e) => {
-            if (e.key === "Enter" && !e.shiftKey && e.target instanceof HTMLTextAreaElement) askRefocus();
+            if (e.key !== "Enter" || e.shiftKey || !(e.target instanceof HTMLTextAreaElement)) return;
+            // Enter on an empty box is nothing to send. CopilotKit's input reads it as
+            // "stop" while a reply is on its way, so a second Enter after a question
+            // cancelled the answer without a word (#236): it stops here. The Stop button
+            // still stops
+            if (!e.target.value.trim() && !e.nativeEvent.isComposing) {
+              e.preventDefault();
+              e.stopPropagation();
+              return;
+            }
+            askRefocus();
           }}
           onClickCapture={(e) => {
             if (e.target instanceof Element && e.target.closest('[data-testid="copilot-send-button"]')) askRefocus();
@@ -160,8 +181,21 @@ export function SidePanel() {
               {t("chatUnreachable")}
             </p>
           )}
+          {recorded && (
+            <p
+              role="note"
+              data-testid="chat-recorded"
+              className="border-b border-[var(--border)] px-3 py-1.5 text-xs text-[var(--text-secondary)]"
+            >
+              {t("chatRecorded")}
+            </p>
+          )}
           <CopilotChat
             className="min-h-0 flex-1"
+            // A reply opens at its start: the question is pinned to the top of the panel
+            // and the answer grows below it. Following the bottom, as the default does,
+            // left only the tail of a tall card on show, most of all on a phone (#231)
+            autoScroll="pin-to-send"
             onError={(event) => {
               // A stopped run (a second Enter, leaving the page) is not a failure
               const error = "error" in event ? event.error : undefined;
@@ -176,13 +210,17 @@ export function SidePanel() {
               chatInputPlaceholder: t("chatPlaceholder"),
               welcomeMessageText: t("chatWelcome"),
               chatDisclaimerText: t("chatDisclaimer"),
+              // One button, two jobs: it sends, and while a reply is on its way it stops.
+              // Named through the labels, CopilotKit switches the name with the job; an
+              // aria-label on the slot said "Send" on the Stop button too (#236)
+              chatInputToolbarSendButtonLabel: t("send"),
+              chatInputToolbarStopButtonLabel: t("stop"),
             }}
-            // CopilotKit's icon buttons have no accessible names of their own; the box stops
-            // at the longest message the assistant reads (MAX_USER_MESSAGE_CHARS, #214)
+            // The box stops at the longest message the assistant reads
+            // (MAX_USER_MESSAGE_CHARS, #214)
             input={{
               autoFocus: refocus,
               textArea: { maxLength: 4000 },
-              sendButton: { "aria-label": t("send") },
               addMenuButton: NoAddMenu,
             }}
           />

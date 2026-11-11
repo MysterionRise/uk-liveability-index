@@ -2,7 +2,7 @@
 # pipeline and `lix` CLI); api/ (FastAPI + agent) and web/ (Next.js) come later.
 [project]
 name = "uk-liveability-index"
-version = "0.7.1"
+version = "0.7.2"
 description = "UK Liveability Index: open-data liveability scores for 62,833 neighbourhoods across the UK and Ireland"
 requires-python = ">=3.11"
 dependencies = [
@@ -48,3 +48,6 @@ testpaths = ["core/tests", "pipeline/tests", "api/tests"]
 # Test files share basenames across packages; importlib mode avoids module clashes
 addopts = "--import-mode=importlib --allow-hosts=127.0.0.1"
 asyncio_mode = "auto"
+# The assistant library's deprecations are UserWarnings on purpose, so they print in the
+# API's log: one reached a newcomer's `docker compose logs` in 0.7.2's release pass
+filterwarnings = ["error::pydantic_ai.PydanticAIDeprecationWarning"]

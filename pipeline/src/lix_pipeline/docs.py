@@ -1,6 +1,8 @@
 """Generate docs/data-sources.md and ATTRIBUTION.md from the dataset registry.
 
-Run ``lix docs`` after editing config/datasets.yaml; CI can check the files are current.
+Run ``lix docs`` after editing config/datasets.yaml. CI runs ``lix docs --check``: the two
+files are current, and the counts the hand-written docs state match the repository
+(lix_pipeline.claims).
 """
 
 from collections import defaultdict
@@ -133,7 +135,7 @@ def _without_period(text: str) -> str:
     return "\n".join(out)
 
 
-def check_docs() -> list[str]:
+def stale_docs() -> list[str]:
     """The generated files that differ from what is committed, ignoring the "Data for"
     column; empty when `lix docs` would change nothing that CI can judge."""
     root = get_project_root()
@@ -143,3 +145,13 @@ def check_docs() -> list[str]:
         if _without_period(current) != _without_period(text):
             stale.append(str(path.relative_to(root)))
     return stale
+
+
+def check_docs() -> list[str]:
+    """What `lix docs --check` fails on, one line each: a generated file that is out of
+    date, and a number the hand-written docs state that the repository contradicts
+    (lix_pipeline.claims). Empty when the docs are current."""
+    from lix_pipeline.claims import check_claims
+
+    stale = [f"{path} is out of date: run make docs and commit it" for path in stale_docs()]
+    return stale + check_claims()

@@ -33,6 +33,18 @@
     "of_uk_I": "of the UK and Ireland",
     "of_E_W": "of England and Wales"
   },
+  "Demo": {
+    "ofAreas": "of the demo's areas",
+    "ofAreasIn": "of the demo's areas {coverageIn}",
+    "cities": {
+      "leeds": "Leeds",
+      "brighton": "Brighton",
+      "cardiff": "Cardiff",
+      "edinburgh": "Edinburgh",
+      "belfast": "Belfast",
+      "dublin": "Dublin"
+    }
+  },
   "Header": {
     "title": "UK Liveability Index",
     "blurb": "{count, number} neighbourhoods {coverageIn}, scored from open data",
@@ -68,6 +80,8 @@
     "chatDisclaimer": "AI can make mistakes. Please verify important information.",
     "chatUnreachable": "The assistant can't be reached just now. The map, search and profiles still work; try your question again in a moment.",
     "send": "Send",
+    "stop": "Stop",
+    "chatRecorded": "Recorded answers: the assistant is replaying recordings of the suggested questions, not asking a model.",
     "suggestions": {
       "familyTitle": "Family-friendly near Leeds",
       "familyMessage": "We have two young kids and a budget of £350k. Where should we look around Leeds?",
@@ -83,6 +97,8 @@
   "Onboarding": {
     "title": "Find a neighbourhood that suits you",
     "blurb": "Every neighbourhood {coverageIn}, scored from open data. Teal areas do better than typical, orange ones worse. Zoom in and click an area to see why, or ask the assistant.",
+    "blurbDemo": "A demo: {count, number} cities {coverageIn}, scored from open data. Teal areas do better than typical, orange ones worse. Pick a city, click an area to see why, or ask the assistant.",
+    "demoCovers": "The demo covers:",
     "whoIsLooking": "Who's looking?",
     "skip": "Skip",
     "personas": {
@@ -97,6 +113,7 @@
   "Search": {
     "placeholder": "Postcode or place",
     "noMatches": "No matches {coverageIn}",
+    "notInDemo": "Not in the demo: it covers {cities}",
     "searching": "Searching…",
     "unavailable": "Search is unavailable",
     "kinds": {
@@ -184,6 +201,8 @@
       "nation": "Against areas in the same nation",
       "urban_rural": "Against areas of the same urban/rural type"
     },
+    "againstDemo": "Against the demo's areas",
+    "againstDemoIn": "Against the demo's areas {coverageIn}",
     "worse": "worse",
     "typical": "typical",
     "better": "better",
@@ -243,6 +262,8 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} residents",
     "overallOf100": "/ 100 overall ({preset})",
+    "oneSmallArea": "This is one small area of {name}, which scores {overall} as a whole.",
+    "oneSmallAreaOnly": "This is one small area of {name}.",
     "rangeTitle": "The 5–95% range of the percentile when each theme's weight is nudged by about a quarter",
     "range": "With slightly different weights: better than {lo, number}–{hi, number}% {of}",
     "betterThan": "Better than {pct, number}% {of}",

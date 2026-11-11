@@ -15,6 +15,7 @@ export function MethodExplainer({ explanation }: { explanation: Explanation }) {
   const t = useTranslations("Explainer");
   const months = useMonths();
   const tw = useTranslations("Weights");
+  const tp = useTranslations("Profile");
   const locale = useLocale();
   const qualityNote = useQualityNote();
   const labels = useLabels();
@@ -29,6 +30,18 @@ export function MethodExplainer({ explanation }: { explanation: Explanation }) {
       title={t("title", { name: explanation.name, score: explanation.overall?.toFixed(0) ?? "–" })}
       subtitle={t("subtitle", { preset: presetName(explanation.preset) })}
     >
+      {/* Asked about a town or a council, the explanation is of one small area of it: the
+          card says so, as the profile card does (#228) */}
+      {explanation.resolved_from && (
+        <p className="mb-2 text-xs text-[var(--text-muted)]" data-testid="resolved-from">
+          {explanation.resolved_from.overall == null
+            ? tp("oneSmallAreaOnly", { name: explanation.resolved_from.name })
+            : tp("oneSmallArea", {
+                name: explanation.resolved_from.name,
+                overall: explanation.resolved_from.overall.toFixed(0),
+              })}
+        </p>
+      )}
       <ul>
         {explanation.contributions.map((c) => (
           <li key={c.theme} className="border-t border-[var(--border)] first:border-t-0">

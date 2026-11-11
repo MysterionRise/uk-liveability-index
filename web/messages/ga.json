@@ -33,6 +33,18 @@
     "of_uk_I": "den RA agus d'Éirinn",
     "of_E_W": "de Shasana agus den Bhreatain Bheag"
   },
+  "Demo": {
+    "ofAreas": "de na ceantair sna sonraí taispeána",
+    "ofAreasIn": "de na ceantair sna sonraí taispeána {coverageIn}",
+    "cities": {
+      "leeds": "Leeds",
+      "brighton": "Brighton",
+      "cardiff": "Cardiff",
+      "edinburgh": "Edinburgh",
+      "belfast": "Béal Feirste",
+      "dublin": "Baile Átha Cliath"
+    }
+  },
   "Header": {
     "title": "Innéacs Inchónaitheachta na RA",
     "blurb": "{count, number} comharsanacht {coverageIn}, scóráilte ó shonraí oscailte",
@@ -68,6 +80,8 @@
     "chatDisclaimer": "Is féidir le IS botúin a dhéanamh. Deimhnigh eolas tábhachtach.",
     "chatUnreachable": "Níl teacht ar an gcúntóir faoi láthair. Oibríonn an léarscáil, an cuardach agus na próifílí fós; bain triail as do cheist arís i gceann tamaillín.",
     "send": "Seol",
+    "stop": "Stop",
+    "chatRecorded": "Freagraí taifeadta: tá an cúntóir ag athsheinm taifeadtaí de na ceisteanna molta, ní ag cur ceiste ar mhúnla.",
     "suggestions": {
       "familyTitle": "Oiriúnach do theaghlaigh i mBaile Átha Cliath",
       "familyMessage": "Tá beirt pháistí óga againn. Cá háit ar chóir dúinn breathnú timpeall Bhaile Átha Cliath?",
@@ -83,6 +97,8 @@
   "Onboarding": {
     "title": "Aimsigh comharsanacht a oireann duit",
     "blurb": "Gach comharsanacht {coverageIn}, scóráilte ó shonraí oscailte. Tá ceantair ghormghlasa níos fearr ná an gnáth, ceantair oráiste níos measa. Zúmáil isteach agus cliceáil ar cheantar le fáil amach cén fáth, nó fiafraigh den chúntóir.",
+    "blurbDemo": "Sonraí taispeána: {count, number} chathair {coverageIn}, scóráilte ó shonraí oscailte. Tá ceantair ghormghlasa níos fearr ná an gnáth, ceantair oráiste níos measa. Roghnaigh cathair, cliceáil ar cheantar le fáil amach cén fáth, nó fiafraigh den chúntóir.",
+    "demoCovers": "Sonraí taispeána:",
     "whoIsLooking": "Cé atá ag breathnú?",
     "skip": "Léim thairis",
     "personas": {
@@ -97,6 +113,7 @@
   "Search": {
     "placeholder": "Postchód nó áit",
     "noMatches": "Gan aon mheaitseáil {coverageIn}",
+    "notInDemo": "Níl sé seo sna sonraí taispeána: clúdaíonn siad {cities}",
     "searching": "Ag cuardach…",
     "unavailable": "Níl an cuardach ar fáil",
     "kinds": {
@@ -184,6 +201,8 @@
       "nation": "I gcoinne ceantar sa náisiún céanna",
       "urban_rural": "I gcoinne ceantar den chineál uirbeach/tuaithe céanna"
     },
+    "againstDemo": "I gcoinne na gceantar sna sonraí taispeána",
+    "againstDemoIn": "I gcoinne na gceantar sna sonraí taispeána {coverageIn}",
     "worse": "níos measa",
     "typical": "tipiciúil",
     "better": "níos fearr",
@@ -243,6 +262,8 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} cónaitheoir",
     "overallOf100": "/ 100 iomlán ({preset})",
+    "oneSmallArea": "Seo ceantar beag amháin. Faigheann {name} ina iomláine {overall}.",
+    "oneSmallAreaOnly": "Seo ceantar beag amháin; fiafraíodh faoi {name}.",
     "rangeTitle": "Raon 5–95% den pheircintíl nuair a bhogtar ualach gach téama thart ar an gceathrú cuid",
     "range": "Le hualaí beagán difriúil: níos fearr ná {lo, number}–{hi, number}% {of}",
     "betterThan": "Níos fearr ná {pct, number}% {of}",

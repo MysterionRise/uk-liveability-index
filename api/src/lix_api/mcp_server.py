@@ -22,7 +22,7 @@ from lix_api.models import (
     Place,
     PoiResult,
     RankResult,
-    Weight,
+    ThemeWeightMap,
 )
 from lix_api.services import areas, catalogue, compare, explain, pois, ranking, search
 from lix_api.store import get_store
@@ -74,7 +74,7 @@ def rank_areas(
     radius_km: Annotated[float, Field(gt=0, le=200)] | None = None,
     level: Level = "msoa",
     preset: Preset = None,
-    theme_weights: dict[str, Weight] | None = None,
+    theme_weights: ThemeWeightMap | None = None,
     max_median_price: Annotated[float, Field(ge=0)] | None = None,
     limit: Annotated[int, Field(ge=1, le=25)] = 10,
     sort_by: Annotated[str, Field(max_length=80)] = "overall",

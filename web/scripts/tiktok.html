@@ -118,12 +118,10 @@
     <div id="progress"></div>
 
     <script>
-      // scripts/tiktok.mjs passes the frames folder as a file: URL; nothing else is loaded
-      const FRAMES = (() => {
-        const given = new URL(location.href).searchParams.get("frames") ?? "";
-        if (!given.startsWith("file:///")) throw new Error("frames must be a file: URL");
-        return given;
-      })();
+      // The frames folder, a file: URL that scripts/tiktok.mjs hands to setup(). It came
+      // in the page's own address until CodeQL pointed out that an address is something
+      // anyone can write: nothing in this page reads its URL now
+      let FRAMES;
       const END = 3.2; // seconds of end card
       let fps, count, segs, clip, total, captions, stickers, zooms, flashes, shakes, M, F;
 
@@ -145,7 +143,9 @@
         return { src: last.to, speed: 1 };
       }
 
-      window.setup = (marks, frameCount, rate) => {
+      window.setup = (marks, frameCount, rate, frames) => {
+        if (!String(frames).startsWith("file:///")) throw new Error("frames must be a file: URL");
+        FRAMES = frames;
         fps = rate;
         count = frameCount;
         M = Object.fromEntries(Object.entries(marks).map(([k, v]) => [k, v.t]));

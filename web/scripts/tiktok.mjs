@@ -229,10 +229,11 @@ async function compose(marks) {
 
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2 });
-  const url = pathToFileURL(path.resolve("scripts/tiktok.html"));
-  url.searchParams.set("frames", pathToFileURL(frames).href);
-  await page.goto(url.href);
-  const total = await page.evaluate(([m, c, fps]) => window.setup(m, c, fps), [marks, count, FPS]);
+  await page.goto(pathToFileURL(path.resolve("scripts/tiktok.html")).href);
+  const total = await page.evaluate(
+    ([m, c, fps, folder]) => window.setup(m, c, fps, folder),
+    [marks, count, FPS, pathToFileURL(frames).href],
+  );
   const out = `${WORK}/out`;
   fs.mkdirSync(out, { recursive: true });
   const n = Math.round(total * FPS);

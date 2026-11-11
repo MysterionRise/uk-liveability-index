@@ -33,6 +33,18 @@
     "of_uk_I": "den RA agus de dh'Èirinn",
     "of_E_W": "de Shasainn agus a' Chuimrigh"
   },
+  "Demo": {
+    "ofAreas": "de na sgìrean san dàta taisbeanaidh",
+    "ofAreasIn": "de na sgìrean san dàta taisbeanaidh {coverageIn}",
+    "cities": {
+      "leeds": "Leeds",
+      "brighton": "Brighton",
+      "cardiff": "Cardiff",
+      "edinburgh": "Dùn Èideann",
+      "belfast": "Belfast",
+      "dublin": "Dublin"
+    }
+  },
   "Header": {
     "title": "Clàr-amais Càileachd Beatha na RA",
     "blurb": "{count, number} nàbachdan {coverageIn}, le sgòr bho dhàta fosgailte",
@@ -68,6 +80,8 @@
     "chatDisclaimer": "Faodaidh IF mearachdan a dhèanamh. Dearbh fiosrachadh cudromach.",
     "chatUnreachable": "Chan eil an cuidiche ri fhaighinn an-dràsta. Tha am mapa, an lorg agus na pròifilean fhathast ag obair; feuch a' cheist a-rithist an ceann greis.",
     "send": "Cuir",
+    "stop": "Stad",
+    "chatRecorded": "Freagairtean clàraichte: tha an cuidiche ag ath-chluich chlàraidhean de na ceistean a tha air am moladh, chan ann a' faighneachd de mhodail.",
     "suggestions": {
       "familyTitle": "Freagarrach do theaghlaichean faisg air Dùn Èideann",
       "familyMessage": "Tha dithis chloinne òga againn agus buidseat de £350k. Càite am bu chòir dhuinn coimhead timcheall air Dùn Èideann?",
@@ -83,6 +97,8 @@
   "Onboarding": {
     "title": "Lorg nàbachd a fhreagras ort",
     "blurb": "Gach nàbachd {coverageIn}, le sgòr bho dhàta fosgailte. Tha sgìrean gorm-uaine nas fheàrr na an àbhaist, sgìrean orains nas miosa. Sùm a-steach agus briog air sgìre airson faicinn carson, no faighnich dhen chuidiche.",
+    "blurbDemo": "Dàta taisbeanaidh: {count, number} bailtean mòra {coverageIn}, le sgòr bho dhàta fosgailte. Tha sgìrean gorm-uaine nas fheàrr na an àbhaist, sgìrean orains nas miosa. Tagh baile, briog air sgìre airson faicinn carson, no faighnich dhen chuidiche.",
+    "demoCovers": "Dàta taisbeanaidh:",
     "whoIsLooking": "Cò tha a' coimhead?",
     "skip": "Leum seachad",
     "personas": {
@@ -97,6 +113,7 @@
   "Search": {
     "placeholder": "Còd-puist no àite",
     "noMatches": "Gun mhaidseadh {coverageIn}",
+    "notInDemo": "Chan eil seo san dàta taisbeanaidh: tha e a' gabhail a-steach {cities}",
     "searching": "A' lorg…",
     "unavailable": "Chan eil an lorg ri fhaighinn",
     "kinds": {
@@ -184,6 +201,8 @@
       "nation": "An aghaidh sgìrean san aon nàisean",
       "urban_rural": "An aghaidh sgìrean den aon seòrsa bailteil/dùthchail"
     },
+    "againstDemo": "An aghaidh nan sgìrean san dàta taisbeanaidh",
+    "againstDemoIn": "An aghaidh nan sgìrean san dàta taisbeanaidh {coverageIn}",
     "worse": "nas miosa",
     "typical": "àbhaisteach",
     "better": "nas fheàrr",
@@ -243,6 +262,8 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} luchd-còmhnaidh",
     "overallOf100": "/ 100 iomlan ({preset})",
+    "oneSmallArea": "Seo aon sgìre bheag. Tha {name} gu h-iomlan a' faighinn {overall}.",
+    "oneSmallAreaOnly": "Seo aon sgìre bheag; chaidh faighneachd mu {name}.",
     "rangeTitle": "Raon 5–95% dhen cheudad nuair a thèid cuideam gach cuspair a ghluasad mu chairteal",
     "range": "Le cuideaman beagan eadar-dhealaichte: nas fheàrr na {lo, number}–{hi, number}% {of}",
     "betterThan": "Nas fheàrr na {pct, number}% {of}",

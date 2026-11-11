@@ -23,6 +23,10 @@ async function mapReady(page: Page) {
   );
 }
 
+/** Whether the data is the demo dataset (CI's, and `make up-demo`'s) rather than a full
+ * build: the header says so once the manifest is in, which mapReady waits for. */
+const onDemo = (page: Page) => page.getByTestId("demo-badge").isVisible();
+
 const featureValue = (page: Page, code: string) =>
   page.evaluate(
     (c) =>
@@ -136,11 +140,24 @@ test("area profile, comparison and pubs render as components", async ({
     "Headingley",
     { timeout: 30_000 },
   );
+  // A named place is profiled as one small area of it: the card says so and gives the
+  // place's own score, the one the comparison then shows for it (#228: two numbers for
+  // one name)
+  const whole = page.getByTestId("resolved-from").first();
+  await expect(whole).toContainText("one small area of Headingley, which scores");
+  const said = (await whole.textContent())!.match(/scores (\d+)/)![1];
   await ask(page, "Compare Headingley and Chapel Allerton");
   await expect(page.getByTestId("comparison")).toContainText(
     en.Comparison.title,
     { timeout: 30_000 },
   );
+  await expect(
+    page
+      .getByTestId("comparison")
+      .getByRole("row", { name: en.Comparison.overall })
+      .getByRole("cell")
+      .nth(1),
+  ).toHaveText(said);
   await ask(page, "Show me well-run pubs near LS6 3AA");
   await expect(page.getByTestId("poi-list")).toContainText(
     en.Poi.titles.well_run_pub,
@@ -194,6 +211,8 @@ test("searching a postcode opens its profile with benchmarks", async ({
   const bars = page.getByTestId("theme-bars");
   await expect(bars).toBeVisible({ timeout: 30_000 });
   await expect(bars).toContainText(en.Profile.ukMedian.replace("{in}", "").trim());
+  // A postcode names its own small area: nothing larger was asked about (#228)
+  await expect(page.getByTestId("resolved-from")).toHaveCount(0);
 });
 
 test("the welcome card's personas set the weights", async ({ page }) => {
@@ -402,12 +421,15 @@ test("the assistant builds a profile from how you describe yourself", async ({ p
 
 test("an indicator only one nation has is compared among that nation's areas", async ({ page }) => {
   await mapReady(page);
+  // The demo dataset ranks its areas among themselves, and its legend says so (#239)
+  const base = (await onDemo(page)) ? en.Legend.againstDemo : "Against every area";
   await page.getByTestId("tab-weights").click();
   // Domestic rates exist only in Northern Ireland: the legend says so (#136)
   await page.getByTestId("layer-select").selectOption("indicator:domestic_rates");
-  await expect(page.getByTestId("legend")).toContainText("Against every area in Northern Ireland");
+  await expect(page.getByTestId("legend")).toContainText(`${base} in Northern Ireland`);
   await page.getByTestId("layer-select").selectOption("overall");
-  await expect(page.getByTestId("legend")).toContainText("Against every area in the UK");
+  await expect(page.getByTestId("legend")).not.toContainText("in Northern Ireland");
+  await expect(page.getByTestId("legend")).toContainText(base);
 });
 
 test("a context measure colours the map and says so in the legend", async ({ page }) => {
@@ -498,10 +520,16 @@ test("a shared link with an area opens its profile there, in Ireland's own terms
   const profile = page.getByTestId("area-profile");
   await expect(profile).toContainText("Rathmines East D", { timeout: 30_000 });
   await expect.poll(() => page.evaluate(() => (window as any).__map?.getZoom?.() ?? 0), { timeout: 30_000 }).toBeGreaterThan(8);
-  // An Irish area's headline compares within Ireland (#147); a Leeds one across the build
-  await expect(profile).toContainText("of Ireland");
+  // An Irish area's headline compares within Ireland (#147); a Leeds one across the
+  // build. The demo says what its percentiles are among: its own areas (#239)
+  const demo = await onDemo(page);
+  await expect(profile).toContainText(demo ? "of the demo's areas in Ireland" : "of Ireland");
   await page.goto(`/${encode({ p: "balanced", s: "E01011350" })}`);
-  await expect(page.getByTestId("area-profile")).toContainText("of the UK and Ireland", { timeout: 30_000 });
+  await expect(page.getByTestId("area-profile")).toContainText(
+    demo ? "of the demo's areas" : "of the UK and Ireland",
+    { timeout: 30_000 },
+  );
+  if (demo) await expect(page.getByTestId("area-profile")).not.toContainText("in Ireland");
 });
 
 test("the assistant connecting while a shared link's area is looked up keeps the flight", async ({ page }) => {
@@ -664,5 +692,197 @@ test.describe("on a phone, the legend", () => {
     await page.getByTestId("legend-toggle").click();
     await expect(page.getByTestId("legend-body")).toBeVisible();
     await expect(page.getByTestId("legend-toggle")).toHaveAttribute("aria-expanded", "true");
+  });
+});
+
+// ---------------------------------------------------------------- v0.7.2
+
+// A newcomer's first run is `make up-demo`: six cities, which the page now says where it
+// used to speak for the UK and Ireland (#239). CI runs on that dataset; a run on a full
+// build skips these.
+test.describe("on the demo dataset", () => {
+  const CITIES = ["Leeds", "Brighton", "Cardiff", "Edinburgh", "Belfast", "Dublin"];
+
+  test.beforeEach(async ({ page }) => {
+    await mapReady(page);
+    test.skip(!(await onDemo(page)), "the data is a full build");
+  });
+
+  /** Whether the map has come to rest zoomed in around a point. */
+  const mapShows = (page: Page, lon: number, lat: number) =>
+    page.evaluate(
+      ([x, y]) => {
+        const m = (window as any).__map;
+        return !m.isMoving() && m.getZoom() > 9 && m.getBounds().contains([x, y]);
+      },
+      [lon, lat],
+    );
+
+  test("a place outside the demo is said to be outside it, with the cities it has", async ({ page }) => {
+    // The README's own example
+    await page.getByTestId("search").locator("input").fill("Hebden Bridge");
+    const results = page.getByRole("listbox");
+    await expect(results).toHaveText(`Not in the demo: it covers ${CITIES.slice(0, 5).join(", ")} and Dublin`, {
+      timeout: 15_000,
+    });
+    await expect(results.getByRole("option")).toHaveCount(0);
+  });
+
+  test("a profile and the welcome card speak for the demo, not for two countries", async ({ page }) => {
+    await expect(page.getByTestId("welcome-blurb")).toContainText("A demo: 6 cities");
+    await page.getByTestId("onboarding").getByRole("button", { name: en.Onboarding.skip }).click();
+    await openFromSearch(page, "LS6 3AA");
+    const card = page.getByTestId("area-profile").first();
+    await expect(card).toBeVisible({ timeout: 30_000 });
+    // "Better than N% of the UK and Ireland" was said of a percentile among six cities
+    await expect(card).toContainText(en.Demo.ofAreas);
+    await expect(card).not.toContainText("of the UK and Ireland");
+  });
+
+  test("the legend compares against the demo's areas", async ({ page }) => {
+    const legend = page.getByTestId("legend");
+    await expect(legend).toContainText("Against the demo's areas");
+    await expect(legend).not.toContainText("Against every area");
+  });
+
+  test("the welcome card's cities take the map there, by mouse or keyboard", async ({ page }) => {
+    const card = page.getByTestId("onboarding");
+    await expect(card.getByTestId("demo-cities").getByRole("button")).toHaveText(CITIES);
+    // The opening view is both countries, with nothing to read at that zoom
+    expect(await page.evaluate(() => (window as any).__map.getZoom())).toBeLessThan(7);
+    await card.getByRole("button", { name: "Leeds" }).click();
+    await expect.poll(() => mapShows(page, -1.55, 53.8), { timeout: 15_000 }).toBe(true);
+    // The card stays, for who is looking; from the first persona the cities are one
+    // Shift+Tab back, and the focus shows
+    await page.getByTestId("persona-family").focus();
+    await page.keyboard.press("Shift+Tab");
+    const dublin = card.getByRole("button", { name: "Dublin" });
+    await expect(dublin).toBeFocused();
+    expect(await dublin.evaluate((el) => el.matches(":focus-visible") && getComputedStyle(el).outlineStyle)).toBe("solid");
+    await page.keyboard.press("Enter");
+    await expect.poll(() => mapShows(page, -6.26, 53.35), { timeout: 15_000 }).toBe(true);
+    await expect(dublin).toHaveAttribute("aria-pressed", "true");
+    await expect(card.getByRole("button", { name: "Leeds" })).toHaveAttribute("aria-pressed", "false");
+    await expect(card).toBeVisible();
+  });
+
+  test("the cities take their Welsh, Gaelic and Irish names where they have one", async ({ page }) => {
+    const toggle = page.getByTestId("locale-toggle");
+    const cities = page.getByTestId("demo-cities").getByRole("button");
+    const input = page.getByTestId("search").locator("input");
+    // The search box joins the same names with the language's own "and"
+    for (const [locale, names, ending] of [
+      ["cy", ["Leeds", "Brighton", "Caerdydd", "Edinburgh", "Belfast", "Dublin"], "Belfast a Dublin"],
+      ["gd", ["Leeds", "Brighton", "Cardiff", "Dùn Èideann", "Belfast", "Dublin"], "Belfast agus Dublin"],
+      ["ga", ["Leeds", "Brighton", "Cardiff", "Edinburgh", "Béal Feirste", "Baile Átha Cliath"], "Béal Feirste agus Baile Átha Cliath"],
+    ] as const) {
+      await toggle.selectOption(locale);
+      await expect(cities).toHaveText([...names]);
+      await input.fill(`Hebden Bridge ${locale}`);
+      await expect(page.getByRole("listbox")).toContainText(`${names.slice(0, 4).join(", ")}, ${ending}`, {
+        timeout: 15_000,
+      });
+    }
+    await toggle.selectOption("en");
+  });
+
+  test.describe("on a small phone", () => {
+    test.use({ viewport: { width: 375, height: 667 } });
+
+    test("the welcome card's last line stays above the chat input", async ({ page }) => {
+      // With the cities the card reaches down over the side panel, furthest in Irish; the
+      // chat input used to paint over it there. A click another element would get fails
+      await page.getByTestId("locale-toggle").selectOption("ga");
+      const card = page.getByTestId("onboarding");
+      await expect(card.getByTestId("demo-cities")).toContainText("Baile Átha Cliath");
+      await card.getByRole("button", { name: "Léim thairis" }).click({ timeout: 5_000 });
+      await expect(card).toBeHidden();
+      await page.getByTestId("locale-toggle").selectOption("en");
+    });
+  });
+});
+
+// The chat panel (#236, #231, #239)
+
+test("Enter on an empty box leaves a reply on its way alone, and the button says what it does", async ({ page }) => {
+  await mapReady(page);
+  // Hold the run, so that the second Enter lands while the reply is on its way. Held
+  // here it has not reached the runtime, so a stop cancels nothing and the reply always
+  // comes: what tells is whether a stop was asked for
+  await page.route("**/api/copilotkit/**", async (route) => {
+    const request = route.request();
+    if (request.method() === "POST" && request.url().endsWith("/run")) {
+      await new Promise((resolve) => setTimeout(resolve, 2_000));
+    }
+    await route.continue();
+  });
+  const stops: string[] = [];
+  page.on("request", (request) => {
+    if (request.method() === "POST" && new URL(request.url()).pathname.includes("/stop/")) {
+      stops.push(request.url());
+    }
+  });
+  const send = page.getByTestId("copilot-send-button");
+  await expect(send).toHaveAttribute("aria-label", en.SidePanel.send);
+  await ask(page, "What are the best areas in Leeds?");
+  // One button, two jobs: while the reply is on its way it stops it, and is named so
+  await expect(send).toHaveAttribute("aria-label", en.SidePanel.stop);
+  // The box is empty now. CopilotKit read Enter here as "stop": on a real model the
+  // question stayed, the answer never came, and nothing said why
+  await page.getByTestId("chat").locator("textarea").first().press("Enter");
+  await page.waitForTimeout(500);
+  expect(stops).toHaveLength(0);
+  // The button still stops
+  await send.click();
+  await expect.poll(() => stops.length).toBe(1);
+});
+
+test("an explanation of a named place says it is one small area of it", async ({ page }) => {
+  await mapReady(page);
+  await ask(page, "Why is the score low in Headingley?");
+  const card = page.getByTestId("explainer").first();
+  await expect(card).toBeVisible({ timeout: 30_000 });
+  // The explanation is of one small area, as the profile is: the card says so (#228)
+  await expect(card.getByTestId("resolved-from")).toContainText("one small area of Headingley, which scores");
+});
+
+test("recorded answers are marked as recordings", async ({ page }) => {
+  // The suite's API runs the scripted model, which is not a recording
+  await mapReady(page);
+  await expect(page.getByTestId("chat-recorded")).toHaveCount(0);
+  // Started without a model key, the API reports that only recordings answer
+  await page.route("**/health", async (route) => {
+    const response = await route.fetch();
+    const health = await response.json();
+    await route.fulfill({
+      response,
+      json: { ...health, assistant: { ...health.assistant, recorded_only: true } },
+    });
+  });
+  await page.reload();
+  await expect(page.getByTestId("chat-recorded")).toHaveText(en.SidePanel.chatRecorded);
+});
+
+test.describe("on a phone, a reply", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("opens at the question, not at the end of a tall card", async ({ page }) => {
+    await mapReady(page);
+    await page.getByTestId("onboarding").getByRole("button", { name: en.Onboarding.skip }).click();
+    await ask(page, "Tell me about Headingley");
+    const card = page.getByTestId("area-profile").first();
+    await expect(card).toBeVisible({ timeout: 30_000 });
+    // The question is pinned to the top of the panel and the reply starts under it.
+    // Following the bottom of the reply, as the default does, left its last lines on
+    // show and the question and the card's heading a scroll away
+    const chat = page.getByTestId("chat");
+    await expect(chat.getByText("Tell me about Headingley")).toBeInViewport();
+    await expect
+      .poll(async () => {
+        const [panel, reply] = [await chat.boundingBox(), await card.boundingBox()];
+        return reply!.y > panel!.y && reply!.y < panel!.y + panel!.height;
+      })
+      .toBe(true);
+    await expect(card.getByText(en.Profile.addToShortlist)).not.toBeInViewport();
   });
 });

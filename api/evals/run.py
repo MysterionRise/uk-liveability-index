@@ -82,12 +82,17 @@ def summarise(report, model: str) -> dict:
     for case in report.cases:
         trace = case.output
         checks = {name: (r.value, r.reason) for name, r in case.assertions.items()}
+        failed = {n: reason for n, (v, reason) in checks.items() if not v}
+        # A check that raised judged nothing: it was left out, and its case counted as
+        # passed on the checks that remained (found by the v0.7.2 pass)
+        for broken in getattr(case, "evaluator_failures", None) or []:
+            failed[f"{broken.name} (raised)"] = broken.error_message
         rows.append(
             {
                 "name": case.name,
                 "category": case.metadata["category"],
-                "passed": all(v for v, _ in checks.values()),
-                "failed_checks": {n: reason for n, (v, reason) in checks.items() if not v},
+                "passed": not failed,
+                "failed_checks": failed,
                 "tools": [c.name for c in trace.calls],
                 "reply": trace.reply,
                 "error": trace.error,
