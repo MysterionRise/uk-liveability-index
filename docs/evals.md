@@ -143,7 +143,11 @@ For a stakeholder demo where every answer counts, Opus 5.5 is worth its cost.
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,compare_two
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 62 cases, about $0.05
 make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 62 cases, about $1.60
+make eval MODEL=anthropic:claude-haiku-5-5                  # Anthropic's own API (ANTHROPIC_API_KEY)
 ```
+
+The results above were all run through OpenRouter, which also reports what each answer
+cost; on a provider's own API the cost is Pydantic AI's estimate from list prices.
 
 On GitHub, the `evals.yml` workflow runs the suite on demand and several times over
 (never on a pull request; it runs in the `evals` environment, where each run waits for a
@@ -151,7 +155,12 @@ reviewer, because it spends money):
 
 ```bash
 gh workflow run evals.yml -f model=openrouter:anthropic/claude-haiku-5.5 -f repeats=3
+gh workflow run evals.yml -f model=anthropic:claude-haiku-5-5 -f repeats=3
 ```
+
+The environment holds one secret per provider, and a run needs the one its model names:
+`OPENROUTER_API_KEY` for `openrouter:…`, `ANTHROPIC_API_KEY` for `anthropic:…`
+(`gh secret set ANTHROPIC_API_KEY --env evals` asks for the key and stores it).
 
 Its summary lists every case that failed at least once with how many runs it passed and
 its first failed check, then the mean pass rate, the cost and the median turn time. It

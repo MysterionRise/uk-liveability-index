@@ -7,18 +7,20 @@ name: Assistant evals
 # summary, and fails only when a case failed every time:
 #   gh workflow run evals.yml                          # Claude Haiku 5.5, three times
 #   gh workflow run evals.yml --ref my-branch -f model=openrouter:anthropic/claude-opus-5.5 -f repeats=2
+#   gh workflow run evals.yml -f model=anthropic:claude-haiku-5-5       # Anthropic's own API
 #   gh workflow run evals.yml -f model=test -f repeats=2
 # The last is the scripted model: no key and no cost, for trying the workflow itself (it
 # cannot pass the cases that need a real model, so that run ends red).
 #
 # It spends money, so it runs on demand only, never on a pull request or a push, and in
-# the `evals` environment, which holds the OpenRouter key (the secret OPENROUTER_API_KEY).
+# the `evals` environment, which holds the key of the provider the model names: the secret
+# OPENROUTER_API_KEY for openrouter:… models, ANTHROPIC_API_KEY for anthropic:… ones.
 # Give that environment a required reviewer and every run waits for a click; the reviewer
 # approves a ref as well as a spend, because the run executes that ref's code with the key
 # in reach. One pass over the suite cost about $0.05 on Claude Haiku 5.5 and about $1.60 on
 # Claude Opus 5.5 when measured on 4 November 2026 (docs/evals.md), so the default three
 # repeats of Haiku are about $0.15. Nothing here caps the spend beyond ten repeats: a
-# credit limit on the key at OpenRouter is the backstop.
+# credit limit on the key at its provider is the backstop.
 #
 # The reports go to an artifact, never to docs/evals: that folder holds the runs the docs
 # quote, and `lix docs --check` holds the docs to them.
@@ -26,7 +28,7 @@ on:
   workflow_dispatch:
     inputs:
       model:
-        description: "Model, as LIX_MODEL takes it (openrouter:..., or test for the scripted one)"
+        description: "Model, as LIX_MODEL takes it (openrouter:..., anthropic:..., or test for the scripted one)"
         default: openrouter:anthropic/claude-haiku-5.5
       repeats:
         description: Times to run the suite (1 to 10)
@@ -53,15 +55,22 @@ jobs:
       REPEATS: ${{ inputs.repeats }}
       RUNS: ${{ github.workspace }}/eval-runs
     steps:
-      - name: Check the inputs, and that the environment holds a key
+      - name: Check the inputs, and that the environment holds the model's key
         env:
-          HAS_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
+          HAS_OPENROUTER: ${{ secrets.OPENROUTER_API_KEY != '' }}
+          HAS_ANTHROPIC: ${{ secrets.ANTHROPIC_API_KEY != '' }}
         run: |
           ok=1
           case "$MODEL" in *[!A-Za-z0-9._:/-]*) ok=0 ;; esac
-          case "$MODEL" in test | openrouter:?*) ;; *) ok=0 ;; esac
+          # The secret each provider's models need, and whether the environment has it
+          case "$MODEL" in
+            test) secret="" has=true ;;
+            openrouter:?*) secret=OPENROUTER_API_KEY has="$HAS_OPENROUTER" ;;
+            anthropic:?*) secret=ANTHROPIC_API_KEY has="$HAS_ANTHROPIC" ;;
+            *) ok=0 ;;
+          esac
           if [ "$ok" != 1 ]; then
-            echo "::error::model must be openrouter:<provider>/<model> (the key is an OpenRouter one), or test"
+            echo "::error::model must be openrouter:<provider>/<model>, anthropic:<model> or test (the environment holds keys for those two providers)"
             exit 1
           fi
           case "$REPEATS" in
@@ -73,8 +82,8 @@ jobs:
           esac
           # Without a key the assistant answers from its recordings, and the suite would
           # run and report on those: refuse instead
-          if [ "$MODEL" != test ] && [ "$HAS_KEY" != true ]; then
-            echo "::error::The evals environment has no OPENROUTER_API_KEY secret"
+          if [ "$has" != true ]; then
+            echo "::error::The evals environment has no $secret secret (gh secret set $secret --env evals)"
             exit 1
           fi
 
@@ -102,6 +111,7 @@ jobs:
       - name: Run the cases, repeated
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # No fallback: a model that fails must fail its cases, not be answered for
           LIX_FALLBACK_MODELS: ""
           # The evals package lives in api/ and is not installed (make eval runs it there)
