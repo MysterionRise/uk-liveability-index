@@ -299,6 +299,67 @@ class ConsistentScores(Evaluator):
         return _ok(not apart, f"one area, two scores: {apart}" if apart else "")
 
 
+def _written(score: float) -> set[str]:
+    """A score as a reply may write it: 68.28, 68.3, 68 (and 70 or 69 for 69.5)."""
+    whole = {str(int(score)), str(int(score + 0.5))}
+    return {f"{score:.2f}", f"{score:.1f}", f"{score:g}"} | whole
+
+
+_NUMBER = re.compile(r"(?<![\w.])(\d+(?:\.\d+)?)(\s?%)?")
+_SENTENCE = re.compile(r"(?<=[.!?])\s+|\n+")
+
+
+@dataclass
+class PercentileOfItsScore(Evaluator):
+    """A profile of a place is of one small area, and its percentile and band are that
+    small area's; ``resolved_from`` gives the larger area a score and no percentile. A
+    reply must not hang the one on the other ("Headingley scores 68.3 overall, better
+    than 84%": 13 of 17 live replies in the v0.7.2 pass). Within a sentence, the score
+    written last before the percentile must not be the larger area's. It fails too
+    unless a profile named a larger area with a score of its own."""
+
+    def evaluate(self, ctx: EvaluatorContext) -> EvaluationReason:
+        checked = 0
+        for raw in ctx.output.returns:
+            try:
+                data = json.loads(raw)
+            except (TypeError, ValueError):
+                continue
+            named = data.get("resolved_from") if isinstance(data, dict) else None
+            if not isinstance(named, dict) or named.get("overall") is None:
+                continue
+            if data.get("overall") is None:
+                continue
+            checked += 1
+            small, larger = _written(float(data["overall"])), _written(float(named["overall"]))
+            # Written alike, the two cannot be told apart in a reply
+            larger -= small
+            percentiles = {
+                round(v)
+                for k, v in data.items()
+                if k.startswith("overall_percentile") and isinstance(v, (int, float))
+            }
+            if not larger or not percentiles:
+                continue
+            for sentence in _SENTENCE.split(ctx.output.reply):
+                last = None
+                for m in _NUMBER.finditer(sentence):
+                    number, percent = m.group(1), m.group(2)
+                    if not percent:
+                        if number in larger or number in small:
+                            last = number
+                        continue
+                    top = sentence[: m.start()].rstrip().lower().endswith("top")
+                    value = 100 - float(number) if top else float(number)
+                    if round(value) in percentiles and last in larger:
+                        return _ok(
+                            False,
+                            f"{number}% is the small area's ({data['overall']:g}), "
+                            f"said of {named.get('name')}'s {last}: {sentence.strip()[:160]!r}",
+                        )
+        return _ok(checked > 0, "" if checked else "no profile named a larger area")
+
+
 def _plain(text: str) -> str:
     """Lower case, "&" as "and", one space: a name as a reply may write it."""
     return re.sub(r"\s+", " ", text.lower().replace("&", " and ")).strip()
@@ -379,6 +440,8 @@ def evaluators_for(expect: dict, kind: str = "chat") -> list[Evaluator]:
         out.append(LanguageCheck(lang=expect["reply_lang"]))
     if expect.get("consistent"):
         out.append(ConsistentScores())
+    if expect.get("percentile_of_its_score"):
+        out.append(PercentileOfItsScore())
     if expect.get("cheapest_named"):
         out.append(CheapestNamed())
     return out

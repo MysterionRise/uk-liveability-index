@@ -63,6 +63,30 @@ test("a POST from another site is refused", async ({ request, baseURL }) => {
   }
 });
 
+test("a request under another host name is refused, as after a DNS rebind", async ({
+  request,
+  baseURL,
+}) => {
+  const own = new URL(baseURL!);
+  // After a rebind the attacker's page and its requests carry one name, so Origin agrees
+  // with Host and the cross-site rule has nothing to refuse: the name gives it away
+  const names = [
+    `rebind.evil.example:${own.port}`,
+    `${own.hostname}.evil.example:${own.port}`,
+    `evil-${own.host}`,
+  ];
+  for (const host of names) {
+    const headers = { Host: host, Origin: `${own.protocol}//${host}` };
+    for (const { path, data } of POSTS) {
+      const response = await request.post(path, { data, headers });
+      expect(response.status(), `${path} as ${host}`).toBe(421);
+    }
+    const page = await request.get("/", { headers: { Host: host } });
+    expect(page.status(), `GET / as ${host}`).toBe(421);
+    expect(await page.text()).toContain("LIX_HOSTS");
+  }
+});
+
 test("the app's own pages, and clients that send no Origin, are not refused", async ({
   request,
   baseURL,

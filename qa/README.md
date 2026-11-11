@@ -68,6 +68,9 @@ A finding without a reproduction is a note, and say so.
   it syncs the environment to that member alone.
 - **Node 24** for everything under `web/`. After a lockfile change,
   `npx playwright install chromium` before the browser suite, or every case fails at launch.
+- **The smoke spec skips itself** unless `LIX_SMOKE=1` is set: `npx playwright test smoke
+  security` without it runs the security cases and reports the smoke ones as skipped.
+  Run both against the demo stack after any change to a string the demo shows.
 - **A real model costs money.** Override the model for a pass
   (`LIX_MODEL=openrouter:anthropic/claude-haiku-5.5`), keep `LIX_DAILY_BUDGET` low, and
   say in the findings what was spent. Never print or copy a key into a findings file.

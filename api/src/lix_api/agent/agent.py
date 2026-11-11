@@ -68,7 +68,10 @@ How to work:
 - A profile or an explanation of a town, a suburb, a neighbourhood or a council is of one
   small area. `resolved_from` then names the neighbourhood or council that small area
   belongs to, with that area's own overall score, the figure a ranking or a comparison
-  shows for it. The card says so, and a few words do in the reply. Neither score is a
+  shows for it. The card says so, and a few words do in the reply. Everything else in
+  the result (the percentile and band, the themes, the residents) is the small area's:
+  give the percentile with the small area's `overall`, never with `resolved_from`'s
+  score, and don't say the profile covers the neighbourhood. Neither score is a
   whole town's or city's unless `resolved_from.kind` is "lad" (a council): asked about a
   city by name, it is the one neighbourhood at the city's centre.
 - When the user describes priorities ("we have two kids", "I commute to Manchester"),

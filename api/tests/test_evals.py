@@ -76,6 +76,64 @@ def test_one_area_one_score():
     assert not _judge(ConsistentScores(), returns=[PROFILE % "68.28", PROFILE % "68.28"]).value
 
 
+HEADINGLEY = (
+    '{"lsoa21cd": "E01011471", "overall": 69.5, "overall_percentile": 84.0,'
+    ' "overall_percentile_all": 84.0, "overall_percentile_nation": 88.0,'
+    ' "overall_percentile_range": [80.0, 87.0], "resolved_from":'
+    ' {"kind": "msoa", "code": "E02002373", "name": "Headingley", "overall": 68.28}}'
+)
+
+
+@pytest.mark.parametrize(
+    ("reply", "passes"),
+    [
+        # What the live pass saw 13 times in 17: the neighbourhood's score, then the
+        # small area's percentile as if it were that score's
+        ("Headingley scores 68.3 overall, better than 84% of the UK and Ireland.", False),
+        ("Headingley as a whole scores 68.3 and sits in the top 16% of the UK and Ireland.", False),
+        ("Headingley scores 68 overall, better than 88% of England.", False),
+        ("Headingley scores 68.28, which is better than 84 % of the build.", False),
+        # The percentile after its own score, or with no score before it
+        ("This small area scores 69.5, better than 84% of the UK and Ireland.", True),
+        (
+            "Headingley as a whole scores 68.3; this small area scores 69.5, better than 84%.",
+            True,
+        ),
+        (
+            "This small area is better than 84% of the UK and Ireland. Headingley as a whole "
+            "scores 68.3.",
+            True,
+        ),
+        ("It scores 70, in the top 16%, and Headingley as a whole scores 68.", True),
+        # A sentence apart is not a claim about that score; another percentage is not
+        # the percentile
+        ("Headingley as a whole scores 68.3. This small area is better than 84%.", True),
+        ("Headingley scores 68.3 overall, and 52% of its homes have gigabit.", True),
+        ("Headingley scores 68.3 overall.", True),
+    ],
+)
+def test_a_percentile_follows_the_score_it_belongs_to(reply, passes):
+    from evals.evaluators import PercentileOfItsScore
+
+    verdict = _judge(PercentileOfItsScore(), returns=[HEADINGLEY], reply=reply)
+    assert verdict.value is passes, verdict.reason
+    if not passes:
+        assert "68" in verdict.reason
+
+
+def test_a_percentile_check_needs_a_profile_that_names_a_larger_area():
+    from evals.evaluators import PercentileOfItsScore
+
+    bad = "Headingley scores 68.3 overall, better than 84% of the UK and Ireland."
+    # A postcode's profile names no larger area; a case that shows none has shown nothing
+    alone = HEADINGLEY.replace('"resolved_from":', '"resolved_from": null, "was":')
+    nothing = _judge(PercentileOfItsScore(), returns=[alone, "Unknown place"], reply=bad)
+    assert not nothing.value and "no profile" in nothing.reason
+    # The two scores written alike (69.5 and 69.52) cannot be told apart in a reply
+    same = HEADINGLEY.replace("68.28", "69.52")
+    assert _judge(PercentileOfItsScore(), returns=[same], reply="It scores 69.5, top 16%.").value
+
+
 def test_the_cheapest_of_a_ranking_is_the_one_named():
     from evals.evaluators import CheapestNamed
 
