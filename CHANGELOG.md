@@ -6,6 +6,14 @@ All notable changes to this project. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The evals workflow (`evals.yml`) takes a model on Anthropic's own API as well as one
+  through OpenRouter: `-f model=anthropic:claude-haiku-5-5` reads the `evals`
+  environment's `ANTHROPIC_API_KEY`, as `openrouter:…` reads `OPENROUTER_API_KEY`. It
+  refused anything but OpenRouter before, so a maintainer with only an Anthropic key
+  could not run it.
+
 ## [0.7.2] - 2026-11-11
 
 Polish and reliability after the launch kit (#201, the review of 10 November 2026), and
