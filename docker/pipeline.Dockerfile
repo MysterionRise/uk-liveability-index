@@ -1,7 +1,7 @@
 # Data pipeline (`lix`): fetch, stage, score and build tiles. GDAL ships inside the
 # pyogrio wheel (with the PMTiles driver), so no system GDAL or tippecanoe is needed.
 # uv is a named stage so that Dependabot, which reads FROM lines only, sees it (#253)
-FROM ghcr.io/astral-sh/uv:0.9 AS uv
+FROM ghcr.io/astral-sh/uv:0.13 AS uv
 
 FROM python:3.11-slim
 COPY --from=uv /uv /uvx /bin/
