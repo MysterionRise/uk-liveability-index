@@ -22,8 +22,74 @@ jobs:
   checks:
     uses: ./.github/workflows/ci.yml
 
+  # Everything that can refuse a tag, before anything is built: the tag's shape, its
+  # changelog section and the data release it reads. These ran in the last job, after the
+  # images (and `latest`) were public: a tag without its changelog heading failed loudly
+  # with the release already pullable (found by the v0.7.2 pass)
+  notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # vX.Y.Z or vX.Y.Z-suffix. Anything else (v0.8, vnext) would be tagged `latest`
+      # and nothing more, since the version tag below is read from a semver
+      - name: The tag is a version
+        run: |
+          if ! printf '%s' "$GITHUB_REF_NAME" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; then
+            echo "::error::$GITHUB_REF_NAME is not vX.Y.Z or vX.Y.Z-suffix (v0.7.2, v0.7.2-rc.1)"
+            exit 1
+          fi
+
+      # A pre-release takes the notes of the version it rehearses (v0.7.2-rc.1 → 0.7.2),
+      # or what is under "Unreleased" while that version has no heading yet
+      - name: Release notes from CHANGELOG.md
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="${tag%%-*}"
+          # The section under "## [name]" up to the next "## ["
+          section() {
+            awk -v heading="## [$1]" '
+              index($0, heading) == 1 { on = 1; next }
+              on && /^## \[/ { exit }
+              on { print }
+            ' CHANGELOG.md
+          }
+          has_text() { grep -q '[^[:space:]]' "$1"; }
+          : > notes.md
+          section "$version" > section.md
+          where="## [$version]"
+          if [ "$tag" != "$version" ]; then
+            has_text section.md || section Unreleased > section.md
+            where="$where or ## [Unreleased]"
+            {
+              echo "A pre-release of $version for testing: \`LIX_VERSION=$tag make up\` runs its"
+              echo "images, and \`latest\` stays on the last full release. The notes of $version so far:"
+            } > notes.md
+          fi
+          has_text section.md || { echo "CHANGELOG.md has nothing under $where"; exit 1; }
+          cat section.md >> notes.md
+
+      # Code releases carry no data pack: they read the newest data release with the serve
+      # schema this code understands. None yet means the schema was bumped without a data
+      # release of the new schema: cut one (make refresh, make data-release) before tagging
+      - name: Name the data release this code reads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          schema="$(sed -n 's/^SERVE_SCHEMA_VERSION = //p' core/src/lix_core/config.py)"
+          data_tag="$(python3 scripts/data_release.py latest --schema "$schema")"
+          printf '\n### Data\n\nReads data release [%s](https://github.com/%s/releases/tag/%s) (serve schema %s): `make data-download` fetches it.\n' \
+            "$data_tag" "$GITHUB_REPOSITORY" "$data_tag" "$schema" >> notes.md
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-notes
+          path: notes.md
+          if-no-files-found: error
+          retention-days: 7
+
   build:
-    needs: checks
+    needs: [checks, notes]
     strategy:
       fail-fast: true
       matrix:
@@ -125,53 +191,16 @@ jobs:
           docker buildx imagetools inspect "$IMAGE:${{ steps.meta.outputs.version }}"
 
   release:
-    needs: images
+    needs: [images, notes]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v7
 
-      # A pre-release takes the notes of the version it rehearses (v0.7.2-rc.1 → 0.7.2),
-      # or what is under "Unreleased" while that version has no heading yet
-      - name: Release notes from CHANGELOG.md
-        run: |
-          tag="${GITHUB_REF_NAME#v}"
-          version="${tag%%-*}"
-          # The section under "## [name]" up to the next "## ["
-          section() {
-            awk -v heading="## [$1]" '
-              index($0, heading) == 1 { on = 1; next }
-              on && /^## \[/ { exit }
-              on { print }
-            ' CHANGELOG.md
-          }
-          has_text() { grep -q '[^[:space:]]' "$1"; }
-          : > notes.md
-          section "$version" > section.md
-          where="## [$version]"
-          if [ "$tag" != "$version" ]; then
-            has_text section.md || section Unreleased > section.md
-            where="$where or ## [Unreleased]"
-            {
-              echo "A pre-release of $version for testing: \`LIX_VERSION=$tag make up\` runs its"
-              echo "images, and \`latest\` stays on the last full release. The notes of $version so far:"
-            } > notes.md
-          fi
-          has_text section.md || { echo "CHANGELOG.md has nothing under $where"; exit 1; }
-          cat section.md >> notes.md
-
-      # Code releases carry no data pack: they read the newest data release with the serve
-      # schema this code understands. None yet means the schema was bumped without a data
-      # release of the new schema: cut one (make refresh, make data-release) before tagging
-      - name: Name the data release this code reads
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          schema="$(sed -n 's/^SERVE_SCHEMA_VERSION = //p' core/src/lix_core/config.py)"
-          data_tag="$(python3 scripts/data_release.py latest --schema "$schema")"
-          printf '\n### Data\n\nReads data release [%s](https://github.com/%s/releases/tag/%s) (serve schema %s): `make data-download` fetches it.\n' \
-            "$data_tag" "$GITHUB_REPOSITORY" "$data_tag" "$schema" >> notes.md
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-notes
 
       # A tag with a suffix is drafted as a GitHub pre-release, so that publishing it never
       # makes it the repository's latest release; v0.7.2-rc.1 is titled

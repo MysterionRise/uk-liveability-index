@@ -19,6 +19,8 @@
 #     consistent:     every overall score the run's tools gave one area agrees, and at
 #                     least one area was scored twice (a case that keeps one weighting)
 #     cheapest_named: the reply names the lowest-priced area of the run's first ranking
+#     percentile_of_its_score: a profile of a place gives the small area's percentile
+#                     after the small area's score, never after the larger area's
 
 cases:
   # ------------------------------------------------------------ ranking with constraints
@@ -221,6 +223,17 @@ cases:
     expect:
       tools: [compare_areas]
       consistent: true
+      grounded: true
+
+  # The percentile and band are the small area's; the neighbourhood it names has a score
+  # and no percentile. 13 of 17 live replies in the v0.7.2 pass read "Headingley scores
+  # 68.3 overall, better than 84%": 84% is the small area's 69.5 (#290)
+  - name: profile_percentile_is_the_small_areas
+    category: lookup
+    turns: ["Tell me about Headingley in Leeds"]
+    expect:
+      tools: [get_area_profile]
+      percentile_of_its_score: true
       grounded: true
 
   # "Of those" means the list just shown: a reply once named two dearer areas (#236)

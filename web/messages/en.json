@@ -34,6 +34,8 @@
     "of_E_W": "of England and Wales"
   },
   "Demo": {
+    "ofAreas": "of the demo's areas",
+    "ofAreasIn": "of the demo's areas {coverageIn}",
     "cities": {
       "leeds": "Leeds",
       "brighton": "Brighton",
@@ -95,6 +97,7 @@
   "Onboarding": {
     "title": "Find a neighbourhood that suits you",
     "blurb": "Every neighbourhood {coverageIn}, scored from open data. Teal areas do better than typical, orange ones worse. Zoom in and click an area to see why, or ask the assistant.",
+    "blurbDemo": "A demo: {count, number} cities {coverageIn}, scored from open data. Teal areas do better than typical, orange ones worse. Pick a city, click an area to see why, or ask the assistant.",
     "demoCovers": "The demo covers:",
     "whoIsLooking": "Who's looking?",
     "skip": "Skip",
@@ -259,7 +262,7 @@
   "Profile": {
     "subtitle": "{area} · {ruc} · {population, number} residents",
     "overallOf100": "/ 100 overall ({preset})",
-    "oneSmallArea": "This is one small area of {name}. {name} as a whole scores {overall}.",
+    "oneSmallArea": "This is one small area of {name}, which scores {overall} as a whole.",
     "oneSmallAreaOnly": "This is one small area of {name}.",
     "rangeTitle": "The 5–95% range of the percentile when each theme's weight is nudged by about a quarter",
     "range": "With slightly different weights: better than {lo, number}–{hi, number}% {of}",

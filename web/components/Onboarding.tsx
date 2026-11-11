@@ -131,7 +131,13 @@ export function Onboarding() {
       <h2 id="welcome-title" className="text-sm font-semibold">
         {t("title")}
       </h2>
-      <p className="mt-1 text-xs text-[var(--text-secondary)]">{t("blurb", { coverageIn })}</p>
+      {/* On the demo the card speaks for the demo's cities, not for every neighbourhood of
+          the countries they are in (#239) */}
+      <p className="mt-1 text-xs text-[var(--text-secondary)]" data-testid="welcome-blurb">
+        {cities.length > 0
+          ? t("blurbDemo", { coverageIn, count: cities.length })
+          : t("blurb", { coverageIn })}
+      </p>
       {cities.length > 0 && (
         <div
           className="mt-3 flex flex-wrap items-center gap-1.5"

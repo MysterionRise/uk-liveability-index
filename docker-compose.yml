@@ -3,7 +3,8 @@
 # ./fixtures/demo/serve for the small demo dataset.
 #   proxy   the one published address: web app, API and data files   http://localhost:3000
 #           (this machine only; LIX_BIND=0.0.0.0 opens it to the network, and anyone who
-#           reaches it can use the assistant on your key)
+#           reaches it can use the assistant on your key. It answers to localhost alone:
+#           LIX_HOSTS="192.168.1.20 mybox.local" adds the names others reach it by)
 #   api     REST + assistant (AG-UI) + MCP (reached through the proxy)
 #   web     the front end (reached through the proxy)
 # Images come from GitHub's registry (make up pulls them) or are built here (make up BUILD=1).
@@ -11,7 +12,7 @@
 
 services:
   api:
-    image: ghcr.io/mysterionrise/uk-liveability-index-api:${LIX_VERSION:-0.7.1}
+    image: ghcr.io/mysterionrise/uk-liveability-index-api:${LIX_VERSION:-0.7.2}
     build: { context: ., dockerfile: docker/api.Dockerfile }
     # Values come from the shell or ./.env (see .env.example); unset ones stay empty
     environment:
@@ -39,7 +40,7 @@ services:
     restart: on-failure
 
   web:
-    image: ghcr.io/mysterionrise/uk-liveability-index-web:${LIX_VERSION:-0.7.1}
+    image: ghcr.io/mysterionrise/uk-liveability-index-web:${LIX_VERSION:-0.7.2}
     build:
       context: .
       dockerfile: docker/web.Dockerfile
@@ -67,6 +68,10 @@ services:
     # Loopback by default: on a shared Wi-Fi, 0.0.0.0 hands the assistant (and your key's
     # budget) to everyone on it (v0.7.1 hardening pass)
     ports: ["${LIX_BIND:-127.0.0.1}:${LIX_PORT:-3000}:8080"]
+    environment:
+      # The host names the proxy answers to besides localhost (space-separated): a
+      # request under any other name is refused, which is what stops DNS rebinding
+      LIX_HOSTS: ${LIX_HOSTS:-}
     mem_limit: 256m
     restart: on-failure
     healthcheck:

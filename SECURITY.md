@@ -17,6 +17,13 @@ affect. You should get a reply within a week.
   data, and an eval checks it ignores instructions hidden in a name. Its tools only read
   the index's data, apart from moving the map, weights and shortlist on your page.
 - **SQL in analyst mode** runs in a separate in-memory DuckDB with only the index's
-  tables: one SELECT at a time, no file or network access, a row cap and a timeout.
+  tables: one SELECT at a time, no file or network access, a row cap and a timeout. It
+  can still be made to use a lot of memory (the container restarts), so analyst SQL is
+  for people you trust until it runs in a process of its own (#235).
+- **The app listens on this machine only, and answers to `localhost` alone.**
+  `LIX_BIND=0.0.0.0` opens it to your network, where anyone who reaches it can use the
+  assistant on your key; `LIX_HOSTS` then names what others reach it by. A request under
+  any other host name is refused, which is what keeps a web page from reaching the app
+  through DNS rebinding.
 - **The app serves plain HTTP** on one port (3000 by default). To put it on the
   internet, run it behind a proxy that adds HTTPS, and expect to tighten the caps.

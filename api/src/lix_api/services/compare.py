@@ -96,6 +96,12 @@ def compare_areas(
         def wmean(col: str, rows: pl.DataFrame = rows) -> float | None:
             return weighted_mean(rows[col], rows["population"])
 
+        # One small area keeps the one decimal its profile shows; an average keeps two,
+        # as a ranking and a profile's resolved_from do
+        overall = wmean("overall")
+        if level == "lsoa" and overall is not None:
+            overall = round(overall, 1)
+
         # What each nation lacks is flagged on every one of its rows alike, so the
         # first row says which indicator (or substitute) this area can show
         first = rows.row(0, named=True)
@@ -104,7 +110,7 @@ def compare_areas(
             pick = stand_in(store, first, i)
             shown[i] = (pick, wmean(f"raw__{pick}") if pick else None)
         picked.append((
-            code, label, level, wmean("overall"),
+            code, label, level, overall,
             percentile(wmean("overall_pct")) if level == "lsoa" else None,
             {t: wmean(f"theme__{t}") for t in store.themes}, shown,
         ))  # fmt: skip

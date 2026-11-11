@@ -34,6 +34,8 @@
     "of_E_W": "o Loegr a Chymru"
   },
   "Demo": {
+    "ofAreas": "o ardaloedd y data enghreifftiol",
+    "ofAreasIn": "o ardaloedd y data enghreifftiol {coverageIn}",
     "cities": {
       "leeds": "Leeds",
       "brighton": "Brighton",
@@ -95,6 +97,7 @@
   "Onboarding": {
     "title": "Dewch o hyd i gymdogaeth sy'n addas i chi",
     "blurb": "Pob cymdogaeth {coverageIn}, wedi'i sgorio o ddata agored. Mae ardaloedd gwyrddlas yn gwneud yn well na'r arfer, rhai oren yn waeth. Chwyddwch i mewn a chliciwch ar ardal i weld pam, neu gofynnwch i'r cynorthwyydd.",
+    "blurbDemo": "Data enghreifftiol: {count, number} dinas {coverageIn}, wedi'u sgorio o ddata agored. Mae ardaloedd gwyrddlas yn gwneud yn well na'r arfer, rhai oren yn waeth. Dewiswch ddinas, cliciwch ar ardal i weld pam, neu gofynnwch i'r cynorthwyydd.",
     "demoCovers": "Data enghreifftiol:",
     "whoIsLooking": "Pwy sy'n chwilio?",
     "skip": "Hepgor",

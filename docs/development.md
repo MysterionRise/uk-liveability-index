@@ -56,7 +56,7 @@ Datasets ingested so far (full list with licences: [docs/data-sources.md](data-s
 
 - a REST API under `/api/v1`: place search, area profiles, rankings with any weights and
   filters or by one measure, comparisons, nearest places (GPs, schools, well-run pubs, ...), score explanations,
-  the indicator catalogue and read-only SQL (docs at `/docs`)
+  the indicator catalogue and read-only SQL (docs at `/api/v1/docs`)
 - an AI assistant at `/agent` speaking [AG-UI](https://docs.ag-ui.com), built with
   [Pydantic AI](https://ai.pydantic.dev): its tools return typed results the front end renders as
   maps, cards and tables, and it moves the map and weight sliders through shared state
@@ -72,7 +72,7 @@ spend per day (`api/src/lix_api/agent/limits.py`); a refusal, a failure or a mis
 explained in the chat while the map keeps working, and every turn is logged to
 `data/logs/agent.jsonl` (tools called, latency, tokens, what the provider billed).
 
-The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 61 cases
+The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 62 cases
 covering ranking with constraints, look-ups, follow-ups, ambiguous places, out-of-scope and
 discriminatory requests, numbers grounded in tool results, analyst SQL, prompt injection,
 profiles from a description, and replies in Welsh, Gaelic and Irish):
@@ -175,8 +175,9 @@ With a model key in `.env`, `make dev` uses the real model from `.env`.
 
 ## Planned
 
-- More open datasets: private rents, jobs density, overcrowding, energy use and energy
-  performance certificates, mobile coverage (v0.7.1)
+- More open datasets: private rents, overcrowding, students and the age mix, and
+  rankings by ceremonial county (v0.7.3); jobs density, energy use and energy performance
+  certificates, mobile coverage (later)
 - Answers composed as a page of cards rather than a chat reply (v0.8.0)
 - Walking-network travel times instead of straight-line distances (v0.8.x), built on the
   OpenStreetMap ways table (`osm_ways`) that v0.7.0 stages

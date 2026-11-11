@@ -16,7 +16,6 @@ it is always a preset plus overrides, which ``services.scoring.resolve_weights``
 composes.
 """
 
-import logging
 import re
 import time
 from dataclasses import dataclass, field
@@ -24,11 +23,12 @@ from functools import lru_cache
 
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
+from pydantic_ai.output import ToolOutput
 from pydantic_ai.usage import UsageLimits
 
 from lix_api.agent import models as agent_models
 from lix_api.agent.limits import limits
-from lix_api.agent.messages import LANGUAGE_NAMES, message
+from lix_api.agent.messages import LANGUAGE_NAMES, MESSAGES, message
 from lix_api.agent.runlog import log_run
 from lix_api.models import EngineReason, ProfileDraft, ProfileEngine, WeightProfile
 from lix_api.services.scoring import (
@@ -42,8 +42,11 @@ from lix_api.services.scoring import (
 )
 from lix_api.services.text import fold
 from lix_api.store import Store
+from lix_core.log import setup_logging
 
-logger = logging.getLogger(__name__)
+# Under "lix", as the assistant's loggers are: the server prints INFO for nothing else, and
+# the line that says the rules stood in for a draft without weights was never seen
+logger = setup_logging("profiles")
 
 NAME_MAX, RATIONALE_MAX = 40, 200
 # Output tokens for the profile call, reasoning included. Not every model keeps to the
@@ -223,7 +226,7 @@ INDIFFERENCE: dict[str, tuple[str, ...]] = {
            "not important", "unimportant", "irrelevant", "dont matter", "don t matter",
            "doesnt matter", "doesn t matter", "not a priority", "not an issue",
            "isnt an issue", "isn t an issue", "no concern", "indifferent", "couldnt care",
-           "couldn t care", "not that important", "not so important"),
+           "couldn t care", "not that important", "not so important", "no need", "no interest"),
     "cy": ("dim ots", "ddim yn poeni", "ddim yn bwysig", "dibwys"),
     "gd": ("coma", "chan eil diofar", "gun diofar"),
     "ga": ("is cuma", "cuma", "ni ga", "nil ga", "neamhthabhachtach"),
@@ -236,7 +239,8 @@ AVERSION: dict[str, tuple[str, ...]] = {
     "gd": ("gun", "chan", "cha", "nach", "fuath", "seachain", "nas lugha"),
     "ga": ("gan", "ni", "nil", "nach", "fuath", "seachain", "nios lu"),
 }  # fmt: skip
-# English negators that are words of another language: "no" is Gaelic and Irish "or"
+# English negators that are words of another language: "no" is Gaelic and Irish "or".
+# The English phrases that open with it ("no need", "no interest") are read there whole
 NOT_IN: dict[str, frozenset[str]] = {"gd": frozenset({"no"}), "ga": frozenset({"no"})}
 # A negator's reach ends at a conjunction: "no pubs but good schools"
 CONJUNCTIONS: dict[str, tuple[str, ...]] = {
@@ -381,6 +385,11 @@ class Matches:
     theme_deltas: dict[str, float] = field(default_factory=dict)
     indicators: dict[str, float] = field(default_factory=dict)
     hits: list[tuple[str, str]] = field(default_factory=list)  # (kind, id) by position
+    # (kind, id) the description says outright it does not want or care about ("no need
+    # for a station", "not bothered about schools", "no kids"): what a model's draft is
+    # held to. A bare "no" or "not" near a word is read less surely ("not far from a
+    # station" asks for one) and is left out
+    disowned: set[tuple[str, str]] = field(default_factory=set)
 
 
 CLAUSE = "|"
@@ -462,9 +471,10 @@ def _negation(written: str, start: int, end: int, locale: str) -> str | None:
     else None. The window stops at a conjunction, so "no pubs but good schools" leaves
     the schools alone."""
     languages = ("en",) if locale == "en" else ("en", locale)
-    stops = {w for lang in languages for w in CONJUNCTIONS.get(lang, ())}
+    before = written[:start].rsplit(CLAUSE, 1)[-1]
+    after = written[end:].split(CLAUSE, 1)[0]
 
-    def window(segment: str, backwards: bool) -> str:
+    def window(segment: str, backwards: bool, stops: tuple[str, ...]) -> str:
         words = segment.split()
         if backwards:
             words = words[::-1]
@@ -475,21 +485,22 @@ def _negation(written: str, start: int, end: int, locale: str) -> str | None:
             kept.append(w)
         return " ".join(kept[::-1] if backwards else kept)
 
-    before = window(written[:start].rsplit(CLAUSE, 1)[-1], backwards=True)
-    after = window(written[end:].split(CLAUSE, 1)[0], backwards=False)
-
-    def has(table: dict[str, tuple[str, ...]], segment: str) -> bool:
+    def has(table: dict[str, tuple[str, ...]], segment: str, backwards: bool) -> bool:
         for lang in languages:
+            # An English negator's reach ends at an English conjunction only: on the
+            # Welsh page, "a" (and) is the article in "no need for a station"
+            stops = CONJUNCTIONS["en"] + (CONJUNCTIONS.get(lang, ()) if lang != "en" else ())
+            reach = window(segment, backwards, stops)
             for phrase in table.get(lang, ()):
                 if lang == "en" and phrase in NOT_IN.get(locale, frozenset()):
                     continue
-                if re.search(rf"\b{re.escape(phrase)}\b", segment):
+                if re.search(rf"\b{re.escape(phrase)}\b", reach):
                     return True
         return False
 
-    if has(INDIFFERENCE, before) or has(INDIFFERENCE, after):
+    if has(INDIFFERENCE, before, True) or has(INDIFFERENCE, after, False):
         return "indifference"
-    if has(AVERSION, before):
+    if has(AVERSION, before, True):
         return "aversion"
     return None
 
@@ -533,7 +544,7 @@ def match_rules(store: Store, description: str, locale: str = "en") -> Matches:
     turn around after a negator in the same clause ("not bothered about schools")."""
     text = tokenise(description, clauses=True)
     written = text  # the blanking below must not pull a negator nearer
-    found: list[tuple[int, str, object, str]] = []
+    found: list[tuple[int, str, object, str, bool]] = []
     for phrase, meanings in _phrase_table(store, locale):
         for m in re.finditer(rf"\b{re.escape(phrase)}\b", text):
             negation = _negation(written, m.start(), m.end(), locale)
@@ -549,12 +560,12 @@ def match_rules(store: Store, description: str, locale: str = "en") -> Matches:
                 # verdict on buses and trains. Wanting it still lifts the theme
                 if kind == "theme" and effect == "down" and names_measure:
                     continue
-                found.append((m.start(), kind, payload, effect))
+                found.append((m.start(), kind, payload, effect, negation == "indifference"))
             text = text[: m.start()] + " " * (m.end() - m.start()) + text[m.end() :]
     found.sort(key=lambda f: f[0])
     out = Matches()
     applied: set[int] = set()  # a rule counts once however many of its phrases hit
-    for _pos, kind, payload, effect in found:
+    for _pos, kind, payload, effect, outright in found:
         if kind == "rule":
             rule: Rule = payload  # type: ignore[assignment]
             if id(rule) in applied:
@@ -570,16 +581,27 @@ def match_rules(store: Store, description: str, locale: str = "en") -> Matches:
             for theme in rule.themes:
                 if rule.themes[theme] > 0 and not rule.indicators:
                     out.hits.append(("theme", theme))
+            # A phrase that only turns things down ("no kids") disowns them. Working from
+            # home trades (less rail, more broadband): a judgement, which a model may
+            # make otherwise
+            lowered = [("theme", t) for t, delta in rule.themes.items() if delta < 0]
+            lowered += [("indicator", i) for i, mult in rule.indicators.items() if mult < 1]
+            if len(lowered) == len(rule.themes) + len(rule.indicators):
+                out.disowned.update(lowered)
         elif kind == "theme":
             theme = str(payload)
             step = THEME_STEP if effect == "up" else -THEME_STEP
             out.theme_deltas[theme] = out.theme_deltas.get(theme, 0.0) + step
             if effect == "up":
                 out.hits.append(("theme", theme))
+            elif outright:
+                out.disowned.add(("theme", theme))
         elif kind == "indicator":
             ind = str(payload)
             if effect == "down":
                 out.indicators[ind] = min(out.indicators.get(ind, 0.5), 0.5)
+                if outright:
+                    out.disowned.add(("indicator", ind))
             else:
                 out.indicators[ind] = max(out.indicators.get(ind, 0.0), INDICATOR_STEP)
                 out.hits.append(("indicator", ind))
@@ -708,37 +730,30 @@ def _with_context(text: str, shown: list[str], locale: str) -> str:
     return text
 
 
-def _with_less(text: str, themes: list[str], measures: list[str], locale: str, reserve: int) -> str:
-    """``text`` (what counts more) with what counts less said after it: a description
-    that turned one theme up and another down used to name only the first (#229). Fewer
-    are named when the whole would not fit, measures going before themes; ``reserve``
-    keeps room for the note about context measures."""
-    themes, measures = list(themes), list(measures)
-    while themes or measures:
-        notes = []
-        if themes:
-            notes.append(
-                message(
-                    "profile_less_note" + ("_one" if len(themes) == 1 else ""),
-                    locale,
-                    fallback="profile_less_note",
-                    themes=", ".join(themes),
-                )
+def _less_notes(themes: list[str], measures: list[str], locale: str) -> list[str]:
+    """The sentences that say what counts less, for after the one about what counts
+    more: a description that turned one theme up and another down used to name only the
+    first (#229)."""
+    notes = []
+    if themes:
+        notes.append(
+            message(
+                "profile_less_note" + ("_one" if len(themes) == 1 else ""),
+                locale,
+                fallback="profile_less_note",
+                themes=", ".join(themes),
             )
-        if measures:
-            notes.append(
-                message(
-                    "profile_less_indicators_note" + ("_one" if len(measures) == 1 else ""),
-                    locale,
-                    fallback="profile_less_indicators_note",
-                    indicators=", ".join(measures),
-                )
+        )
+    if measures:
+        notes.append(
+            message(
+                "profile_less_indicators_note" + ("_one" if len(measures) == 1 else ""),
+                locale,
+                fallback="profile_less_indicators_note",
+                indicators=", ".join(measures),
             )
-        joined = " ".join([text, *notes])
-        if len(joined) + reserve <= RATIONALE_MAX:
-            return joined
-        (measures or themes).pop()
-    return text
+        )
+    return notes
 
 
 def _context_only(preset_label: str, shown: list[str], locale: str) -> str:
@@ -772,15 +787,22 @@ def _rationale(
     labels = _labels(store, locale)
     # Measures named that the cards show but the score cannot weigh (#223)
     shown = [labels["indicators"].get(i, i) for i in context]
-    up = [labels["themes"][t] for t, v in overrides.items() if v > base.get(t, 1.0)]
-    down = [labels["themes"][t] for t, v in overrides.items() if v < base.get(t, 1.0)]
-    inds = [labels["indicators"][i] for i, m in indicators.items() if m > 1]
-    inds_down = [labels["indicators"][i] for i, m in indicators.items() if m < 1]
+    names = {
+        "up": [labels["themes"][t] for t, v in overrides.items() if v > base.get(t, 1.0)],
+        "down": [labels["themes"][t] for t, v in overrides.items() if v < base.get(t, 1.0)],
+        "inds": [labels["indicators"][i] for i, m in indicators.items() if m > 1],
+        "inds_down": [labels["indicators"][i] for i, m in indicators.items() if m < 1],
+    }
     preset_label = labels["presets"].get(preset, preset)
 
-    def render(up: list[str], inds: list[str]) -> str:
+    def render(said: dict[str, int]) -> str:
+        """The note naming the first ``said`` names of each list."""
+        up, down, inds, inds_down = (names[k][: said[k]] for k in names)
         values = {"preset": preset_label}
         n_themes = n_inds = 0
+        # What the first sentence leaves for a second to say: it names what counts less
+        # itself only when nothing counts more
+        less: tuple[list[str], list[str]] = (down, inds_down)
         if up and inds:
             key, n_themes, n_inds = "profile_rationale", len(up), len(inds)
             values["themes"], values["indicators"] = ", ".join(up), ", ".join(inds)
@@ -791,40 +813,48 @@ def _rationale(
             values["indicators"] = ", ".join(inds)
         elif down:
             key, n_themes, values["themes"] = "profile_rationale_less", len(down), ", ".join(down)
+            less = ([], inds_down)
         elif inds_down:
             key, n_inds = "profile_rationale_indicators_less", len(inds_down)
             values["indicators"] = ", ".join(inds_down)
+            less = ([], [])
         else:
             key = "profile_rationale_plain"
         # A language that inflects by number has singular forms of the template (English
-        # "counts more", Welsh "ei thema"); the key falls back to the plain form
-        one = ("_one_theme" if n_themes == 1 else "") + ("_one_indicator" if n_inds == 1 else "")
-        return message(key + one, locale, fallback=key, **values)
+        # "counts more", Welsh "ei thema"), some of them for one measure whatever the
+        # number of themes; the key falls back to the plain form
+        one_theme = "_one_theme" if n_themes == 1 else ""
+        one_measure = "_one_indicator" if n_inds == 1 else ""
+        forms = MESSAGES.get(locale) or MESSAGES["en"]
+        singular = (key + one_theme + one_measure, key + one_measure)
+        form = next((f for f in singular if f in forms), key)
+        first = message(form, locale, fallback=key, **values)
+        return " ".join(" ".join([first, *_less_notes(*less, locale)]).split())
 
-    if shown and not (up or inds or down or inds_down):
+    if shown and not any(names.values()):
         return _context_only(preset_label, shown, locale)
-    text = render(up, inds)
-    # Rather than cut a sentence short, name fewer measures, then fewer themes, then none;
-    # with context measures to name as well, leave room for the note naming the first
+    # With context measures to name as well, leave room for the note naming the first
     reserve = len(_with_context("", shown[:1], locale)) + 1 if shown else 0
-    while len(" ".join(text.split())) + reserve > RATIONALE_MAX:
-        if len(inds) > 1:
-            inds = inds[:-1]
-        elif len(up) > 1:
-            up = up[:-1]
-        elif inds:
-            inds = []
-        elif up:
-            up = []
-        else:
-            break
-        text = render(up, inds)
+    # Room is short (a profile travels in a shared link). Names are given it in the order
+    # of what changes the ranking most, each kept if the whole still fits, and a list that
+    # runs out says no more: a sentence loses names from its end, never its ending. One
+    # theme that counts more, one that counts less (a theme switched off matters more than
+    # the third measure turned up), the other themes, then single measures: one that
+    # weighs more (it may be all that says what was asked for: broadband, for working
+    # from home), those that weigh less, the rest
+    steps = (("up", 1), ("down", 1), ("up", None), ("down", None))
+    steps += (("inds", 1), ("inds_down", None), ("inds", None))
+    said, full = dict.fromkeys(names, 0), set()
+    text = render(said)
+    for key, upto in steps:  # a list, and how many of its names by this step (None: all)
+        while key not in full and said[key] < len(names[key][:upto]):
+            longer = render({**said, key: said[key] + 1})
+            # The first name is said whatever its length
+            if any(said.values()) and len(longer) + reserve > RATIONALE_MAX:
+                full.add(key)
+            else:
+                said[key], text = said[key] + 1, longer
     text = _cut(text, RATIONALE_MAX)
-    # The sentence above names what counts less only when nothing counts more
-    if up or inds:
-        text = _with_less(text, down, inds_down, locale, reserve)
-    elif down:
-        text = _with_less(text, [], inds_down, locale, reserve)
     return _with_context(text, shown, locale) if shown else text
 
 
@@ -956,7 +986,11 @@ def profile_agent() -> Agent:
         _AGENT = Agent(
             agent_models.build_model(),
             deps_type=ProfileDeps,
-            output_type=ProfileDraft,
+            # As a tool call, whatever the model's default: the draft's two maps take
+            # any id as a key, which strict structured output cannot express. Asked that
+            # way (pydantic-ai's choice for Claude since 2.6x), Haiku was sent maps with no
+            # properties and returned them empty 54 times in 54 (v0.7.2 pass)
+            output_type=ToolOutput(ProfileDraft),
             name="profile",
             instructions=PROFILE_INSTRUCTIONS,
             model_settings=settings,
@@ -974,6 +1008,36 @@ def profile_agent() -> Agent:
     return _AGENT
 
 
+def _hold_to_description(
+    matches: Matches,
+    base: dict[str, float],
+    overrides: dict[str, float],
+    multipliers: dict[str, float],
+) -> list[str]:
+    """Correct, in place, what a draft turned up though the description disowns it ("no
+    need for a station" with rail weighing more): it takes the rules' value. Returns the
+    ids corrected. Only a contradiction is touched: a draft that turned the thing down
+    keeps its own value, and where the rules read nothing disowned the draft stands."""
+    corrected: list[str] = []
+    for kind, ident in sorted(matches.disowned):
+        if kind == "indicator":
+            # Below 1 over the whole description: not a measure it asks for elsewhere
+            mult = matches.indicators.get(ident, 1.0)
+            if mult < 1 < multipliers.get(ident, 1.0):
+                multipliers[ident] = _round(min(3.0, max(0.25, mult)))
+                corrected.append(ident)
+            continue
+        start = base.get(ident, 1.0)
+        if matches.theme_deltas.get(ident, 0.0) < 0 and overrides.get(ident, start) > start:
+            # As profile_by_rules has it, from the draft's own preset
+            value = _round(min(3.0, max(0.0, start + matches.theme_deltas[ident])))
+            overrides.pop(ident)
+            if value != start:
+                overrides[ident] = value
+            corrected.append(ident)
+    return corrected
+
+
 def _from_draft(
     store: Store,
     draft: ProfileDraft,
@@ -983,7 +1047,8 @@ def _from_draft(
     description: str = "",
 ) -> WeightProfile:
     """Check a draft against the catalogue: known ids only, bounds, lengths, no numbers in
-    the rationale (a rationale that estimates is replaced by the rules' sentence)."""
+    the rationale (a rationale that estimates is replaced by the rules' sentence); and
+    against the description, where the draft turned up what that disowns."""
     try:
         preset = match_preset(store, draft.preset)
     except ValueError:
@@ -1009,16 +1074,27 @@ def _from_draft(
     rationale = _cut(
         re.split(r"(?<=[.!?])\s", draft.rationale.strip(), maxsplit=1)[0], RATIONALE_MAX
     )
+    corrected = _hold_to_description(
+        match_rules(store, description, locale), base, overrides, multipliers
+    )
+    if corrected:
+        # Ids only: the description is the user's own words
+        logger.info(f"profile draft turned up what the description disowns: {', '.join(corrected)}")
+        rationale = ""  # the model's sentence says the opposite of the weights now
     if not overrides and not multipliers:
-        # An economical model names the changes in its sentence and leaves both maps
-        # empty (Opus 5.5 did, three times in three, in the v0.6.3 release pass): the
-        # rules engine's reading of the same description stands in, with its sentence,
-        # so that the words and the weights agree
+        # A model can name the changes in its sentence and leave both maps empty (Opus
+        # 5.5 did, three times in three, in the v0.6.3 release pass; asked for the draft
+        # as structured output, which cannot carry a free-form map, every model did every
+        # time: see profile_agent). The rules engine's reading of the same description
+        # stands in, with its sentence, so that the words and the weights agree, and the
+        # profile is reported as the rules' with the model at fault: the page says "by
+        # rules", and an eval on a paid model fails rather than pass on the rules' work
         rules = profile_by_rules(store, description, locale)
         if rules.theme_weights or rules.indicator_weights:
-            logger.info("profile draft had no weights; the rules engine's stand in")
+            logger.warning("profile draft had no weights; the rules engine's stand in")
             preset, base = rules.preset, dict(store.presets[rules.preset].themes)
             overrides, multipliers = dict(rules.theme_weights), dict(rules.indicator_weights)
+            engine, reason = "rules", "model_error"
         rationale = ""
     # Measures the description names that the cards show but the score cannot weigh:
     # the model has no id for them, so its sentence gains the note (#223)

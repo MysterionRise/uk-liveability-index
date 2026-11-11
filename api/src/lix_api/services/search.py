@@ -519,18 +519,31 @@ def resolve_area(store: Store, ref: str) -> tuple[str, Place | None]:
     larger = top if top.kind in ("msoa", "lad", "place") else None
     if top.lsoa21cd:
         return top.lsoa21cd, larger
+    column = {"msoa": "msoa21cd", "lad": "lad_cd"}.get(top.kind)
+    inside = (
+        store.features.filter(pl.col(column) == top.code)
+        if column and top.code
+        else store.features.clear()
+    )
+    # A namesake stands for a neighbourhood or a council only from inside it: there is a
+    # village called Croydon in Cambridgeshire, and it was the London borough's profile
+    within = set(inside["lsoa21cd"]) if inside.height else None
     namesake = next(
-        (p for p in places[1:] if p.lsoa21cd and p.name.lower() == top.name.lower()), None
+        (
+            p
+            for p in places[1:]
+            if p.lsoa21cd
+            and p.name.lower() == top.name.lower()
+            and (within is None or p.lsoa21cd in within)
+        ),
+        None,
     )
     if namesake:
         return namesake.lsoa21cd, larger
     # A neighbourhood or council without a namesake place: its most populous area, which
     # is inside it (the middle of its bounding box may be a bay or the next council)
-    column = {"msoa": "msoa21cd", "lad": "lad_cd"}.get(top.kind)
-    if column and top.code:
-        inside = store.features.filter(pl.col(column) == top.code)
-        if inside.height:
-            return inside.sort("population", descending=True)["lsoa21cd"][0], larger
+    if inside.height:
+        return inside.sort("population", descending=True)["lsoa21cd"][0], larger
     if top.centre:
         return nearest_lsoa(store, top.centre), larger
     raise LookupError(f"Couldn't find an area for {ref!r}")

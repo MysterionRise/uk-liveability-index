@@ -34,6 +34,8 @@
     "of_E_W": "de Shasainn agus a' Chuimrigh"
   },
   "Demo": {
+    "ofAreas": "de na sgìrean san dàta taisbeanaidh",
+    "ofAreasIn": "de na sgìrean san dàta taisbeanaidh {coverageIn}",
     "cities": {
       "leeds": "Leeds",
       "brighton": "Brighton",
@@ -95,6 +97,7 @@
   "Onboarding": {
     "title": "Lorg nàbachd a fhreagras ort",
     "blurb": "Gach nàbachd {coverageIn}, le sgòr bho dhàta fosgailte. Tha sgìrean gorm-uaine nas fheàrr na an àbhaist, sgìrean orains nas miosa. Sùm a-steach agus briog air sgìre airson faicinn carson, no faighnich dhen chuidiche.",
+    "blurbDemo": "Dàta taisbeanaidh: {count, number} bailtean mòra {coverageIn}, le sgòr bho dhàta fosgailte. Tha sgìrean gorm-uaine nas fheàrr na an àbhaist, sgìrean orains nas miosa. Tagh baile, briog air sgìre airson faicinn carson, no faighnich dhen chuidiche.",
     "demoCovers": "Dàta taisbeanaidh:",
     "whoIsLooking": "Cò tha a' coimhead?",
     "skip": "Leum seachad",
