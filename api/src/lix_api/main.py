@@ -73,9 +73,11 @@ async def lifespan(app: FastAPI):
 
 
 # The longest reference a request may carry (a postcode, a code, "Place, Scope") and the
-# largest body a REST call may send: anything bigger is a mistake or an attack, and search
-# time grows with it. The assistant's own endpoint carries the whole conversation each
-# turn (every answer and tool result so far), so it has room for a long one
+# largest body a REST call or an MCP tool call may send: anything bigger is a mistake or an
+# attack, and search time grows with it (/mcp had the assistant's room until one 4 MB call
+# with 420,000 weights stalled the API for ten seconds, v0.7.2 pass). The assistant's own
+# endpoint carries the whole conversation each turn (every answer and tool result so far),
+# so it has room for a long one
 MAX_REF = 200
 MAX_BODY_BYTES = 16_384
 MAX_AGENT_BODY_BYTES = 8 * 1024 * 1024
@@ -104,10 +106,11 @@ app.add_middleware(
 
 
 class BodyLimit:
-    """A request body larger than any legitimate one is refused: a REST call carries a
-    few hundred bytes, the assistant's a conversation. A declared length over the limit
-    is refused before the body is read; the bytes are counted as they arrive too, since a
-    chunked request declares no length (the v0.6.3 release pass sent 4 MB that way)."""
+    """A request body larger than any legitimate one is refused: a REST call or an MCP
+    tool call carries a few hundred bytes, the assistant's a conversation. A declared
+    length over the limit is refused before the body is read; the bytes are counted as
+    they arrive too, since a chunked request declares no length (the v0.6.3 release pass
+    sent 4 MB that way)."""
 
     def __init__(self, app):
         self.app = app
@@ -116,7 +119,10 @@ class BodyLimit:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
-        limit = MAX_BODY_BYTES if scope["path"].startswith("/api/v1/") else MAX_AGENT_BODY_BYTES
+        path = scope["path"]
+        # The MCP mount is /mcp and what lies under it, not every path with those letters
+        small = path.startswith("/api/v1/") or path == "/mcp" or path.startswith("/mcp/")
+        limit = MAX_BODY_BYTES if small else MAX_AGENT_BODY_BYTES
         detail = f"Request body over {limit:,} bytes"
         declared = next((v for k, v in scope["headers"] if k == b"content-length"), b"")
         if declared.isdigit() and int(declared) > limit:
@@ -201,7 +207,11 @@ async def unprocessable(request: Request, exc: RequestValidationError):
 
 
 @app.get("/health")
-def health() -> dict:
+async def health() -> dict:
+    # On the event loop, not a worker thread: everything read here is in memory once the
+    # app has started (the store is warmed), and as a plain def it waited behind every
+    # busy worker, 10 s behind sixty slow queries (v0.7.2 pass). Nothing that blocks
+    # belongs in here
     from lix_api.agent import models
 
     store = get_store()

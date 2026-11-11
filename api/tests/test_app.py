@@ -76,6 +76,16 @@ def test_errors_map_to_status_codes(client):
     )
     r = client.post("/api/v1/sql", json={"query": "COPY lsoa TO '/tmp/x'"})
     assert r.status_code == 400 and "SELECT" in r.json()["detail"]
+    # Half of a surrogate pair is valid JSON and no text at all: a 500 until v0.7.2
+    r = client.post(
+        "/api/v1/sql",
+        content=b'{"query": "select 1 as \\"\\ud800\\""}',
+        headers={"content-type": "application/json"},
+    )
+    assert r.status_code == 400 and r.json()["detail"].startswith("Couldn't parse the query")
+    # A function that changes the engine for the next caller is refused like any other
+    r = client.post("/api/v1/sql", json={"query": 'select * from "enable_logging"()'})
+    assert r.status_code == 400 and "enable_logging() is not allowed" in r.json()["detail"]
 
 
 def _agui(client, text: str, state: dict | None = None) -> list[dict]:
@@ -511,6 +521,32 @@ def test_limits_turns_rate_and_budget(tmp_path):
     assert limits.status()["spent"] == 0.02
 
 
+def test_the_api_starts_whatever_is_in_the_turn_log(store, tmp_path, monkeypatch):
+    """One line reading ``null`` in data/logs/agent.jsonl: "Application startup failed",
+    seven restarts in 30 s and /health 502 until the line was taken out (v0.7.2 pass).
+    The log is read as the API starts, so nothing in it, and nothing in its place, may
+    stop that."""
+    from lix_api import main
+
+    monkeypatch.setenv("LIX_DATA_DIR", str(tmp_path))
+    monkeypatch.setattr(main.limits, "spent", 0.0)  # put back when the test is over
+    log = tmp_path / "logs" / "agent.jsonl"
+    log.parent.mkdir()
+    today = main.limits.today()
+    log.write_bytes(
+        b'null\n[1]\n"text"\n\xff\xfe\n'
+        + f'{{"at": "{today}T08:00:00+00:00", "cost": 0.02}}\n'.encode()
+        + f'{{"at": "{today}T09:00:00+00:00", "cost": "a lot"}}\n'.encode()
+    )
+    with TestClient(main.app) as c:
+        assert c.get("/health").json()["assistant"]["limits"]["spent"] == 0.02
+    # A directory where the log should be: said in the API's log, and the day starts at zero
+    log.unlink()
+    log.mkdir()
+    with TestClient(main.app) as c:
+        assert c.get("/health").json()["assistant"]["limits"]["spent"] == 0.0
+
+
 def test_refused_questions_get_a_chat_reply(client, monkeypatch):
     from lix_api import main
 
@@ -551,6 +587,44 @@ def test_health_reports_version(client):
     body = client.get("/health").json()
     assert body["version"] == "0.7.2"
     assert body["assistant"]["recorded_only"] is False
+
+
+async def test_health_answers_while_every_worker_thread_is_busy(store, monkeypatch):
+    """Sixty slow queries took all forty worker threads, and /health, a plain ``def``
+    then, waited 10 s in the queue behind them (v0.7.2 pass). It reads what is already in
+    memory, so it runs on the event loop: with one worker thread and a request holding
+    it, /health still answers."""
+    import threading
+
+    import anyio.to_thread
+    import httpx2
+
+    from lix_api import main
+
+    started, release = threading.Event(), threading.Event()
+
+    def held(store) -> dict:
+        started.set()
+        release.wait(30)
+        return {"default": "balanced"}
+
+    monkeypatch.setattr(main.catalogue, "presets", held)
+    monkeypatch.setattr(anyio.to_thread.current_default_thread_limiter(), "total_tokens", 1)
+    transport = httpx2.ASGITransport(app=main.app)
+    async with httpx2.AsyncClient(transport=transport, base_url="http://api") as c:
+        busy = asyncio.create_task(c.get("/api/v1/presets"))
+        try:
+            for _ in range(500):
+                if started.is_set():
+                    break
+                await asyncio.sleep(0.01)
+            assert started.is_set()
+            health = await asyncio.wait_for(c.get("/health"), timeout=5)
+            assert health.status_code == 200 and health.json()["status"] == "ok"
+            assert not busy.done()  # the one worker was still held when /health answered
+        finally:
+            release.set()
+            assert (await busy).json() == {"default": "balanced"}
 
 
 def test_run_cost_prefers_what_the_provider_billed():
@@ -729,6 +803,70 @@ def test_references_and_bodies_are_bounded(client):
     # Twenty scopes cost no more than three: the rest are ignored
     r = client.get("/api/v1/search", params={"q": "Headingley" + ", Leeds" * 20})
     assert r.status_code == 200 and r.json()[0]["name"] == "Headingley"
+
+
+def _mcp_call(tool: str, arguments: dict) -> dict:
+    return {
+        "jsonrpc": "2.0", "id": 1, "method": "tools/call",
+        "params": {"name": tool, "arguments": arguments},
+    }  # fmt: skip
+
+
+MCP_HEADERS = {"accept": "application/json, text/event-stream", "content-type": "application/json"}
+
+
+def test_an_mcp_call_is_no_larger_than_a_rest_call(client):
+    """/mcp had the assistant's 8 MiB: one 4 MB tools/call with 420,000 keys in
+    ``theme_weights`` stalled the API for 8 to 14 s, and twelve at once got it killed
+    (v0.7.2 pass). A tool call is a few hundred bytes, so it has the REST cap, whether
+    the length is declared or the body arrives in chunks."""
+    padded = {"within": "Leeds", "theme_weights": {f"theme{i}": 1 for i in range(1_500)}}
+    big = json.dumps(_mcp_call("rank_areas", padded)).encode()
+    assert 18_000 < len(big) < 24_000
+    declared = client.post("/mcp/", content=big, headers=MCP_HEADERS)
+    assert declared.status_code == 413
+    assert declared.json() == {"detail": "Request body over 16,384 bytes"}
+    chunks = (big[i : i + 4_096] for i in range(0, len(big), 4_096))
+    chunked = client.post("/mcp/", content=chunks, headers=MCP_HEADERS)
+    assert "content-length" not in chunked.request.headers
+    assert chunked.status_code == 413
+    # The mount, not every path that starts with its letters
+    assert client.post("/mcpx", content=big, headers=MCP_HEADERS).status_code == 404
+    # An ordinary call is nowhere near the cap
+    small = _mcp_call("rank_areas", {"within": "Leeds", "limit": 3, "theme_weights": {"safety": 3}})
+    r = client.post("/mcp/", json=small, headers=MCP_HEADERS)
+    assert r.status_code == 200
+    assert 1 <= len(_mcp_reply(r)["result"]["structuredContent"]["results"]) <= 3
+
+
+def test_a_weights_map_has_no_more_keys_than_there_are_things_to_weight(client, store):
+    """Nine themes and a few hundred indicators: a map of thousands of keys is not a
+    weighting. Every route that takes one refuses it by its size; a map naming every
+    scored indicator still fits."""
+    from lix_api.models import MAX_INDICATOR_WEIGHTS, MAX_THEME_WEIGHTS
+
+    assert len(store.themes) <= MAX_THEME_WEIGHTS and len(store.indicators) <= MAX_INDICATOR_WEIGHTS
+    themes = {f"t{i}": 1 for i in range(MAX_THEME_WEIGHTS + 1)}
+    indicators = {f"i{i}": 1 for i in range(MAX_INDICATOR_WEIGHTS + 1)}
+    for body in ({"theme_weights": themes}, {"indicator_weights": indicators}):
+        r = client.post("/api/v1/rank", json=body)
+        assert r.status_code == 422, body
+        (error,) = r.json()["detail"]
+        assert (error["type"], error["loc"]) == ("too_long", ["body", *body])
+    r = client.get("/api/v1/areas/LS6 3HN", params={"theme_weights": json.dumps(themes)})
+    assert r.status_code == 400 and "at most 32 items" in r.json()["detail"]
+    r = client.post(
+        "/mcp/", json=_mcp_call("rank_areas", {"theme_weights": themes}), headers=MCP_HEADERS
+    )
+    reply = _mcp_reply(r)["result"]
+    assert reply["isError"] and "at most 32 items" in reply["content"][0]["text"]
+    # Every theme and every scored indicator at once is a weighting, and is taken
+    full = {
+        "within": "Leeds",
+        "theme_weights": {t: 2 for t in store.themes},
+        "indicator_weights": {i.id: 2 for i in store.scored},
+    }
+    assert client.post("/api/v1/rank", json=full).status_code == 200
 
 
 def test_a_refusal_quotes_80_characters_of_what_was_sent(client):

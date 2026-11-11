@@ -11,9 +11,13 @@ from pydantic import BaseModel, Field
 Level = Literal["lsoa", "msoa", "lad", "region", "nation"]
 Locale = Literal["en", "cy", "gd", "ga"]
 Weight = Annotated[float, Field(ge=0, le=3, allow_inf_nan=False)]
-# A request's sliders and multipliers: finite, in the sliders' range, keyed by id or label
-ThemeWeightMap = dict[str, Weight]
-IndicatorWeightMap = dict[str, Weight]
+# A request's sliders and multipliers: finite, in the sliders' range, keyed by id or label.
+# No map needs more keys than there are things to weight: nine themes, and a catalogue of
+# a couple of hundred indicators (the bounds leave room for both to grow)
+MAX_THEME_WEIGHTS = 32
+MAX_INDICATOR_WEIGHTS = 512
+ThemeWeightMap = Annotated[dict[str, Weight], Field(max_length=MAX_THEME_WEIGHTS)]
+IndicatorWeightMap = Annotated[dict[str, Weight], Field(max_length=MAX_INDICATOR_WEIGHTS)]
 Multiplier = Annotated[float, Field(ge=0.25, le=3, allow_inf_nan=False)]
 ProfileEngine = Literal["model", "rules"]
 EngineReason = Literal["free_model", "no_key", "budget", "model_error"]
