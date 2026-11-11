@@ -112,6 +112,38 @@ measures and no data rebuild.
   rest was. The instructions now say that everything else in a profile is the small
   area's and that the percentile goes with the small area's score. On Haiku the new eval
   case passed 8 runs of 12 without the sentence and 16 of 16 with it (#290).
+- "Describe yourself" profiles built by a model were the rules engine's, under a name the
+  model wrote. The draft's two weight maps take any id as a key, which strict structured
+  output cannot express; asked for the draft that way, a model was sent maps with no
+  properties and returned them empty, and the rules' reading of the description stood
+  in, reported as the model's. Opus has been asked that way since v0.6.3 (its empty maps
+  were put down to an "economical model"); Haiku since the Pydantic AI update that
+  followed v0.7.1, where the pass's assistant tester saw it as 54 profiles in 54 whose
+  weights matched the rules exactly. The draft is now asked for as a tool call, whose
+  arguments may be free-form: Haiku, Opus and Qwen each fill the maps (Haiku 3 drafts of
+  3 empty before, 0 of 19 after), and the tester's descriptions come back right in four
+  languages ("no need for a station" turns rail down on the Welsh, Gaelic and Irish
+  pages; "I don't care about the weather" no longer turns Climate up; Irish "gan
+  páistí" is read). A profile whose weights are the rules' now says so (`engine:
+  "rules"`, `engine_reason: "model_error"`, "by rules" on the page), so the evals fail
+  on a paid model rather than pass on the rules' work, and the line that reports a
+  stand-in reaches the server's log, which it never did (#292).
+- The rules engine, which builds profiles without a key and stands in for a model:
+  - An English sentence on the Welsh, Gaelic or Irish page lost its negation: "no need
+    for a station" turned rail **up** there (Welsh "a", and, ended the negator's reach
+    at the English article; "no" is Gaelic and Irish "or"). An English negator now stops
+    at English conjunctions, and "no need" and "no interest" are read as phrases.
+  - The note left out what counts less when room ran short, which in Welsh, Gaelic and
+    Irish was always: "pubs and gigs, no kids" switched Schools & childcare off and said
+    so in English alone. Names are now given room in the order of what changes a
+    ranking most (a theme that counts more, a theme that counts less, the other themes,
+    then single measures), each kept if the whole still fits the 200 characters, and
+    one measure beside one theme reads in the singular in the three languages.
+  - A model's draft that turns up what the description disowns outright ("no need for",
+    "not bothered about", "no kids") takes the rules' value, and the note is rebuilt.
+  Still wrong, and filed: "I don't care about the weather" is not read as a negation
+  by the rules (the contraction uses up the negator's reach), and a theme at 0 is said
+  to "count less" (#292, #300).
 - The assistant rewrote what you said about yourself before building your profile. "I'm
   28, work in tech and love going out" reached the profile builder as "…nightlife, bars,
   restaurants and good transport for commuting", and the profile came out on the Commuter

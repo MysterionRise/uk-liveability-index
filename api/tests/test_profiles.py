@@ -563,9 +563,15 @@ def test_a_draft_without_weights_takes_the_rules_reading(store):
     p = _from_draft(store, draft, "en", "model", description="I hate noise and schools matter")
     assert p.theme_weights["education"] >= 2 and p.indicator_weights["noise_exposure"] == 2
     assert p.name == "Quiet family life" and "raised" not in p.rationale
-    # Nothing in the rules either: the preset stands, with the plain sentence
+    # The weights are the rules', and the profile says so: reported as the model's, a
+    # model path that had stopped returning weights at all went unseen through a release
+    # pass's evals (the page said nothing either, and the model call was paid for)
+    assert (p.engine, p.engine_reason) == ("rules", "model_error")
+    # Nothing in the rules either: the preset stands, with the plain sentence, and that
+    # is the model's choice of preset
     q = _from_draft(store, draft, "en", "model", description="lorem ipsum")
     assert q.preset == "family" and not q.theme_weights and "Nothing" in q.rationale
+    assert (q.engine, q.engine_reason) == ("model", None)
 
 
 class TestContextMeasures:
@@ -855,3 +861,37 @@ class TestADraftIsHeldToTheDescription:
         # line saying the rules stood in for a draft without weights was never printed
         assert profiles.logger.name.startswith("lix.")
         assert profiles.logger.isEnabledFor(logging.INFO)
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "name", ["openrouter:anthropic/claude-haiku-5.5", "openrouter:anthropic/claude-opus-5.5"]
+)
+async def test_the_draft_is_asked_for_as_a_tool_call(store, monkeypatch, name):
+    """A draft's two maps take any id as a key. A schema like that is beyond strict
+    structured output, so a model asked for the draft through ``response_format`` was
+    sent maps with no properties and returned them empty: Haiku 54 times in 54 in the
+    v0.7.2 pass (pydantic-ai had begun asking it that way), each profile then being the
+    rules' reading under a name the model wrote, for the price of a model call. A tool
+    call's arguments may be free-form, so the draft is asked for as one, whatever a
+    model's default. Captured at the client with a placeholder key; nothing is sent."""
+    from lix_api.agent import models as agent_models
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "placeholder-not-a-key")
+    model = agent_models.model_for(name)
+    sent: dict = {}
+
+    async def capture(*args, **kwargs):
+        sent.update(kwargs)
+        raise RuntimeError("captured; nothing is sent")
+
+    monkeypatch.setattr(model.client.chat.completions, "create", capture)
+    with pytest.raises(Exception):  # noqa: B017, PT011 - whatever wraps the capture
+        await profiles.profile_agent().run(
+            "pubs and gigs, no kids", deps=profiles.ProfileDeps(store, "en"), model=model
+        )
+    assert not isinstance(sent.get("response_format"), dict), "asked as structured output"
+    (tool,) = sent["tools"]
+    asked = tool["function"]["parameters"]["properties"]
+    for field in ("theme_weights", "indicator_weights"):
+        assert asked[field]["additionalProperties"] == {"type": "number"}, asked[field]

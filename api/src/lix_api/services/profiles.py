@@ -23,6 +23,7 @@ from functools import lru_cache
 
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
+from pydantic_ai.output import ToolOutput
 from pydantic_ai.usage import UsageLimits
 
 from lix_api.agent import models as agent_models
@@ -985,7 +986,11 @@ def profile_agent() -> Agent:
         _AGENT = Agent(
             agent_models.build_model(),
             deps_type=ProfileDeps,
-            output_type=ProfileDraft,
+            # As a tool call, whatever the model's default: the draft's two maps take
+            # any id as a key, which strict structured output cannot express. Asked that
+            # way (pydantic-ai's choice for Claude since 2.6x), Haiku was sent maps with no
+            # properties and returned them empty 54 times in 54 (v0.7.2 pass)
+            output_type=ToolOutput(ProfileDraft),
             name="profile",
             instructions=PROFILE_INSTRUCTIONS,
             model_settings=settings,
@@ -1077,15 +1082,19 @@ def _from_draft(
         logger.info(f"profile draft turned up what the description disowns: {', '.join(corrected)}")
         rationale = ""  # the model's sentence says the opposite of the weights now
     if not overrides and not multipliers:
-        # An economical model names the changes in its sentence and leaves both maps
-        # empty (Opus 5.5 did, three times in three, in the v0.6.3 release pass): the
-        # rules engine's reading of the same description stands in, with its sentence,
-        # so that the words and the weights agree
+        # A model can name the changes in its sentence and leave both maps empty (Opus
+        # 5.5 did, three times in three, in the v0.6.3 release pass; asked for the draft
+        # as structured output, which cannot carry a free-form map, every model did every
+        # time: see profile_agent). The rules engine's reading of the same description
+        # stands in, with its sentence, so that the words and the weights agree, and the
+        # profile is reported as the rules' with the model at fault: the page says "by
+        # rules", and an eval on a paid model fails rather than pass on the rules' work
         rules = profile_by_rules(store, description, locale)
         if rules.theme_weights or rules.indicator_weights:
-            logger.info("profile draft had no weights; the rules engine's stand in")
+            logger.warning("profile draft had no weights; the rules engine's stand in")
             preset, base = rules.preset, dict(store.presets[rules.preset].themes)
             overrides, multipliers = dict(rules.theme_weights), dict(rules.indicator_weights)
+            engine, reason = "rules", "model_error"
         rationale = ""
     # Measures the description names that the cards show but the score cannot weigh:
     # the model has no id for them, so its sentence gains the note (#223)
