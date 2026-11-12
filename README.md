@@ -120,7 +120,7 @@ it scores on fewer themes and stand-ins than the UK nations.
 - **Uncertain where it should be.** Nudging every theme's weight (200 random draws around
   each preset) shows how stable a result is: "better than 60–81% of the UK and Ireland"
   rather than a falsely precise 72%, and "close call" tags in rankings.
-- **Checked.** A review of 58 contrasting places (168 checks, 109 of them run on every
+- **Checked.** A review of 59 contrasting places (169 checks, 109 of them run on every
   build) is in [docs/validation.md](docs/validation.md).
 
 The full method, including how Greater Manchester's missing crime data and Ofsted's
