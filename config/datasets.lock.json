@@ -2879,28 +2879,36 @@
   },
   "nrw_fraw_rivers": {
     "fetched": {
-      "bytes": 930791424,
-      "fetched_at": "2026-11-01T23:56:43.647742+00:00",
-      "sha256": "bb0d2e8e354c8019cee2644404e39c980aa1869c35be83a9c89958cf46631b7f",
-      "version": "NRW_FLOOD_RISK_FROM_RIVERS.gpkg"
+      "bytes": 930865152,
+      "fetched_at": "2026-11-12T00:34:16.877205+00:00",
+      "files": {
+        "page_000": "e398860c0515d45f5a80eca19939a758756b327c4f2f35fed019c4c0643d1aae"
+      },
+      "sha256": "e73360a188345431496a4ba05d7bd500d0436aee9656e9aaa71a8cc0dab16d36",
+      "version": "inspire-nrw:NRW_FLOOD_RISK_FROM_RIVERS 105679 features, pub_date 2026-05-21"
     },
     "resolved": {
-      "resolved_at": "2026-11-01T23:45:35+00:00",
-      "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=inspire-nrw%3ANRW_FLOOD_RISK_FROM_RIVERS&outputFormat=gpkg&srs=EPSG%3A27700",
-      "version": "NRW_FLOOD_RISK_FROM_RIVERS.gpkg"
+      "count": 105679,
+      "resolved_at": "2026-11-12T00:34:36+00:00",
+      "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire-nrw%3ANRW_FLOOD_RISK_FROM_RIVERS&resultType=hits",
+      "version": "inspire-nrw:NRW_FLOOD_RISK_FROM_RIVERS 105679 features, pub_date 2026-05-21"
     }
   },
   "nrw_fraw_sea": {
     "fetched": {
-      "bytes": 135921664,
-      "fetched_at": "2026-11-01T23:56:54.067615+00:00",
-      "sha256": "de35461e41f7911307b05e9e4a378fc4610c0c439e155ecf0262c16c6ed35786",
-      "version": "NRW_FLOOD_RISK_FROM_SEA.gpkg"
+      "bytes": 135909376,
+      "fetched_at": "2026-11-12T00:34:30.876545+00:00",
+      "files": {
+        "page_000": "a2966d39049c071f921a9d34ee58c66e80459687a9fd53a7371deb8055372cf0"
+      },
+      "sha256": "a421caac4cad00144975bc180831cce302d15868289b8b85e4697e1e998616f7",
+      "version": "inspire-nrw:NRW_FLOOD_RISK_FROM_SEA 29494 features, pub_date 2026-05-21"
     },
     "resolved": {
-      "resolved_at": "2026-11-01T23:45:40+00:00",
-      "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=inspire-nrw%3ANRW_FLOOD_RISK_FROM_SEA&outputFormat=gpkg&srs=EPSG%3A27700",
-      "version": "NRW_FLOOD_RISK_FROM_SEA.gpkg"
+      "count": 29494,
+      "resolved_at": "2026-11-12T00:34:38+00:00",
+      "url": "https://datamap.gov.wales/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire-nrw%3ANRW_FLOOD_RISK_FROM_SEA&resultType=hits",
+      "version": "inspire-nrw:NRW_FLOOD_RISK_FROM_SEA 29494 features, pub_date 2026-05-21"
     }
   },
   "nrw_fraw_surface_water": {

@@ -1306,8 +1306,11 @@ nrw_fraw_rivers:
   title: NRW Flood Risk Assessment Wales, risk from rivers
   theme: environment
   access:
-    type: http
-    url: https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=inspire-nrw%3ANRW_FLOOD_RISK_FROM_RIVERS&outputFormat=gpkg&srs=EPSG%3A27700
+    type: wfs
+    url: https://datamap.gov.wales/geoserver/ows
+    typename: inspire-nrw:NRW_FLOOD_RISK_FROM_RIVERS
+    sort_by: mm_id
+    version_field: pub_date
   format: gpkg
   landing_page: https://datamap.gov.wales/layers/inspire-nrw:NRW_FLOOD_RISK_FROM_RIVERS
   description: Areas of Wales at high, medium or low risk of flooding from rivers, allowing for defences (annual chance above 1 in 30, 1 in 30 to 1 in 100, 1 in 100 to 1 in 1000).
@@ -1322,8 +1325,11 @@ nrw_fraw_sea:
   title: NRW Flood Risk Assessment Wales, risk from the sea
   theme: environment
   access:
-    type: http
-    url: https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=inspire-nrw%3ANRW_FLOOD_RISK_FROM_SEA&outputFormat=gpkg&srs=EPSG%3A27700
+    type: wfs
+    url: https://datamap.gov.wales/geoserver/ows
+    typename: inspire-nrw:NRW_FLOOD_RISK_FROM_SEA
+    sort_by: mm_id
+    version_field: pub_date
   format: gpkg
   landing_page: https://datamap.gov.wales/layers/inspire-nrw:NRW_FLOOD_RISK_FROM_SEA
   description: Areas of Wales at high, medium or low risk of flooding from the sea, allowing for defences.
