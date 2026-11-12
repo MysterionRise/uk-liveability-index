@@ -416,6 +416,18 @@ def stage_ea_flood_all_postcodes() -> pl.LazyFrame:
     return per_lsoa.lazy()
 
 
+def _flood_postcodes_csv():
+    """The one CSV of the download, whatever it is called: the Environment Agency renames it
+    between editions (``…Postcodes_AtRisk.csv``, then ``…PostcodesAtRisk.csv`` in November
+    2026, with the same columns), and a missing column says so by name."""
+    folder = data_dir("raw") / "ea_flood_postcodes"
+    found = sorted(folder.glob("**/*.csv"))
+    if len(found) != 1:
+        names = [p.name for p in found] or "none"
+        raise FileNotFoundError(f"Expected one CSV under {folder}, found {names}")
+    return found[0]
+
+
 def stage_ea_flood_postcodes() -> pl.LazyFrame:
     """Residential properties at each flood likelihood, summed per LSOA.
 
@@ -423,8 +435,7 @@ def stage_ea_flood_postcodes() -> pl.LazyFrame:
     likelihood); LSOAs with none listed have no property at risk from rivers or sea.
     High = at least 3.3% a year, Medium = 1–3.3%, Low = 0.1–1%, Very low = under 0.1%.
     """
-    path = next((data_dir("raw") / "ea_flood_postcodes").glob("**/*Postcodes_AtRisk.csv"))
-    raw = pl.read_csv(path, infer_schema=False, encoding="utf8-lossy")
+    raw = pl.read_csv(_flood_postcodes_csv(), infer_schema=False, encoding="utf8-lossy")
     df = raw.select(
         pl.col("PC").alias("postcode"),
         *[pl.col(f"RES_CNT_{b}").cast(pl.Int64).alias(f"res_{b.lower()}") for b in FLOOD_BANDS],
