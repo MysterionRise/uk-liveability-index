@@ -87,6 +87,7 @@ def merge(reports: list[dict]) -> dict:
         "flaky": sorted(name for name, c in failing.items() if c["passed"] > 0),
         "cost": sum(costs) if costs else None,
         "cost_estimated": any(r.get("cost_estimated") for r in reports),
+        "thinking_refusals": sum(r.get("thinking_refusals") or 0 for r in reports),
         "turn_p50": statistics.median(turns) if turns else None,
     }
 
@@ -155,6 +156,11 @@ def markdown(merged: dict) -> str:
         lines.append(f"- Total cost: ${merged['cost']:.4f}{estimated}")
     if merged["turn_p50"] is not None:
         lines.append(f"- Turn time p50: {merged['turn_p50']:.2f} s")
+    if merged.get("thinking_refusals"):
+        lines.append(
+            f"- Requests refused over a replayed thinking block and re-sent: "
+            f"{merged['thinking_refusals']}"
+        )
     return "\n".join(lines) + "\n"
 
 

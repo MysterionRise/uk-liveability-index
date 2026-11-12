@@ -352,6 +352,25 @@ def test_openrouter_settings(monkeypatch):
     assert "openrouter_provider" not in model_settings()
 
 
+def test_every_refused_thinking_block_is_shown(monkeypatch):
+    """The library re-sends a request Anthropic's API refused over a replayed thinking
+    block and warns. Python prints a warning once per place in the code: a server would
+    say it the first time and never again (#303)."""
+    import warnings
+
+    from pydantic_ai.models.anthropic import AnthropicStaleThinkingBlockWarning
+
+    from lix_api.agent.models import model_for
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "placeholder")
+    with warnings.catch_warnings(record=True) as shown:
+        warnings.simplefilter("default")  # Python's own rule: once per place
+        model_for("anthropic:claude-haiku-5-5")
+        for _ in range(3):
+            warnings.warn("refused and re-sent", AnthropicStaleThinkingBlockWarning)
+    assert len(shown) == 3
+
+
 def test_unknown_place_goes_back_to_the_model(client):
     # The scripted model ranks "Belfast"; the tool can't find it, and the model is told
     # so (a retry prompt) instead of the whole turn failing
@@ -729,6 +748,60 @@ def test_set_profile_tool_updates_the_state(client):
     assert snapshot["preset"] == "young_professional"
     assert snapshot["theme_weights"]["education"] == 1.25
     assert snapshot["indicator_weights"]["sunshine"] == 2
+
+
+def test_an_earlier_turn_goes_back_without_its_thinking(store):
+    """A thinking block is tied to the system prompt it was written under, and the state
+    line in ours changes between turns: replayed after a change, Anthropic's API refuses
+    the request (#303). This turn's own block goes back, since its tool call needs it."""
+    from pydantic_ai.messages import ModelResponse, TextPart, ThinkingPart, ToolCallPart
+    from pydantic_ai.models.function import FunctionModel
+    from pydantic_ai.ui import StateDeps
+
+    from lix_api.agent.agent import agent
+    from lix_api.agent.state import LiveabilityState
+
+    replayed: list[list[str]] = []  # per request: the thinking that came back with it
+    state_lines: list[str] = []
+
+    def model(messages, info):
+        replayed.append(
+            [
+                part.content
+                for m in messages
+                if isinstance(m, ModelResponse)
+                for part in m.parts
+                if isinstance(part, ThinkingPart)
+            ]
+        )
+        state_lines.append(info.instructions or "")
+        n = len(replayed)
+        thought = ThinkingPart(content=f"thought {n}", signature=f"signature {n}")
+        if n in (1, 3):  # each turn: think, call a tool that changes the state, then answer
+            preset = "Retired" if n == 1 else "Commuter"
+            return ModelResponse(parts=[thought, ToolCallPart("set_weights", {"preset": preset})])
+        return ModelResponse(parts=[thought, TextPart("done")])
+
+    deps = StateDeps(LiveabilityState())
+    first = agent.run_sync("somewhere to retire", model=FunctionModel(model), deps=deps)
+    second = agent.run_sync(
+        "and for a commuter",
+        model=FunctionModel(model),
+        deps=deps,
+        message_history=first.all_messages(),
+    )
+
+    assert state_lines[0] == state_lines[1] != state_lines[2]  # pinned in a turn, new in the next
+    assert replayed == [[], ["thought 1"], [], ["thought 3"]]
+    # What is kept for the turn after matches what was sent: nothing older comes back later
+    kept = [
+        part.content
+        for m in second.all_messages()
+        if isinstance(m, ModelResponse)
+        for part in m.parts
+        if isinstance(part, ThinkingPart)
+    ]
+    assert kept == ["thought 3", "thought 4"]
 
 
 def test_state_lines_mention_the_profile():

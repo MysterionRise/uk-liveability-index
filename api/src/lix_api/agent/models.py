@@ -17,6 +17,7 @@ LIX_MODEL_TIMEOUT    seconds before a model request is abandoned (default 60)
 import json
 import os
 import re
+import warnings
 
 from pydantic_ai.messages import (
     ModelMessage,
@@ -109,8 +110,15 @@ def model_for(name: str) -> Model:
 
         return OpenRouterModel(name.split(":", 1)[1], provider="openrouter", settings=settings)
     if settings and name.startswith("anthropic:"):
-        from pydantic_ai.models.anthropic import AnthropicModel
+        from pydantic_ai.models.anthropic import (
+            AnthropicModel,
+            AnthropicStaleThinkingBlockWarning,
+        )
 
+        # A request refused over a replayed thinking block is re-sent by the library with
+        # a warning, and Python prints a warning once per place in the code: a server
+        # would say it once and never again. Every one is asked for (#303)
+        warnings.filterwarnings("always", category=AnthropicStaleThinkingBlockWarning)
         return AnthropicModel(name.split(":", 1)[1], provider="anthropic", settings=settings)
     return infer_model(name)
 

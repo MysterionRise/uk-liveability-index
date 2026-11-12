@@ -14,6 +14,8 @@ import json
 import os
 import re
 import statistics
+import warnings
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -75,6 +77,31 @@ def openrouter_price(model: str) -> tuple[float, float] | None:
     if m is None:
         return None
     return float(m["pricing"]["prompt"]), float(m["pricing"]["completion"])
+
+
+@contextmanager
+def thinking_refusals():
+    """Count the requests Anthropic's own API refused over a replayed thinking block
+    while the block runs (#303). The library re-sends each without the block and warns,
+    so the replies are right and nothing else would say it happened."""
+    count = [0]
+    try:
+        from pydantic_ai.models.anthropic import AnthropicStaleThinkingBlockWarning as Stale
+    except ImportError:  # no Anthropic SDK: nothing can raise it
+        yield count
+        return
+    with warnings.catch_warnings():
+        warnings.simplefilter("always", Stale)
+        shown = warnings.showwarning
+
+        def show(message, category, *args, **kwargs):
+            if issubclass(category, Stale):
+                count[0] += 1
+            else:
+                shown(message, category, *args, **kwargs)
+
+        warnings.showwarning = show
+        yield count
 
 
 def summarise(report, model: str) -> dict:
@@ -162,12 +189,16 @@ def main(argv: list[str] | None = None) -> int:
     async def task(inputs):
         return await run_case(inputs, model=model)
 
-    report = (
-        dataset.evaluate_sync(task, max_concurrency=args.concurrency, progress=False)
-        if hasattr(dataset, "evaluate_sync")
-        else asyncio.run(dataset.evaluate(task, max_concurrency=args.concurrency, progress=False))
-    )
+    with thinking_refusals() as refused:
+        report = (
+            dataset.evaluate_sync(task, max_concurrency=args.concurrency, progress=False)
+            if hasattr(dataset, "evaluate_sync")
+            else asyncio.run(
+                dataset.evaluate(task, max_concurrency=args.concurrency, progress=False)
+            )
+        )
     summary = summarise(report, args.model)
+    summary["thinking_refusals"] = refused[0]
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -183,6 +214,11 @@ def main(argv: list[str] | None = None) -> int:
         est = " (estimated from list prices)" if summary["cost_estimated"] else ""
         print(f"cost ${summary['cost_total']} total, ${summary['cost_per_case']} per case{est}")
     print(f"reply length: median {summary['reply_words_median']} words")
+    if summary["thinking_refusals"]:
+        print(
+            f"{summary['thinking_refusals']} request(s) refused over a replayed thinking "
+            "block and re-sent without it: something before it changed between requests"
+        )
     for r in summary["results"]:
         if not r["passed"]:
             why = r.get("error") or r.get("failed_checks")

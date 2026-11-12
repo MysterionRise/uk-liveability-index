@@ -6,6 +6,22 @@ All notable changes to this project. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- On Anthropic's own API (`LIX_MODEL=anthropic:…`), a follow-up question had its first
+  request refused and sent again. A thinking block is tied to the system prompt it was
+  written under, and ours ends with a line about the page's state (the preset, the open
+  area, the shortlist), which a tool in the turn before had changed. For accounts created
+  since 31 August 2026 the API answers 400; the library then sent the request again
+  without the block, so the replies were right and one round trip was wasted. It reached
+  callers that hand the whole history from one turn to the next (the evals: two of the
+  four two-turn cases on Claude Haiku 5.5), not the web app, whose browser never sends an
+  earlier turn's thinking back. Earlier turns now go to the model without their thinking
+  for every caller, as they do from the page; a turn's own blocks stay, since its tool
+  calls need them. Each refusal now reaches the server's log (Python printed the
+  library's warning once per process), and an eval report counts them
+  (`thinking_refusals`) (#303).
+
 ### Changed
 
 - The evals workflow (`evals.yml`) takes a model on Anthropic's own API as well as one
