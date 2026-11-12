@@ -34,9 +34,29 @@ def count_features(access: WfsAccess, session: requests.Session) -> int:
     return int(m.group(1))
 
 
+def newest_value(access: WfsAccess, session: requests.Session) -> str | None:
+    """The greatest value of ``version_field`` among the layer's features: one feature is
+    asked for, newest first, with that field alone (a third of a second on DataMapWales)."""
+    params = _params(
+        access,
+        outputFormat="application/json",
+        sortBy=f"{access.version_field} DESC",
+        propertyName=access.version_field,
+        count=1,
+    )
+    resp = session.get(f"{access.url}?{urlencode(params)}", timeout=(30, access.timeout_s))
+    resp.raise_for_status()
+    features = resp.json().get("features") or []
+    value = features[0]["properties"].get(access.version_field) if features else None
+    return None if value is None else str(value)
+
+
 def resolve_layer(access: WfsAccess, session: requests.Session) -> dict:
     n = count_features(access, session)
-    return {"url": hits_url(access), "version": f"{access.typename} {n} features", "count": n}
+    version = f"{access.typename} {n} features"
+    if access.version_field and n and (newest := newest_value(access, session)):
+        version += f", {access.version_field} {newest}"
+    return {"url": hits_url(access), "version": version, "count": n}
 
 
 def page_url(access: WfsAccess, fmt: str, start: int) -> str:

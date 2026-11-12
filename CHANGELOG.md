@@ -21,6 +21,15 @@ All notable changes to this project. The format follows
   calls need them. Each refusal now reaches the server's log (Python printed the
   library's warning once per process), and an eval report counts them
   (`thinking_refusals`) (#303).
+- A refresh counted Natural Resources Wales's two flood layers (rivers, the sea) as a new
+  edition every time, downloaded their 1 GB again and rebuilt the flood stage. They were
+  fetched as one WFS `GetFeature` file, which the server writes afresh on each request,
+  so its checksum never repeated. They are now versioned as the surface-water layer is,
+  by the layer's feature count, and with it the newest publication date among its
+  features (`version_field`, one small request), so a layer republished with the same
+  count is still seen. An unchanged layer is neither downloaded nor listed. The next data
+  release lists both once more as a new edition, because the form of the version changed;
+  their contents are the same, feature for feature (#232).
 
 ### Changed
 

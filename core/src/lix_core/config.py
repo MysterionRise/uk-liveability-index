@@ -47,12 +47,18 @@ class WfsAccess(_Strict):
     so the layer is fetched ``page_size`` features at a time, sorted by ``sort_by`` for a
     stable order, into data/raw/{slug}/page_{n}.{format}. ``cql_filter`` keeps only the
     features wanted (the high and medium flood bands).
+
+    The layer's version is its feature count, which is what a refresh compares: GeoServer
+    writes a GeoPackage afresh on every request, so a checksum never repeats (#232).
+    ``version_field`` names a field that dates each feature (NRW's ``pub_date``): its
+    newest value joins the version, so a republished layer with the same count is seen.
     """
 
     type: Literal["wfs"]
     url: str
     typename: str
     sort_by: str
+    version_field: str | None = None
     cql_filter: str | None = None
     page_size: int = 500_000
     srs: str = "EPSG:27700"
