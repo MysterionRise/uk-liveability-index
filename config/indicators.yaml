@@ -1455,16 +1455,57 @@ indicators:
   - id: aged_65_plus
     theme: community
     label: Residents aged 65 and over
-    description: Share of residents aged 65 or over (Census 2021; Census 2022 in Scotland).
+    description: Share of residents aged 65 or over (Census 2021; Census 2022 in Scotland and Ireland).
     unit: "%"
     direction: higher_better
-    coverage: [E, W, S, N]
-    sources: [census_ts007a, scotland_census_2022, nisra_census_2021_p1]
+    coverage: [E, W, S, N, I]
+    sources: [census_ts007a, scotland_census_2022, nisra_census_2021_p1, cso_saps22_sa]
     builder: community:census_share
     params:
       table: census_ts007a
       numerator: [aged_65_to_69_years, aged_70_to_74_years, aged_75_to_79_years, aged_80_to_84_years, aged_85_years_and_over]
     role: context
+
+  - id: aged_20_34
+    theme: community
+    label: Residents aged 20 to 34
+    description: Share of residents aged 20 to 34 (Census 2021; Census 2022 in Scotland and Ireland).
+    unit: "%"
+    direction: higher_better
+    coverage: [E, W, S, N, I]
+    sources: [census_ts007a, scotland_census_2022, nisra_census_2021_p1, cso_saps22_sa]
+    builder: community:census_share
+    params:
+      table: census_ts007a
+      numerator: [aged_20_to_24_years, aged_25_to_29_years, aged_30_to_34_years]
+    role: context
+
+  # The census age bands split at 15, so under-16s come from the population estimates
+  - id: under_16
+    theme: community
+    label: Residents under 16
+    description: Share of residents aged under 16 (latest mid-year population estimates; Census 2022 in Ireland).
+    unit: "%"
+    direction: higher_better
+    coverage: [E, W, S, N, I]
+    sources: [pop_lsoa_mye, nrs_sape, nisra_sdz_mye, cso_saps22_sa]
+    builder: common:share
+    params: {slug: population, numerator: [pop_children_0_15], denominator: population}
+    role: context
+
+  - id: students_share
+    theme: community
+    label: Full-time students
+    description: Share of residents aged 16 and over who are full-time students (Census 2021; Census 2022 in Scotland and Ireland).
+    unit: "%"
+    direction: higher_better
+    benchmark: nation
+    coverage: [E, W, S, I]
+    sources: [census_ts066, scotland_census_2022, cso_saps22_sa]
+    builder: community:census_share
+    params: {table: census_ts066, numerator: [full_time_students]}
+    role: context
+    caveats: Counted where students live in term time, so a neighbourhood of halls reads as nearly all students. Ireland counts people aged 15 and over whose main status is student; Northern Ireland publishes it for wards only.
 
   - id: owner_occupied
     theme: community

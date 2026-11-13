@@ -186,7 +186,10 @@ indicators:
   imd: {label: Clàr-amais Ioma-bhochdainn, description: "Sgòr bochdainn iomlan; gun sgòr oir tha a raointean a' tar-lùbadh thaisbeanairean eile."}
   population_density: {label: Dùmhlachd sluaigh, description: "Luchd-còmhnaidh gach cilemeatair ceàrnagach (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
   households_with_children: {label: Teaghlaichean le clann eisimeileach, description: "Cuid de theaghlaichean le clann eisimeileach (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
-  aged_65_plus: {label: Luchd-còmhnaidh aois 65 is barrachd, description: "Cuid de luchd-còmhnaidh aois 65 no nas sine (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
+  aged_65_plus: {label: Luchd-còmhnaidh aois 65 is barrachd, description: "Cuid de luchd-còmhnaidh aois 65 no nas sine (Cunntas-sluaigh 2021; 2022 ann an Alba agus Èirinn)."}
+  aged_20_34: {label: Luchd-còmhnaidh aois 20 gu 34, description: "Cuid de luchd-còmhnaidh aois 20 gu 34 (Cunntas-sluaigh 2021; 2022 ann an Alba agus Èirinn)."}
+  under_16: {label: Luchd-còmhnaidh fo aois 16, description: "Cuid de luchd-còmhnaidh fo aois 16 (na tuairmsean sluaigh meadhan-bliadhna as ùire; Cunntas-sluaigh 2022 ann an Èirinn)."}
+  students_share: {label: Oileanaich làn-ùine, description: "Cuid de luchd-còmhnaidh aois 16 is barrachd a tha nan oileanaich làn-ùine (Cunntas-sluaigh 2021; 2022 ann an Alba agus Èirinn).", caveats: "Air an cunntadh far a bheil oileanaich a' fuireach rè an teirm, agus mar sin tha nàbachd de thallachan-còmhnaidh a' coimhead mar gum biodh cha mhòr a h-uile duine nan oileanaich. Bidh Èirinn a' cunntadh dhaoine aois 15 is barrachd aig a bheil oileanach mar am prìomh inbhe; chan eil Èirinn a Tuath ga fhoillseachadh ach airson uàrdan."}
   owner_occupied: {label: Dachaighean le sealbhadair a' fuireach annta, description: "Cuid de theaghlaichean a tha nan sealbhadairean air an dachaigh gu tur no le morgaids (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
   no_car: {label: Teaghlaichean gun chàr, description: "Cuid de theaghlaichean gun chàr no bhan (Cunntas-sluaigh 2021; 2022 ann an Alba)."}
   sustainable_commute: {label: "Coiseachd, baidhsagal no còmhdhail phoblach gu obair", description: "Cuid de luchd-obrach a' siubhal gu obair air chois, air baidhsagal no air còmhdhail phoblaich (Cunntas-sluaigh 2021, rè bacaidhean COVID-19; 2022 ann an Alba)."}

@@ -162,7 +162,10 @@ indicators:
   imd: {label: Mynegai Amddifadedd Lluosog, description: Sgôr amddifadedd cyffredinol; heb ei sgorio am fod ei barthau'n gorgyffwrdd â dangosyddion eraill.}
   population_density: {label: Dwysedd poblogaeth, description: Trigolion fesul cilometr sgwâr (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
   households_with_children: {label: Aelwydydd â phlant dibynnol, description: Cyfran yr aelwydydd â phlant dibynnol (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
-  aged_65_plus: {label: Trigolion 65 oed a throsodd, description: Cyfran y trigolion 65 oed neu'n hŷn (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
+  aged_65_plus: {label: Trigolion 65 oed a throsodd, description: Cyfran y trigolion 65 oed neu'n hŷn (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban ac Iwerddon).}
+  aged_20_34: {label: Trigolion 20 i 34 oed, description: Cyfran y trigolion 20 i 34 oed (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban ac Iwerddon).}
+  under_16: {label: Trigolion o dan 16 oed, description: Cyfran y trigolion o dan 16 oed (yr amcangyfrifon poblogaeth canol blwyddyn diweddaraf; Cyfrifiad 2022 yn Iwerddon).}
+  students_share: {label: Myfyrwyr amser llawn, description: "Cyfran y trigolion 16 oed a throsodd sy'n fyfyrwyr amser llawn (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban ac Iwerddon).", caveats: "Cânt eu cyfrif lle mae myfyrwyr yn byw yn ystod y tymor, felly mae cymdogaeth o neuaddau preswyl yn ymddangos fel petai bron pawb yn fyfyrwyr. Mae Iwerddon yn cyfrif pobl 15 oed a throsodd sy'n nodi mai myfyriwr yw eu prif statws; dim ond ar gyfer wardiau y mae Gogledd Iwerddon yn ei gyhoeddi."}
   owner_occupied: {label: Cartrefi perchen-feddianwyr, description: Cyfran yr aelwydydd sy'n berchen ar eu cartref yn llwyr neu â morgais (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
   no_car: {label: Aelwydydd heb gar, description: Cyfran yr aelwydydd heb gar na fan (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).}
   sustainable_commute: {label: "Cerdded, beicio neu drafnidiaeth gyhoeddus i'r gwaith", description: "Cyfran y gweithwyr sy'n cymudo ar droed, ar feic neu ar drafnidiaeth gyhoeddus (Cyfrifiad 2021, yn ystod cyfyngiadau COVID-19; Cyfrifiad 2022 yn yr Alban)."}

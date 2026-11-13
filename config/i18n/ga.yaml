@@ -188,7 +188,10 @@ indicators:
   imd: {label: Innéacs Ildíothachta, description: "Scór díothachta iomlán; gan scór mar forluíonn a fhearainn ar tháscairí eile."}
   population_density: {label: Dlús daonra, description: "Cónaitheoirí in aghaidh an chiliméadair chearnaigh (Daonáireamh 2021; 2022 in Albain)."}
   households_with_children: {label: Teaghlaigh le leanaí cleithiúnacha, description: "Sciar de theaghlaigh le leanaí cleithiúnacha (Daonáireamh 2021; 2022 in Albain)."}
-  aged_65_plus: {label: Cónaitheoirí 65 nó níos sine, description: "Sciar de chónaitheoirí atá 65 bliana d'aois nó níos sine (Daonáireamh 2021; 2022 in Albain)."}
+  aged_65_plus: {label: Cónaitheoirí 65 nó níos sine, description: "Sciar de chónaitheoirí atá 65 bliana d'aois nó níos sine (Daonáireamh 2021; 2022 in Albain agus in Éirinn)."}
+  aged_20_34: {label: Cónaitheoirí 20 go 34, description: "Sciar de chónaitheoirí atá idir 20 agus 34 bliana d'aois (Daonáireamh 2021; 2022 in Albain agus in Éirinn)."}
+  under_16: {label: Cónaitheoirí faoi 16, description: "Sciar de chónaitheoirí faoi 16 bliana d'aois (na meastacháin daonra lárbhliana is déanaí; Daonáireamh 2022 in Éirinn)."}
+  students_share: {label: Mic léinn lánaimseartha, description: "Sciar de chónaitheoirí 16 bliana d'aois nó níos sine ar mic léinn lánaimseartha iad (Daonáireamh 2021; 2022 in Albain agus in Éirinn).", caveats: "Áirítear mic léinn san áit a gcónaíonn siad le linn an téarma, mar sin bíonn cuma ar chomharsanacht hallaí cónaithe gur mic léinn beagnach gach duine inti. In Éirinn áirítear daoine 15 bliana d'aois nó níos sine arb é 'mac léinn' a bpríomhstádas; ní fhoilsíonn Tuaisceart Éireann é ach do bhardaí."}
   owner_occupied: {label: Tithe úinéir-áitithe, description: "Sciar de theaghlaigh ar leo a dteach go hiomlán nó le morgáiste (Daonáireamh 2021; 2022 in Albain)."}
   no_car: {label: Teaghlaigh gan charr, description: "Sciar de theaghlaigh gan charr ná veain (Daonáireamh 2021; 2022 in Albain)."}
   sustainable_commute: {label: "Siúl, rothaíocht nó iompar poiblí chun na hoibre", description: "Sciar d'oibrithe a thaistealaíonn chun na hoibre de shiúl na gcos, ar rothar nó ar iompar poiblí (Daonáireamh 2021, le linn srianta COVID-19; 2022 in Albain)."}
