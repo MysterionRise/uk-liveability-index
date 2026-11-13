@@ -98,7 +98,16 @@ def test_stats19_england_with_location(data):
     assert df.select("collision_index", "severity", "year").rows() == [("1", "fatal", 2025)]
 
 
-def test_flood_postcodes_summed_per_lsoa(data):
+@pytest.mark.parametrize(
+    "name",
+    [
+        "x.RoFRS_Postcodes_AtRisk.csv",
+        # The November 2026 edition: the same columns under a new file name, which stopped
+        # the v0.7.3 refresh at this stage with a bare StopIteration
+        "RoFRS_PostcodesAtRisk.csv",
+    ],
+)
+def test_flood_postcodes_summed_per_lsoa(data, name):
     cols = ["PC", "cntpc", "RES_cntpc"] + [
         f"RES_CNT_{b}" for b in ("VeryLow", "Low", "Medium", "High")
     ]
@@ -108,7 +117,7 @@ def test_flood_postcodes_summed_per_lsoa(data):
         ["CF10 1AA", "5", "5", "0", "0", "5", "0"],  # Wales
     ]
     _write(
-        data / "raw" / "ea_flood_postcodes" / "DATA" / "x.RoFRS_Postcodes_AtRisk.csv",
+        data / "raw" / "ea_flood_postcodes" / "DATA" / name,
         ",".join(cols) + "\n" + "".join(",".join(r) + "\n" for r in rows),
         encoding="utf-8-sig",
     )
@@ -116,6 +125,17 @@ def test_flood_postcodes_summed_per_lsoa(data):
     assert df.rows(named=True) == [
         {"lsoa21cd": "E01000001", "res_high": 1, "res_medium": 3, "res_low": 2, "res_verylow": 0}
     ]
+
+
+def test_flood_postcodes_without_their_file_say_what_is_there(data):
+    folder = data / "raw" / "ea_flood_postcodes"
+    _write(folder / "SUPPORTING_DOCUMENTS" / "Product Description.pdf", "%PDF")
+    with pytest.raises(FileNotFoundError, match="one CSV .*ea_flood_postcodes.* found none"):
+        stage_ea_flood_postcodes()
+    _write(folder / "DATA" / "a.csv", "PC\n")
+    _write(folder / "DATA" / "b.csv", "PC\n")
+    with pytest.raises(FileNotFoundError, match=r"found \['a.csv', 'b.csv'\]"):
+        stage_ea_flood_postcodes()
 
 
 def test_flood_all_sources_summed_per_lsoa(data):

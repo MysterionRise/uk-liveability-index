@@ -244,6 +244,19 @@ def test_flood_risk_any_source_and_estimates_are_flagged():
     assert any_["quality"].to_list() == ["ok", "imputed"]
 
 
+def test_census_share_has_no_value_where_the_numerator_is_not_published():
+    from lix_pipeline.indicators.community import census_share
+
+    table = pl.DataFrame({
+        "lsoa21cd": ["E01000001", "S01000001", "I01000001"],
+        "total": [1000.0, 500.0, 90.0],
+        "overcrowded": [50.0, 0.0, None],
+    })  # fmt: skip
+    out = census_share(FakeContext(census_ts052=table), "census_ts052", ["overcrowded"])
+    # Scotland's zero is a real 0%; Ireland's census has no such count
+    assert out["value"].to_list() == [5.0, 0.0, None]
+
+
 def test_claimant_rate_per_working_age_resident():
     ages = pl.DataFrame({
         "lsoa21cd": ["E01000001"], "aged_15_to_19_years": [100], "aged_20_to_24_years": [400],
@@ -253,6 +266,47 @@ def test_claimant_rate_per_working_age_resident():
     ctx = FakeContext(census_ts007a=ages, claimant_count=claims)
     # 16–64 ≈ 0.8 × 100 + 400 + 420 = 900
     assert claimant_rate(ctx)["value"].to_list() == pytest.approx([5.0])
+
+
+def test_rent_is_the_councils_and_its_share_of_income_the_wider_areas():
+    from lix_pipeline.indicators.housing import private_rent, rent_to_income
+
+    geo = pl.DataFrame({
+        "lsoa21cd": ["E01000001", "E01000002", "E01000003"],
+        "msoa21cd": ["E02000001", "E02000002", "E02000003"],
+        "lad_cd": ["E08000035", "E08000035", "E09000001"],
+    })  # fmt: skip
+    rents = pl.DataFrame({"lad_cd": ["E08000035"], "rent": [1000.0]})
+    income = pl.DataFrame({
+        "msoa21cd": ["E02000001", "E02000002", "E02000003"],
+        "income_net": [40_000.0, 30_000.0, 60_000.0],
+    })  # fmt: skip
+    ctx = FakeContext(geo_lsoa=geo, ons_private_rents=rents, msoa_income=income)
+    rent = private_rent(ctx).sort("lsoa21cd")
+    assert rent["value"].to_list() == [1000.0, 1000.0, None]  # no rent is published for the City
+    assert set(rent["quality"]) == {"broadcast_lad"}
+    share = rent_to_income(ctx).sort("lsoa21cd")
+    assert share["value"].to_list() == pytest.approx([30.0, 40.0, None])
+    # One rent for the council, a share for each neighbourhood
+    assert set(share["quality"]) == {"broadcast_msoa"}
+
+
+def test_people_per_room_is_flagged_where_few_households_are_behind_it():
+    from lix_pipeline.indicators.community import persons_per_room
+
+    rooms = pl.DataFrame({
+        "lsoa21cd": ["I01000001", "I01000002", "I01000003", "I01000004", "E01000001"],
+        "total": [90.0, 5.0, 55.0, 0.0, 400.0],
+        "households": [94.0, 6.0, 206.0, 3.0, None],
+        "persons_per_room": [0.47, 0.5, 1.05, None, None],
+    })  # fmt: skip
+    out = persons_per_room(FakeContext(census_ts052=rooms)).sort("lsoa21cd")
+    # Five households; 55 of 206 stating their rooms; an area with none has no row
+    assert out.rows() == [
+        ("I01000001", 0.47, "ok"),
+        ("I01000002", 0.5, "low_n"),
+        ("I01000003", 1.05, "low_n"),
+    ]
 
 
 def test_council_tax_broadcast_from_billing_authority():

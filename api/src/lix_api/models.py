@@ -105,6 +105,13 @@ class IndicatorValue(BaseModel):
         description="The indicator this one replaces here: a substitute shown because the "
         "nation lacks the usual one (the SIMD crime rate for police.uk crime in Scotland)",
     )
+    caveats: str | None = Field(
+        None,
+        description="What to keep in mind when reading this figure (English): what it "
+        "counts, what it is an average of, where the nations differ. Say what matters "
+        "of it when the figure is quoted, and judge high or low by the score, not by "
+        "the size of the figure",
+    )
 
 
 class ResolvedFrom(BaseModel):
@@ -221,7 +228,11 @@ class RankedArea(BaseModel):
 
 class RankResult(BaseModel):
     level: Level
-    within: str | None = Field(None, description="The area or place the ranking was limited to")
+    within: str | None = Field(
+        None,
+        description="The area or place the ranking was limited to; a county's name (or "
+        "several) when the scope was a county, which covers every council in it",
+    )
     preset: str
     theme_weights: dict[str, float]
     sort_by: str = Field(
@@ -238,6 +249,13 @@ class RankResult(BaseModel):
     )
     radius_km: float | None = Field(
         None, description="Set when the scope is a radius around `place` rather than an area"
+    )
+    covers: list[str] | None = Field(
+        None,
+        description="When the scope is a county (or several): the councils it takes in. "
+        "All of them are inside the scope named in `within`, including any that share "
+        "the county's name with it (the council County Durham is one of four in the "
+        "county County Durham)",
     )
     candidates: int = Field(description="Areas that passed the filters and have the measure")
     results: list[RankedArea]
@@ -266,6 +284,12 @@ class Comparison(BaseModel):
         default_factory=dict,
         description="Substitute indicator → the usual indicator it stands in for, where an "
         "area's nation lacks the usual one",
+    )
+    across_nations: dict[str, str] = Field(
+        default_factory=dict,
+        description="Set when the areas are in different nations: the rows those nations "
+        "measure differently (indicator id → why, in English). Give each area's figure "
+        "as its own nation's and do not say which area has more or less of it",
     )
 
 

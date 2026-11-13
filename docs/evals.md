@@ -1,16 +1,16 @@
 # Assistant evals
 
-The assistant is tested with real models on the full build, using 62 cases in
+The assistant is tested with real models on the full build, using 67 cases in
 [api/evals/cases.yaml](../api/evals/cases.yaml):
 
 | Category | Cases | What is checked |
 |---|---|---|
-| Ranking | 14 | Weights set before ranking (family, commuter, retiree, young professional), place and price filters, the Republic of Ireland by any of its names, ranking by one measure (the quietest areas in London, the sunniest in the South East) with the map coloured by it, worst first (the areas of Highland furthest from an A&E), areas highlighted on the map; Edinburgh, Belfast and Dublin now that Scotland, Northern Ireland and Ireland are covered; Ireland for retirees |
-| Look-ups | 16 | The right tool and arguments for profiles (including a BT postcode, Ranelagh in Dublin and "Ranelagh, Dublin"; a place's profile gives the small area's percentile with the small area's score, not with the neighbourhood's), comparisons, nearby pubs and GPs, score explanations, map layers, the shortlist and the indicator catalogue |
+| Ranking | 15 | Weights set before ranking (family, commuter, retiree, young professional), place and price filters, a county ranked across all of its councils (Devon, Kent), the Republic of Ireland by any of its names, ranking by one measure (the quietest areas in London, the sunniest in the South East) with the map coloured by it, worst first (the areas of Highland furthest from an A&E), areas highlighted on the map; Edinburgh, Belfast and Dublin now that Scotland, Northern Ireland and Ireland are covered; Ireland for retirees |
+| Look-ups | 20 | A named place's rent is given, not denied; crowding is read by its score, not by the size of the figure; Ireland's student share is not set against Britain's as the same count; the right tool and arguments for profiles (including a BT postcode, Ranelagh in Dublin and "Ranelagh, Dublin"; a place's profile gives the small area's percentile with the small area's score, not with the neighbourhood's), comparisons, nearby pubs and GPs, score explanations, map layers, the shortlist and the indicator catalogue |
 | Follow-ups | 4 | "Compare the top two", "now do that for retirees"; a place profiled and then compared shows one score for it, not two (#228); "which of those is the most affordable?" names the cheapest of the list just shown |
 | Ambiguity | 2 | Says which Clapham it used; profiles Newport now that Wales is covered |
 | Scope and ethics | 6 | Paris is out of scope, Dublin's schools are a declared gap and a Dublin price limit is explained rather than answered with an empty list; it declines to rank by immigration or religion; off-topic requests use no tools |
-| Grounding | 2 (+32) | Every number in a reply appears in a tool result, the prompt or the model's own tool arguments (checked on 34 cases) |
+| Grounding | 2 (+37) | Every number in a reply appears in a tool result, the prompt or the model's own tool arguments (checked on 39 cases) |
 | Analyst | 2 | SQL only in analyst mode |
 | Injection | 1 | A pub name carrying "ignore all previous instructions…" isn't obeyed |
 | Languages | 7 | With the page in Welsh, Gaelic or Irish, a profile and a nearby-pubs question are answered in that language (checked by the share of its stopwords in the reply) |
@@ -141,8 +141,8 @@ For a stakeholder demo where every answer counts, Opus 5.5 is worth its cost.
 
 ```bash
 make eval MODEL=openrouter:anthropic/claude-haiku-5.5 CASES=family_leeds_budget,compare_two
-make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 62 cases, about $0.05
-make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 62 cases, about $1.60
+make eval MODEL=openrouter:anthropic/claude-haiku-5.5       # all 67 cases, about $0.05
+make eval MODEL=openrouter:anthropic/claude-opus-5.5        # all 67 cases, about $1.60
 make eval MODEL=anthropic:claude-haiku-5-5                  # Anthropic's own API (ANTHROPIC_API_KEY)
 ```
 

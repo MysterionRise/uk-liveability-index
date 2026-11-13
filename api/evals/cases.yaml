@@ -19,6 +19,8 @@
 #     consistent:     every overall score the run's tools gave one area agrees, and at
 #                     least one area was scored twice (a case that keeps one weighting)
 #     cheapest_named: the reply names the lowest-priced area of the run's first ranking
+#     ranked_within:  a ranking of the run reports this area as its scope (a county is
+#                     all of its councils, not the district search finds first)
 #     percentile_of_its_score: a profile of a place gives the small area's percentile
 #                     after the small area's score, never after the larger area's
 
@@ -61,6 +63,17 @@ cases:
         - {tool: rank_areas, arg: within, op: contains, value: devon}
       state:
         - {path: preset, op: eq, value: retiree}
+      ranked_within: Devon
+      grounded: true
+
+  - name: county_kent
+    category: ranking
+    turns: ["Which neighbourhoods in Kent score best overall?"]
+    expect:
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: within, op: contains, value: kent}
+      ranked_within: Kent
       grounded: true
 
   - name: safest_bristol
@@ -111,6 +124,50 @@ cases:
     turns: ["what's whitley bay like as a place to live?"]  # lower case on purpose (#72)
     expect:
       tools: [get_area_profile]
+      grounded: true
+
+  # The v0.7.3 test pass (#314): the new measures were in no profile or comparison, so the
+  # model said the index had no rents (23 of 62 runs); a crowding figure was called low
+  # against its own score (9 of 13); Ireland's students were set against Britain's (3 of 3)
+  - name: rent_of_a_named_place
+    category: lookup
+    turns: ["What are rents like in Headingley, Leeds?"]
+    expect:
+      tools: [get_area_profile]
+      reply_any: ["a month", "per month", "monthly"]
+      reply_none: ["doesn't include rent", "does not include rent", "doesn't measure rent",
+                   "doesn't carry rent", "no rental", "has no rent", "doesn't hold rent"]
+      grounded: true
+
+  - name: rent_between_two_councils
+    category: lookup
+    turns: ["Is it cheaper to rent in Manchester or in Salford?"]
+    expect:
+      reply_any: ["a month", "per month", "monthly"]
+      reply_none: ["doesn't include rent", "does not include rent", "doesn't measure rent",
+                   "doesn't carry rent", "no rental", "has no rent", "doesn't hold rent"]
+      grounded: true
+
+  - name: crowding_read_by_its_score
+    category: lookup
+    turns: ["How overcrowded is Rathmines in Dublin?"]
+    expect:
+      reply_any: ["per room"]
+      reply_none: ["not overcrowded", "isn't overcrowded", "low density", "looks limited",
+                   "rely on the raw figure"]
+      grounded: true
+
+  - name: students_across_the_border
+    category: lookup
+    turns: ["Which has a bigger share of students: Belfield in Dublin or Hyde Park in Leeds?"]
+    expect:
+      # "wider" and "comparable" passed a reply that set 72% against 42% and never said
+      # the counts differ ("both are wider neighbourhoods")
+      reply_any: ["count differently", "counts differently", "counted differently",
+                  "measured differently", "defined differently", "not the same measure",
+                  "not like for like", "isn't like for like", "different definition",
+                  "school pupils", "aged 15", "main status", "not directly comparable",
+                  "aren't directly comparable", "can't be compared directly"]
       grounded: true
 
   - name: compare_two

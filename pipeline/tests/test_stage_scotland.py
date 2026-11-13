@@ -109,6 +109,68 @@ def test_scottish_census_table_maps_onto_census_2021_columns(tmp_path, monkeypat
     assert out.columns == ["lsoa21cd", "total", "no_cars_or_vans_in_household"]
 
 
+def _scottish_csv(folder, name: str, rows: list[tuple[str, str, int]]) -> None:
+    (folder / f"Table {name}.csv").write_text(
+        f"Scotland's Census 2022 - National Records of Scotland\nTable {name}\n\n"
+        + "".join(f'"{zone}","{category}",{count}\n' for zone, category, count in rows)
+    )
+
+
+def test_scottish_overcrowding_is_the_one_category_scotland_publishes(tmp_path, monkeypatch):
+    from lix_pipeline.stage.census import scotland_census_table
+
+    monkeypatch.setenv("LIX_DATA_DIR", str(tmp_path))
+    folder = tmp_path / "raw" / "scotland_census_2022"
+    folder.mkdir(parents=True)
+    _scottish_csv(
+        folder,
+        "UV415 - Occupancy rating for bedrooms",
+        [
+            ("S01000001", "All occupied households", 491),
+            ("S01000001", "\tOccupancy rating of bedrooms: +2 or more", 144),
+            ("S01000001", "Occupancy rating of bedrooms: +1", 213),
+            ("S01000001", "Occupancy rating of bedrooms: 0", 128),
+            ("S01000001", "Occupancy rating of bedrooms: -1 or less", 6),
+        ],
+    )
+    out = scotland_census_table("census_ts052")
+    assert out.to_dicts() == [{"lsoa21cd": "S01000001", "total": 491.0, "overcrowded": 6.0}]
+
+
+def test_scottish_students_are_a_share_of_residents_aged_16_and_over(tmp_path, monkeypatch):
+    from lix_pipeline.stage.census import scotland_census_table
+
+    monkeypatch.setenv("LIX_DATA_DIR", str(tmp_path))
+    folder = tmp_path / "raw" / "scotland_census_2022"
+    folder.mkdir(parents=True)
+    _scottish_csv(
+        folder,
+        "UV603 - Economic activity - Full-time students",
+        [
+            ("S01000001", "All full-time students aged 16 and over", 46),
+            ("S01000001", "Economically inactive", 15),
+        ],
+    )
+    _scottish_csv(
+        folder,
+        "UV103 - Age by single year",
+        [
+            ("S01000001", "All people", 500),
+            ("S01000001", "Under 1", 5),
+            ("S01000001", "15", 20),
+            ("S01000001", "16", 30),
+            ("S01000001", "40", 300),
+            ("S01000001", "100 and over", 1),
+            # A zone with nobody in full-time study is still a row
+            ("S01000002", "All people", 80),
+            ("S01000002", "70", 80),
+        ],
+    )
+    out = scotland_census_table("census_ts066")
+    assert out.columns == ["lsoa21cd", "total", "full_time_students"]
+    assert out.rows() == [("S01000001", 331.0, 46.0), ("S01000002", 80.0, None)]
+
+
 def test_registers_of_scotland_series_is_pooled_per_zone():
     from lix_pipeline.stage.price_paid import _ros_summary, _ros_zone_years
 

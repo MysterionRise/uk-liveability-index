@@ -84,6 +84,27 @@ def test_active_places_public_and_operational(data):
     assert stage_active_places().collect()["facilityid"].to_list() == [1]
 
 
+def test_a_tuesday_the_feed_runs_far_fewer_trips_on_is_passed_over():
+    """BODS's files of 12 November 2026: the Tuesday two weeks in, 1 December, runs 252,541
+    trips against 464,419 the week before, and every English city read as almost busless."""
+    start, end = date(2026, 11, 12), date(2028, 3, 31)
+    trips = {
+        date(2026, 11, 17): 456_496, date(2026, 11, 24): 464_419, date(2026, 12, 1): 252_541,
+        date(2026, 12, 8): 469_248, date(2026, 12, 15): 464_285,
+    }  # fmt: skip
+    assert reference_tuesday(start, end) == date(2026, 12, 1)
+    assert reference_tuesday(start, end, trips_on=trips.get) == date(2026, 11, 24)
+    # A normal day stays, even when a later week runs a little more
+    normal = trips | {date(2026, 12, 1): 460_000}
+    assert reference_tuesday(start, end, trips_on=normal.get) == date(2026, 12, 1)
+    # The week before is thin too: the week after
+    both = trips | {date(2026, 11, 24): 250_000}
+    assert reference_tuesday(start, end, trips_on=both.get) == date(2026, 12, 8)
+    # Every week is thin (a feed that is ending): the day two weeks in stands
+    thin = {d: 10 for d in trips}
+    assert reference_tuesday(start, end, trips_on=thin.get) == date(2026, 12, 1)
+
+
 def test_reference_tuesday():
     assert reference_tuesday(date(2026, 10, 7), date(2027, 7, 7)) == date(2026, 10, 27)
     # Never past the end of the timetable
@@ -120,6 +141,39 @@ def test_bus_departures_follow_the_calendar(data):
     df = stage_bods_gtfs().collect()
     assert df.select("stop_id", "departures").rows() == [("A", 2)]
     assert df["reference_day"][0] == date(2026, 10, 27)
+
+
+def test_a_departure_is_counted_once_however_many_copies_of_the_timetable_say_so(data):
+    """An operator publishes the next version of a timetable before the last one ends, and
+    the feed holds both: First Bristol's 12,380 trips on 24 November 2026 were 6,967
+    journeys, and a city's buses read double."""
+    root = data / "raw" / "bods_gtfs"
+    days = "monday,tuesday,wednesday,thursday,friday,saturday,sunday"
+    _write(root / "calendar.txt",
+           f"service_id,{days},start_date,end_date\n"
+           "v1,1,1,1,1,1,0,0,20261007,20270707\n"
+           "v2,1,1,1,1,1,0,0,20261020,20270707\n")  # fmt: skip
+    _write(root / "calendar_dates.txt", "service_id,date,exception_type\n")
+    _write(root / "routes.txt",
+           "route_id,agency_id,route_short_name,route_long_name,route_type\n"
+           "r1,OP1,4,,3\nr1b,OP1,4,,3\nr2,OP1,5,,3\nr3,OP2,4,,3\n")  # fmt: skip
+    _write(root / "trips.txt",
+           "route_id,service_id,trip_id,direction_id\n"
+           "r1,v1,a,0\nr1b,v2,b,0\n"      # the 4 at 08:00, in two versions of the timetable
+           "r1,v1,c,1\n"                    # the 4 the other way
+           "r2,v1,d,0\n"                    # the 5
+           "r3,v1,e,0\n"                    # another operator's 4
+           "r1b,v2,f,0\n")  # fmt: skip     # the new version's 08:10, which the old one lacks
+    _write(root / "stop_times.txt",
+           "trip_id,arrival_time,departure_time,stop_id,stop_sequence,pickup_type\n"
+           + "".join(f"{trip},{time},{time},A,1,0\n" for trip, time in [
+               ("a", "08:00:00"), ("b", "08:00:00"), ("c", "08:00:00"), ("d", "08:00:00"),
+               ("e", "08:00:00"), ("f", "08:10:00"),
+           ]))  # fmt: skip
+    _write(root / "stops.txt", "stop_id,stop_name,stop_lat,stop_lon\nA,High St,53.8,-1.55\n")
+    df = stage_bods_gtfs().collect()
+    # Six trips, five departures: the two copies of the 08:00 number 4 are one bus
+    assert df.select("stop_id", "departures").rows() == [("A", 5)]
 
 
 ORIGINS = pl.DataFrame({

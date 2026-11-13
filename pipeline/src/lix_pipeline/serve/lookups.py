@@ -18,7 +18,7 @@ from lix_core.codes import active_nations, in_scope
 from lix_core.config import load_nations
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
-from lix_core.text import clean_name
+from lix_core.text import clean_name, title_name
 from lix_pipeline.stage.geo import bng_to_lonlat
 
 logger = setup_logging("serve.lookups")
@@ -97,6 +97,15 @@ def _school_pois(staged) -> pl.DataFrame | None:
             pl.lit(None, pl.Date).alias("inspection_date"),
         )
     schools = _with_lonlat(schools)
+    # The Welsh list writes a third of its names in capitals, in Welsh and in English (#310)
+    schools = schools.with_columns(
+        pl.when(pl.col("source") == "wg")
+        .then(
+            pl.col("name").map_elements(lambda n: title_name(n, welsh=True), return_dtype=pl.Utf8)
+        )
+        .otherwise(pl.col("name"))
+        .alias("name")
+    )
     category = (
         pl.when(pl.col("phase").is_in(["Primary", "Middle deemed primary"]))
         .then(pl.lit("primary_school"))
@@ -188,6 +197,22 @@ def build_pois() -> pl.DataFrame:
             pl.when(pl.col("source") == "OpenStreetMap").then(pl.lit(ODBL)).otherwise(pl.lit(OGL))
             .alias("licence")
         )  # fmt: skip
+    # The ODS list writes every name in capitals, Northern Ireland's writes the surnames
+    # so ("Dr. MCGLADE & PARTNERS") and Scotland's a few. Done here, not in the stager, so
+    # the GP indicators' staged input is as the source wrote it. The ODS list holds Wales's
+    # practices too, whose names are read as Welsh ("Meddygfa Cwm Rhymni", "Pen-y-Bont")
+    welsh = pl.col("lsoa21cd").str.starts_with("W")
+    official = pl.col("source") != "OpenStreetMap"
+    gp = gp.with_columns(
+        pl.when(official & welsh)
+        .then(
+            pl.col("name").map_elements(lambda n: title_name(n, welsh=True), return_dtype=pl.Utf8)
+        )
+        .when(official)
+        .then(pl.col("name").map_elements(title_name, return_dtype=pl.Utf8))
+        .otherwise(pl.col("name"))
+        .alias("name")
+    )
     # Ids are prefixed by source, so an OpenStreetMap surgery never reads as an ODS code
     prefix = pl.col("source").replace_strict(GP_ID_PREFIX, default="gp")
     code = pl.col("practice_code").str.replace(r"^osm:", "")
@@ -346,7 +371,8 @@ def build_areas(features: pl.DataFrame) -> pl.DataFrame:
 
 def council_counties() -> pl.DataFrame:
     """Council code → the county people name it by, where the nation keeps such a list
-    (Ireland's curated councils); an empty table otherwise."""
+    (Ireland's curated councils); an empty table otherwise. Great Britain's counties are
+    sets of small areas, not of councils: the features carry them (``scores.py``)."""
     empty = pl.DataFrame(schema={"code": pl.Utf8, "county": pl.Utf8})
     if "I" not in active_nations():
         return empty

@@ -111,18 +111,62 @@ class Store:
         return out
 
     @cached_property
-    def county_councils(self) -> dict[str, set[str]]:
-        """Folded county name → the council codes that share it (Dublin's four), where
-        the pack carries a county for councils."""
+    def region_names(self) -> dict[str, str]:
+        """Folded region name → the name as the pack spells it."""
         from lix_api.services.text import fold
 
-        if "county" not in self.areas.columns:
-            return {}
+        return {fold(r): r for r in self.features["rgn_nm"].unique().to_list() if r}
+
+    @cached_property
+    def _county_pairs(self) -> list[tuple[str, str, str]]:
+        """(county, council code, nation) for every county and council that share a small
+        area. A county is a set of small areas (the features' ``county``): most councils
+        lie in one, and the Tees divides Stockton-on-Tees between two. A pack from before
+        the column has the councils' own county (Ireland's), read the same way."""
+        if "county" in self.features.columns:
+            pairs = self.features.select("county", "lad_cd", "nation").unique()
+        elif "county" in self.areas.columns:
+            pairs = self.areas.filter(pl.col("level") == "lad").select(
+                "county", pl.col("code").alias("lad_cd"), "nation"
+            )
+        else:
+            return []
+        return [row for row in pairs.iter_rows() if row[0]]
+
+    @cached_property
+    def county_councils(self) -> dict[str, set[str]]:
+        """Folded county name → the codes of the councils with a small area in it
+        (Dublin's four, Devon's ten)."""
+        from lix_api.services.text import fold
+
         out: dict[str, set[str]] = {}
-        rows = self.areas.filter((pl.col("level") == "lad") & pl.col("county").is_not_null())
-        for code, county in rows.select("code", "county").iter_rows():
+        for county, code, _ in self._county_pairs:
             out.setdefault(fold(county), set()).add(code)
         return out
+
+    @cached_property
+    def county_names(self) -> dict[str, str]:
+        """Folded county name → the name as the pack spells it."""
+        from lix_api.services.text import fold
+
+        return {fold(county): county for county, _, _ in self._county_pairs}
+
+    @cached_property
+    def county_nations(self) -> dict[str, set[str]]:
+        """Folded county name → the nations it lies in."""
+        from lix_api.services.text import fold
+
+        out: dict[str, set[str]] = {}
+        for county, _, nation in self._county_pairs:
+            out.setdefault(fold(county), set()).add(nation)
+        return out
+
+    @cached_property
+    def council_names_folded(self) -> set[str]:
+        """Every council's name, folded: what a county's name is checked against."""
+        from lix_api.services.text import fold
+
+        return {fold(n) for n in self.features["lad_nm"].unique().to_list() if n}
 
     @cached_property
     def applicable(self) -> dict[str, list[str]]:

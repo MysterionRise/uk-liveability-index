@@ -4,15 +4,37 @@ import polars as pl
 
 
 def census_share(ctx, table: str, numerator: list[str], denominator: str = "total") -> pl.DataFrame:
-    """sum(numerator columns) / denominator × 100."""
+    """sum(numerator columns) / denominator × 100; no value where a nation's census does
+    not publish any of the numerator columns (a sum of nothing is not a share of 0)."""
     df = ctx.staged(table)
+    published = pl.any_horizontal(pl.col(c).is_not_null() for c in numerator)
     return df.select(
         "lsoa21cd",
         # The parts and the total can come from different tables or roundings: a share is
         # never over 100
-        (pl.sum_horizontal(numerator) / pl.col(denominator) * 100)
-        .clip(upper_bound=100)
+        pl.when(published)
+        .then((pl.sum_horizontal(numerator) / pl.col(denominator) * 100).clip(upper_bound=100))
         .alias("value"),
+    )
+
+
+# People per room rests on the households that stated their rooms: under this many, or
+# under this share of the area's households, it says little about the area (the v0.7.3
+# test pass: Julianstown 030/03's figure came from 5 households of 10 people)
+MIN_HOUSEHOLDS = 20
+MIN_STATED_SHARE = 0.5
+
+
+def persons_per_room(ctx) -> pl.DataFrame:
+    """Ireland's people per room, flagged ``low_n`` where few households are behind it."""
+    df = ctx.staged("census_ts052")
+    thin = (pl.col("total") < MIN_HOUSEHOLDS) | (
+        pl.col("total") < MIN_STATED_SHARE * pl.col("households")
+    )
+    return df.filter(pl.col("persons_per_room").is_not_null()).select(
+        "lsoa21cd",
+        pl.col("persons_per_room").alias("value"),
+        pl.when(thin).then(pl.lit("low_n")).otherwise(pl.lit("ok")).alias("quality"),
     )
 
 

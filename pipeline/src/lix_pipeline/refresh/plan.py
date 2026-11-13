@@ -333,15 +333,33 @@ def serve_sidecar() -> Path:
 # and the Northern Irish places' districts (#211) did (v0.7.0 release pass)
 SERVE_TABLES = (
     "geo_lsoa", "nspl", "places", "logainm", "ods_gp", "schools", "ofsted_schools",
-    "chargers", "osm_pois",
+    "chargers", "osm_pois", "area_counties",
 )  # fmt: skip
 
 
+def serve_code_hash() -> str:
+    """A digest of the code that writes the pack: the serve package and ``lix_core`` (the
+    scoring, the units, the names). Whole files, not the functions called: the step takes
+    under a minute, and a change to how GP names are written (#258) left the planner
+    saying "nothing to rebuild"."""
+    import lix_core
+    import lix_pipeline.serve
+
+    h = hashlib.sha256()
+    for package in (lix_pipeline.serve, lix_core):
+        folder = Path(package.__file__).parent
+        for path in sorted(folder.glob("*.py")):
+            h.update(f"{package.__name__}/{path.name}\n".encode())
+            h.update(path.read_bytes())
+    return h.hexdigest()
+
+
 def serve_fingerprint(root: Path | None = None) -> tuple[str, dict[str, str | None]]:
-    """The indicator table, the staged tables the pack copies from, and the configuration
-    the scores are computed from."""
+    """The indicator table, the staged tables the pack copies from, the configuration
+    the scores are computed from, and the code that writes the pack."""
     root = root or get_project_root()
     parts = {"indicators/long.parquet": _file_sha(data_dir("indicators") / "long.parquet")}
+    parts["code"] = serve_code_hash()
     for table in SERVE_TABLES:
         meta = graph.read_sidecar(graph.sidecar_path(table))
         if meta:

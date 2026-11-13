@@ -26,6 +26,7 @@ presets:
 units:
   gbp: "£"
   gbp_year: "£ sa bhliain"
+  gbp_month: "£ sa mhí"
   pct: "%"
   pct_homes: "% de thithe"
   pct_pupils: "% de dhaltaí"
@@ -47,6 +48,7 @@ units:
   years_income: "blianta d'ioncam"
   years: blianta
   people_km2: "daoine in aghaidh km²"
+  people_per_room: "daoine in aghaidh an tseomra"
   per_km2: "in aghaidh an km²"
   radiance: "nW/cm²/sr"
   hours_year: "uaireanta sa bhliain"
@@ -171,9 +173,13 @@ indicators:
   domestic_rates: {label: Rátaí tí (teach tipiciúil), description: "Bille rátaí tí bliantúil do theach ag meánluach caipitil an cheantair, ón ráta réigiúnach agus ó ráta ceantair na comhairle (Tuaisceart Éireann).", caveats: "Muirearaíonn Tuaisceart Éireann rátaí ar luach caipitil tí in ionad cáin chomhairle de réir bandaí; is bille do theach i lár mheascán luachanna 2016 an cheantair an bille a thaispeántar, mar sin athraíonn sé le luachanna áitiúla chomh maith leis an ráta sa phunt."}
   council_tax_typical: {label: Cáin chomhairle (teach tipiciúil anseo), description: "An méid a íocann teach tipiciúil sa cheantar i gcáin chomhairle, muirear gach banda ualaithe de réir an lín tithe sa cheantar atá sa bhanda sin.", caveats: "Úsáideann sé muirear na comhairle do gach banda agus meascán bandaí an cheantair, mar sin is é thart ar dhá thrian de ráta Bhanda D na comhairle atá i gceantar de thithe sraithe Bhanda A; ní áirítear lascainí ná díolúintí."}
   price_to_income: {label: Praghas i gcomparáid le hioncam áitiúil, description: "Praghas tí tipiciúil roinnte ar mheánioncam glan teaghlaigh an cheantair.", caveats: "Meastachán bunaithe ar shamhail is ea an t-ioncam don cheantar níos leithne (MSOA), do 2022–23."}
+  private_rent: {label: Cíos príobháideach (meán na comhairle), description: "Meánchíos príobháideach míosúil i limistéar na comhairle, thar gach teach atá ar cíos go príobháideach (Innéacs Praghsanna Cíosanna Príobháideacha an ONS).", caveats: "Mar an gcéanna do gach comharsanacht i limistéar comhairle, agus ina mheán thar gach méid tí, mar sin bíonn sé níos airde san áit a bhfuil na tithe níos mó. Staitisticí oifigiúla atá á bhforbairt. Foilsítear Albain agus Tuaisceart Éireann de réir limistéar margaidh cíosa, nach dtaispeántar go fóill."}
+  rent_to_income: {label: Cíos i gcomparáid le hioncam áitiúil, description: "Bliain de mheánchíos príobháideach limistéar na comhairle mar sciar de mheánioncam glan teaghlaigh an cheantair.", caveats: "Is é meán reatha limistéar na comhairle an cíos; is meastachán bunaithe ar shamhail don cheantar níos leithne (MSOA) do 2022–23 an t-ioncam, atá níos sine ná an cíos. Laistigh de chomhairle amháin ní athraíonn sé ach leis an ioncam, agus is gnách go dtuilleann cíosaithe níos lú ná meán an cheantair, mar sin léigh é mar threoir ar an áit a bhfuil an cíos trom, ní mar an méid a íocann cíosaí."}
   new_builds: {label: Tithe a tógadh ó 2000, description: "Sciar de thithe a tógadh in 2000 nó ina dhiaidh."}
   period_homes: {label: Tithe a tógadh roimh 1919, description: "Sciar de thithe a tógadh roimh 1919."}
   lower_band_homes: {label: Tithe i mbandaí cánach comhairle A–B, description: "Sciar de thithe sa dá bhanda cánach comhairle is ísle (na tithe is saoire ag luachanna 1991)."}
+  overcrowded_households: {label: Teaghlaigh róphlódaithe, description: "Sciar de theaghlaigh a bhfuil níos lú seomraí leapa acu ná mar a theastaíonn uathu de réir chaighdeán na seomraí leapa (Daonáireamh 2021; 2022 in Albain).", caveats: "Cuireann caighdeán na seomraí leapa daoine i bpéirí (lánúineacha, beirt leanaí faoi 10 mbliana d'aois, beirt den ghnéas céanna faoi 21), mar sin is féidir le teaghlach a bheith seomra leapa gann gan a bheith plódaithe dar leo féin. Is beag atá ag formhór na gceantar (2% sa ghnáthcheantar), mar sin tá 5% i measc an cheathrú is plódaithe cheana féin. Ní fhoilsíonn Tuaisceart Éireann é do cheantair bheaga; áirítear seomraí i ndaonáireamh na hÉireann, agus taispeántar é mar dhaoine in aghaidh an tseomra."}
+  persons_per_room: {label: Daoine in aghaidh an tseomra, description: "Daoine i dteaghlaigh phríobháideacha in aghaidh gach seomra ina dtithe (Daonáireamh 2022), tomhas plódaithe na hÉireann.", caveats: "Meán thar theaghlaigh an cheantair, ní líon na dteaghlach plódaithe, mar sin léigh é i gcomparáid leis an gcuid eile d'Éirinn (0.47 atá ag an ngnáthcheantar, agus tá ceantar amháin as gach deich os cionn 0.6) seachas i gcomparáid le duine amháin in aghaidh an tseomra. Áirítear cistiní mar sheomraí ach ní áirítear seomraí folctha; glactar le teach a bhfuil \"8 seomra nó níos mó\" ann mar 9."}
   income_deprivation: {label: Díothacht ioncaim, description: "Sciar de chónaitheoirí ar ioncam íseal (fearann ioncaim an innéacs díothachta).", caveats: "Sa Bhreatain Bheag is é an ráta táscaire \"daoine i ndíothacht ioncaim\" WIMD 2025 (StatsWales), an tomhas atá taobh thiar de scór an fhearainn."}
   pobal_deprivation: {label: Rachmas agus díothacht (innéacs Pobal HP), description: "Innéacs díothachta coibhneasta Pobal HP na toghroinne ó Dhaonáireamh 2022 (dífhostaíocht, oideachas, aicme shóisialta, tuismitheoirí aonair, tionacht agus plódú); ciallaíonn níos airde níos saibhre.", caveats: "Foilsithe do thoghranna (thart ar 1,500 duine); tá leagan an Cheantair Bhig ceadúnaithe. Seasann sé in ionad an tomhais ar dhíothacht ioncaim mar sciar, nach bhfoilsíonn Éire faoi leibhéal an chontae."}
   employment_deprivation: {label: Díothacht fostaíochta, description: "Sciar de chónaitheoirí in aois oibre atá dífhostaithe dá n-ainneoin féin (fearann fostaíochta an innéacs díothachta).", caveats: "Sa Bhreatain Bheag is é an ráta táscaire \"daoine in aois oibre i ndíothacht fostaíochta\" WIMD 2025 (StatsWales), an tomhas atá taobh thiar de scór an fhearainn."}
@@ -185,7 +191,10 @@ indicators:
   imd: {label: Innéacs Ildíothachta, description: "Scór díothachta iomlán; gan scór mar forluíonn a fhearainn ar tháscairí eile."}
   population_density: {label: Dlús daonra, description: "Cónaitheoirí in aghaidh an chiliméadair chearnaigh (Daonáireamh 2021; 2022 in Albain)."}
   households_with_children: {label: Teaghlaigh le leanaí cleithiúnacha, description: "Sciar de theaghlaigh le leanaí cleithiúnacha (Daonáireamh 2021; 2022 in Albain)."}
-  aged_65_plus: {label: Cónaitheoirí 65 nó níos sine, description: "Sciar de chónaitheoirí atá 65 bliana d'aois nó níos sine (Daonáireamh 2021; 2022 in Albain)."}
+  aged_65_plus: {label: Cónaitheoirí 65 nó níos sine, description: "Sciar de chónaitheoirí atá 65 bliana d'aois nó níos sine (Daonáireamh 2021; 2022 in Albain agus in Éirinn)."}
+  aged_20_34: {label: Cónaitheoirí 20 go 34, description: "Sciar de chónaitheoirí atá idir 20 agus 34 bliana d'aois (Daonáireamh 2021; 2022 in Albain agus in Éirinn)."}
+  under_16: {label: Cónaitheoirí faoi 16, description: "Sciar de chónaitheoirí faoi 16 bliana d'aois (na meastacháin daonra lárbhliana is déanaí; Daonáireamh 2022 in Éirinn)."}
+  students_share: {label: Mic léinn lánaimseartha, description: "Sciar de chónaitheoirí 16 bliana d'aois nó níos sine ar mic léinn lánaimseartha iad (Daonáireamh 2021; 2022 in Albain agus in Éirinn).", caveats: "Áirítear mic léinn san áit a gcónaíonn siad le linn an téarma, mar sin bíonn cuma ar chomharsanacht hallaí cónaithe gur mic léinn beagnach gach duine inti. Áiríonn na náisiúin ar bhealaí éagsúla, mar sin déan comparáid laistigh de náisiún amháin. Áirítear i Sasana agus sa Bhreatain Bheag mic léinn nach bhfuil ag obair is cuma cé mhéad uair staidéir atá acu, agus áirítear in Éirinn gach duine 15 bliana d'aois nó níos sine arb é 'mac léinn' a bpríomhstádas, daltaí scoile ina measc. Ní fhoilsíonn Tuaisceart Éireann é ach do bhardaí."}
   owner_occupied: {label: Tithe úinéir-áitithe, description: "Sciar de theaghlaigh ar leo a dteach go hiomlán nó le morgáiste (Daonáireamh 2021; 2022 in Albain)."}
   no_car: {label: Teaghlaigh gan charr, description: "Sciar de theaghlaigh gan charr ná veain (Daonáireamh 2021; 2022 in Albain)."}
   sustainable_commute: {label: "Siúl, rothaíocht nó iompar poiblí chun na hoibre", description: "Sciar d'oibrithe a thaistealaíonn chun na hoibre de shiúl na gcos, ar rothar nó ar iompar poiblí (Daonáireamh 2021, le linn srianta COVID-19; 2022 in Albain)."}

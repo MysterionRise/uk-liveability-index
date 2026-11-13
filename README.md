@@ -15,7 +15,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
 - **62,833 neighbourhoods** across the UK and Ireland (2021 LSOAs in England and Wales,
   2022 Data Zones in Scotland, 2021 Super Data Zones in Northern Ireland, 2022 Small Areas
   in Ireland; from a few hundred residents in Ireland and Scotland to a few thousand
-  elsewhere), scored 0–100 on nine themes from **about 224 open datasets** (236 in the
+  elsewhere), scored 0–100 on nine themes from **about 224 open datasets** (239 in the
   registry): police.uk, the PSNI and the CSO's Garda statistics, NHS,
   Ofsted, DfE, the Welsh and Scottish Governments and the Northern Ireland departments,
   Land Registry, Registers of Scotland and Land & Property Services, ONS, NRS, NISRA and
@@ -27,7 +27,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
   about yourself ("young professional, one child starting school, I need sunshine") or
   any weighting of your own, with a range for how much a preset's result depends on the
   exact weights.
-- **An assistant that shows its working**, tested on 62 cases, 34 of them also checking
+- **An assistant that shows its working**, tested on 67 cases, 39 of them also checking
   that every number in the reply traces to a tool result ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.
@@ -105,7 +105,7 @@ A full walkthrough video comes with each feature
 
 ## How the scores work
 
-Each neighbourhood gets up to 112 indicators. The 44 that count towards the score are
+Each neighbourhood gets up to 119 indicators. The 44 that count towards the score are
 turned into 0–100 scores, averaged within nine themes (safety, environment, health
 services, schools and childcare, transport, amenities, housing, community and climate), and
 the themes are weighted by what you choose. Measures that are the same everywhere
@@ -120,7 +120,7 @@ it scores on fewer themes and stand-ins than the UK nations.
 - **Uncertain where it should be.** Nudging every theme's weight (200 random draws around
   each preset) shows how stable a result is: "better than 60–81% of the UK and Ireland"
   rather than a falsely precise 72%, and "close call" tags in rankings.
-- **Checked.** A review of 58 contrasting places (168 checks, 109 of them run on every
+- **Checked.** A review of 59 contrasting places (169 checks, 109 of them run on every
   build) is in [docs/validation.md](docs/validation.md).
 
 The full method, including how Greater Manchester's missing crime data and Ofsted's

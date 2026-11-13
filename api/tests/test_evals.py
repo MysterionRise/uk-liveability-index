@@ -1,5 +1,6 @@
 """The assistant eval harness (api/evals) runs end to end, offline, on the scripted model."""
 
+import json
 import sys
 from pathlib import Path
 
@@ -132,6 +133,23 @@ def test_a_percentile_check_needs_a_profile_that_names_a_larger_area():
     # The two scores written alike (69.5 and 69.52) cannot be told apart in a reply
     same = HEADINGLEY.replace("68.28", "69.52")
     assert _judge(PercentileOfItsScore(), returns=[same], reply="It scores 69.5, top 16%.").value
+
+
+def test_a_county_ranking_reports_the_county_as_its_scope():
+    from evals.evaluators import RankedWithin
+
+    def ranking(within: str | None) -> str:
+        return json.dumps({"within": within, "results": [{"name": "Sidmouth Town"}]})
+
+    district = _judge(RankedWithin("Devon"), returns=[ranking("North Devon")], reply="")
+    assert not district.value and "North Devon" in district.reason
+    assert _judge(RankedWithin("Devon"), returns=[ranking("Devon")], reply="").value
+    # A first ranking of one district and a second of the county: the county counts
+    both = [ranking("North Devon"), ranking("devon")]
+    assert _judge(RankedWithin("Devon"), returns=both, reply="").value
+    # A profile is not a ranking, and a ranking of everywhere has no scope
+    other = [json.dumps({"lsoa21cd": "E01000001", "within": "Devon"}), ranking(None), "not json"]
+    assert not _judge(RankedWithin("Devon"), returns=other, reply="").value
 
 
 def test_the_cheapest_of_a_ranking_is_the_one_named():

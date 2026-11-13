@@ -81,9 +81,11 @@ def rank_areas(
     direction: Literal["best", "worst"] = "best",
 ) -> RankResult:
     """Rank areas best first (or worst first), optionally within a place/area and under a
-    house price; ``sort_by`` ("theme:<id>" or "indicator:<id>") ranks by one measure
-    instead. ``level``: lsoa (neighbourhood), msoa (the default), lad (council), region
-    or nation. ``theme_weights``: theme id → 0–3, over the preset."""
+    house price; a county as ``within`` ("Devon", "Yorkshire") covers every council in it
+    and the result's ``within`` names what was used. ``sort_by`` ("theme:<id>" or
+    "indicator:<id>") ranks by one measure instead. ``level``: lsoa (neighbourhood), msoa
+    (the default), lad (council), region or nation. ``theme_weights``: theme id → 0–3,
+    over the preset."""
     return ranking.rank_areas(
         get_store(), within=within, radius_km=radius_km, level=level, preset=preset,
         theme_weights=theme_weights, max_median_price=max_median_price,

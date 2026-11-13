@@ -41,6 +41,62 @@ def stage_msoa_income() -> pl.LazyFrame:
     return out.lazy()
 
 
+RENT_COLUMNS = {
+    "Rental price": "rent",
+    "Rental price one bed": "rent_one_bed",
+    "Rental price two bed": "rent_two_bed",
+    "Rental price three bed": "rent_three_bed",
+    "Annual change": "rent_annual_change",
+}
+
+
+def tidy_private_rents(table: pl.DataFrame) -> pl.DataFrame:
+    """ONS's Price Index of Private Rents (every area and month since 2015, values as
+    text) → each local authority's average monthly rent in the latest month it has one.
+
+    Countries, regions and Broad Rental Market Areas are left out: Scotland's rents come
+    by market area (``S33``) and Northern Ireland's with no code at all (#261). A month
+    without a rent is "[x]"; the latest month is taken per authority, so one that lags
+    keeps its last figure and says which month it is.
+    """
+    number = r"^-?\d+(\.\d+)?$"
+    out = (
+        table.select(
+            pl.col("Area code").str.strip_chars().alias("lad_cd"),
+            pl.col("Area name").str.strip_chars().alias("authority"),
+            pl.col("Time period").str.slice(0, 10).str.to_date("%Y-%m-%d").alias("month"),
+            *[
+                pl.when(pl.col(source).str.contains(number))
+                .then(pl.col(source))
+                .cast(pl.Float64)
+                .alias(name)
+                for source, name in RENT_COLUMNS.items()
+            ],
+        )
+        .filter(in_scope("lad_cd", "upper") & pl.col("rent").is_not_null())
+        .sort("lad_cd", "month")
+        .group_by("lad_cd", maintain_order=True)
+        .last()
+    )
+    return out.sort("lad_cd")
+
+
+def stage_private_rents() -> pl.LazyFrame:
+    """Average monthly private rent per local authority (England and Wales)."""
+    from lix_core.paths import raw_file
+
+    reader = fastexcel.read_excel(raw_file("ons_private_rents", "xlsx"))
+    header = _header_row(reader, "Table 1", "Time period")
+    table = reader.load_sheet_by_name("Table 1", header_row=header, dtypes="string").to_polars()
+    out = tidy_private_rents(table.rename({c: c.strip() for c in table.columns}))
+    latest = out["month"].max()
+    logger.info(
+        f"{out.height} local authorities with a rent, latest month {latest:%B %Y} "
+        f"({out.filter(pl.col('month') < latest).height} lag it)"
+    )
+    return out.lazy()
+
+
 BANDS = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
 

@@ -399,6 +399,29 @@ class CheapestNamed(Evaluator):
 
 
 @dataclass
+class RankedWithin(Evaluator):
+    """A ranking of the run was made within the area named: the county, not one district
+    of it (#233: "in Devon" was answered for North Devon by one model and West Devon by
+    another). It reads the scope the tool reports; the top rows of a county can all fall
+    in one council and still be right."""
+
+    area: str
+
+    def evaluate(self, ctx: EvaluatorContext) -> EvaluationReason:
+        scopes = []
+        for raw in ctx.output.returns:
+            try:
+                data = json.loads(raw)
+            except (TypeError, ValueError):
+                continue
+            if isinstance(data, dict) and "results" in data:
+                scopes.append(data.get("within"))
+        wanted = _plain(self.area)
+        found = any(_plain(str(s)) == wanted for s in scopes if s)
+        return _ok(found, f"rankings were within {scopes}, expected {self.area!r}")
+
+
+@dataclass
 class ModelEngine(Evaluator):
     """A profile case on a real model must come from the model, not the rules fallback
     (on the scripted or recorded model the rules are the engine, and that passes)."""
@@ -444,4 +467,6 @@ def evaluators_for(expect: dict, kind: str = "chat") -> list[Evaluator]:
         out.append(PercentileOfItsScore())
     if expect.get("cheapest_named"):
         out.append(CheapestNamed())
+    if expect.get("ranked_within"):
+        out.append(RankedWithin(area=expect["ranked_within"]))
     return out

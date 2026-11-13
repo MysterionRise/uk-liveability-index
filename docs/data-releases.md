@@ -21,3 +21,4 @@ that. Cutting one: `make refresh`, commit the lockfile, `make data-release`
 | [data-2026-10.7](https://github.com/MysterionRise/uk-liveability-index/releases/tag/data-2026-10.7) | 2026-10-27 | 2026-10-27 | 5 |
 | [data-2026-10.8](https://github.com/MysterionRise/uk-liveability-index/releases/tag/data-2026-10.8) | 2026-10-28 | 2026-10-28 | 5 |
 | [data-2026-11](https://github.com/MysterionRise/uk-liveability-index/releases/tag/data-2026-11) | 2026-11-04 | 2026-11-04 | 5 |
+| [data-2026-11.1](https://github.com/MysterionRise/uk-liveability-index/releases/tag/data-2026-11.1) | 2026-11-13 | 2026-11-13 | 6 |

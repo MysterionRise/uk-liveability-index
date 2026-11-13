@@ -221,3 +221,18 @@ def test_catalogue_gaps_flag_an_entry_split_by_an_unquoted_comma():
     labels["presets"]["family"] = broken["presets"]["family"]
     gaps = catalogue_gaps(catalogue, weights, labels)
     assert any(g.startswith("presets.family: unexpected fields") for g in gaps)
+
+
+def test_a_unit_this_code_does_not_know_still_has_a_code():
+    """A newer pack's unit must not break an older reader's catalogue: v0.7.2 raised
+    KeyError on "£ a month" and its indicator list answered 500."""
+    from lix_core.config import IndicatorSpec, catalogue_problems, load_indicators, load_registry
+
+    spec = load_indicators().by_id()["house_price"].model_copy(update={"unit": "€ a week (net)"})
+    assert IndicatorSpec.model_validate(spec.model_dump(exclude={"unit_code"})).unit_code == (
+        "a_week_net"
+    )
+    # The configuration still has to give every unit a code of its own
+    catalogue = load_indicators()
+    catalogue.indicators[0] = catalogue.indicators[0].model_copy(update={"unit": "furlongs"})
+    assert any("furlongs" in p for p in catalogue_problems(catalogue, load_registry()))

@@ -1,8 +1,8 @@
 {
-  "schema_version": 5,
-  "generated_at": "2026-11-04T11:46:16+00:00",
+  "schema_version": 6,
+  "generated_at": "2026-11-13T21:14:38+00:00",
   "data_release": null,
-  "data_to": "2026-11-04",
+  "data_to": "2026-11-13",
   "geography": {
     "build": {
       "working_crs": 27700,
@@ -423,6 +423,7 @@
       "units": {
         "gbp": "\u00a3",
         "gbp_year": "\u00a3 y flwyddyn",
+        "gbp_month": "\u00a3 y mis",
         "pct": "%",
         "pct_homes": "% o gartrefi",
         "pct_pupils": "% o ddisgyblion",
@@ -444,6 +445,7 @@
         "years_income": "blynyddoedd o incwm",
         "years": "blynyddoedd",
         "people_km2": "pobl fesul km\u00b2",
+        "people_per_room": "pobl fesul ystafell",
         "per_km2": "y km\u00b2",
         "radiance": "nW/cm\u00b2/sr",
         "hours_year": "oriau y flwyddyn",
@@ -822,6 +824,16 @@
           "description": "Pris t\u0177 arferol wedi'i rannu ag incwm aelwyd net cymedrig yr ardal.",
           "caveats": "Amcangyfrif ar sail model yw'r incwm ar gyfer yr ardal ehangach (MSOA), ar gyfer 2022\u201323."
         },
+        "private_rent": {
+          "label": "Rhent preifat (cyfartaledd y cyngor)",
+          "description": "Rhent preifat misol cyfartalog yn ardal y cyngor, dros bob cartref a rentir yn breifat (Mynegai Prisiau Rhenti Preifat yr ONS).",
+          "caveats": "Yr un fath i bob cymdogaeth yn ardal y cyngor, ac yn gyfartaledd dros bob maint o gartref, felly mae'n uwch lle mae'r cartrefi'n fwy. Ystadegau swyddogol sy'n cael eu datblygu. Cyhoeddir yr Alban a Gogledd Iwerddon fesul ardal marchnad rentu, nad yw'n cael ei dangos eto."
+        },
+        "rent_to_income": {
+          "label": "Rhent o'i gymharu ag incwm lleol",
+          "description": "Blwyddyn o rent preifat cyfartalog ardal y cyngor fel cyfran o incwm aelwyd net cymedrig yr ardal.",
+          "caveats": "Cyfartaledd cyfredol ardal y cyngor yw'r rhent; amcangyfrif ar sail model ar gyfer yr ardal ehangach (MSOA) ar gyfer 2022\u201323 yw'r incwm, sy'n h\u0177n na'r rhent. O fewn un cyngor dim ond gyda'r incwm y mae'n newid, ac mae rhentwyr fel arfer yn ennill llai na chymedr yr ardal, felly darllenwch ef fel canllaw i ble mae rhent yn drwm, nid fel yr hyn y mae rhentwr yn ei dalu."
+        },
         "new_builds": {
           "label": "Cartrefi a adeiladwyd ers 2000",
           "description": "Cyfran y cartrefi a adeiladwyd yn 2000 neu'n ddiweddarach."
@@ -833,6 +845,16 @@
         "lower_band_homes": {
           "label": "Cartrefi ym mandiau treth gyngor A\u2013B",
           "description": "Cyfran y cartrefi yn y ddau fand treth gyngor isaf (y cartrefi rhataf yng ngwerthoedd 1991)."
+        },
+        "overcrowded_households": {
+          "label": "Aelwydydd gorlawn",
+          "description": "Cyfran yr aelwydydd sydd \u00e2 llai o ystafelloedd gwely nag sydd eu hangen arnynt yn \u00f4l y safon ystafelloedd gwely (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).",
+          "caveats": "Mae'r safon ystafelloedd gwely yn paru pobl (cyplau, dau blentyn o dan 10 oed, dau o'r un rhyw o dan 21 oed), felly gall aelwyd fod un ystafell wely yn brin heb deimlo'n orlawn. Ychydig iawn sydd gan y rhan fwyaf o ardaloedd (2% yn yr ardal nodweddiadol), felly mae 5% eisoes ymhlith y chwarter mwyaf gorlawn. Nid yw Gogledd Iwerddon yn ei gyhoeddi ar gyfer ardaloedd bach; mae cyfrifiad Iwerddon yn cyfrif ystafelloedd, a ddangosir fel pobl fesul ystafell."
+        },
+        "persons_per_room": {
+          "label": "Pobl fesul ystafell",
+          "description": "Pobl mewn aelwydydd preifat am bob ystafell yn eu cartrefi (Cyfrifiad 2022), mesur gorlenwi Iwerddon.",
+          "caveats": "Cyfartaledd dros aelwydydd yr ardal, nid cyfrif o'r rhai gorlawn, felly darllenwch ef yn erbyn gweddill Iwerddon (0.47 sydd gan yr ardal nodweddiadol, ac mae un ardal o bob deg dros 0.6) yn hytrach nag yn erbyn un person fesul ystafell. Mae ceginau'n cyfrif fel ystafelloedd ond nid ystafelloedd ymolchi; cymerir cartref ag \"8 ystafell neu fwy\" fel 9."
         },
         "income_deprivation": {
           "label": "Amddifadedd incwm",
@@ -887,7 +909,20 @@
         },
         "aged_65_plus": {
           "label": "Trigolion 65 oed a throsodd",
-          "description": "Cyfran y trigolion 65 oed neu'n h\u0177n (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban)."
+          "description": "Cyfran y trigolion 65 oed neu'n h\u0177n (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban ac Iwerddon)."
+        },
+        "aged_20_34": {
+          "label": "Trigolion 20 i 34 oed",
+          "description": "Cyfran y trigolion 20 i 34 oed (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban ac Iwerddon)."
+        },
+        "under_16": {
+          "label": "Trigolion o dan 16 oed",
+          "description": "Cyfran y trigolion o dan 16 oed (yr amcangyfrifon poblogaeth canol blwyddyn diweddaraf; Cyfrifiad 2022 yn Iwerddon)."
+        },
+        "students_share": {
+          "label": "Myfyrwyr amser llawn",
+          "description": "Cyfran y trigolion 16 oed a throsodd sy'n fyfyrwyr amser llawn (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban ac Iwerddon).",
+          "caveats": "C\u00e2nt eu cyfrif lle mae myfyrwyr yn byw yn ystod y tymor, felly mae cymdogaeth o neuaddau preswyl yn ymddangos fel petai bron pawb yn fyfyrwyr. Mae'r gwledydd yn cyfrif yn wahanol, felly cymharwch o fewn un wlad. Mae Cymru a Lloegr yn cynnwys myfyrwyr nad ydynt yn gweithio beth bynnag yw eu horiau astudio, ac mae Iwerddon yn cyfrif pawb 15 oed a throsodd sy'n nodi mai myfyriwr yw eu prif statws, gan gynnwys disgyblion ysgol. Dim ond ar gyfer wardiau y mae Gogledd Iwerddon yn ei gyhoeddi."
         },
         "owner_occupied": {
           "label": "Cartrefi perchen-feddianwyr",
@@ -1163,6 +1198,7 @@
       "units": {
         "gbp": "\u00a3",
         "gbp_year": "\u00a3 sa bhliain",
+        "gbp_month": "\u00a3 sa mh\u00ed",
         "pct": "%",
         "pct_homes": "% de thithe",
         "pct_pupils": "% de dhalta\u00ed",
@@ -1184,6 +1220,7 @@
         "years_income": "blianta d'ioncam",
         "years": "blianta",
         "people_km2": "daoine in aghaidh km\u00b2",
+        "people_per_room": "daoine in aghaidh an tseomra",
         "per_km2": "in aghaidh an km\u00b2",
         "radiance": "nW/cm\u00b2/sr",
         "hours_year": "uaireanta sa bhliain",
@@ -1644,6 +1681,16 @@
           "description": "Praghas t\u00ed tipici\u00fail roinnte ar mhe\u00e1nioncam glan teaghlaigh an cheantair.",
           "caveats": "Meastach\u00e1n bunaithe ar shamhail is ea an t-ioncam don cheantar n\u00edos leithne (MSOA), do 2022\u201323."
         },
+        "private_rent": {
+          "label": "C\u00edos pr\u00edobh\u00e1ideach (me\u00e1n na comhairle)",
+          "description": "Me\u00e1nch\u00edos pr\u00edobh\u00e1ideach m\u00edos\u00fail i limist\u00e9ar na comhairle, thar gach teach at\u00e1 ar c\u00edos go pr\u00edobh\u00e1ideach (Inn\u00e9acs Praghsanna C\u00edosanna Pr\u00edobh\u00e1ideacha an ONS).",
+          "caveats": "Mar an gc\u00e9anna do gach comharsanacht i limist\u00e9ar comhairle, agus ina mhe\u00e1n thar gach m\u00e9id t\u00ed, mar sin b\u00edonn s\u00e9 n\u00edos airde san \u00e1it a bhfuil na tithe n\u00edos m\u00f3. Staitistic\u00ed oifigi\u00fala at\u00e1 \u00e1 bhforbairt. Foils\u00edtear Albain agus Tuaisceart \u00c9ireann de r\u00e9ir limist\u00e9ar margaidh c\u00edosa, nach dtaispe\u00e1ntar go f\u00f3ill."
+        },
+        "rent_to_income": {
+          "label": "C\u00edos i gcompar\u00e1id le hioncam \u00e1iti\u00fail",
+          "description": "Bliain de mhe\u00e1nch\u00edos pr\u00edobh\u00e1ideach limist\u00e9ar na comhairle mar sciar de mhe\u00e1nioncam glan teaghlaigh an cheantair.",
+          "caveats": "Is \u00e9 me\u00e1n reatha limist\u00e9ar na comhairle an c\u00edos; is meastach\u00e1n bunaithe ar shamhail don cheantar n\u00edos leithne (MSOA) do 2022\u201323 an t-ioncam, at\u00e1 n\u00edos sine n\u00e1 an c\u00edos. Laistigh de chomhairle amh\u00e1in n\u00ed athra\u00edonn s\u00e9 ach leis an ioncam, agus is gn\u00e1ch go dtuilleann c\u00edosaithe n\u00edos l\u00fa n\u00e1 me\u00e1n an cheantair, mar sin l\u00e9igh \u00e9 mar threoir ar an \u00e1it a bhfuil an c\u00edos trom, n\u00ed mar an m\u00e9id a \u00edocann c\u00edosa\u00ed."
+        },
         "new_builds": {
           "label": "Tithe a t\u00f3gadh \u00f3 2000",
           "description": "Sciar de thithe a t\u00f3gadh in 2000 n\u00f3 ina dhiaidh."
@@ -1655,6 +1702,16 @@
         "lower_band_homes": {
           "label": "Tithe i mbanda\u00ed c\u00e1nach comhairle A\u2013B",
           "description": "Sciar de thithe sa d\u00e1 bhanda c\u00e1nach comhairle is \u00edsle (na tithe is saoire ag luachanna 1991)."
+        },
+        "overcrowded_households": {
+          "label": "Teaghlaigh r\u00f3phl\u00f3daithe",
+          "description": "Sciar de theaghlaigh a bhfuil n\u00edos l\u00fa seomra\u00ed leapa acu n\u00e1 mar a theasta\u00edonn uathu de r\u00e9ir chaighde\u00e1n na seomra\u00ed leapa (Daon\u00e1ireamh 2021; 2022 in Albain).",
+          "caveats": "Cuireann caighde\u00e1n na seomra\u00ed leapa daoine i bp\u00e9ir\u00ed (l\u00e1n\u00faineacha, beirt leana\u00ed faoi 10 mbliana d'aois, beirt den ghn\u00e9as c\u00e9anna faoi 21), mar sin is f\u00e9idir le teaghlach a bheith seomra leapa gann gan a bheith pl\u00f3daithe dar leo f\u00e9in. Is beag at\u00e1 ag formh\u00f3r na gceantar (2% sa ghn\u00e1thcheantar), mar sin t\u00e1 5% i measc an cheathr\u00fa is pl\u00f3daithe cheana f\u00e9in. N\u00ed fhoils\u00edonn Tuaisceart \u00c9ireann \u00e9 do cheantair bheaga; \u00e1ir\u00edtear seomra\u00ed i ndaon\u00e1ireamh na h\u00c9ireann, agus taispe\u00e1ntar \u00e9 mar dhaoine in aghaidh an tseomra."
+        },
+        "persons_per_room": {
+          "label": "Daoine in aghaidh an tseomra",
+          "description": "Daoine i dteaghlaigh phr\u00edobh\u00e1ideacha in aghaidh gach seomra ina dtithe (Daon\u00e1ireamh 2022), tomhas pl\u00f3daithe na h\u00c9ireann.",
+          "caveats": "Me\u00e1n thar theaghlaigh an cheantair, n\u00ed l\u00edon na dteaghlach pl\u00f3daithe, mar sin l\u00e9igh \u00e9 i gcompar\u00e1id leis an gcuid eile d'\u00c9irinn (0.47 at\u00e1 ag an ngn\u00e1thcheantar, agus t\u00e1 ceantar amh\u00e1in as gach deich os cionn 0.6) seachas i gcompar\u00e1id le duine amh\u00e1in in aghaidh an tseomra. \u00c1ir\u00edtear cistin\u00ed mar sheomra\u00ed ach n\u00ed \u00e1ir\u00edtear seomra\u00ed folctha; glactar le teach a bhfuil \"8 seomra n\u00f3 n\u00edos m\u00f3\" ann mar 9."
         },
         "income_deprivation": {
           "label": "D\u00edothacht ioncaim",
@@ -1709,7 +1766,20 @@
         },
         "aged_65_plus": {
           "label": "C\u00f3naitheoir\u00ed 65 n\u00f3 n\u00edos sine",
-          "description": "Sciar de ch\u00f3naitheoir\u00ed at\u00e1 65 bliana d'aois n\u00f3 n\u00edos sine (Daon\u00e1ireamh 2021; 2022 in Albain)."
+          "description": "Sciar de ch\u00f3naitheoir\u00ed at\u00e1 65 bliana d'aois n\u00f3 n\u00edos sine (Daon\u00e1ireamh 2021; 2022 in Albain agus in \u00c9irinn)."
+        },
+        "aged_20_34": {
+          "label": "C\u00f3naitheoir\u00ed 20 go 34",
+          "description": "Sciar de ch\u00f3naitheoir\u00ed at\u00e1 idir 20 agus 34 bliana d'aois (Daon\u00e1ireamh 2021; 2022 in Albain agus in \u00c9irinn)."
+        },
+        "under_16": {
+          "label": "C\u00f3naitheoir\u00ed faoi 16",
+          "description": "Sciar de ch\u00f3naitheoir\u00ed faoi 16 bliana d'aois (na meastach\u00e1in daonra l\u00e1rbhliana is d\u00e9ana\u00ed; Daon\u00e1ireamh 2022 in \u00c9irinn)."
+        },
+        "students_share": {
+          "label": "Mic l\u00e9inn l\u00e1naimseartha",
+          "description": "Sciar de ch\u00f3naitheoir\u00ed 16 bliana d'aois n\u00f3 n\u00edos sine ar mic l\u00e9inn l\u00e1naimseartha iad (Daon\u00e1ireamh 2021; 2022 in Albain agus in \u00c9irinn).",
+          "caveats": "\u00c1ir\u00edtear mic l\u00e9inn san \u00e1it a gc\u00f3na\u00edonn siad le linn an t\u00e9arma, mar sin b\u00edonn cuma ar chomharsanacht halla\u00ed c\u00f3naithe gur mic l\u00e9inn beagnach gach duine inti. \u00c1ir\u00edonn na n\u00e1isi\u00fain ar bheala\u00ed \u00e9ags\u00fala, mar sin d\u00e9an compar\u00e1id laistigh de n\u00e1isi\u00fan amh\u00e1in. \u00c1ir\u00edtear i Sasana agus sa Bhreatain Bheag mic l\u00e9inn nach bhfuil ag obair is cuma c\u00e9 mh\u00e9ad uair staid\u00e9ir at\u00e1 acu, agus \u00e1ir\u00edtear in \u00c9irinn gach duine 15 bliana d'aois n\u00f3 n\u00edos sine arb \u00e9 'mac l\u00e9inn' a bpr\u00edomhst\u00e1das, dalta\u00ed scoile ina measc. N\u00ed fhoils\u00edonn Tuaisceart \u00c9ireann \u00e9 ach do bharda\u00ed."
         },
         "owner_occupied": {
           "label": "Tithe \u00fain\u00e9ir-\u00e1itithe",
@@ -1903,6 +1973,7 @@
       "units": {
         "gbp": "\u00a3",
         "gbp_year": "\u00a3 sa bhliadhna",
+        "gbp_month": "\u00a3 sa mh\u00ecos",
         "pct": "%",
         "pct_homes": "% de dhachaighean",
         "pct_pupils": "% de sgoilearan",
@@ -1924,6 +1995,7 @@
         "years_income": "bliadhnaichean de theachd-a-steach",
         "years": "bliadhnaichean",
         "people_km2": "daoine gach km\u00b2",
+        "people_per_room": "daoine gach se\u00f2mar",
         "per_km2": "gach km\u00b2",
         "radiance": "nW/cm\u00b2/sr",
         "hours_year": "uairean sa bhliadhna",
@@ -2374,6 +2446,16 @@
           "description": "Pr\u00ecs taighe \u00e0bhaisteach air a roinn le teachd-a-steach lom teaghlaich cuibheasach na sg\u00ecre.",
           "caveats": "Is e tuairmse st\u00e8idhichte air modail a th' anns an teachd-a-steach airson na sg\u00ecre nas fharsainge (MSOA), airson 2022\u201323."
         },
+        "private_rent": {
+          "label": "M\u00e0l pr\u00ecobhaideach (cuibheas na comhairle)",
+          "description": "M\u00e0l pr\u00ecobhaideach m\u00ecosail cuibheasach ann an sg\u00ecre na comhairle, thar gach dachaigh air mh\u00e0l gu pr\u00ecobhaideach (Cl\u00e0r-amais Pr\u00ecsean M\u00e0il Phr\u00ecobhaidich an ONS).",
+          "caveats": "An aon rud airson gach n\u00e0bachd ann an sg\u00ecre comhairle, agus na chuibheas thar gach meud dachaigh, agus mar sin tha e nas \u00e0irde far a bheil na dachaighean nas motha. Staitistig oifigeil gan leasachadh. Tha Alba agus \u00c8irinn a Tuath air am foillseachadh a r\u00e8ir sg\u00ecre margaidh m\u00e0il, nach eil ri fhaicinn fhathast."
+        },
+        "rent_to_income": {
+          "label": "M\u00e0l an coimeas ri teachd-a-steach ionadail",
+          "description": "Bliadhna de mh\u00e0l pr\u00ecobhaideach cuibheasach sg\u00ecre na comhairle mar chuid de theachd-a-steach lom teaghlaich cuibheasach na sg\u00ecre.",
+          "caveats": "Is e cuibheas l\u00e0ithreach sg\u00ecre na comhairle am m\u00e0l; is e tuairmse st\u00e8idhichte air modail airson na sg\u00ecre nas fharsainge (MSOA) airson 2022\u201323 an teachd-a-steach, nas sine na am m\u00e0l. Taobh a-staigh aon chomhairle chan atharraich e ach leis an teachd-a-steach, agus mar as trice bidh luchd-m\u00e0il a' cosnadh nas lugha na cuibheas na sg\u00ecre, agus mar sin leugh e mar sti\u00f9ireadh air far a bheil m\u00e0l trom, chan ann mar na ph\u00e0igheas neach-m\u00e0il."
+        },
         "new_builds": {
           "label": "Dachaighean a thogadh bho 2000",
           "description": "Cuid de dhachaighean a thogadh ann an 2000 no nas fhaide air adhart."
@@ -2385,6 +2467,16 @@
         "lower_band_homes": {
           "label": "Dachaighean ann am bannan c\u00ecs comhairle A\u2013B",
           "description": "Cuid de dhachaighean anns an d\u00e0 bhann c\u00ecs comhairle as \u00ecsle (na dachaighean as saoire ann an luachan 1991)."
+        },
+        "overcrowded_households": {
+          "label": "Teaghlaichean ro-dh\u00f9mhail",
+          "description": "Cuid de theaghlaichean aig a bheil nas lugha de she\u00f2mraichean-cadail na tha a dh\u00ecth orra a r\u00e8ir inbhe nan se\u00f2mraichean-cadail (Cunntas-sluaigh 2021; 2022 ann an Alba).",
+          "caveats": "Bidh inbhe nan se\u00f2mraichean-cadail a' c\u00e0radh dhaoine (c\u00e0raidean, dithis chloinne fo aois 10, dithis den aon ghn\u00e8 fo aois 21), agus mar sin faodaidh teaghlach a bhith se\u00f2mar-cadail a dh\u00ecth gun a bhith a' faireachdainn d\u00f9mhail. Chan eil ach gl\u00e8 bheag aig a' mh\u00f2r-chuid de sg\u00ecrean (2% san sg\u00ecre \u00e0bhaisteach), agus mar sin tha 5% mar-th\u00e0 am measg a' cheathraimh as d\u00f9mhaile. Chan eil \u00c8irinn a Tuath ga fhoillseachadh airson sg\u00ecrean beaga; bidh cunntas-sluaigh na h-\u00c8ireann a' cunntadh she\u00f2mraichean, air a shealltainn mar dhaoine gach se\u00f2mar."
+        },
+        "persons_per_room": {
+          "label": "Daoine gach se\u00f2mar",
+          "description": "Daoine ann an teaghlaichean pr\u00ecobhaideach airson gach se\u00f2mar nan dachaighean (Cunntas-sluaigh 2022), tomhas d\u00f9mhlachd na h-\u00c8ireann.",
+          "caveats": "Cuibheas thar theaghlaichean na sg\u00ecre, chan e cunntas den fheadhainn dh\u00f9mhail, agus mar sin leugh e an aghaidh a' ch\u00f2rr de dh'\u00c8irinn (tha 0.47 aig an sg\u00ecre \u00e0bhaisteach, agus tha aon sg\u00ecre \u00e0s gach deich os cionn 0.6) seach an aghaidh aon neach gach se\u00f2mar. Tha cidsinean air an cunntadh mar she\u00f2mraichean ach chan eil se\u00f2mraichean-ionnlaid; thathar a' gabhail dachaigh le \"8 se\u00f2mraichean no barrachd\" mar 9."
         },
         "income_deprivation": {
           "label": "Bochdainn teachd-a-steach",
@@ -2439,7 +2531,20 @@
         },
         "aged_65_plus": {
           "label": "Luchd-c\u00f2mhnaidh aois 65 is barrachd",
-          "description": "Cuid de luchd-c\u00f2mhnaidh aois 65 no nas sine (Cunntas-sluaigh 2021; 2022 ann an Alba)."
+          "description": "Cuid de luchd-c\u00f2mhnaidh aois 65 no nas sine (Cunntas-sluaigh 2021; 2022 ann an Alba agus \u00c8irinn)."
+        },
+        "aged_20_34": {
+          "label": "Luchd-c\u00f2mhnaidh aois 20 gu 34",
+          "description": "Cuid de luchd-c\u00f2mhnaidh aois 20 gu 34 (Cunntas-sluaigh 2021; 2022 ann an Alba agus \u00c8irinn)."
+        },
+        "under_16": {
+          "label": "Luchd-c\u00f2mhnaidh fo aois 16",
+          "description": "Cuid de luchd-c\u00f2mhnaidh fo aois 16 (na tuairmsean sluaigh meadhan-bliadhna as \u00f9ire; Cunntas-sluaigh 2022 ann an \u00c8irinn)."
+        },
+        "students_share": {
+          "label": "Oileanaich l\u00e0n-\u00f9ine",
+          "description": "Cuid de luchd-c\u00f2mhnaidh aois 16 is barrachd a tha nan oileanaich l\u00e0n-\u00f9ine (Cunntas-sluaigh 2021; 2022 ann an Alba agus \u00c8irinn).",
+          "caveats": "Air an cunntadh far a bheil oileanaich a' fuireach r\u00e8 an teirm, agus mar sin tha n\u00e0bachd de thallachan-c\u00f2mhnaidh a' coimhead mar gum biodh cha mh\u00f2r a h-uile duine nan oileanaich. Bidh na d\u00f9thchannan a' cunntadh ann an d\u00f2ighean eadar-dhealaichte, mar sin d\u00e8an coimeas taobh a-staigh aon d\u00f9thaich. Tha Sasainn agus a' Chuimrigh a' gabhail a-steach oileanaich nach eil ag obair ge b' e d\u00e8 na h-uairean ionnsachaidh aca, agus bidh \u00c8irinn a' cunntadh a h-uile duine aois 15 is barrachd aig a bheil oileanach mar am pr\u00ecomh inbhe, sgoilearan nam measg. Chan eil \u00c8irinn a Tuath ga fhoillseachadh ach airson u\u00e0rdan."
         },
         "owner_occupied": {
           "label": "Dachaighean le sealbhadair a' fuireach annta",
@@ -2672,9 +2777,13 @@
     "price_change",
     "council_tax_typical",
     "price_to_income",
+    "private_rent",
+    "rent_to_income",
     "new_builds",
     "period_homes",
     "lower_band_homes",
+    "overcrowded_households",
+    "persons_per_room",
     "employment_deprivation",
     "claimant_rate",
     "household_income",
@@ -2684,6 +2793,9 @@
     "population_density",
     "households_with_children",
     "aged_65_plus",
+    "aged_20_34",
+    "under_16",
+    "students_share",
     "owner_occupied",
     "no_car",
     "sustainable_commute",
@@ -6085,6 +6197,65 @@
       "unit_code": "years_income"
     },
     {
+      "id": "private_rent",
+      "theme": "housing",
+      "label": "Private rent (council average)",
+      "description": "Average monthly private rent in the council area, over all privately rented homes (ONS Price Index of Private Rents).",
+      "unit": "\u00a3 a month",
+      "direction": "lower_better",
+      "benchmark": "nation",
+      "coverage": [
+        "E",
+        "W"
+      ],
+      "sources": [
+        "ons_private_rents"
+      ],
+      "builder": "housing:private_rent",
+      "params": {},
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "The same for every neighbourhood in a council area, and an average over every size of home, so it runs higher where homes are larger. Official statistics in development. Scotland and Northern Ireland are published by rental market area, which is not shown yet.",
+      "substitute_for": [],
+      "unit_code": "gbp_month"
+    },
+    {
+      "id": "rent_to_income",
+      "theme": "housing",
+      "label": "Rent to local income",
+      "description": "A year of the council area's average private rent as a share of the area's mean net household income.",
+      "unit": "%",
+      "direction": "lower_better",
+      "benchmark": "nation",
+      "coverage": [
+        "E",
+        "W"
+      ],
+      "sources": [
+        "ons_private_rents",
+        "msoa_income"
+      ],
+      "builder": "housing:rent_to_income",
+      "params": {},
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "Rent is the council area's current average; income is a model-based estimate for the wider area (MSOA) for 2022\u201323, older than the rent. Within one council it moves only with income, and renters usually earn less than the area's mean, so read it as a guide to where rent is heavy, not as what a renter pays.",
+      "substitute_for": [],
+      "unit_code": "pct"
+    },
+    {
       "id": "new_builds",
       "theme": "housing",
       "label": "Homes built since 2000",
@@ -6189,6 +6360,70 @@
       "caveats": null,
       "substitute_for": [],
       "unit_code": "pct_homes"
+    },
+    {
+      "id": "overcrowded_households",
+      "theme": "housing",
+      "label": "Overcrowded households",
+      "description": "Share of households with fewer bedrooms than they need by the bedroom standard (Census 2021; Census 2022 in Scotland).",
+      "unit": "%",
+      "direction": "lower_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S"
+      ],
+      "sources": [
+        "census_ts052",
+        "scotland_census_2022"
+      ],
+      "builder": "community:census_share",
+      "params": {
+        "table": "census_ts052",
+        "numerator": [
+          "overcrowded"
+        ]
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "The bedroom standard pairs people up (couples, two children under 10, two of the same sex under 21), so a household can be a bedroom short without feeling crowded. Most areas have very few (the typical one 2%), so 5% is already among the most overcrowded quarter. Northern Ireland does not publish it for small areas; Ireland's census counts rooms, shown as people per room.",
+      "substitute_for": [],
+      "unit_code": "pct"
+    },
+    {
+      "id": "persons_per_room",
+      "theme": "housing",
+      "label": "People per room",
+      "description": "People in private households for every room of their homes (Census 2022), Ireland's measure of crowding.",
+      "unit": "people per room",
+      "direction": "lower_better",
+      "benchmark": "nation",
+      "coverage": [
+        "I"
+      ],
+      "sources": [
+        "cso_saps22_sa"
+      ],
+      "builder": "community:persons_per_room",
+      "params": {},
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "An average over the area's households, not a count of crowded ones, so read it against the rest of Ireland (the typical area has 0.47, and one area in ten is over 0.6) rather than against one person per room. Kitchens count as rooms and bathrooms do not; a home with \"8 or more rooms\" is taken as 9.",
+      "substitute_for": [],
+      "unit_code": "people_per_room"
     },
     {
       "id": "income_deprivation",
@@ -6604,7 +6839,7 @@
       "id": "aged_65_plus",
       "theme": "community",
       "label": "Residents aged 65 and over",
-      "description": "Share of residents aged 65 or over (Census 2021; Census 2022 in Scotland).",
+      "description": "Share of residents aged 65 or over (Census 2021; Census 2022 in Scotland and Ireland).",
       "unit": "%",
       "direction": "higher_better",
       "benchmark": "uk",
@@ -6612,12 +6847,14 @@
         "E",
         "W",
         "S",
-        "N"
+        "N",
+        "I"
       ],
       "sources": [
         "census_ts007a",
         "scotland_census_2022",
-        "nisra_census_2021_p1"
+        "nisra_census_2021_p1",
+        "cso_saps22_sa"
       ],
       "builder": "community:census_share",
       "params": {
@@ -6639,6 +6876,127 @@
       "role": "context",
       "overlap_group": null,
       "caveats": null,
+      "substitute_for": [],
+      "unit_code": "pct"
+    },
+    {
+      "id": "aged_20_34",
+      "theme": "community",
+      "label": "Residents aged 20 to 34",
+      "description": "Share of residents aged 20 to 34 (Census 2021; Census 2022 in Scotland and Ireland).",
+      "unit": "%",
+      "direction": "higher_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N",
+        "I"
+      ],
+      "sources": [
+        "census_ts007a",
+        "scotland_census_2022",
+        "nisra_census_2021_p1",
+        "cso_saps22_sa"
+      ],
+      "builder": "community:census_share",
+      "params": {
+        "table": "census_ts007a",
+        "numerator": [
+          "aged_20_to_24_years",
+          "aged_25_to_29_years",
+          "aged_30_to_34_years"
+        ]
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": null,
+      "substitute_for": [],
+      "unit_code": "pct"
+    },
+    {
+      "id": "under_16",
+      "theme": "community",
+      "label": "Residents under 16",
+      "description": "Share of residents aged under 16 (latest mid-year population estimates; Census 2022 in Ireland).",
+      "unit": "%",
+      "direction": "higher_better",
+      "benchmark": "uk",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "N",
+        "I"
+      ],
+      "sources": [
+        "pop_lsoa_mye",
+        "nrs_sape",
+        "nisra_sdz_mye",
+        "cso_saps22_sa"
+      ],
+      "builder": "common:share",
+      "params": {
+        "slug": "population",
+        "numerator": [
+          "pop_children_0_15"
+        ],
+        "denominator": "population"
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": null,
+      "substitute_for": [],
+      "unit_code": "pct"
+    },
+    {
+      "id": "students_share",
+      "theme": "community",
+      "label": "Full-time students",
+      "description": "Share of residents aged 16 and over who are full-time students (Census 2021; Census 2022 in Scotland and Ireland).",
+      "unit": "%",
+      "direction": "higher_better",
+      "benchmark": "nation",
+      "coverage": [
+        "E",
+        "W",
+        "S",
+        "I"
+      ],
+      "sources": [
+        "census_ts066",
+        "scotland_census_2022",
+        "cso_saps22_sa"
+      ],
+      "builder": "community:census_share",
+      "params": {
+        "table": "census_ts066",
+        "numerator": [
+          "full_time_students"
+        ]
+      },
+      "normalise": "rank",
+      "log1p": false,
+      "good": null,
+      "bad": null,
+      "scale_max": 1.0,
+      "weight": 1.0,
+      "role": "context",
+      "overlap_group": null,
+      "caveats": "Counted where students live in term time, so a neighbourhood of halls reads as nearly all students. The nations count differently, so compare within one. England and Wales include students who are not working whatever their hours of study, and Ireland counts everyone aged 15 and over whose main status is student, school pupils among them. Northern Ireland publishes it for wards only.",
       "substitute_for": [],
       "unit_code": "pct"
     },
@@ -7314,7 +7672,7 @@
       ],
       "version": "6ee6614fb50827ad",
       "fetched_version": "6ee6614fb50827ad",
-      "fetched_at": "2026-11-01T23:59:06+00:00",
+      "fetched_at": "2026-11-12T11:39:42+00:00",
       "period": {
         "label": "18 October 2026",
         "start": "2026-10-18",
@@ -7334,11 +7692,11 @@
       ],
       "version": "5387c79c68d2c713",
       "fetched_version": "5387c79c68d2c713",
-      "fetched_at": "2026-11-02T00:02:09+00:00",
+      "fetched_at": "2026-11-12T11:41:28+00:00",
       "period": {
-        "label": "downloaded 2 November 2026",
-        "start": "2026-11-02",
-        "end": "2026-11-02",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -7396,11 +7754,11 @@
       ],
       "version": "itm_all_gtfs.zip",
       "fetched_version": "itm_all_gtfs.zip",
-      "fetched_at": "2026-10-26T20:32:41.190131+00:00",
+      "fetched_at": "2026-11-12T12:28:39.233193+00:00",
       "period": {
-        "label": "timetable for 10 November 2026",
-        "start": "2026-11-10",
-        "end": "2026-11-10",
+        "label": "timetable for 24 November 2026",
+        "start": "2026-11-24",
+        "end": "2026-11-24",
         "kind": "day"
       },
       "cadence": "daily",
@@ -7416,11 +7774,11 @@
       ],
       "version": "itm_scotland_gtfs.zip",
       "fetched_version": "itm_scotland_gtfs.zip",
-      "fetched_at": "2026-10-26T20:38:35.718645+00:00",
+      "fetched_at": "2026-11-12T12:26:27.289746+00:00",
       "period": {
-        "label": "timetable for 10 November 2026",
-        "start": "2026-11-10",
-        "end": "2026-11-10",
+        "label": "timetable for 24 November 2026",
+        "start": "2026-11-24",
+        "end": "2026-11-24",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -7436,11 +7794,11 @@
       ],
       "version": "itm_wales_gtfs.zip",
       "fetched_version": "itm_wales_gtfs.zip",
-      "fetched_at": "2026-10-26T20:37:55.491603+00:00",
+      "fetched_at": "2026-11-12T09:55:21.472172+00:00",
       "period": {
-        "label": "timetable for 10 November 2026",
-        "start": "2026-11-10",
-        "end": "2026-11-10",
+        "label": "timetable for 24 November 2026",
+        "start": "2026-11-24",
+        "end": "2026-11-24",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -7474,13 +7832,13 @@
       "coverage": [
         "N"
       ],
-      "version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/ea21e150-a87d-463e-9af7-05848426eea5/download/05.-dispensed-items-by-gp-and-pharmacy-aug-2026.csv",
-      "fetched_version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/ea21e150-a87d-463e-9af7-05848426eea5/download/05.-dispensed-items-by-gp-and-pharmacy-aug-2026.csv",
-      "fetched_at": "2026-10-14T15:48:07.850892+00:00",
+      "version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/1ac9a1bf-bd10-4452-8c18-5adaccf5a127/download/06.-dispensed-items-by-gp-and-pharmacy-sep-2026.csv",
+      "fetched_version": "https://admin.opendatani.gov.uk/dataset/f6f91659-7687-4d99-8813-60e9f38c41ce/resource/1ac9a1bf-bd10-4452-8c18-5adaccf5a127/download/06.-dispensed-items-by-gp-and-pharmacy-sep-2026.csv",
+      "fetched_at": "2026-11-12T11:39:57.863590+00:00",
       "period": {
-        "label": "August 2026",
-        "start": "2026-08-01",
-        "end": "2026-08-31",
+        "label": "September 2026",
+        "start": "2026-09-01",
+        "end": "2026-09-30",
         "kind": "month"
       },
       "cadence": "monthly",
@@ -7652,6 +8010,27 @@
       "stale_reason": "none",
       "stale": false
     },
+    "census_ts052": {
+      "title": "Census 2021 TS052 Occupancy rating for bedrooms",
+      "licence": "OGL-3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021.",
+      "coverage": [
+        "E",
+        "W"
+      ],
+      "version": "census2021-ts052.zip",
+      "fetched_version": "census2021-ts052.zip",
+      "fetched_at": "2026-11-13T18:57:55.896343+00:00",
+      "period": {
+        "label": "2021",
+        "start": "2021-01-01",
+        "end": "2021-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
     "census_ts054": {
       "title": "Census 2021 TS054 Tenure",
       "licence": "OGL-3.0",
@@ -7684,6 +8063,27 @@
       "version": "census2021-ts061.zip",
       "fetched_version": "census2021-ts061.zip",
       "fetched_at": "2026-10-26T20:30:23.979885+00:00",
+      "period": {
+        "label": "2021",
+        "start": "2021-01-01",
+        "end": "2021-12-31",
+        "kind": "text"
+      },
+      "cadence": "static",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "census_ts066": {
+      "title": "Census 2021 TS066 Economic activity status",
+      "licence": "OGL-3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021.",
+      "coverage": [
+        "E",
+        "W"
+      ],
+      "version": "census2021-ts066.zip",
+      "fetched_version": "census2021-ts066.zip",
+      "fetched_at": "2026-11-13T18:57:59.404177+00:00",
       "period": {
         "label": "2021",
         "start": "2021-01-01",
@@ -7764,7 +8164,7 @@
       ],
       "version": "9c8c1364f0532226",
       "fetched_version": "9c8c1364f0532226",
-      "fetched_at": "2026-11-02T00:00:16+00:00",
+      "fetched_at": "2026-11-12T11:40:36+00:00",
       "period": {
         "label": "14 October 2026",
         "start": "2026-10-14",
@@ -7784,7 +8184,7 @@
       ],
       "version": "4064b39ef7904c61",
       "fetched_version": "4064b39ef7904c61",
-      "fetched_at": "2026-11-01T23:59:07+00:00",
+      "fetched_at": "2026-11-12T11:39:42+00:00",
       "period": {
         "label": "13 October 2026",
         "start": "2026-10-13",
@@ -7822,13 +8222,13 @@
       "coverage": [
         "E"
       ],
-      "version": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods",
-      "fetched_version": "https://www.cqc.org.uk/system/files/2026-10/01_October_2026_HSCA_Active_Locations.ods",
-      "fetched_at": "2026-10-07T22:41:32.809103+00:00",
+      "version": "https://www.cqc.org.uk/system/files/2026-11/2_November_2026_HSCA_Active_Locations.ods",
+      "fetched_version": "https://www.cqc.org.uk/system/files/2026-11/2_November_2026_HSCA_Active_Locations.ods",
+      "fetched_at": "2026-11-12T00:42:43.692644+00:00",
       "period": {
-        "label": "1 October 2026",
-        "start": "2026-10-01",
-        "end": "2026-10-01",
+        "label": "2 November 2026",
+        "start": "2026-11-02",
+        "end": "2026-11-02",
         "kind": "day"
       },
       "cadence": "monthly",
@@ -7842,13 +8242,13 @@
       "coverage": [
         "I"
       ],
-      "version": "01/11/2026",
-      "fetched_version": "01/11/2026",
-      "fetched_at": "2026-11-02T00:00:37.623569+00:00",
+      "version": "12/11/2026",
+      "fetched_version": "12/11/2026",
+      "fetched_at": "2026-11-12T11:40:53.616278+00:00",
       "period": {
-        "label": "downloaded 2 November 2026",
-        "start": "2026-11-02",
-        "end": "2026-11-02",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "quarterly",
@@ -8391,11 +8791,11 @@
       ],
       "version": "Postcodes_Risk_Assessment_All.csv",
       "fetched_version": "Postcodes_Risk_Assessment_All.csv",
-      "fetched_at": "2026-10-26T20:30:37.122853+00:00",
+      "fetched_at": "2026-11-12T00:42:00.356975+00:00",
       "period": {
-        "label": "downloaded 26 October 2026",
-        "start": "2026-10-26",
-        "end": "2026-10-26",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "quarterly",
@@ -8411,11 +8811,11 @@
       ],
       "version": "RoFRS_Postcodes_in_Areas_at_Risk.zip",
       "fetched_version": "RoFRS_Postcodes_in_Areas_at_Risk.zip",
-      "fetched_at": "2026-10-26T20:30:31.207696+00:00",
+      "fetched_at": "2026-11-12T00:41:51.710540+00:00",
       "period": {
-        "label": "downloaded 26 October 2026",
-        "start": "2026-10-26",
-        "end": "2026-10-26",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -8877,9 +9277,9 @@
         "S",
         "N"
       ],
-      "version": "Sun, 01 Nov 2026 02:13:13 GMT",
-      "fetched_version": "Sun, 01 Nov 2026 02:13:13 GMT",
-      "fetched_at": "2026-11-01T23:55:24.536633+00:00",
+      "version": "Wed, 11 Nov 2026 02:36:37 GMT",
+      "fetched_version": "Wed, 11 Nov 2026 02:36:37 GMT",
+      "fetched_at": "2026-11-12T09:55:14.908912+00:00",
       "period": {
         "label": "published November 2026",
         "start": "2026-11-01",
@@ -8899,11 +9299,11 @@
       ],
       "version": "1dfe8f46dbb80776",
       "fetched_version": "1dfe8f46dbb80776",
-      "fetched_at": "2026-11-02T00:00:37+00:00",
+      "fetched_at": "2026-11-12T11:40:53+00:00",
       "period": {
-        "label": "downloaded 2 November 2026",
-        "start": "2026-11-02",
-        "end": "2026-11-02",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -8917,13 +9317,13 @@
       "coverage": [
         "E"
       ],
-      "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261101.csv",
-      "fetched_version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261101.csv",
-      "fetched_at": "2026-11-01T23:47:34.849608+00:00",
+      "version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261111.csv",
+      "fetched_version": "https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata20261111.csv",
+      "fetched_at": "2026-11-12T00:42:49.928503+00:00",
       "period": {
-        "label": "1 November 2026",
-        "start": "2026-11-01",
-        "end": "2026-11-01",
+        "label": "11 November 2026",
+        "start": "2026-11-11",
+        "end": "2026-11-11",
         "kind": "day"
       },
       "cadence": "daily",
@@ -8982,7 +9382,7 @@
       ],
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-11-01T23:59:07+00:00",
+      "fetched_at": "2026-11-12T11:39:42+00:00",
       "period": {
         "label": "1991\u20132020 averages",
         "start": "2020-01-01",
@@ -9022,11 +9422,11 @@
       ],
       "version": "e32708817890b90d",
       "fetched_version": "e32708817890b90d",
-      "fetched_at": "2026-11-02T00:00:27+00:00",
+      "fetched_at": "2026-11-12T11:40:44+00:00",
       "period": {
-        "label": "downloaded 2 November 2026",
-        "start": "2026-11-02",
-        "end": "2026-11-02",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -9352,11 +9752,11 @@
       ],
       "version": "Stops.csv",
       "fetched_version": "Stops.csv",
-      "fetched_at": "2026-11-01T23:47:42.754852+00:00",
+      "fetched_at": "2026-11-12T00:42:59.044058+00:00",
       "period": {
-        "label": "downloaded 1 November 2026",
-        "start": "2026-11-01",
-        "end": "2026-11-01",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "daily",
@@ -9370,13 +9770,13 @@
       "coverage": [
         "E"
       ],
-      "version": "2026-09-10T11:08:12+00:00",
-      "fetched_version": "2026-09-10T11:08:12+00:00",
-      "fetched_at": "2026-10-18T19:52:47+00:00",
+      "version": "2026-11-04T11:52:06+00:00",
+      "fetched_version": "2026-11-04T11:52:06+00:00",
+      "fetched_at": "2026-11-12T11:41:05+00:00",
       "period": {
-        "label": "published September 2026",
-        "start": "2026-09-01",
-        "end": "2026-09-30",
+        "label": "published November 2026",
+        "start": "2026-11-01",
+        "end": "2026-11-30",
         "kind": "month"
       },
       "cadence": "monthly",
@@ -9412,7 +9812,7 @@
       ],
       "version": "f0c2e833f55a702b",
       "fetched_version": "f0c2e833f55a702b",
-      "fetched_at": "2026-11-01T23:59:13+00:00",
+      "fetched_at": "2026-11-12T11:39:54+00:00",
       "period": {
         "label": "2026\u201327",
         "start": "2026-01-01",
@@ -9670,13 +10070,13 @@
       "coverage": [
         "W"
       ],
-      "version": "NRW_FLOOD_RISK_FROM_RIVERS.gpkg",
-      "fetched_version": "NRW_FLOOD_RISK_FROM_RIVERS.gpkg",
-      "fetched_at": "2026-11-01T23:56:43.647742+00:00",
+      "version": "inspire-nrw:NRW_FLOOD_RISK_FROM_RIVERS 105679 features, pub_date 2026-05-21",
+      "fetched_version": "inspire-nrw:NRW_FLOOD_RISK_FROM_RIVERS 105679 features, pub_date 2026-05-21",
+      "fetched_at": "2026-11-12T00:34:16.877205+00:00",
       "period": {
-        "label": "downloaded 1 November 2026",
-        "start": "2026-11-01",
-        "end": "2026-11-01",
+        "label": "21 May 2026",
+        "start": "2026-05-21",
+        "end": "2026-05-21",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -9690,13 +10090,13 @@
       "coverage": [
         "W"
       ],
-      "version": "NRW_FLOOD_RISK_FROM_SEA.gpkg",
-      "fetched_version": "NRW_FLOOD_RISK_FROM_SEA.gpkg",
-      "fetched_at": "2026-11-01T23:56:54.067615+00:00",
+      "version": "inspire-nrw:NRW_FLOOD_RISK_FROM_SEA 29494 features, pub_date 2026-05-21",
+      "fetched_version": "inspire-nrw:NRW_FLOOD_RISK_FROM_SEA 29494 features, pub_date 2026-05-21",
+      "fetched_at": "2026-11-12T00:34:30.876545+00:00",
       "period": {
-        "label": "downloaded 1 November 2026",
-        "start": "2026-11-01",
-        "end": "2026-11-01",
+        "label": "21 May 2026",
+        "start": "2026-05-21",
+        "end": "2026-05-21",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -9793,13 +10193,13 @@
       "coverage": [
         "I"
       ],
-      "version": "Sat, 31 Oct 2026 23:21:32 GMT",
-      "fetched_version": "Sat, 31 Oct 2026 23:21:32 GMT",
-      "fetched_at": "2026-11-02T00:00:33.389297+00:00",
+      "version": "Wed, 11 Nov 2026 23:08:44 GMT",
+      "fetched_version": "Wed, 11 Nov 2026 23:08:44 GMT",
+      "fetched_at": "2026-11-12T11:40:50.873112+00:00",
       "period": {
-        "label": "timetable for 17 November 2026",
-        "start": "2026-11-17",
-        "end": "2026-11-17",
+        "label": "timetable for 24 November 2026",
+        "start": "2026-11-24",
+        "end": "2026-11-24",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -9835,13 +10235,13 @@
         "E",
         "W"
       ],
-      "version": "\"y0oo9w6r941c761\"",
-      "fetched_version": "\"y0oo9w6r941c761\"",
-      "fetched_at": "2026-11-01T23:47:30.131091+00:00",
+      "version": "\"efrbxct311c7iv\"",
+      "fetched_version": "\"efrbxct311c7iv\"",
+      "fetched_at": "2026-11-12T00:42:44.613508+00:00",
       "period": {
-        "label": "downloaded 1 November 2026",
-        "start": "2026-11-01",
-        "end": "2026-11-01",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "daily",
@@ -9856,13 +10256,13 @@
         "E",
         "W"
       ],
-      "version": "\"10qawpv3bnx1zabj\"",
-      "fetched_version": "\"10qawpv3bnx1zabj\"",
-      "fetched_at": "2026-11-01T23:47:27.987692+00:00",
+      "version": "\"9vgvg1we3y1zb0q\"",
+      "fetched_version": "\"9vgvg1we3y1zb0q\"",
+      "fetched_at": "2026-11-12T00:42:42.425220+00:00",
       "period": {
-        "label": "downloaded 1 November 2026",
-        "start": "2026-11-01",
-        "end": "2026-11-01",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "daily",
@@ -9919,11 +10319,32 @@
       "coverage": [
         "E"
       ],
-      "version": "https://assets.publishing.service.gov.uk/media/6ad095a72de3184ccf8b818d/Management_information_-_state-funded_schools_-_latest_inspections_as_at_30_Sep_2026.csv",
-      "fetched_version": "https://assets.publishing.service.gov.uk/media/6ad095a72de3184ccf8b818d/Management_information_-_state-funded_schools_-_latest_inspections_as_at_30_Sep_2026.csv",
-      "fetched_at": "2026-10-20T15:03:46.997296+00:00",
+      "version": "https://assets.publishing.service.gov.uk/media/6af2dfeb8b63641b15a5c8ba/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_October_2026.csv",
+      "fetched_version": "https://assets.publishing.service.gov.uk/media/6af2dfeb8b63641b15a5c8ba/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_October_2026.csv",
+      "fetched_at": "2026-11-12T00:42:51.154226+00:00",
       "period": {
-        "label": "inspections to September 2026",
+        "label": "inspections to October 2026",
+        "start": "2026-10-01",
+        "end": "2026-10-31",
+        "kind": "month"
+      },
+      "cadence": "monthly",
+      "stale_reason": "none",
+      "stale": false
+    },
+    "ons_private_rents": {
+      "title": "Price Index of Private Rents, monthly price statistics (ONS)",
+      "licence": "OGL-3.0",
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data \u00a9 Crown copyright and database right 2026.",
+      "coverage": [
+        "E",
+        "W"
+      ],
+      "version": "https://www.ons.gov.uk/file?uri=/economy/inflationandpriceindices/datasets/priceindexofprivaterentsukmonthlypricestatistics/21october2026/priceindexofprivaterentsukmonthlypricestatistics.xlsx",
+      "fetched_version": "https://www.ons.gov.uk/file?uri=/economy/inflationandpriceindices/datasets/priceindexofprivaterentsukmonthlypricestatistics/21october2026/priceindexofprivaterentsukmonthlypricestatistics.xlsx",
+      "fetched_at": "2026-11-13T19:13:56.676703+00:00",
+      "period": {
+        "label": "September 2026",
         "start": "2026-09-01",
         "end": "2026-09-30",
         "kind": "month"
@@ -10052,11 +10473,11 @@
       ],
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-07T17:05:53.934114+00:00",
+      "fetched_at": "2026-11-12T00:41:50.439585+00:00",
       "period": {
-        "label": "published April 2026",
-        "start": "2026-04-01",
-        "end": "2026-04-30",
+        "label": "published November 2026",
+        "start": "2026-11-01",
+        "end": "2026-11-30",
         "kind": "month"
       },
       "cadence": "adhoc",
@@ -10096,11 +10517,11 @@
       ],
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-10-10T19:10:26.579357+00:00",
+      "fetched_at": "2026-11-12T00:42:37.832611+00:00",
       "period": {
-        "label": "September 2026",
-        "start": "2026-09-01",
-        "end": "2026-09-30",
+        "label": "October 2026",
+        "start": "2026-10-01",
+        "end": "2026-10-31",
         "kind": "month"
       },
       "cadence": "monthly",
@@ -10136,13 +10557,13 @@
       "coverage": [
         "E"
       ],
-      "version": "Sun, 01 Nov 2026 00:28:01 GMT",
-      "fetched_version": "Sun, 01 Nov 2026 00:28:01 GMT",
-      "fetched_at": "2026-11-01T23:55:18.715442+00:00",
+      "version": "Wed, 11 Nov 2026 00:32:00 GMT",
+      "fetched_version": "Wed, 11 Nov 2026 00:32:00 GMT",
+      "fetched_at": "2026-11-12T09:55:09.283534+00:00",
       "period": {
-        "label": "31 October 2026",
-        "start": "2026-10-31",
-        "end": "2026-10-31",
+        "label": "11 November 2026",
+        "start": "2026-11-11",
+        "end": "2026-11-11",
         "kind": "day"
       },
       "cadence": "daily",
@@ -10157,13 +10578,13 @@
         "N",
         "I"
       ],
-      "version": "Sun, 01 Nov 2026 13:03:03 GMT",
-      "fetched_version": "Sun, 01 Nov 2026 13:03:03 GMT",
-      "fetched_at": "2026-11-02T00:00:16.048534+00:00",
+      "version": "Wed, 11 Nov 2026 00:24:51 GMT",
+      "fetched_version": "Wed, 11 Nov 2026 00:24:51 GMT",
+      "fetched_at": "2026-11-12T11:40:36.184188+00:00",
       "period": {
-        "label": "31 October 2026",
-        "start": "2026-10-31",
-        "end": "2026-10-31",
+        "label": "11 November 2026",
+        "start": "2026-11-11",
+        "end": "2026-11-11",
         "kind": "day"
       },
       "cadence": "daily",
@@ -10177,13 +10598,13 @@
       "coverage": [
         "S"
       ],
-      "version": "Sun, 01 Nov 2026 00:26:04 GMT",
-      "fetched_version": "Sun, 01 Nov 2026 00:26:04 GMT",
-      "fetched_at": "2026-11-01T23:59:06.958777+00:00",
+      "version": "Wed, 11 Nov 2026 00:32:10 GMT",
+      "fetched_version": "Wed, 11 Nov 2026 00:32:10 GMT",
+      "fetched_at": "2026-11-12T12:26:06.147407+00:00",
       "period": {
-        "label": "31 October 2026",
-        "start": "2026-10-31",
-        "end": "2026-10-31",
+        "label": "11 November 2026",
+        "start": "2026-11-11",
+        "end": "2026-11-11",
         "kind": "day"
       },
       "cadence": "daily",
@@ -10197,13 +10618,13 @@
       "coverage": [
         "W"
       ],
-      "version": "Sun, 01 Nov 2026 00:25:42 GMT",
-      "fetched_version": "Sun, 01 Nov 2026 00:25:42 GMT",
-      "fetched_at": "2026-11-01T23:57:33.870998+00:00",
+      "version": "Wed, 11 Nov 2026 00:32:15 GMT",
+      "fetched_version": "Wed, 11 Nov 2026 00:32:15 GMT",
+      "fetched_at": "2026-11-12T10:01:59.065980+00:00",
       "period": {
-        "label": "31 October 2026",
-        "start": "2026-10-31",
-        "end": "2026-10-31",
+        "label": "11 November 2026",
+        "start": "2026-11-11",
+        "end": "2026-11-11",
         "kind": "day"
       },
       "cadence": "daily",
@@ -10745,11 +11166,11 @@
       ],
       "version": "718977eba9aaeecc",
       "fetched_version": "718977eba9aaeecc",
-      "fetched_at": "2026-11-02T00:00:16+00:00",
+      "fetched_at": "2026-11-12T11:40:36+00:00",
       "period": {
-        "label": "downloaded 2 November 2026",
-        "start": "2026-11-02",
-        "end": "2026-11-02",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "adhoc",
@@ -10785,13 +11206,13 @@
         "W",
         "N"
       ],
-      "version": "Wed, 30 Sep 2026 14:06:14 GMT",
-      "fetched_version": "Wed, 30 Sep 2026 14:06:14 GMT",
-      "fetched_at": "2026-10-07T15:49:38.464335+00:00",
+      "version": "Thu, 05 Nov 2026 15:00:20 GMT",
+      "fetched_version": "Thu, 05 Nov 2026 15:00:20 GMT",
+      "fetched_at": "2026-11-12T00:41:34.043583+00:00",
       "period": {
-        "label": "September 2023 to August 2026",
-        "start": "2023-09-01",
-        "end": "2026-08-31",
+        "label": "October 2023 to September 2026",
+        "start": "2023-10-01",
+        "end": "2026-09-30",
         "kind": "range"
       },
       "cadence": "monthly",
@@ -11579,7 +12000,7 @@
       ],
       "version": null,
       "fetched_version": null,
-      "fetched_at": "2026-11-01T23:47:26+00:00",
+      "fetched_at": "2026-11-12T00:42:06+00:00",
       "period": {
         "label": "2025",
         "start": "2025-01-01",
@@ -11780,11 +12201,11 @@
       ],
       "version": "maintained_schools_wg.csv",
       "fetched_version": "maintained_schools_wg.csv",
-      "fetched_at": "2026-10-26T20:51:41.336317+00:00",
+      "fetched_at": "2026-11-12T09:55:17.599552+00:00",
       "period": {
-        "label": "downloaded 26 October 2026",
-        "start": "2026-10-26",
-        "end": "2026-10-26",
+        "label": "downloaded 12 November 2026",
+        "start": "2026-11-12",
+        "end": "2026-11-12",
         "kind": "day"
       },
       "cadence": "quarterly",
@@ -11854,28 +12275,28 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "f414e59e2e00fab06755e302473628275cb0903b1e24efb5aa862bcac75393c1",
-      "bytes": 4803110
+      "sha256": "6d00a41200d3bd2622bd0ab38b32304255038032228adb148d762588abe72f75",
+      "bytes": 5106081
     },
     "scores.parquet": {
-      "sha256": "55e32d110ddabf47e461cc4f79c76815306b0d23b9616b817e4245c2abf1c31e",
-      "bytes": 931456
+      "sha256": "8188c5a3fcaf713cca8850fabf36c422da97bd8870f5dde75a69ad49dc93fcd2",
+      "bytes": 1018089
     },
     "postcodes.parquet": {
-      "sha256": "b40a92ce69ff836d7027cb36999445fcfc00e1f88e4acf1f6e2145f59fcde5e6",
-      "bytes": 1406543
+      "sha256": "c65e6e933f268792eb5855d1692d83e6d4acd42f4b00c54e8b38d6b5fa447a12",
+      "bytes": 1406551
     },
     "places.parquet": {
-      "sha256": "51b852085460928ee72df2a1cb6a8afb719dc419fa5063d39c5906db7148b85b",
-      "bytes": 35114
+      "sha256": "e3a16dfeebf929a45253fc1d39215f115d80f865c3476b2a8f4cdedf77889dd5",
+      "bytes": 35569
     },
     "areas.parquet": {
-      "sha256": "ecda22243254f5d921cfdba137a40246eac320ea3c4a2060c8ec4267a28cda25",
-      "bytes": 34433
+      "sha256": "38e491eab54cb7fccaf67318097291aab53903a77abe29161d1efa346706d116",
+      "bytes": 34566
     },
     "pois.parquet": {
-      "sha256": "d3de12f49d838051d79cdb0573fe3bd48f69bf3f49913c8cf657f54e8230df52",
-      "bytes": 2090850
+      "sha256": "c5784aa81dfb2ab97ab8d7be39f870adc1be62e15d8d53041b4b2eef57079538",
+      "bytes": 2093156
     }
   },
   "correlations": {
@@ -11978,7 +12399,7 @@
         0.73,
         0.63,
         0.58,
-        0.38,
+        0.39,
         0.24,
         0.11,
         0.19,
@@ -11987,8 +12408,8 @@
         -0.25,
         0.02,
         0.62,
-        0.1,
-        0.59,
+        0.11,
+        0.6,
         0.2,
         -0.08,
         0.54,
@@ -12044,7 +12465,7 @@
         0.13,
         0.54,
         0.59,
-        -0.02,
+        -0.03,
         0.39,
         -0.17,
         0.59,
@@ -12136,7 +12557,7 @@
         0.18,
         0.67,
         0.67,
-        -0.07,
+        -0.06,
         0.44,
         -0.2,
         0.73,
@@ -12173,16 +12594,16 @@
         0.47,
         0.12,
         0.43,
-        0.16,
+        0.17,
         -0.01,
         0.4,
         -0.31,
         -0.27,
         -0.3,
-        0.01,
+        0.0,
         0.4,
         0.44,
-        0.03,
+        0.02,
         0.24,
         -0.13,
         0.41,
@@ -12199,11 +12620,11 @@
         0.47,
         null,
         0.54,
-        0.06,
+        0.05,
         0.42
       ],
       [
-        0.38,
+        0.39,
         0.41,
         0.53,
         0.47,
@@ -12264,9 +12685,9 @@
         0.11,
         0.2,
         0.17,
-        0.3,
         0.29,
-        0.11,
+        0.28,
+        0.13,
         0.36,
         -0.32,
         -0.3,
@@ -12282,7 +12703,7 @@
         0.2,
         -0.34,
         0.1,
-        -0.03,
+        -0.04,
         -0.07,
         -0.17,
         0.02,
@@ -12312,7 +12733,7 @@
         0.08,
         0.06,
         0.2,
-        0.15,
+        0.16,
         0.0,
         -0.11,
         -0.09,
@@ -12328,7 +12749,7 @@
         -0.11,
         -0.35,
         0.1,
-        0.03,
+        0.02,
         0.16,
         0.04,
         0.16,
@@ -12358,7 +12779,7 @@
         0.21,
         0.25,
         0.22,
-        0.05,
+        0.07,
         0.11,
         -0.31,
         -0.13,
@@ -12376,7 +12797,7 @@
         0.11,
         -0.11,
         -0.05,
-        -0.21,
+        -0.2,
         0.09,
         -0.03,
         -0.29,
@@ -12404,7 +12825,7 @@
         0.1,
         0.4,
         0.15,
-        0.06,
+        0.07,
         -0.1,
         -0.31,
         0.0,
@@ -12412,7 +12833,7 @@
         -0.17,
         0.03,
         0.13,
-        -0.11,
+        -0.1,
         0.13,
         -0.17,
         0.07,
@@ -12458,7 +12879,7 @@
         0.15,
         -0.25,
         -0.29,
-        0.04,
+        0.02,
         -0.17,
         0.1,
         -0.3,
@@ -12466,7 +12887,7 @@
         -0.86,
         -0.7,
         0.23,
-        0.46,
+        0.45,
         0.31,
         0.33,
         0.72,
@@ -12504,7 +12925,7 @@
         0.16,
         -0.23,
         -0.3,
-        0.13,
+        0.12,
         -0.19,
         0.22,
         -0.29,
@@ -12512,7 +12933,7 @@
         -0.5,
         -0.52,
         0.25,
-        0.51,
+        0.5,
         0.34,
         0.43,
         0.72,
@@ -12605,7 +13026,7 @@
         0.03,
         -0.2,
         -0.36,
-        -0.29,
+        -0.28,
         -0.54,
         -0.29,
         -0.34,
@@ -12617,7 +13038,7 @@
         0.51
       ],
       [
-        0.1,
+        0.11,
         0.17,
         0.17,
         0.03,
@@ -12642,7 +13063,7 @@
         0.13,
         0.08,
         0.07,
-        -0.03,
+        -0.04,
         0.17,
         -0.12,
         0.05,
@@ -12663,13 +13084,13 @@
         0.19
       ],
       [
-        0.59,
+        0.6,
         0.48,
         0.69,
         0.56,
         0.43,
         null,
-        0.3,
+        0.29,
         0.06,
         0.25,
         0.4,
@@ -12680,7 +13101,7 @@
         0.2,
         1.0,
         0.25,
-        0.01,
+        0.02,
         0.57,
         -0.73,
         -0.23,
@@ -12688,7 +13109,7 @@
         0.1,
         0.59,
         0.58,
-        -0.16,
+        -0.15,
         0.64,
         -0.37,
         0.57,
@@ -12696,7 +13117,7 @@
         0.46,
         0.05,
         -0.16,
-        -0.34,
+        -0.33,
         -0.34,
         -0.62,
         -0.29,
@@ -12713,9 +13134,9 @@
         0.25,
         0.24,
         0.09,
-        0.16,
+        0.17,
         null,
-        0.29,
+        0.28,
         0.2,
         0.22,
         0.15,
@@ -12733,14 +13154,14 @@
         -0.27,
         0.15,
         0.11,
-        0.1,
-        0.02,
-        0.13,
+        0.11,
+        0.01,
+        0.12,
         -0.05,
-        0.06,
+        0.07,
         0.16,
         null,
-        -0.41,
+        -0.4,
         -0.01,
         -0.02,
         -0.07,
@@ -12751,7 +13172,7 @@
         0.04,
         null,
         0.23,
-        -0.06,
+        -0.05,
         0.25
       ],
       [
@@ -12761,23 +13182,23 @@
         -0.04,
         -0.01,
         null,
-        0.11,
-        0.15,
-        0.05,
-        0.06,
+        0.13,
+        0.16,
+        0.07,
+        0.07,
         0.02,
         0.07,
         null,
         -0.06,
         -0.03,
-        0.01,
+        0.02,
         0.01,
         1.0,
         -0.04,
         0.03,
         0.09,
-        -0.09,
-        0.1,
+        -0.11,
+        0.09,
         0.01,
         -0.03,
         0.06,
@@ -12832,14 +13253,14 @@
         0.6,
         0.15,
         0.4,
-        0.18,
+        0.17,
         -0.07,
         -0.28,
         -0.2,
         -0.34,
         -0.25,
         -0.35,
-        -0.5,
+        -0.49,
         0.46,
         0.73,
         0.62,
@@ -12956,7 +13377,7 @@
         -0.25,
         -0.62,
         -0.27,
-        -0.09,
+        -0.11,
         -0.31,
         0.61,
         0.25,
@@ -12989,7 +13410,7 @@
         0.13,
         0.08,
         0.18,
-        0.01,
+        0.0,
         -0.03,
         0.26,
         0.01,
@@ -13002,7 +13423,7 @@
         0.13,
         0.1,
         0.15,
-        0.1,
+        0.09,
         0.29,
         -0.03,
         -0.14,
@@ -13093,7 +13514,7 @@
         0.6,
         0.07,
         0.58,
-        0.1,
+        0.11,
         -0.03,
         0.56,
         -0.45,
@@ -13124,22 +13545,22 @@
       ],
       [
         -0.05,
-        -0.02,
+        -0.03,
         -0.05,
-        -0.07,
-        0.03,
+        -0.06,
+        0.02,
         null,
         -0.18,
         -0.1,
         -0.18,
-        -0.11,
-        0.04,
-        0.13,
+        -0.1,
+        0.02,
+        0.12,
         null,
         -0.14,
-        -0.03,
-        -0.16,
-        0.02,
+        -0.04,
+        -0.15,
+        0.01,
         0.06,
         -0.07,
         0.16,
@@ -13150,23 +13571,23 @@
         -0.09,
         1.0,
         -0.06,
-        0.29,
-        -0.08,
-        -0.17,
+        0.28,
+        -0.07,
+        -0.16,
         null,
-        0.08,
+        0.1,
         -0.02,
-        0.07,
+        0.08,
         0.03,
-        0.15,
-        0.05,
+        0.14,
+        0.03,
         null,
-        0.13,
+        0.12,
         null,
         null,
         -0.11,
-        -0.04,
-        -0.12
+        -0.03,
+        -0.13
       ],
       [
         0.44,
@@ -13185,7 +13606,7 @@
         0.49,
         0.17,
         0.64,
-        0.13,
+        0.12,
         -0.0,
         0.46,
         -0.53,
@@ -13240,7 +13661,7 @@
         0.12,
         -0.19,
         -0.19,
-        0.29,
+        0.28,
         -0.3,
         1.0,
         -0.2,
@@ -13277,7 +13698,7 @@
         0.59,
         0.05,
         0.57,
-        0.06,
+        0.07,
         -0.01,
         0.6,
         -0.4,
@@ -13286,7 +13707,7 @@
         0.27,
         0.71,
         0.73,
-        -0.08,
+        -0.07,
         0.47,
         -0.2,
         1.0,
@@ -13332,7 +13753,7 @@
         -0.02,
         0.11,
         0.13,
-        -0.17,
+        -0.16,
         0.15,
         -0.34,
         0.12,
@@ -13387,7 +13808,7 @@
         0.66,
         -0.14,
         -0.59,
-        -0.33,
+        -0.34,
         -0.44,
         -0.66,
         null,
@@ -13415,16 +13836,16 @@
         0.03,
         -0.4,
         0.05,
-        -0.41,
+        -0.4,
         0.03,
-        0.18,
+        0.17,
         0.13,
         0.06,
         0.17,
         -0.17,
         0.14,
         0.15,
-        0.08,
+        0.1,
         -0.02,
         0.05,
         0.19,
@@ -13497,16 +13918,16 @@
         -0.37,
         -0.31,
         -0.24,
-        -0.03,
-        0.03,
+        -0.04,
+        0.02,
         -0.11,
         -0.16,
-        0.46,
-        0.51,
+        0.45,
+        0.5,
         0.08,
         -0.36,
         0.03,
-        -0.34,
+        -0.33,
         -0.02,
         0.17,
         -0.28,
@@ -13516,7 +13937,7 @@
         0.06,
         -0.31,
         -0.33,
-        0.07,
+        0.08,
         -0.31,
         0.23,
         -0.33,
@@ -13550,7 +13971,7 @@
         0.31,
         0.34,
         -0.09,
-        -0.29,
+        -0.28,
         -0.03,
         -0.34,
         -0.07,
@@ -13567,20 +13988,20 @@
         0.14,
         -0.25,
         -0.22,
-        -0.33,
+        -0.34,
         -0.12,
         0.3,
         0.49,
         1.0,
-        0.69,
+        0.68,
         0.46,
         null,
         0.41,
-        -0.43,
+        -0.44,
         -0.51,
-        -0.4,
+        -0.39,
         -0.0,
-        -0.24
+        -0.23
       ],
       [
         -0.51,
@@ -13591,7 +14012,7 @@
         -0.59,
         -0.17,
         0.04,
-        -0.21,
+        -0.2,
         -0.21,
         0.33,
         0.43,
@@ -13608,7 +14029,7 @@
         -0.01,
         -0.43,
         -0.46,
-        0.15,
+        0.14,
         -0.51,
         0.33,
         -0.43,
@@ -13617,7 +14038,7 @@
         -0.03,
         0.25,
         0.64,
-        0.69,
+        0.68,
         1.0,
         0.57,
         null,
@@ -13654,7 +14075,7 @@
         0.1,
         -0.26,
         -0.29,
-        0.05,
+        0.03,
         -0.22,
         0.14,
         -0.29,
@@ -13739,14 +14160,14 @@
         -0.74,
         -0.15,
         0.03,
-        -0.5,
+        -0.49,
         0.6,
         0.37,
         0.52,
         0.04,
         -0.51,
         -0.55,
-        0.13,
+        0.12,
         -0.5,
         0.34,
         -0.52,
@@ -13801,7 +14222,7 @@
         0.35,
         -0.43,
         -0.62,
-        -0.43,
+        -0.44,
         -0.52,
         -0.6,
         -0.45,
@@ -13893,7 +14314,7 @@
         0.05,
         -0.24,
         -0.42,
-        -0.4,
+        -0.39,
         -0.67,
         -0.36,
         null,
@@ -13909,7 +14330,7 @@
         0.03,
         0.15,
         0.26,
-        0.06,
+        0.05,
         0.1,
         0.08,
         -0.14,
@@ -13921,7 +14342,7 @@
         0.29,
         -0.05,
         0.38,
-        -0.06,
+        -0.05,
         0.1,
         0.31,
         -0.14,
@@ -13930,7 +14351,7 @@
         0.09,
         0.31,
         0.24,
-        -0.04,
+        -0.03,
         0.27,
         -0.12,
         0.29,
@@ -13976,7 +14397,7 @@
         0.02,
         0.38,
         0.37,
-        -0.12,
+        -0.13,
         0.34,
         -0.26,
         0.33,
@@ -13985,7 +14406,7 @@
         -0.15,
         -0.17,
         -0.27,
-        -0.24,
+        -0.23,
         -0.45,
         -0.15,
         -0.26,

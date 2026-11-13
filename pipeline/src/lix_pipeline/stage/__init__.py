@@ -181,6 +181,8 @@ STAGE_INPUTS: dict[str, list[str]] = {
     ],
     "tree_cover": ["esa_worldcover", "nspl"],
     "coastline": ["os_boundary_line", "te_high_water_mark", "osni_ni_outline", "te_admin_areas"],
+    # Great Britain's ceremonial counties, the scope a county name means (stage/counties.py)
+    "area_counties": ["os_boundary_line"],
     "os_open_uprn": ["os_open_uprn", *LOW_BOUNDARIES],
     "night_lights": ["viirs_vnl", "nspl"],
     "climate": ["haduk_grid", "nspl", "met_eireann_temp_9120", "met_eireann_rr_9120"],
@@ -212,7 +214,16 @@ STAGE_INPUTS: dict[str, list[str]] = {
     # Northern Ireland publishes only population, density and single year of age at
     # Super Data Zone level (stage/census.py NI_TABLES); the other tables stop at wards
     "census_ts001": ["census_ts001", "scotland_census_2022", "nisra_census_2021_p1"],
-    "census_ts007a": ["census_ts007a", "scotland_census_2022", "nisra_census_2021_p1"],
+    # Ireland's Small Area file fills the age bands, students and persons per room
+    # (stage/census.py IRELAND_TABLES)
+    "census_ts007a": [
+        "census_ts007a",
+        "scotland_census_2022",
+        "nisra_census_2021_p1",
+        "cso_saps22_sa",
+    ],
+    "census_ts052": ["census_ts052", "scotland_census_2022", "cso_saps22_sa"],
+    "census_ts066": ["census_ts066", "scotland_census_2022", "cso_saps22_sa"],
     # Scotland's density: Census 2022 residents over the zone polygons
     "census_ts006": [
         "census_ts006",
@@ -227,6 +238,7 @@ STAGE_READS: dict[str, list[str]] = {
     "homes": ["nspl"],
     "police_crime": ["geo_lsoa"],  # Ireland: Small Area centroids and populations
     "geo_lsoa": ["nspl", "population", "homes"],
+    "area_counties": ["geo_lsoa"],
     "dz11_dz22": ["nspl"],
     "price_paid": ["nspl", "geo_lsoa", "dz11_dz22"],  # Scotland: crosswalk and IZ fallback
     "defra_pcm_no2": ["homes"],
@@ -311,6 +323,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         climate,
         coastline,
         community,
+        counties,
         environment,
         geo,
         health,
@@ -403,6 +416,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "bods_gtfs": transport.stage_bods_gtfs,
         "ofcom_broadband": transport.stage_ofcom_broadband,  # needs staged oa_lookup
         "msoa_income": housing.stage_msoa_income,
+        "ons_private_rents": housing.stage_private_rents,
         "council_tax": housing.stage_council_tax,
         "voa_ctsop": housing.stage_voa_ctsop,
         "claimant_count": community.stage_claimant_count,
@@ -412,6 +426,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "noise": noise.stage_noise,  # needs staged nspl
         "tree_cover": landcover.stage_tree_cover,  # needs staged nspl
         "coastline": coastline.stage_coastline,
+        "area_counties": counties.stage_area_counties,
         "protected_areas": protected_areas.stage_protected_areas,  # needs staged homes
         "terrain": terrain.stage_terrain,  # needs staged homes
         "storm_overflows": storm_overflows.stage_storm_overflows,

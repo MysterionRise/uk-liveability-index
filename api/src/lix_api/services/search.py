@@ -1,6 +1,8 @@
 """Find what a user means: a postcode, an LSOA/MSOA/LAD code, a place or an area name."""
 
 import re
+from dataclasses import dataclass
+from typing import Literal
 
 import polars as pl
 from rapidfuzz import fuzz, process
@@ -352,14 +354,103 @@ def _council_of(store: Store, place: Place) -> str | None:
     return None
 
 
+# A compass point alone names no county or region ("East" is not East Sussex)
+COMPASS = frozenset({"north", "south", "east", "west"})
+
+
+def _named(names: dict[str, str], councils: dict[str, set[str]], words: str) -> dict:
+    """The entries of ``names`` (folded name → name as spelt) a word names, each with its
+    council codes: the one of that name, else every one whose name ends with the word."""
+    folded = fold(words)
+    if not folded or folded in COMPASS:
+        return {}
+    if folded in names:
+        return {names[folded]: set(councils[folded])}
+    return {names[k]: set(councils[k]) for k in sorted(names) if k.endswith(f" {folded}")}
+
+
+def named_counties(store: Store, words: str) -> dict[str, set[str]]:
+    """The counties a word names, each with its council codes: the county of that name
+    ("Devon", "County Durham", "Dublin"), else every county whose name ends with the word
+    ("Yorkshire": North, South and West Yorkshire and the East Riding of Yorkshire;
+    "Sussex": East and West)."""
+    return _named(store.county_names, store.county_councils, words)
+
+
+def _listed(names: list[str]) -> str:
+    return names[0] if len(names) == 1 else f"{', '.join(names[:-1])} and {names[-1]}"
+
+
+# "the Midlands", "the West Country": the article is not part of the name
+_ARTICLE = re.compile(r"^the\s+", re.IGNORECASE)
+
+
+@dataclass(frozen=True)
+class WideScope:
+    """A county, or several counties or regions, as the place to rank within: the name to
+    show, the features column that holds it, the values to keep, and the councils with a
+    small area inside (all of them for most counties; a council the county divides is in
+    the list and only its part is ranked)."""
+
+    label: str
+    column: Literal["county", "rgn_nm"]
+    values: tuple[str, ...]
+    councils: frozenset[str]
+
+
+def county_scope(store: Store, words: str) -> WideScope | None:
+    """What a ranking "within" covers when the words name a county, or an area wider than
+    one, rather than a single place; the label says what was used ("Devon"; "East Sussex
+    and West Sussex" for "Sussex").
+
+    - A county's own name is the county: Devon's small areas across its ten councils, not
+      the district search finds first (#233), and Dublin's four councils. Outside England
+      a county that shares a council's name is left to the council ("Aberdeenshire" and
+      "Gwynedd" mean the councils; a lieutenancy of the name is another shape).
+    - A word that ends two or more regions' names is those regions ("Midlands"); else one
+      that ends counties' names is those counties ("Yorkshire", "Sussex").
+    - A name that is also a region's ("West Midlands") stays the region, and one that is
+      exactly a place or an area ("Durham" the city, "Manchester") stays that place: only
+      "County Durham" and "Greater Manchester" are the counties.
+    """
+    words = _ARTICLE.sub("", words.strip())
+    folded = fold(words)
+    if not folded or folded in store.region_councils or folded in store.scope_aliases:
+        return None
+
+    def scope(found: dict[str, set[str]], column: str) -> WideScope:
+        return WideScope(
+            _listed(list(found)), column, tuple(found), frozenset().union(*found.values())
+        )
+
+    counties = named_counties(store, words)
+    if folded in store.county_names:
+        english = "E" in store.county_nations.get(folded, ())
+        if not english and folded in store.council_names_folded:
+            return None
+        return scope(counties, "county")
+    regions = _named(store.region_names, store.region_councils, words)
+    found, column = (regions, "rgn_nm") if len(regions) >= 2 else (counties, "county")
+    if not found:
+        return None
+    top = search_place(store, words, limit=1)
+    if top and folded in (fold(top[0].name), fold(top[0].name_en or "")):
+        return None
+    return scope(found, column)
+
+
 def scope_councils(store: Store, scope: str) -> set[str]:
     """The council codes a scope word means: a region's councils ("London"), the councils
-    sharing a county ("Dublin": Dublin City, South Dublin, Fingal, Dún Laoghaire-Rathdown;
-    "Cork": city and county), and every council whose name is or contains the word
-    ("Dublin" also finds "South Dublin"); the best fuzzy match alone when nothing matches
-    that way ("Edinburgh" for "Edinbrugh")."""
+    of the county or counties it names ("Dublin": Dublin City, South Dublin, Fingal, Dún
+    Laoghaire-Rathdown; "Devon"; "Yorkshire"), and every council whose name is or
+    contains the word ("Dublin" also finds "South Dublin"); the best fuzzy match alone
+    when nothing matches that way ("Edinburgh" for "Edinbrugh")."""
     folded = fold(scope)
-    codes = set(store.region_councils.get(folded, ())) | set(store.county_councils.get(folded, ()))
+    codes = set(store.region_councils.get(folded, ()))
+    # Every council with a small area in the county: a place the county divides its
+    # council from ("Yarm, North Yorkshire" in Stockton-on-Tees) is still found
+    for county_codes in named_counties(store, scope).values():
+        codes |= county_codes
     councils = [p for p in _candidates(store, scope, limit=10) if p.kind == "lad"]
     word = re.compile(rf"(^|\W){re.escape(folded)}($|\W)")
     named = [

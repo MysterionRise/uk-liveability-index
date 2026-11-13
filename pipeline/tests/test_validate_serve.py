@@ -78,3 +78,42 @@ def test_staleness_follows_the_publishing_cadence():
     assert is_stale("2026-07-01T00:00:00+00:00", "monthly", now)
     assert not is_stale("2020-01-01T00:00:00+00:00", "static", now)
     assert not is_stale(None, "monthly", now)
+
+
+def test_every_english_small_area_needs_a_county():
+    from lix_pipeline.qa.validate import county_problems
+
+    features = pl.DataFrame(
+        {
+            "lsoa21cd": ["E01000001", "E01000002", "S01000001", "N21000001"],
+            "lad_cd": ["E08000035", "E06000023", "S12000017", "N09000003"],
+            "lad_nm": ["Leeds", "Bristol, City of", "Highland", "Belfast"],
+            "county": ["West Yorkshire", None, "Caithness", None],
+        }
+    )
+    # Northern Ireland has no counties yet (#315): only England is required
+    assert county_problems(features) == [
+        "1 English small areas have no county, e.g. in ['Bristol, City of']"
+    ]
+    assert county_problems(features.drop("county")) == [
+        "lsoa_features.parquet has no county column"
+    ]
+
+
+def test_a_full_pack_has_the_whole_of_devon_and_kent():
+    from lix_pipeline.qa.validate import COUNTY_COUNCILS, ENGLISH_COUNCILS, county_problems
+
+    def pack(devon: int) -> pl.DataFrame:
+        counties = ["Devon"] * devon + ["Kent"] * COUNTY_COUNCILS["Kent"]
+        counties += ["Essex"] * (ENGLISH_COUNCILS - len(counties))
+        return pl.DataFrame(
+            {
+                "lsoa21cd": [f"E010{i:05d}" for i in range(len(counties))],
+                "lad_cd": [f"E0700{i:04d}" for i in range(len(counties))],
+                "lad_nm": [f"Council {i}" for i in range(len(counties))],
+                "county": counties,
+            }
+        )
+
+    assert county_problems(pack(devon=10)) == []
+    assert county_problems(pack(devon=8)) == ["Devon takes in 8 councils, expected 10"]

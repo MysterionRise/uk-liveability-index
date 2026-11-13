@@ -56,6 +56,15 @@ class TestCensus:
             ("Population Density: Persons per square kilometre; measures: Value",
              "persons_per_square_kilometre"),
             ("Distance travelled to work: 2km to less than 5km", "2km_to_less_than_5km"),
+            # A rating of +1 and of -1 are opposite things (#78)
+            ("Occupancy rating for bedrooms: Occupancy rating of bedrooms: +1",
+             "occupancy_rating_of_bedrooms_plus_1"),
+            ("Occupancy rating for bedrooms: Occupancy rating of bedrooms: -1",
+             "occupancy_rating_of_bedrooms_minus_1"),
+            ("Occupancy rating for bedrooms: Occupancy rating of bedrooms: -2 or less",
+             "occupancy_rating_of_bedrooms_minus_2_or_less"),
+            ("Economic activity status: Economically inactive: Long-term sick or disabled",
+             "economically_inactive_long_term_sick_or_disabled"),
         ],
     )  # fmt: skip
     def test_column_names(self, label, name):
@@ -73,6 +82,63 @@ class TestCensus:
         assert df.to_dicts() == [
             {"lsoa21cd": "E01000001", "total": 837.0, "no_cars_or_vans_in_household": 555.0}
         ]
+
+    def test_a_concept_column_sums_the_parts_the_census_splits(self, data):
+        topic = "Occupancy rating for bedrooms"
+        ratings = ["+2 or more", "+1", "0", "-1", "-2 or less"]
+        _write(
+            data / "raw" / "census_ts052" / "census2021-ts052-lsoa.csv",
+            f"date,geography,geography code,{topic}: Total: All households,"
+            + ",".join(f"{topic}: Occupancy rating of bedrooms: {r}" for r in ratings)
+            + "\n2021,City of London 001A,E01000001,1000,400,300,250,40,10\n",
+        )
+        row = stage_census_table("census_ts052").collect().to_dicts()[0]
+        assert row["overcrowded"] == 50.0
+        assert row["occupancy_rating_of_bedrooms_plus_1"] == 300.0
+        assert row["occupancy_rating_of_bedrooms_minus_1"] == 40.0
+
+
+class TestPrivateRents:
+    def table(self) -> pl.DataFrame:
+        rows = [
+            # month, code, name, rent, one bed, two bed, three bed, annual change
+            ("2026-08-01 00:00:00", "E08000035", "Leeds", "1140", "780", "970", "1135", "4.6"),
+            ("2026-09-01 00:00:00", "E08000035", "Leeds", "1148", "783", "977", "1142", "4.476682"),
+            # No rent yet for the latest month: the month before stands
+            ("2026-08-01 00:00:00", "E06000001", "Hartlepool", "560", "[x]", "510", "610", "1.2"),
+            ("2026-09-01 00:00:00", "E06000001", "Hartlepool", "[x]", "[x]", "[x]", "[x]", "[x]"),
+            # A country, a region, a Scottish market area and a Northern Irish one
+            ("2026-09-01 00:00:00", "E92000001", "England", "1460", "1180", "1300", "1470", "3.9"),
+            ("2026-09-01 00:00:00", "E12000003", "Yorkshire", "900", "650", "790", "920", "4.1"),
+            ("2026-09-01 00:00:00", "S33000001", "Aberdeen", "800", "560", "780", "1000", "2"),
+            ("2026-09-01 00:00:00", "[z]", "Belfast BRMA", "[x]", "[x]", "[x]", "[x]", "[x]"),
+        ]  # fmt: skip
+        names = ["Time period", "Area code", "Area name", "Rental price", "Rental price one bed",
+                 "Rental price two bed", "Rental price three bed", "Annual change"]  # fmt: skip
+        return pl.DataFrame(rows, schema=names, orient="row")
+
+    def test_each_council_keeps_its_latest_month_with_a_rent(self, data):
+        from datetime import date as day
+
+        from lix_pipeline.stage.housing import tidy_private_rents
+
+        out = tidy_private_rents(self.table())
+        assert out["lad_cd"].to_list() == ["E06000001", "E08000035"]
+        assert out["rent"].to_list() == [560.0, 1148.0]
+        assert out["month"].to_list() == [day(2026, 8, 1), day(2026, 9, 1)]
+        assert out["rent_one_bed"].to_list() == [None, 783.0]
+        assert out["rent_annual_change"].to_list() == pytest.approx([1.2, 4.476682])
+
+    def test_the_period_is_the_month_of_the_rents_not_the_day_they_were_published(self, data):
+        from lix_pipeline.stage.housing import tidy_private_rents
+        from lix_pipeline.stage.periods import STAGED_EXTRACTORS
+
+        (data / "staged").mkdir()
+        tidy_private_rents(self.table()).write_parquet(
+            data / "staged" / "ons_private_rents.parquet"
+        )
+        period = STAGED_EXTRACTORS["ons_private_rents"]("ons_private_rents")
+        assert period["label"] == "September 2026" and period["end"] == "2026-09-30"
 
 
 class TestPolice:

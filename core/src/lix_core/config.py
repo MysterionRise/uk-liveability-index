@@ -1,5 +1,6 @@
 """Loading and validation of the YAML files in ``config/``."""
 
+import re
 from functools import lru_cache
 from typing import Annotated, Literal
 
@@ -271,7 +272,12 @@ Access = Annotated[
 ]
 
 # Layout of data/serve/ (manifest, parquet columns). Readers refuse other versions.
-SERVE_SCHEMA_VERSION = 5
+# 6: the same files as 5, with units that releases up to v0.7.2 do not know ("£ a month",
+# "people per room"): their indicator list raised on a unit missing from UNIT_CODES, so
+# they must not take this pack as the newest they can read. From 6 a reader gives a unit
+# it does not know a code made from its text (IndicatorSpec.unit_code), and a new unit
+# alone no longer needs a new number.
+SERVE_SCHEMA_VERSION = 6
 
 # The nations, by the first letter of their codes: the UK's four (ONS GSS codes) and
 # Ireland (codes minted here, see lix_core.codes.minted_codes). config/nations.yaml
@@ -379,6 +385,7 @@ class ThemeSpec(_Strict):
 UNIT_CODES: dict[str, str] = {
     "£": "gbp",
     "£ a year": "gbp_year",
+    "£ a month": "gbp_month",
     "%": "pct",
     "% of homes": "pct_homes",
     "% of pupils": "pct_pupils",
@@ -400,6 +407,7 @@ UNIT_CODES: dict[str, str] = {
     "years of income": "years_income",
     "years": "years",
     "people per km²": "people_km2",
+    "people per room": "people_per_room",
     "per km²": "per_km2",
     "nW/cm²/sr": "radiance",
     "hours a year": "hours_year",
@@ -464,8 +472,11 @@ class IndicatorSpec(_Strict):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def unit_code(self) -> str:
-        """The unit's code (UNIT_CODES); the manifest and models carry it beside ``unit``."""
-        return UNIT_CODES[self.unit]
+        """The unit's code (UNIT_CODES); the manifest and models carry it beside ``unit``.
+        A unit this code does not know (a newer pack's) gets a code made from its text,
+        so the catalogue still lists it and the page shows the unit as written; the
+        configuration check (``catalogue_problems``) is what requires a code for each."""
+        return UNIT_CODES.get(self.unit) or re.sub(r"[^a-z0-9]+", "_", self.unit.lower()).strip("_")
 
 
 class IndicatorCatalogue(_Strict):

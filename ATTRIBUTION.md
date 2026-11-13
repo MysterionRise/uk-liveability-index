@@ -5,14 +5,14 @@
 This project's outputs are built from the datasets below. Reuse must keep these notices. Data derived from OpenStreetMap is a derivative database under the Open Database Licence (ODbL) and must be shared under the same licence.
 
 - Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2026. Contains Royal Mail data © Royal Mail copyright and database right 2026. Contains GeoPlace data © Local Government Information House Limited copyright and database right 2026. (`nspl`)
-- Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2026. (`lsoa_boundaries`, `lsoa_boundaries_bsc`, `msoa_boundaries`, `lad_boundaries`, `lsoa_centroids`, `oa_lookup`, `lsoa11_lsoa21`, `ruc_2021`, `pop_lsoa_mye`, `msoa_income`, `claimant_count`)
+- Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2026. (`lsoa_boundaries`, `lsoa_boundaries_bsc`, `msoa_boundaries`, `lad_boundaries`, `lsoa_centroids`, `oa_lookup`, `lsoa11_lsoa21`, `ruc_2021`, `pop_lsoa_mye`, `msoa_income`, `ons_private_rents`, `claimant_count`)
 - House of Commons Library MSOA Names, licensed under the Open Parliament Licence v3.0. Contains OS data © Crown copyright and database right 2026. (`msoa_names`)
 - Contains OS data © Crown copyright and database right 2026. (`os_open_names`, `os_greenspace`, `os_open_uprn`)
 - Contains OS data © Crown copyright and database right 2026, licensed under the Open Government Licence v3.0. (`os_boundary_line`, `os_terrain_50`)
 - Office for Health Improvement and Disparities, Local Health (Fingertips), based on ONS data, licensed under the Open Government Licence v3.0. (`life_expectancy`)
 - Contains HM Land Registry data © Crown copyright and database right 2026. This data is licensed under the Open Government Licence v3.0. (`price_paid`)
 - Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025, licensed under the Open Government Licence v3.0. (`iod_2025`)
-- Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021. (`census_ts001`, `census_ts003`, `census_ts006`, `census_ts007a`, `census_ts037`, `census_ts044`, `census_ts045`, `census_ts054`, `census_ts058`, `census_ts061`, `census_ts067`)
+- Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021. (`census_ts001`, `census_ts003`, `census_ts006`, `census_ts007a`, `census_ts037`, `census_ts044`, `census_ts045`, `census_ts052`, `census_ts054`, `census_ts058`, `census_ts061`, `census_ts066`, `census_ts067`)
 - Contains public sector information from police.uk licensed under the Open Government Licence v3.0. (`police_crime`)
 - Department for Transport, Road Safety Data (STATS19), licensed under the Open Government Licence v3.0. (`stats19`)
 - © Crown copyright. Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence v3.0. (`defra_pcm_no2`, `defra_pcm_pm25`, `defra_pcm_pm10`)

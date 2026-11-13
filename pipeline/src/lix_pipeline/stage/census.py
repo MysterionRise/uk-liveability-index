@@ -1,20 +1,25 @@
 """Census topic summaries → one tidy table per topic: the Census 2021 bulk files (Nomis)
-for England and Wales, Scotland's Census 2022 tables mapped onto the same columns.
+for England and Wales, with Scotland's Census 2022, Northern Ireland's Census 2021 and
+Ireland's Census 2022 mapped onto the same columns where they publish the topic.
 
 Bulk files label columns like "Tenure of household: Owned: Owns outright" or
 "Residence type: Total; measures: Value". Labels become snake_case names without the
 topic prefix (``owned_owns_outright``); the all-categories column becomes ``total``.
 Values are counts (density is persons/km²). Census counts are perturbed for
 disclosure control, so use shares of ``total`` rather than small raw counts.
+
+Where the censuses cut an idea differently (England and Wales split overcrowding into
+"-1" and "-2 or less", Scotland publishes "-1 or less"), the table carries one concept
+column every nation fills (``CONCEPTS``), and indicators read that.
 """
 
 import re
 
 import polars as pl
 
-from lix_core.codes import in_scope
+from lix_core.codes import in_scope, minted_codes
 from lix_core.log import setup_logging
-from lix_core.paths import data_dir
+from lix_core.paths import data_dir, raw_file
 
 logger = setup_logging("stage.census")
 
@@ -27,20 +32,53 @@ def census_column_name(label: str) -> str:
     if rest[0].lower() == "total":
         return "total"
     name = "_".join(rest).lower()
+    # A signed number keeps its sign: an occupancy rating of "+1" and of "-1" are
+    # opposite things, and both would otherwise be "1"
+    name = re.sub(r"(?<![a-z0-9])\+(?=\d)", "plus_", name)
+    name = re.sub(r"(?<![a-z0-9])-(?=\d)", "minus_", name)
     name = re.sub(r"[^a-z0-9]+", "_", name).strip("_")
     return name
 
 
+# Concept columns: one name for an idea the censuses word or cut differently. England and
+# Wales sum the bulk file's own columns; the other nations' mappings below name the
+# concept directly.
+CONCEPTS: dict[str, dict[str, list[str]]] = {
+    # Fewer bedrooms than the bedroom standard says the household needs
+    "census_ts052": {
+        "overcrowded": [
+            "occupancy_rating_of_bedrooms_minus_1",
+            "occupancy_rating_of_bedrooms_minus_2_or_less",
+        ]
+    },
+    # Full-time students aged 16 and over, working or not
+    "census_ts066": {
+        "full_time_students": [
+            "economically_active_and_a_full_time_student",
+            "economically_inactive_student",
+        ]
+    },
+}
+
 # Scotland's Census 2022 tables (one long CSV each: zone, category, count) mapped onto the
-# Census 2021 column names the indicators read. A category list may end in "*" to match
-# a prefix (the travel-to-work total is a sentence); "-" counts are suppressed zeros.
+# Census 2021 column names the indicators read: one or more ``(table, columns)`` per
+# slug. A category list may end in "*" to match a prefix (the travel-to-work total is a
+# sentence); "-" counts are suppressed zeros.
 _AGE_BANDS = {
     "aged_4_years_and_under": range(0, 5),
     **{f"aged_{a}_to_{a + 4}_years": range(a, a + 5) for a in range(5, 85, 5)},
     "aged_85_years_and_over": range(85, 101),
 }
 _WITH_CHILDREN = ("One dependent child", "Two or more dependent children")
-SCOTLAND_TABLES: dict[str, tuple[str, dict[str, list[str]]]] = {
+
+
+def _scottish_ages(ages) -> list[str]:
+    """UV103's category labels for single years of age."""
+    return ["Under 1" if a == 0 else "100 and over" if a == 100 else str(a) for a in ages]
+
+
+ScottishTable = tuple[str, dict[str, list[str]]]
+SCOTLAND_TABLES: dict[str, ScottishTable | list[ScottishTable]] = {
     "census_ts037": (
         "UV302",
         {
@@ -75,12 +113,7 @@ SCOTLAND_TABLES: dict[str, tuple[str, dict[str, list[str]]]] = {
         "UV103",
         {
             "total": ["All people"],
-            **{
-                band: [
-                    "Under 1" if a == 0 else "100 and over" if a == 100 else str(a) for a in ages
-                ]
-                for band, ages in _AGE_BANDS.items()
-            },
+            **{band: _scottish_ages(ages) for band, ages in _AGE_BANDS.items()},
         },
     ),
     "census_ts054": ("UV404", {"total": ["All occupied households"], "owned": ["Owned: Total"]}),
@@ -110,6 +143,19 @@ SCOTLAND_TABLES: dict[str, tuple[str, dict[str, list[str]]]] = {
             "other_method_of_travel_to_work": ["Other"],
         },
     ),
+    "census_ts052": (
+        "UV415",
+        {
+            "total": ["All occupied households"],
+            "overcrowded": ["Occupancy rating of bedrooms: -1 or less"],
+        },
+    ),
+    # Full-time students come as a table of their own, so the residents aged 16 and over
+    # they are a share of come from the single years of age
+    "census_ts066": [
+        ("UV603", {"full_time_students": ["All full-time students aged 16 and over"]}),
+        ("UV103", {"total": _scottish_ages(range(16, 101))}),
+    ],
 }
 
 
@@ -148,19 +194,26 @@ def scotland_census_table(slug: str) -> pl.DataFrame:
     """One Census 2021 table's Scottish rows from the matching Census 2022 table."""
     if slug == "census_ts006":
         return scotland_density()
-    prefix, columns = SCOTLAND_TABLES[slug]
+    tables = SCOTLAND_TABLES[slug]
     folder = data_dir("raw") / "scotland_census_2022"
-    path = next(iter(sorted(folder.glob(f"Table {prefix} - *.csv"))), None)
-    if path is None:
-        raise FileNotFoundError(f"No Table {prefix} CSV under {folder}")
-    long = read_scottish_table(path)
-    out = long.group_by("lsoa21cd").agg(
-        *[
-            pl.col("value").filter(_matches(cats)).sum().alias(name)
-            for name, cats in columns.items()
-        ]
-    )
-    return out.sort("lsoa21cd")
+    out = None
+    for prefix, columns in tables if isinstance(tables, list) else [tables]:
+        path = next(iter(sorted(folder.glob(f"Table {prefix} - *.csv"))), None)
+        if path is None:
+            raise FileNotFoundError(f"No Table {prefix} CSV under {folder}")
+        part = (
+            read_scottish_table(path)
+            .group_by("lsoa21cd")
+            .agg(
+                *[
+                    pl.col("value").filter(_matches(cats)).sum().alias(name)
+                    for name, cats in columns.items()
+                ]
+            )
+        )
+        out = part if out is None else out.join(part, on="lsoa21cd", how="full", coalesce=True)
+    first = [c for c in ("lsoa21cd", "total") if c in out.columns]
+    return out.select(*first, pl.exclude(first)).sort("lsoa21cd")
 
 
 def scotland_density() -> pl.DataFrame:
@@ -257,9 +310,79 @@ def ni_census_table(slug: str) -> pl.DataFrame:
     )
 
 
+# Ireland's Census 2022 Small Area Population Statistics (one wide CSV: a column per
+# count) mapped onto the same names. Ages come as single years to 19, then five-year bands.
+_SAPS_AGES = {
+    "aged_4_years_and_under": [f"T1_1AGE{a}T" for a in range(0, 5)],
+    **{
+        f"aged_{a}_to_{a + 4}_years": [f"T1_1AGE{b}T" for b in range(a, a + 5)] for a in (5, 10, 15)
+    },
+    **{f"aged_{a}_to_{a + 4}_years": [f"T1_1AGE{a}_{a + 4}T"] for a in range(20, 85, 5)},
+    "aged_85_years_and_over": ["T1_1AGEGE_85T"],
+}
+IRELAND_TABLES: dict[str, dict[str, list[str]]] = {
+    "census_ts007a": {"total": ["T1_1AGETT"], **_SAPS_AGES},
+    # Principal economic status of people aged 15 and over: a student is someone who
+    # gave that as their main status, so a student with a job may be counted as at work
+    "census_ts066": {"total": ["T8_1_TT"], "full_time_students": ["T8_1_ST"]},
+}
+# The census asks Irish households for their rooms, not an occupancy rating: the count
+# of households (H) and of their members (P) by number of rooms, 1 to 7 and "8 or more"
+_SAPS_ROOMS = [*(str(k) for k in range(1, 8)), "GE8"]
+# What "8 or more rooms" counts as. 9 reproduces Pobal's published persons per room in
+# the Electoral Divisions where nobody lives in a communal establishment (#78)
+ROOMS_IN_TOP_CLASS = 9
+
+
+def tidy_saps_rooms(df: pl.DataFrame) -> pl.DataFrame:
+    """Persons per room of each Small Area: the members of the private households that
+    stated their rooms over those rooms. ``total`` is the households counted and
+    ``households`` every private household, stated or not; an area with none counted
+    has no figure."""
+
+    def count(column: str) -> pl.Expr:
+        return pl.col(column).cast(pl.Float64, strict=False).fill_null(0)
+
+    rooms = pl.sum_horizontal(
+        count(f"T6_4_{k}RH") * (ROOMS_IN_TOP_CLASS if k == "GE8" else int(k)) for k in _SAPS_ROOMS
+    )
+    people = pl.sum_horizontal(count(f"T6_4_{k}RP") for k in _SAPS_ROOMS)
+    return df.select(
+        "lsoa21cd",
+        pl.sum_horizontal(count(f"T6_4_{k}RH") for k in _SAPS_ROOMS).alias("total"),
+        count("T6_4_TH").alias("households"),
+        pl.when(rooms > 0).then(people / rooms).alias("persons_per_room"),
+    )
+
+
+def tidy_saps_table(df: pl.DataFrame, columns: dict[str, list[str]]) -> pl.DataFrame:
+    """Sums of SAPS count columns under the Census 2021 column names."""
+    return df.select(
+        "lsoa21cd",
+        *[
+            pl.sum_horizontal(pl.col(c).cast(pl.Float64, strict=False) for c in cols).alias(name)
+            for name, cols in columns.items()
+        ],
+    )
+
+
+def ireland_census_table(slug: str) -> pl.DataFrame:
+    """One Census 2021 table's Irish rows from the CSO's Small Area file, keyed by the
+    codes minted from the area ids. The State total row (no urban/rural class) is dropped."""
+    df = pl.read_csv(
+        raw_file("cso_saps22_sa", "csv"), infer_schema_length=0, encoding="utf8-lossy"
+    ).filter(pl.col("UR_Category").is_not_null())
+    codes = minted_codes("I", "low", df["GEOGID"].to_list())
+    df = df.with_columns(pl.col("GEOGID").replace_strict(codes).alias("lsoa21cd"))
+    if slug == "census_ts052":
+        return tidy_saps_rooms(df).sort("lsoa21cd")
+    return tidy_saps_table(df, IRELAND_TABLES[slug]).sort("lsoa21cd")
+
+
 def stage_census_table(slug: str) -> pl.LazyFrame:
     """Stage one census_tsNNN table at small-area level for the active nations: the
-    Census 2021 bulk file for England and Wales, Scotland's Census 2022 for Scotland."""
+    Census 2021 bulk file for England and Wales, and the other nations' censuses where
+    they publish the topic at small-area level."""
     from lix_core.codes import active_nations
 
     frames = []
@@ -269,6 +392,8 @@ def stage_census_table(slug: str) -> pl.LazyFrame:
         frames.append(scotland_census_table(slug))
     if "N" in active_nations() and slug in NI_TABLES:
         frames.append(ni_census_table(slug))
+    if "I" in active_nations() and (slug in IRELAND_TABLES or slug == "census_ts052"):
+        frames.append(ireland_census_table(slug))
     out = pl.concat(frames, how="diagonal_relaxed").filter(in_scope("lsoa21cd")).sort("lsoa21cd")
     logger.info(f"[{slug}] {out.height:,} areas, {out.width - 1} measures")
     return out.lazy()
@@ -298,4 +423,8 @@ def _england_wales(slug: str) -> pl.DataFrame:
         .rename(rename)
         .filter(in_scope("lsoa21cd"))
         .with_columns(pl.exclude("lsoa21cd").cast(pl.Float64))
+        .with_columns(
+            pl.sum_horizontal(parts).alias(concept)
+            for concept, parts in CONCEPTS.get(slug, {}).items()
+        )
     )

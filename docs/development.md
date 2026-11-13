@@ -19,7 +19,7 @@ The pipeline downloads, stages and joins the open datasets below:
   population, area and map bounding box; `lix validate geo` checks it
 - helpers bring other geographies onto LSOAs: points, output areas, MSOA/local-authority values,
   1km grids (sampled at postcodes, so population-weighted) and distance-based access to places
-- `lix indicators` builds 112 indicators (44 scored across 9 themes) from
+- `lix indicators` builds 119 indicators (44 scored across 9 themes) from
   [`config/indicators.yaml`](../config/indicators.yaml); `lix score` turns them into theme and
   overall scores per LSOA for five persona presets ([`config/weights.yaml`](../config/weights.yaml)),
   plus a QA report. The method, including how Greater Manchester's missing crime data and
@@ -72,7 +72,7 @@ spend per day (`api/src/lix_api/agent/limits.py`); a refusal, a failure or a mis
 explained in the chat while the map keeps working, and every turn is logged to
 `data/logs/agent.jsonl` (tools called, latency, tokens, what the provider billed).
 
-The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 62 cases
+The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 67 cases
 covering ranking with constraints, look-ups, follow-ups, ambiguous places, out-of-scope and
 discriminatory requests, numbers grounded in tool results, analyst SQL, prompt injection,
 profiles from a description, and replies in Welsh, Gaelic and Irish):

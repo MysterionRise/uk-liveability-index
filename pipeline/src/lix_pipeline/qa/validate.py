@@ -20,7 +20,7 @@ from lix_core.config import (
 )
 from lix_core.paths import data_dir
 from lix_core.quality import QUALITY_LEVELS
-from lix_core.text import stray_name_problems
+from lix_core.text import capitals_problems, stray_name_problems
 
 
 def validate_geo() -> list[str]:
@@ -198,6 +198,33 @@ def indicator_coverage_problems(
     return problems
 
 
+# The councils two counties take in, in a pack that holds all of England: Devon with
+# Plymouth and Torbay, Kent with Medway (#233)
+COUNTY_COUNCILS = {"Devon": 10, "Kent": 13}
+ENGLISH_COUNCILS = 296
+
+
+def county_problems(features: pl.DataFrame) -> list[str]:
+    """Every English small area has a county, the scope a county name means; and where
+    the pack holds all of England, Devon and Kent take in the councils they should."""
+    if "county" not in features.columns:
+        return ["lsoa_features.parquet has no county column"]
+    english = features.filter(pl.col("lsoa21cd").str.starts_with("E"))
+    problems = []
+    without = english.filter(pl.col("county").is_null())
+    if without.height:
+        councils = without["lad_nm"].unique().sort().head(3).to_list()
+        problems.append(
+            f"{without.height:,} English small areas have no county, e.g. in {councils}"
+        )
+    if english["lad_cd"].n_unique() >= ENGLISH_COUNCILS:
+        for county, expected in COUNTY_COUNCILS.items():
+            found = features.filter(pl.col("county") == county)["lad_cd"].n_unique()
+            if found != expected:
+                problems.append(f"{county} takes in {found} councils, expected {expected}")
+    return problems
+
+
 def validate_serve(serve_dir: Path | None = None) -> list[str]:
     """The files the API and browser read: complete, consistent and as the manifest says.
 
@@ -250,6 +277,7 @@ def validate_serve(serve_dir: Path | None = None) -> list[str]:
         problems.append("lsoa_features has duplicate lsoa21cd")
     if nations and not codes.str.contains(area_code_regex(nations=tuple(nations))).all():
         problems.append(f"lsoa_features has codes outside the nations {nations}")
+    problems += county_problems(features)
     if "headline_within" in features.columns:
         bad = set(features["headline_within"].unique()) - {"all", "nation"}
         if bad:
@@ -329,6 +357,11 @@ def validate_serve(serve_dir: Path | None = None) -> list[str]:
             problems.append(f"{table}.parquet could not be read: {exc}")
             continue
         problems += stray_name_problems(frame, table, key)
+        if table == "pois":
+            problems += capitals_problems(frame, table)
+            # GP and school lists are names throughout: a few in capitals is already a fault
+            named = frame.filter(pl.col("category").str.contains("^gp$|school|^nursery$"))
+            problems += capitals_problems(named, "pois (GPs and schools)", share=0.05)
 
     for tiles in ("lsoa", "msoa", "lad"):
         path = serve / "tiles" / f"{tiles}.pmtiles"

@@ -14,6 +14,15 @@
 # What the review shows beyond the checks (written by hand; rendered into the page)
 observations:
   - >-
+    **The Environment Agency's flood release of 3 November 2026 (data-2026-11.1).** The new
+    edition lowers the share of addresses at high or medium risk around the Wash and in
+    south Essex and leaves the rest of England where it was. South Holland's small areas
+    average 15% where they averaged 39%, Fenland's 14% (25%), Rochford's 8% (18%) and
+    King's Lynn and West Norfolk's 4% (13%); Thurrock (39%), Sefton (29%) and Goole (92%)
+    did not move. Spalding North went from 73% to 2% while Spalding East stayed at 90%, so
+    the flood anchor is now Goole. Across England 353 small areas fell by ten points or
+    more and 119 rose by as much.
+  - >-
     **Tree cover against Forest Research's canopy survey (v0.3.2).** The LSOA values,
     averaged over the postcodes of each English urban ward whose code still matches,
     correlate with Forest Research's point-sampled ward canopy cover at r = 0.72
@@ -364,12 +373,23 @@ places:
       - {theme: housing, op: ge, value: 55}
 
   # ------------------------------------------------------------------ flood risk
+  - name: Goole
+    local_authority: East Riding of Yorkshire
+    why: Port town on the tidal Ouse, almost all of it in an area at risk from rivers and the sea
+    checks:
+      - {indicator: hilliness, op: le, value: 1.5}  # reclaimed marsh (0.9%)
+      # 92% of addresses at high or medium risk in the October and the November 2026
+      # editions alike: the anchor since the Environment Agency's release of 3 November
+      # 2026 took Spalding North from 73% to 2%
+      - {indicator: flood_risk, op: ge, value: 25, anchor: true}
+
   - name: Spalding
     local_authority: South Holland
-    why: Fenland town, much of it at risk from rivers and the sea
+    why: Fenland town behind the Welland's defences
     checks:
       - {indicator: hilliness, op: le, value: 1.5}  # the Fens (0.6%)
-      - {indicator: flood_risk, op: ge, value: 25, anchor: true}
+      # No flood check since data-2026-11.1: the town's north reads 2% and its east 90%
+      # in the Environment Agency's November 2026 release (73% and 97% before)
 
   - name: Wisbech
     local_authority: Fenland
