@@ -18,6 +18,7 @@ from lix_api.services.scoring import (
     scores_for,
 )
 from lix_api.services.search import county_scope, search_place
+from lix_api.services.text import fold
 from lix_api.store import Store
 from lix_core.uncertainty import top_share
 
@@ -49,7 +50,11 @@ def _within(store: Store, within: str | None, radius_km: float | None, lang: str
             boxes["bbox_e"].max(), boxes["bbox_n"].max(),
         )  # fmt: skip
         return pl.col("lad_cd").is_in(sorted(codes)), label, bbox, label, None
-    places = search_place(store, within, limit=1)
+    places = search_place(store, within)
+    if radius_km is None and fold(within) in store.region_councils:
+        # A region's own name is the region, not the city that shares it: "London" is its
+        # 33 boroughs, not ten kilometres around Charing Cross
+        places = [p for p in places if p.kind == "region"] or places
     if not places:
         raise LookupError(f"Couldn't find {within!r}")
     place = places[0]

@@ -135,20 +135,21 @@ def test_a_percentile_check_needs_a_profile_that_names_a_larger_area():
     assert _judge(PercentileOfItsScore(), returns=[same], reply="It scores 69.5, top 16%.").value
 
 
-def test_a_county_ranking_lists_more_than_one_council():
-    from evals.evaluators import SeveralCouncils
+def test_a_county_ranking_reports_the_county_as_its_scope():
+    from evals.evaluators import RankedWithin
 
-    def ranking(*councils: str) -> str:
-        return json.dumps({"results": [{"name": f"Area {i}", "local_authority": c}
-                                       for i, c in enumerate(councils)]})  # fmt: skip
+    def ranking(within: str | None) -> str:
+        return json.dumps({"within": within, "results": [{"name": "Sidmouth Town"}]})
 
-    one = _judge(SeveralCouncils(), returns=[ranking("North Devon", "North Devon")], reply="")
-    assert not one.value and "1 council(s)" in one.reason
-    assert _judge(SeveralCouncils(), returns=[ranking("Exeter", "Torbay")], reply="").value
+    district = _judge(RankedWithin("Devon"), returns=[ranking("North Devon")], reply="")
+    assert not district.value and "North Devon" in district.reason
+    assert _judge(RankedWithin("Devon"), returns=[ranking("Devon")], reply="").value
     # A first ranking of one district and a second of the county: the county counts
-    both = [ranking("North Devon"), ranking("Exeter", "Plymouth", "Torbay")]
-    assert _judge(SeveralCouncils(at_least=3), returns=both, reply="").value
-    assert not _judge(SeveralCouncils(), returns=["not json"], reply="").value
+    both = [ranking("North Devon"), ranking("devon")]
+    assert _judge(RankedWithin("Devon"), returns=both, reply="").value
+    # A profile is not a ranking, and a ranking of everywhere has no scope
+    other = [json.dumps({"lsoa21cd": "E01000001", "within": "Devon"}), ranking(None), "not json"]
+    assert not _judge(RankedWithin("Devon"), returns=other, reply="").value
 
 
 def test_the_cheapest_of_a_ranking_is_the_one_named():

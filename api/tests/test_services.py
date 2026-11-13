@@ -146,6 +146,20 @@ class TestRanking:
         yorkshire = ranking.rank_areas(store, within="Yorkshire", level="lsoa", limit=10)
         assert yorkshire.within == "West Yorkshire" and yorkshire.candidates == 4
 
+    def test_a_regions_own_name_is_the_region_not_the_city_that_shares_it(self, store, monkeypatch):
+        """ "London" is a city in the gazetteer and a region: within it means the region."""
+        from lix_api.models import Place, Point
+
+        region = search.search_place(store, "E12000008")[0]
+        city = Place(kind="place", name="South East", centre=Point(lat=50.83, lon=-0.12))
+        monkeypatch.setattr(ranking, "search_place", lambda *a, **k: [city, region])
+        r = ranking.rank_areas(store, within="South East", level="lsoa")
+        assert (r.within, r.radius_km) == ("South East", None)
+        assert {a.code for a in r.results} == {"E01000005", "E01000006"}
+        # With a radius the words are a place to measure from
+        around = ranking.rank_areas(store, within="South East", radius_km=3, level="lsoa")
+        assert around.radius_km == 3
+
     def test_a_county_with_a_radius_is_a_place_again(self, store):
         """A radius is measured from a place: the county reading is for "within" alone."""
         r = ranking.rank_areas(store, within="Dublin", radius_km=3, level="lsoa")

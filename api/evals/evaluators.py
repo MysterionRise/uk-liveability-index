@@ -399,29 +399,26 @@ class CheapestNamed(Evaluator):
 
 
 @dataclass
-class SeveralCouncils(Evaluator):
-    """A ranking within a county lists areas from more than one council (#233: "in
-    Devon" was answered for one district of it). Any ranking of the run may be the one."""
+class RankedWithin(Evaluator):
+    """A ranking of the run was made within the area named: the county, not one district
+    of it (#233: "in Devon" was answered for North Devon by one model and West Devon by
+    another). It reads the scope the tool reports; the top rows of a county can all fall
+    in one council and still be right."""
 
-    at_least: int = 2
+    area: str
 
     def evaluate(self, ctx: EvaluatorContext) -> EvaluationReason:
-        widest = 0
+        scopes = []
         for raw in ctx.output.returns:
             try:
-                rows = json.loads(raw).get("results") or []
-            except (TypeError, ValueError, AttributeError):
+                data = json.loads(raw)
+            except (TypeError, ValueError):
                 continue
-            councils = {
-                r.get("local_authority_en") or r.get("local_authority")
-                for r in rows
-                if isinstance(r, dict)
-            }
-            widest = max(widest, len(councils - {None}))
-        return _ok(
-            widest >= self.at_least,
-            f"the widest ranking lists {widest} council(s), expected at least {self.at_least}",
-        )
+            if isinstance(data, dict) and "results" in data:
+                scopes.append(data.get("within"))
+        wanted = _plain(self.area)
+        found = any(_plain(str(s)) == wanted for s in scopes if s)
+        return _ok(found, f"rankings were within {scopes}, expected {self.area!r}")
 
 
 @dataclass
@@ -470,6 +467,6 @@ def evaluators_for(expect: dict, kind: str = "chat") -> list[Evaluator]:
         out.append(PercentileOfItsScore())
     if expect.get("cheapest_named"):
         out.append(CheapestNamed())
-    if expect.get("councils_at_least"):
-        out.append(SeveralCouncils(at_least=expect["councils_at_least"]))
+    if expect.get("ranked_within"):
+        out.append(RankedWithin(area=expect["ranked_within"]))
     return out
