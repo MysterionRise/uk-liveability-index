@@ -82,17 +82,29 @@ class WcsAccess(_Strict):
     bbox: list[float] | None = None
 
 
+class Mirror(_Strict):
+    """A copy of a source's file kept with this repository's releases, for when the
+    publisher's own copy cannot be read: the file's URL, and the publisher's version it
+    is a copy of (the lockfile's, so a build from the mirror is the same build)."""
+
+    url: str
+    modified: str
+
+
 class ArcgisItemAccess(_Strict):
     """An ArcGIS Online item (ONS Open Geography Portal).
 
     ONS deletes an item when it publishes a new version, so the item is found by
     searching for ``query`` and taking the newest result whose title matches
     ``title_regex`` (and ``item_type``). ``pin`` is the item last known to work; it is
-    used when search finds nothing.
+    used when search finds nothing. ``mirror`` is read when neither can be: in November
+    2026 ONS put four 2021 boundary and centroid layers behind a login, with no public
+    item of the same generalisation to move to (#306).
     """
 
     type: Literal["arcgis_item"]
     pin: str
+    mirror: Mirror | None = None
     query: str | None = None
     title_regex: str | None = None
     item_type: str | None = None

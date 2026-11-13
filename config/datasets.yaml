@@ -46,6 +46,8 @@ lsoa_boundaries:
     title_regex: '^Lower layer Super Output Areas \(December 2021\) Boundaries EW BGC \(V\d+\)$'
     item_type: Feature Service
     pin: 68515293204e43ca8ab56fa13ae8a547
+    # ONS put this item behind a login in November 2026 (#306): the copy last fetched
+    mirror: {url: "https://github.com/MysterionRise/uk-liveability-index/releases/download/source-mirror-2026-11/lsoa_boundaries.gpkg", modified: "2025-08-11T08:22:17+00:00"}
     mode: hub_export
     export_format: geoPackage
   format: gpkg
@@ -67,6 +69,8 @@ lsoa_boundaries_bsc:
     title_regex: '^Lower layer Super Output Areas \(December 2021\) Boundaries EW BSC \(V\d+\)$'
     item_type: Feature Service
     pin: 04c65a08ecff4858bffc16e9ca9356f4
+    # ONS put this item behind a login in November 2026 (#306): the copy last fetched
+    mirror: {url: "https://github.com/MysterionRise/uk-liveability-index/releases/download/source-mirror-2026-11/lsoa_boundaries_bsc.gpkg", modified: "2025-08-11T08:22:18+00:00"}
     mode: hub_export
     export_format: geoPackage
   format: gpkg
@@ -88,6 +92,8 @@ msoa_boundaries:
     title_regex: '^Middle layer Super Output Areas \(December 2021\) Boundaries EW BGC \(V\d+\)$'
     item_type: Feature Service
     pin: 6b282db29762450881ed5159259a6e4e
+    # ONS put this item behind a login in November 2026 (#306): the copy last fetched
+    mirror: {url: "https://github.com/MysterionRise/uk-liveability-index/releases/download/source-mirror-2026-11/msoa_boundaries.gpkg", modified: "2025-08-11T08:22:21+00:00"}
     mode: featureserver
     fields: [MSOA21CD]
     geometry: polygon
@@ -128,6 +134,8 @@ lsoa_centroids:
     title_regex: '^Lower layer Super Output Areas \(December 2021\) EW Population Weighted Centroids$'
     item_type: Feature Service
     pin: 32729e42d05e4e23bc7e43a36aa4ae8b
+    # ONS put this item behind a login in November 2026 (#306): the copy last fetched
+    mirror: {url: "https://github.com/MysterionRise/uk-liveability-index/releases/download/source-mirror-2026-11/lsoa_centroids.parquet", modified: "2026-03-02T12:04:53+00:00"}
     mode: featureserver
     fields: [LSOA21CD]
     geometry: point

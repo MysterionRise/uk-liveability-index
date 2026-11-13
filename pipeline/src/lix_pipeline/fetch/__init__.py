@@ -338,8 +338,11 @@ def fetch(
     if not resolved or any(k not in resolved for k in needed):
         resolved = resolve_and_lock(slug, spec, session)
 
+    # A mirrored item is one file, however the publisher's layer would have been read
     if (
-        spec.access.type == "arcgis_item" and spec.access.mode == "featureserver"
+        spec.access.type == "arcgis_item"
+        and spec.access.mode == "featureserver"
+        and not resolved.get("mirror")
     ) or spec.access.type == "arcgis_layer":
         meta = _fetch_paged(
             slug,

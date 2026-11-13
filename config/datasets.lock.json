@@ -2371,10 +2371,11 @@
     },
     "resolved": {
       "item_id": "68515293204e43ca8ab56fa13ae8a547",
+      "mirror": true,
       "modified": "2025-08-11T08:22:17+00:00",
-      "resolved_at": "2026-11-01T23:43:32+00:00",
-      "title": "Lower layer Super Output Areas (December 2021) Boundaries EW BGC (V5)",
-      "url": "https://geoportal.statistics.gov.uk/api/download/v1/items/68515293204e43ca8ab56fa13ae8a547/geoPackage?layers=0",
+      "resolved_at": "2026-11-13T21:40:22+00:00",
+      "title": null,
+      "url": "https://github.com/MysterionRise/uk-liveability-index/releases/download/source-mirror-2026-11/lsoa_boundaries.gpkg",
       "version": "2025-08-11T08:22:17+00:00"
     }
   },
@@ -2389,10 +2390,11 @@
     },
     "resolved": {
       "item_id": "04c65a08ecff4858bffc16e9ca9356f4",
+      "mirror": true,
       "modified": "2025-08-11T08:22:18+00:00",
-      "resolved_at": "2026-11-01T23:43:32+00:00",
-      "title": "Lower layer Super Output Areas (December 2021) Boundaries EW BSC (V4)",
-      "url": "https://geoportal.statistics.gov.uk/api/download/v1/items/04c65a08ecff4858bffc16e9ca9356f4/geoPackage?layers=0",
+      "resolved_at": "2026-11-13T21:40:38+00:00",
+      "title": null,
+      "url": "https://github.com/MysterionRise/uk-liveability-index/releases/download/source-mirror-2026-11/lsoa_boundaries_bsc.gpkg",
       "version": "2025-08-11T08:22:18+00:00"
     }
   },
@@ -2406,10 +2408,11 @@
     },
     "resolved": {
       "item_id": "32729e42d05e4e23bc7e43a36aa4ae8b",
+      "mirror": true,
       "modified": "2026-03-02T12:04:53+00:00",
-      "resolved_at": "2026-11-01T23:43:32+00:00",
-      "title": "Lower layer Super Output Areas (December 2021) EW Population Weighted Centroids",
-      "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LSOA_PopCentroids_EW_2021_V4/FeatureServer/0",
+      "resolved_at": "2026-11-13T21:40:42+00:00",
+      "title": null,
+      "url": "https://github.com/MysterionRise/uk-liveability-index/releases/download/source-mirror-2026-11/lsoa_centroids.parquet",
       "version": "2026-03-02T12:04:53+00:00"
     }
   },
@@ -2463,10 +2466,11 @@
     },
     "resolved": {
       "item_id": "6b282db29762450881ed5159259a6e4e",
+      "mirror": true,
       "modified": "2025-08-11T08:22:21+00:00",
-      "resolved_at": "2026-11-01T23:43:32+00:00",
-      "title": "Middle layer Super Output Areas (December 2021) Boundaries EW BGC (V3)",
-      "url": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Middle_layer_Super_Output_Areas_December_2021_Boundaries_EW_BGC_V3/FeatureServer/0",
+      "resolved_at": "2026-11-13T21:40:40+00:00",
+      "title": null,
+      "url": "https://github.com/MysterionRise/uk-liveability-index/releases/download/source-mirror-2026-11/msoa_boundaries.gpkg",
       "version": "2025-08-11T08:22:21+00:00"
     }
   },
