@@ -8,8 +8,9 @@ All notable changes to this project. The format follows
 
 ### Added
 
-- Seven context measures, shown on the profile card and in comparisons and scored by no
-  preset. In housing: **overcrowded households** (fewer bedrooms than the bedroom
+- Seven context measures, scored by no preset. Rent, crowding, students and the 20-to-34s
+  are among the profile card's facts where the nation publishes them, rent, crowding and
+  students are rows of a comparison, and all seven are in a theme's explanation. In housing: **overcrowded households** (fewer bedrooms than the bedroom
   standard asks for; England, Wales and Scotland), **people per room** (Ireland, whose
   census counts rooms rather than rating occupancy, so it is a measure of its own with
   its own unit), **private rent** (the council area's average a month, from ONS's Price
@@ -25,14 +26,18 @@ All notable changes to this project. The format follows
   nation's census cuts it (#78, #85, #36).
 - A county works as the place to rank within. "Within Devon" ranked one district of it
   (whichever the search found first: North Devon for one model, West Devon for another);
-  it now ranks all ten councils of the county, with Plymouth and Torbay, and "Kent" its
-  thirteen with Medway. Each British council takes the ceremonial county that holds at
-  least two thirds of its residents (OS Boundary-Line; 344 of 350 councils, 77 counties),
-  and Ireland keeps its curated counties. A word that ends several counties' names is
-  all of them ("Yorkshire", "Sussex") and one that ends two regions' names is both
-  ("Midlands"); a name that is exactly a place stays that place ("Durham" is the city,
-  "County Durham" the county), and a ranking's `within` says what was used. A search
-  scope after a comma takes the same counties ("Yarm, Durham") (#233).
+  it now ranks the small areas of the whole county, across its ten councils with Plymouth
+  and Torbay, and "Kent" across its thirteen with Medway. Each British small area takes
+  the ceremonial county its centre lies in (OS Boundary-Line), so a council a county
+  boundary divides is divided: the part of Stockton-on-Tees south of the Tees is in North
+  Yorkshire, the rest in County Durham. Ireland keeps its curated counties. A word that
+  ends several counties' names is all of them ("Yorkshire", "Sussex") and one that ends
+  two regions' names is both ("the Midlands"); a name that is exactly a place stays that
+  place ("Durham" is the city, "County Durham" the county); outside England a county that
+  shares a council's name is left to the council ("Gwynedd"). A ranking's `within` says
+  what was used and `covers` lists the councils it takes in. A search scope after a comma
+  takes the same counties ("Whitby, Yorkshire"). Northern Ireland's six counties are not
+  covered yet (#233, #315).
 
 ### Fixed
 
@@ -61,12 +66,29 @@ All notable changes to this project. The format follows
 
 - English GP surgeries were named in capitals ("HEBDEN BRIDGE GROUP PRACTICE"): the NHS
   list writes all 6,555 that way. So were a third of Welsh schools ("PONTARDDULAIS
-  PRIMARY SCHOOL" beside "Ysgol Bro Plenydd") and a few Northern Irish practices. They
-  are now in title case in the pack ("Hebden Bridge Group Practice"), with acronyms and
-  initials kept ("The NHS Centre", "Dr PS Bath's Practice", "Stratford-upon-Avon HC")
-  and Welsh read as Welsh ("Ysgol y Garreg", "Cwrt Henri", "YGG Tanylan"). `lix validate
-  serve` refuses a pack where a source's names are mostly capitals, or more than one in
-  twenty of its GP and school names (#258, #310).
+  PRIMARY SCHOOL" beside "Ysgol Bro Plenydd"), and Northern Ireland's list writes the
+  surnames so ("Dr. MCGLADE & PARTNERS", 297 of 304). They are now in title case in the
+  pack ("Hebden Bridge Group Practice", "Dr. McGlade & Partners"), with acronyms and
+  initials kept ("Dr PS Bath's Practice", "Brace Street HC") and Welsh read as Welsh
+  ("Ysgol y Garreg", "Cwrt Henri", "Pen-y-Bont Surgery"). About seventeen practices whose
+  acronym has a vowel still read as a word ("Ea Hub"). `lix validate serve` refuses a
+  pack where a source's names are mostly capitals, or more than one in twenty of its GP
+  and school names (#258, #310).
+- The stage that counts buses took the Tuesday two weeks into each timetable's calendar
+  whatever that day held. It now passes over a Tuesday on which the feed runs under nine
+  tenths of the trips of the Tuesdays around it. In the files of 12 November 2026 that
+  day was 1 December, when England's feed runs 252,541 trips against 464,419 the week
+  before: counted on it, Bristol read 0.3 buses an hour for 33. The release's data tester
+  caught it before the pack was published.
+- **Bus frequency counted the same bus more than once**, and falls where it did. A
+  timetable feed holds overlapping copies of a timetable (an operator publishes the next
+  version before the last one ends), and the stage counted rows: on 24 November 2026
+  England's feed ran 464,419 trips that were 426,543 journeys, and First Bristol's 12,380
+  trips were 6,967. A departure is now a line leaving a stop at a time, counted once: 8%
+  fewer departures in all, and about half in some First Bus areas (Leeds 17 buses an hour
+  → 7, Bristol 33 → 18, Portsmouth 31 → 13), where earlier packs read too high. The
+  copies pile up on later dates, which is why Leeds read 12 from one October edition and
+  17 from the next. `bus_frequency`, `bus_access` and `everyday_services` follow.
 - "Within London" ranked the areas within ten kilometres of the centre (23 councils at
   council level), because the gazetteer has a city of that name and a place is ranked by
   radius. A region's own name is now the region: London's 33 boroughs. With a radius
@@ -83,11 +105,15 @@ All notable changes to this project. The format follows
 ### Changed
 
 - **English flood figures changed with the Environment Agency's release of 3 November
-  2026**, around the Wash and in south Essex and hardly anywhere else: South Holland's
-  average share of addresses at high or medium risk fell from 39% to 15% and Spalding
-  North's from 73% to 2%, while the high-risk band is unchanged nationally. It is the
-  publisher's change, not a reading fault. Spalding was the flood anchor of the
-  face-validity review, which now uses Goole (92% in both editions) (#308).
+  2026.** From rivers and the sea, risk fell around the Wash (South Holland's average
+  share of addresses at high or medium risk from 39% to 15%, Spalding North's from 73%
+  to 2%), in Hull (8.5% to 3.7%) and on the Humber's south bank. From surface water it
+  fell in Basildon, Harlow, Rochford and Castle Point. In about a hundred other councils
+  a few areas moved by ten points or more, a third of them up (parts of Doncaster). It is
+  the publisher's change, not a reading fault. Spalding was the flood anchor of the
+  face-validity review, which now uses Goole (92% in both editions) (#308). In 324
+  English areas the figure for rivers and the sea alone is above the figure for any
+  source, as it was before this release: the two files disagree (#316).
 - An English or Welsh build from scratch needs four ONS boundary and centroid layers
   that ONS has put behind a login; a refresh builds from the copies already on disk
   (#306).
@@ -110,8 +136,8 @@ All notable changes to this project. The format follows
   indicator and nation (areas before and after, how many moved and by how much, coverage
   gained and lost), and the two things a reviewer otherwise looks for by hand: an
   indicator that moved although none of its sources has a new file, and a new file that
-  moved nothing that reads it. Between `data-2026-11` and this build 46 of 119
-  indicators moved, each with a new file or a new definition behind it.
+  moved nothing that reads it; and a measure whose typical value in a nation shifted by
+  more than a quarter, which a new file does not explain by itself.
 - The evals workflow (`evals.yml`) takes a model on Anthropic's own API as well as one
   through OpenRouter: `-f model=anthropic:claude-haiku-5-5` reads the `evals`
   environment's `ANTHROPIC_API_KEY`, as `openrouter:…` reads `OPENROUTER_API_KEY`. It

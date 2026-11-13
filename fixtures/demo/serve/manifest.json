@@ -1,6 +1,6 @@
 {
   "schema_version": 6,
-  "generated_at": "2026-11-13T19:57:49+00:00",
+  "generated_at": "2026-11-13T21:14:38+00:00",
   "data_release": null,
   "data_to": "2026-11-13",
   "geography": {
@@ -849,12 +849,12 @@
         "overcrowded_households": {
           "label": "Aelwydydd gorlawn",
           "description": "Cyfran yr aelwydydd sydd \u00e2 llai o ystafelloedd gwely nag sydd eu hangen arnynt yn \u00f4l y safon ystafelloedd gwely (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).",
-          "caveats": "Mae'r safon ystafelloedd gwely yn paru pobl (cyplau, dau blentyn o dan 10 oed, dau o'r un rhyw o dan 21 oed), felly gall aelwyd fod un ystafell wely yn brin heb deimlo'n orlawn. Nid yw Gogledd Iwerddon yn ei gyhoeddi ar gyfer ardaloedd bach; mae cyfrifiad Iwerddon yn cyfrif ystafelloedd, a ddangosir fel pobl fesul ystafell."
+          "caveats": "Mae'r safon ystafelloedd gwely yn paru pobl (cyplau, dau blentyn o dan 10 oed, dau o'r un rhyw o dan 21 oed), felly gall aelwyd fod un ystafell wely yn brin heb deimlo'n orlawn. Ychydig iawn sydd gan y rhan fwyaf o ardaloedd (2% yn yr ardal nodweddiadol), felly mae 5% eisoes ymhlith y chwarter mwyaf gorlawn. Nid yw Gogledd Iwerddon yn ei gyhoeddi ar gyfer ardaloedd bach; mae cyfrifiad Iwerddon yn cyfrif ystafelloedd, a ddangosir fel pobl fesul ystafell."
         },
         "persons_per_room": {
           "label": "Pobl fesul ystafell",
           "description": "Pobl mewn aelwydydd preifat am bob ystafell yn eu cartrefi (Cyfrifiad 2022), mesur gorlenwi Iwerddon.",
-          "caveats": "Cyfartaledd dros aelwydydd yr ardal, nid cyfrif o'r rhai gorlawn. Mae ceginau'n cyfrif fel ystafelloedd ond nid ystafelloedd ymolchi; cymerir cartref ag \"8 ystafell neu fwy\" fel 9."
+          "caveats": "Cyfartaledd dros aelwydydd yr ardal, nid cyfrif o'r rhai gorlawn, felly darllenwch ef yn erbyn gweddill Iwerddon (0.47 sydd gan yr ardal nodweddiadol, ac mae un ardal o bob deg dros 0.6) yn hytrach nag yn erbyn un person fesul ystafell. Mae ceginau'n cyfrif fel ystafelloedd ond nid ystafelloedd ymolchi; cymerir cartref ag \"8 ystafell neu fwy\" fel 9."
         },
         "income_deprivation": {
           "label": "Amddifadedd incwm",
@@ -922,7 +922,7 @@
         "students_share": {
           "label": "Myfyrwyr amser llawn",
           "description": "Cyfran y trigolion 16 oed a throsodd sy'n fyfyrwyr amser llawn (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban ac Iwerddon).",
-          "caveats": "C\u00e2nt eu cyfrif lle mae myfyrwyr yn byw yn ystod y tymor, felly mae cymdogaeth o neuaddau preswyl yn ymddangos fel petai bron pawb yn fyfyrwyr. Mae Iwerddon yn cyfrif pobl 15 oed a throsodd sy'n nodi mai myfyriwr yw eu prif statws; dim ond ar gyfer wardiau y mae Gogledd Iwerddon yn ei gyhoeddi."
+          "caveats": "C\u00e2nt eu cyfrif lle mae myfyrwyr yn byw yn ystod y tymor, felly mae cymdogaeth o neuaddau preswyl yn ymddangos fel petai bron pawb yn fyfyrwyr. Mae'r gwledydd yn cyfrif yn wahanol, felly cymharwch o fewn un wlad. Mae Cymru a Lloegr yn cynnwys myfyrwyr nad ydynt yn gweithio beth bynnag yw eu horiau astudio, ac mae Iwerddon yn cyfrif pawb 15 oed a throsodd sy'n nodi mai myfyriwr yw eu prif statws, gan gynnwys disgyblion ysgol. Dim ond ar gyfer wardiau y mae Gogledd Iwerddon yn ei gyhoeddi."
         },
         "owner_occupied": {
           "label": "Cartrefi perchen-feddianwyr",
@@ -1706,12 +1706,12 @@
         "overcrowded_households": {
           "label": "Teaghlaigh r\u00f3phl\u00f3daithe",
           "description": "Sciar de theaghlaigh a bhfuil n\u00edos l\u00fa seomra\u00ed leapa acu n\u00e1 mar a theasta\u00edonn uathu de r\u00e9ir chaighde\u00e1n na seomra\u00ed leapa (Daon\u00e1ireamh 2021; 2022 in Albain).",
-          "caveats": "Cuireann caighde\u00e1n na seomra\u00ed leapa daoine i bp\u00e9ir\u00ed (l\u00e1n\u00faineacha, beirt leana\u00ed faoi 10 mbliana d'aois, beirt den ghn\u00e9as c\u00e9anna faoi 21), mar sin is f\u00e9idir le teaghlach a bheith seomra leapa gann gan a bheith pl\u00f3daithe dar leo f\u00e9in. N\u00ed fhoils\u00edonn Tuaisceart \u00c9ireann \u00e9 do cheantair bheaga; \u00e1ir\u00edtear seomra\u00ed i ndaon\u00e1ireamh na h\u00c9ireann, agus taispe\u00e1ntar \u00e9 mar dhaoine in aghaidh an tseomra."
+          "caveats": "Cuireann caighde\u00e1n na seomra\u00ed leapa daoine i bp\u00e9ir\u00ed (l\u00e1n\u00faineacha, beirt leana\u00ed faoi 10 mbliana d'aois, beirt den ghn\u00e9as c\u00e9anna faoi 21), mar sin is f\u00e9idir le teaghlach a bheith seomra leapa gann gan a bheith pl\u00f3daithe dar leo f\u00e9in. Is beag at\u00e1 ag formh\u00f3r na gceantar (2% sa ghn\u00e1thcheantar), mar sin t\u00e1 5% i measc an cheathr\u00fa is pl\u00f3daithe cheana f\u00e9in. N\u00ed fhoils\u00edonn Tuaisceart \u00c9ireann \u00e9 do cheantair bheaga; \u00e1ir\u00edtear seomra\u00ed i ndaon\u00e1ireamh na h\u00c9ireann, agus taispe\u00e1ntar \u00e9 mar dhaoine in aghaidh an tseomra."
         },
         "persons_per_room": {
           "label": "Daoine in aghaidh an tseomra",
           "description": "Daoine i dteaghlaigh phr\u00edobh\u00e1ideacha in aghaidh gach seomra ina dtithe (Daon\u00e1ireamh 2022), tomhas pl\u00f3daithe na h\u00c9ireann.",
-          "caveats": "Me\u00e1n thar theaghlaigh an cheantair, n\u00ed l\u00edon na dteaghlach pl\u00f3daithe. \u00c1ir\u00edtear cistin\u00ed mar sheomra\u00ed ach n\u00ed \u00e1ir\u00edtear seomra\u00ed folctha; glactar le teach a bhfuil \"8 seomra n\u00f3 n\u00edos m\u00f3\" ann mar 9."
+          "caveats": "Me\u00e1n thar theaghlaigh an cheantair, n\u00ed l\u00edon na dteaghlach pl\u00f3daithe, mar sin l\u00e9igh \u00e9 i gcompar\u00e1id leis an gcuid eile d'\u00c9irinn (0.47 at\u00e1 ag an ngn\u00e1thcheantar, agus t\u00e1 ceantar amh\u00e1in as gach deich os cionn 0.6) seachas i gcompar\u00e1id le duine amh\u00e1in in aghaidh an tseomra. \u00c1ir\u00edtear cistin\u00ed mar sheomra\u00ed ach n\u00ed \u00e1ir\u00edtear seomra\u00ed folctha; glactar le teach a bhfuil \"8 seomra n\u00f3 n\u00edos m\u00f3\" ann mar 9."
         },
         "income_deprivation": {
           "label": "D\u00edothacht ioncaim",
@@ -1779,7 +1779,7 @@
         "students_share": {
           "label": "Mic l\u00e9inn l\u00e1naimseartha",
           "description": "Sciar de ch\u00f3naitheoir\u00ed 16 bliana d'aois n\u00f3 n\u00edos sine ar mic l\u00e9inn l\u00e1naimseartha iad (Daon\u00e1ireamh 2021; 2022 in Albain agus in \u00c9irinn).",
-          "caveats": "\u00c1ir\u00edtear mic l\u00e9inn san \u00e1it a gc\u00f3na\u00edonn siad le linn an t\u00e9arma, mar sin b\u00edonn cuma ar chomharsanacht halla\u00ed c\u00f3naithe gur mic l\u00e9inn beagnach gach duine inti. In \u00c9irinn \u00e1ir\u00edtear daoine 15 bliana d'aois n\u00f3 n\u00edos sine arb \u00e9 'mac l\u00e9inn' a bpr\u00edomhst\u00e1das; n\u00ed fhoils\u00edonn Tuaisceart \u00c9ireann \u00e9 ach do bharda\u00ed."
+          "caveats": "\u00c1ir\u00edtear mic l\u00e9inn san \u00e1it a gc\u00f3na\u00edonn siad le linn an t\u00e9arma, mar sin b\u00edonn cuma ar chomharsanacht halla\u00ed c\u00f3naithe gur mic l\u00e9inn beagnach gach duine inti. \u00c1ir\u00edonn na n\u00e1isi\u00fain ar bheala\u00ed \u00e9ags\u00fala, mar sin d\u00e9an compar\u00e1id laistigh de n\u00e1isi\u00fan amh\u00e1in. \u00c1ir\u00edtear i Sasana agus sa Bhreatain Bheag mic l\u00e9inn nach bhfuil ag obair is cuma c\u00e9 mh\u00e9ad uair staid\u00e9ir at\u00e1 acu, agus \u00e1ir\u00edtear in \u00c9irinn gach duine 15 bliana d'aois n\u00f3 n\u00edos sine arb \u00e9 'mac l\u00e9inn' a bpr\u00edomhst\u00e1das, dalta\u00ed scoile ina measc. N\u00ed fhoils\u00edonn Tuaisceart \u00c9ireann \u00e9 ach do bharda\u00ed."
         },
         "owner_occupied": {
           "label": "Tithe \u00fain\u00e9ir-\u00e1itithe",
@@ -2471,12 +2471,12 @@
         "overcrowded_households": {
           "label": "Teaghlaichean ro-dh\u00f9mhail",
           "description": "Cuid de theaghlaichean aig a bheil nas lugha de she\u00f2mraichean-cadail na tha a dh\u00ecth orra a r\u00e8ir inbhe nan se\u00f2mraichean-cadail (Cunntas-sluaigh 2021; 2022 ann an Alba).",
-          "caveats": "Bidh inbhe nan se\u00f2mraichean-cadail a' c\u00e0radh dhaoine (c\u00e0raidean, dithis chloinne fo aois 10, dithis den aon ghn\u00e8 fo aois 21), agus mar sin faodaidh teaghlach a bhith se\u00f2mar-cadail a dh\u00ecth gun a bhith a' faireachdainn d\u00f9mhail. Chan eil \u00c8irinn a Tuath ga fhoillseachadh airson sg\u00ecrean beaga; bidh cunntas-sluaigh na h-\u00c8ireann a' cunntadh she\u00f2mraichean, air a shealltainn mar dhaoine gach se\u00f2mar."
+          "caveats": "Bidh inbhe nan se\u00f2mraichean-cadail a' c\u00e0radh dhaoine (c\u00e0raidean, dithis chloinne fo aois 10, dithis den aon ghn\u00e8 fo aois 21), agus mar sin faodaidh teaghlach a bhith se\u00f2mar-cadail a dh\u00ecth gun a bhith a' faireachdainn d\u00f9mhail. Chan eil ach gl\u00e8 bheag aig a' mh\u00f2r-chuid de sg\u00ecrean (2% san sg\u00ecre \u00e0bhaisteach), agus mar sin tha 5% mar-th\u00e0 am measg a' cheathraimh as d\u00f9mhaile. Chan eil \u00c8irinn a Tuath ga fhoillseachadh airson sg\u00ecrean beaga; bidh cunntas-sluaigh na h-\u00c8ireann a' cunntadh she\u00f2mraichean, air a shealltainn mar dhaoine gach se\u00f2mar."
         },
         "persons_per_room": {
           "label": "Daoine gach se\u00f2mar",
           "description": "Daoine ann an teaghlaichean pr\u00ecobhaideach airson gach se\u00f2mar nan dachaighean (Cunntas-sluaigh 2022), tomhas d\u00f9mhlachd na h-\u00c8ireann.",
-          "caveats": "Cuibheas thar theaghlaichean na sg\u00ecre, chan e cunntas den fheadhainn dh\u00f9mhail. Tha cidsinean air an cunntadh mar she\u00f2mraichean ach chan eil se\u00f2mraichean-ionnlaid; thathar a' gabhail dachaigh le \"8 se\u00f2mraichean no barrachd\" mar 9."
+          "caveats": "Cuibheas thar theaghlaichean na sg\u00ecre, chan e cunntas den fheadhainn dh\u00f9mhail, agus mar sin leugh e an aghaidh a' ch\u00f2rr de dh'\u00c8irinn (tha 0.47 aig an sg\u00ecre \u00e0bhaisteach, agus tha aon sg\u00ecre \u00e0s gach deich os cionn 0.6) seach an aghaidh aon neach gach se\u00f2mar. Tha cidsinean air an cunntadh mar she\u00f2mraichean ach chan eil se\u00f2mraichean-ionnlaid; thathar a' gabhail dachaigh le \"8 se\u00f2mraichean no barrachd\" mar 9."
         },
         "income_deprivation": {
           "label": "Bochdainn teachd-a-steach",
@@ -2544,7 +2544,7 @@
         "students_share": {
           "label": "Oileanaich l\u00e0n-\u00f9ine",
           "description": "Cuid de luchd-c\u00f2mhnaidh aois 16 is barrachd a tha nan oileanaich l\u00e0n-\u00f9ine (Cunntas-sluaigh 2021; 2022 ann an Alba agus \u00c8irinn).",
-          "caveats": "Air an cunntadh far a bheil oileanaich a' fuireach r\u00e8 an teirm, agus mar sin tha n\u00e0bachd de thallachan-c\u00f2mhnaidh a' coimhead mar gum biodh cha mh\u00f2r a h-uile duine nan oileanaich. Bidh \u00c8irinn a' cunntadh dhaoine aois 15 is barrachd aig a bheil oileanach mar am pr\u00ecomh inbhe; chan eil \u00c8irinn a Tuath ga fhoillseachadh ach airson u\u00e0rdan."
+          "caveats": "Air an cunntadh far a bheil oileanaich a' fuireach r\u00e8 an teirm, agus mar sin tha n\u00e0bachd de thallachan-c\u00f2mhnaidh a' coimhead mar gum biodh cha mh\u00f2r a h-uile duine nan oileanaich. Bidh na d\u00f9thchannan a' cunntadh ann an d\u00f2ighean eadar-dhealaichte, mar sin d\u00e8an coimeas taobh a-staigh aon d\u00f9thaich. Tha Sasainn agus a' Chuimrigh a' gabhail a-steach oileanaich nach eil ag obair ge b' e d\u00e8 na h-uairean ionnsachaidh aca, agus bidh \u00c8irinn a' cunntadh a h-uile duine aois 15 is barrachd aig a bheil oileanach mar am pr\u00ecomh inbhe, sgoilearan nam measg. Chan eil \u00c8irinn a Tuath ga fhoillseachadh ach airson u\u00e0rdan."
         },
         "owner_occupied": {
           "label": "Dachaighean le sealbhadair a' fuireach annta",
@@ -6393,7 +6393,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": null,
-      "caveats": "The bedroom standard pairs people up (couples, two children under 10, two of the same sex under 21), so a household can be a bedroom short without feeling crowded. Northern Ireland does not publish it for small areas; Ireland's census counts rooms, shown as people per room.",
+      "caveats": "The bedroom standard pairs people up (couples, two children under 10, two of the same sex under 21), so a household can be a bedroom short without feeling crowded. Most areas have very few (the typical one 2%), so 5% is already among the most overcrowded quarter. Northern Ireland does not publish it for small areas; Ireland's census counts rooms, shown as people per room.",
       "substitute_for": [],
       "unit_code": "pct"
     },
@@ -6411,11 +6411,8 @@
       "sources": [
         "cso_saps22_sa"
       ],
-      "builder": "common:column",
-      "params": {
-        "slug": "census_ts052",
-        "column": "persons_per_room"
-      },
+      "builder": "community:persons_per_room",
+      "params": {},
       "normalise": "rank",
       "log1p": false,
       "good": null,
@@ -6424,7 +6421,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": null,
-      "caveats": "An average over the area's households, not a count of crowded ones. Kitchens count as rooms and bathrooms do not; a home with \"8 or more rooms\" is taken as 9.",
+      "caveats": "An average over the area's households, not a count of crowded ones, so read it against the rest of Ireland (the typical area has 0.47, and one area in ten is over 0.6) rather than against one person per room. Kitchens count as rooms and bathrooms do not; a home with \"8 or more rooms\" is taken as 9.",
       "substitute_for": [],
       "unit_code": "people_per_room"
     },
@@ -6999,7 +6996,7 @@
       "weight": 1.0,
       "role": "context",
       "overlap_group": null,
-      "caveats": "Counted where students live in term time, so a neighbourhood of halls reads as nearly all students. Ireland counts people aged 15 and over whose main status is student; Northern Ireland publishes it for wards only.",
+      "caveats": "Counted where students live in term time, so a neighbourhood of halls reads as nearly all students. The nations count differently, so compare within one. England and Wales include students who are not working whatever their hours of study, and Ireland counts everyone aged 15 and over whose main status is student, school pupils among them. Northern Ireland publishes it for wards only.",
       "substitute_for": [],
       "unit_code": "pct"
     },
@@ -7759,9 +7756,9 @@
       "fetched_version": "itm_all_gtfs.zip",
       "fetched_at": "2026-11-12T12:28:39.233193+00:00",
       "period": {
-        "label": "timetable for 1 December 2026",
-        "start": "2026-12-01",
-        "end": "2026-12-01",
+        "label": "timetable for 24 November 2026",
+        "start": "2026-11-24",
+        "end": "2026-11-24",
         "kind": "day"
       },
       "cadence": "daily",
@@ -7779,9 +7776,9 @@
       "fetched_version": "itm_scotland_gtfs.zip",
       "fetched_at": "2026-11-12T12:26:27.289746+00:00",
       "period": {
-        "label": "timetable for 1 December 2026",
-        "start": "2026-12-01",
-        "end": "2026-12-01",
+        "label": "timetable for 24 November 2026",
+        "start": "2026-11-24",
+        "end": "2026-11-24",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -7799,9 +7796,9 @@
       "fetched_version": "itm_wales_gtfs.zip",
       "fetched_at": "2026-11-12T09:55:21.472172+00:00",
       "period": {
-        "label": "timetable for 1 December 2026",
-        "start": "2026-12-01",
-        "end": "2026-12-01",
+        "label": "timetable for 24 November 2026",
+        "start": "2026-11-24",
+        "end": "2026-11-24",
         "kind": "day"
       },
       "cadence": "weekly",
@@ -12278,12 +12275,12 @@
   },
   "files": {
     "lsoa_features.parquet": {
-      "sha256": "64b7771e18d6ad094f56b7d7844eaefe3520bc7b64092d353efe4dfcbe080051",
-      "bytes": 5104162
+      "sha256": "6d00a41200d3bd2622bd0ab38b32304255038032228adb148d762588abe72f75",
+      "bytes": 5106081
     },
     "scores.parquet": {
-      "sha256": "efb8936d85328b93eb307a2a8b2a479ef885d27167b3ba34ffd10b8dff9a3a8e",
-      "bytes": 1017965
+      "sha256": "8188c5a3fcaf713cca8850fabf36c422da97bd8870f5dde75a69ad49dc93fcd2",
+      "bytes": 1018089
     },
     "postcodes.parquet": {
       "sha256": "c65e6e933f268792eb5855d1692d83e6d4acd42f4b00c54e8b38d6b5fa447a12",
@@ -12294,12 +12291,12 @@
       "bytes": 35569
     },
     "areas.parquet": {
-      "sha256": "6ff22c0e567f87290845d135f9082c76c9db0a67debfbac84e8bf5813da225ee",
-      "bytes": 34597
+      "sha256": "38e491eab54cb7fccaf67318097291aab53903a77abe29161d1efa346706d116",
+      "bytes": 34566
     },
     "pois.parquet": {
-      "sha256": "9b81a7089211489a9a64718f1cc0e5f4bfb3b1283cd913c434b3ac4c7c4a8be9",
-      "bytes": 2093211
+      "sha256": "c5784aa81dfb2ab97ab8d7be39f870adc1be62e15d8d53041b4b2eef57079538",
+      "bytes": 2093156
     }
   },
   "correlations": {

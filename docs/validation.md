@@ -143,7 +143,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 - ✅ community score ≤ 25: 11.1 ⚓
 - ✅ housing score ≥ 50: 61.8 ⚓
-- ✅ flag broadcast_lad: council_tax, private_rent, rent_to_income, secondary_school_quality ⚓
+- ✅ flag broadcast_lad: council_tax, private_rent, secondary_school_quality ⚓
 - ✅ flag not_available: access_deprivation, aircraft_noise, bus_access, care_homes, domestic_rates, gp_list_size, gp_quality, leisure_facilities, life_expectancy, patients_per_gp, persons_per_room, pobal_deprivation, primary_results, primary_school_quality, rainfall_total, recorded_crime, secondary_results, storm_overflow_spills, swimming_pool_distance ⚓
 
 **Merthyr Tydfil** (Gelli-deg & Town). Valleys town, high deprivation, cheap homes. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
@@ -309,7 +309,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ hilliness ≤ 1.5: 0.8
 - ✅ elevation ≤ 10: 3.5 ⚓
 - ✅ flood_risk ≥ 10: 29.8
-- ✅ everyday_services ≤ 90: 73.6
+- ✅ everyday_services ≤ 90: 86.0
 - ✅ night_noise ≤ 15: 10.0 ⚓
 
 **Hounslow West** (Heston Central & Lampton West). Under the final approach to Heathrow's northern runway, with the A4 and M4 beside it: aircraft by day, aircraft and road at night. Flags: broadcast_lad, broadcast_msoa, low_n, not_available.

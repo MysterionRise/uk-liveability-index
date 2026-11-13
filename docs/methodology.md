@@ -24,18 +24,19 @@ interface calls them small areas, data zones and neighbourhoods according to the
 (`levels` in `config/nations.yaml`).
 
 Above the council there is one more name people use, the county, and it is a scope, not
-a level with scores of its own: "within Devon" ranks the neighbourhoods of the county's
-ten councils. In Great Britain a council takes the ceremonial county (OS Boundary-Line:
-England's lieutenancies, the Welsh preserved counties, the Scottish lieutenancy areas)
-where at least two thirds of its residents live, each small area placed by its
-population-weighted centre. Every English council has one (Stockton-on-Tees, which the
-Tees divides, is 70% in County Durham); six councils elsewhere have none, because a
-lieutenancy names only a part of them (Highland is not "Inverness") or because the county
-has since become another council's name (Gwynedd no longer means Anglesey to anyone
-there). Ireland's counties come from a curated list (Dublin is four councils). A county's
-own name is the county, a word that ends several counties' names is all of them
-("Yorkshire", "Sussex"), and a name that is exactly a place stays the place ("Durham" is
-the city, "County Durham" the county).
+a level with scores of its own: "within Devon" ranks the small areas of the county, which
+lie in ten councils. In Great Britain each small area takes the ceremonial county (OS
+Boundary-Line: England's lieutenancies, the Welsh preserved counties, the Scottish
+lieutenancy areas) that its population-weighted centre lies in, so a county is a set of
+small areas, and a council a county boundary divides is divided: Stockton-on-Tees north of
+the Tees is in County Durham, and Yarm and Thornaby south of it in North Yorkshire. Nine
+councils lie in more than one county. Ireland's counties come from a curated list of its
+councils (Dublin is four). A county's own name is the county, a word that ends several
+counties' names is all of them ("Yorkshire", "Sussex"), and a name that is exactly a place
+stays the place ("Durham" is the city, "County Durham" the county). Outside England a
+county that shares a council's name is left to the council: "Aberdeenshire" and "Gwynedd"
+mean the councils, whose lieutenancy or preserved county is another shape. Northern
+Ireland's six counties are not covered yet.
 
 ## 2. Indicators
 
@@ -162,7 +163,11 @@ may be scored. The build's QA report lists scored indicators that correlate abov
 - **Bus frequency** is the number of buses an hour (weekdays 07:00–19:00, on a normal
   Tuesday from the national timetable) at the busiest stop within 400m of each home;
   the busiest stop, not the sum, so one bus calling at two nearby stops isn't counted
-  twice.
+  twice. A bus is a line leaving a stop at a time, counted once however many trips in
+  the feed say so: a feed holds overlapping copies of a timetable, and counting its rows
+  made some cities' buses double. The Tuesday is the one two weeks into the feed unless
+  the feed runs far fewer trips on it than on the Tuesdays around it, when the nearest
+  normal one is taken.
 - **School results nearby** (shown on their own as context) average the results of
   nearby schools (key stage 2 within 2km, Attainment 8 within 5km), weighted by
   distance. Results reflect pupils' backgrounds as well as teaching, and progress
