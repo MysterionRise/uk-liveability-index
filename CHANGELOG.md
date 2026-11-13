@@ -91,6 +91,13 @@ All notable changes to this project. The format follows
 - An English or Welsh build from scratch needs four ONS boundary and centroid layers
   that ONS has put behind a login; a refresh builds from the copies already on disk
   (#306).
+- **The data pack's schema is 6, and this release reads only that.** The files are laid
+  out as before, but the pack carries two units that releases up to v0.7.2 do not know
+  ("£ a month", "people per room"), and their indicator list fails on an unknown unit
+  (`KeyError`, a 500 from `/api/v1/indicators`). With a new number they keep taking
+  `data-2026-11` as the newest pack they can read. From this release a unit the code
+  does not know is listed under a code made from its text, so a new unit alone will not
+  need a new number again.
 - `make data-release` refuses a pack that is not what the checked-out commit builds:
   code or configuration that is not committed, a commit to them made after the pack was
   built, or a step the planner would still rebuild. The planner now counts the code that
