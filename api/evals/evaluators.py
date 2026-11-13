@@ -399,6 +399,32 @@ class CheapestNamed(Evaluator):
 
 
 @dataclass
+class SeveralCouncils(Evaluator):
+    """A ranking within a county lists areas from more than one council (#233: "in
+    Devon" was answered for one district of it). Any ranking of the run may be the one."""
+
+    at_least: int = 2
+
+    def evaluate(self, ctx: EvaluatorContext) -> EvaluationReason:
+        widest = 0
+        for raw in ctx.output.returns:
+            try:
+                rows = json.loads(raw).get("results") or []
+            except (TypeError, ValueError, AttributeError):
+                continue
+            councils = {
+                r.get("local_authority_en") or r.get("local_authority")
+                for r in rows
+                if isinstance(r, dict)
+            }
+            widest = max(widest, len(councils - {None}))
+        return _ok(
+            widest >= self.at_least,
+            f"the widest ranking lists {widest} council(s), expected at least {self.at_least}",
+        )
+
+
+@dataclass
 class ModelEngine(Evaluator):
     """A profile case on a real model must come from the model, not the rules fallback
     (on the scripted or recorded model the rules are the engine, and that passes)."""
@@ -444,4 +470,6 @@ def evaluators_for(expect: dict, kind: str = "chat") -> list[Evaluator]:
         out.append(PercentileOfItsScore())
     if expect.get("cheapest_named"):
         out.append(CheapestNamed())
+    if expect.get("councils_at_least"):
+        out.append(SeveralCouncils(at_least=expect["councils_at_least"]))
     return out

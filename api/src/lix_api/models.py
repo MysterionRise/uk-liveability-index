@@ -221,7 +221,11 @@ class RankedArea(BaseModel):
 
 class RankResult(BaseModel):
     level: Level
-    within: str | None = Field(None, description="The area or place the ranking was limited to")
+    within: str | None = Field(
+        None,
+        description="The area or place the ranking was limited to; a county's name (or "
+        "several) when the scope was a county, which covers every council in it",
+    )
     preset: str
     theme_weights: dict[str, float]
     sort_by: str = Field(

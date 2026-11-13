@@ -181,6 +181,8 @@ STAGE_INPUTS: dict[str, list[str]] = {
     ],
     "tree_cover": ["esa_worldcover", "nspl"],
     "coastline": ["os_boundary_line", "te_high_water_mark", "osni_ni_outline", "te_admin_areas"],
+    # Great Britain's ceremonial counties, the scope a county name means (stage/counties.py)
+    "council_counties": ["os_boundary_line"],
     "os_open_uprn": ["os_open_uprn", *LOW_BOUNDARIES],
     "night_lights": ["viirs_vnl", "nspl"],
     "climate": ["haduk_grid", "nspl", "met_eireann_temp_9120", "met_eireann_rr_9120"],
@@ -236,6 +238,7 @@ STAGE_READS: dict[str, list[str]] = {
     "homes": ["nspl"],
     "police_crime": ["geo_lsoa"],  # Ireland: Small Area centroids and populations
     "geo_lsoa": ["nspl", "population", "homes"],
+    "council_counties": ["geo_lsoa"],
     "dz11_dz22": ["nspl"],
     "price_paid": ["nspl", "geo_lsoa", "dz11_dz22"],  # Scotland: crosswalk and IZ fallback
     "defra_pcm_no2": ["homes"],
@@ -320,6 +323,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         climate,
         coastline,
         community,
+        counties,
         environment,
         geo,
         health,
@@ -422,6 +426,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "noise": noise.stage_noise,  # needs staged nspl
         "tree_cover": landcover.stage_tree_cover,  # needs staged nspl
         "coastline": coastline.stage_coastline,
+        "council_counties": counties.stage_council_counties,
         "protected_areas": protected_areas.stage_protected_areas,  # needs staged homes
         "terrain": terrain.stage_terrain,  # needs staged homes
         "storm_overflows": storm_overflows.stage_storm_overflows,

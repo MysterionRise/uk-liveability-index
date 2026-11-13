@@ -17,7 +17,7 @@ from lix_api.services.scoring import (
     resolve_weights,
     scores_for,
 )
-from lix_api.services.search import search_place
+from lix_api.services.search import county_scope, search_place
 from lix_api.store import Store
 from lix_core.uncertainty import top_share
 
@@ -38,6 +38,17 @@ def _within(store: Store, within: str | None, radius_km: float | None, lang: str
     label names an area in the locale asked for where the pack has that form."""
     if not within:
         return pl.lit(True), None, None, None, None
+    county = county_scope(store, within) if radius_km is None else None
+    if county:
+        # Every council of the county (or counties) the words name, not the one district
+        # that search puts first
+        label, codes = county
+        boxes = store.areas.filter((pl.col("level") == "lad") & pl.col("code").is_in(codes))
+        bbox = (
+            boxes["bbox_w"].min(), boxes["bbox_s"].min(),
+            boxes["bbox_e"].max(), boxes["bbox_n"].max(),
+        )  # fmt: skip
+        return pl.col("lad_cd").is_in(sorted(codes)), label, bbox, label, None
     places = search_place(store, within, limit=1)
     if not places:
         raise LookupError(f"Couldn't find {within!r}")

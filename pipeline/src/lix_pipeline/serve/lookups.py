@@ -345,20 +345,27 @@ def build_areas(features: pl.DataFrame) -> pl.DataFrame:
 
 
 def council_counties() -> pl.DataFrame:
-    """Council code → the county people name it by, where the nation keeps such a list
-    (Ireland's curated councils); an empty table otherwise."""
-    empty = pl.DataFrame(schema={"code": pl.Utf8, "county": pl.Utf8})
-    if "I" not in active_nations():
-        return empty
-    try:
-        from lix_pipeline.stage.geo_ie import read_councils
+    """Council code → the county people name it by: Great Britain's ceremonial counties
+    (the staged ``council_counties``, see stage/counties.py) and Ireland's curated
+    council list; a nation with neither adds no rows."""
+    frames = [pl.DataFrame(schema={"code": pl.Utf8, "county": pl.Utf8})]
+    staged = data_dir("staged") / "council_counties.parquet"
+    if staged.exists():
+        frames.append(
+            pl.read_parquet(staged)
+            .filter(pl.col("lad_cd").str.slice(0, 1).is_in(active_nations()))
+            .select(pl.col("lad_cd").alias("code"), "county")
+        )
+    if "I" in active_nations():
+        try:
+            from lix_pipeline.stage.geo_ie import read_councils
 
-        councils = read_councils()
-    except FileNotFoundError:
-        return empty
-    if "county" not in councils.columns:
-        return empty
-    return councils.select(pl.col("lad_cd").alias("code"), "county").unique("code")
+            councils = read_councils()
+        except FileNotFoundError:
+            councils = None
+        if councils is not None and "county" in councils.columns:
+            frames.append(councils.select(pl.col("lad_cd").alias("code"), "county"))
+    return pl.concat(frames).unique("code", keep="first")
 
 
 def build_lookups(features: pl.DataFrame) -> dict:

@@ -27,7 +27,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
   about yourself ("young professional, one child starting school, I need sunshine") or
   any weighting of your own, with a range for how much a preset's result depends on the
   exact weights.
-- **An assistant that shows its working**, tested on 62 cases, 34 of them also checking
+- **An assistant that shows its working**, tested on 63 cases, 35 of them also checking
   that every number in the reply traces to a tool result ([evals](docs/evals.md)).
 - **Open**: MIT code, open data under the ODbL, a documented and validated
   [method](docs/methodology.md). It runs on your own machine.

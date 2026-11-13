@@ -334,8 +334,10 @@ def rank_areas(
     current weighting, or by one measure when the question is about one thing.
 
     Args:
-        within: a local authority, region, neighbourhood or place; with a place, areas
-            within radius_km of it (default 10 km)
+        within: a local authority, county, region, neighbourhood or place. A county
+            ("Devon", "Kent", "Yorkshire") covers every council in it, and the result's
+            `within` names what was used; with a place, areas within radius_km of it
+            (default 10 km)
         radius_km: search radius around a place
         level: "msoa" (neighbourhoods of ~8,000 people), "lsoa" (small areas of roughly
             700–4,000) or "lad"

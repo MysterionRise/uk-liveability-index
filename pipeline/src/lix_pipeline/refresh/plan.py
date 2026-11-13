@@ -333,7 +333,7 @@ def serve_sidecar() -> Path:
 # and the Northern Irish places' districts (#211) did (v0.7.0 release pass)
 SERVE_TABLES = (
     "geo_lsoa", "nspl", "places", "logainm", "ods_gp", "schools", "ofsted_schools",
-    "chargers", "osm_pois",
+    "chargers", "osm_pois", "council_counties",
 )  # fmt: skip
 
 

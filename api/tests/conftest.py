@@ -58,8 +58,16 @@ REGION_NAMES = {
     "I92000000": "Ireland",
 }
 COUNTRY_CODES = {"E": "E92000001", "W": "W92000004", "I": "I92000000"}
-# Councils that share a county (Dublin's), as the pack's areas table carries it
-COUNTIES = {"I06000007": "Dublin", "I06000008": "Dublin"}
+# Each council's county as the pack's areas table carries it: Dublin's two share one, the
+# British ones are ceremonial counties
+COUNTIES = {
+    "I06000007": "Dublin",
+    "I06000008": "Dublin",
+    "E08000035": "West Yorkshire",
+    "E06000043": "East Sussex",
+    "E06000023": "Bristol",
+    "W06000015": "South Glamorgan",
+}
 
 
 def _raw_value(ind_id: str, i: int) -> float | None:

@@ -1,5 +1,6 @@
 """The assistant eval harness (api/evals) runs end to end, offline, on the scripted model."""
 
+import json
 import sys
 from pathlib import Path
 
@@ -132,6 +133,22 @@ def test_a_percentile_check_needs_a_profile_that_names_a_larger_area():
     # The two scores written alike (69.5 and 69.52) cannot be told apart in a reply
     same = HEADINGLEY.replace("68.28", "69.52")
     assert _judge(PercentileOfItsScore(), returns=[same], reply="It scores 69.5, top 16%.").value
+
+
+def test_a_county_ranking_lists_more_than_one_council():
+    from evals.evaluators import SeveralCouncils
+
+    def ranking(*councils: str) -> str:
+        return json.dumps({"results": [{"name": f"Area {i}", "local_authority": c}
+                                       for i, c in enumerate(councils)]})  # fmt: skip
+
+    one = _judge(SeveralCouncils(), returns=[ranking("North Devon", "North Devon")], reply="")
+    assert not one.value and "1 council(s)" in one.reason
+    assert _judge(SeveralCouncils(), returns=[ranking("Exeter", "Torbay")], reply="").value
+    # A first ranking of one district and a second of the county: the county counts
+    both = [ranking("North Devon"), ranking("Exeter", "Plymouth", "Torbay")]
+    assert _judge(SeveralCouncils(at_least=3), returns=both, reply="").value
+    assert not _judge(SeveralCouncils(), returns=["not json"], reply="").value
 
 
 def test_the_cheapest_of_a_ranking_is_the_one_named():

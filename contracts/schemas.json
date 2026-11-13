@@ -1362,7 +1362,7 @@
             }
           ],
           "default": null,
-          "description": "The area or place the ranking was limited to",
+          "description": "The area or place the ranking was limited to; a county's name (or several) when the scope was a county, which covers every council in it",
           "title": "Within"
         }
       },

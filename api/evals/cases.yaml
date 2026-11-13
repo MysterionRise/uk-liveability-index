@@ -19,6 +19,8 @@
 #     consistent:     every overall score the run's tools gave one area agrees, and at
 #                     least one area was scored twice (a case that keeps one weighting)
 #     cheapest_named: the reply names the lowest-priced area of the run's first ranking
+#     councils_at_least: a ranking of the run lists areas from at least this many councils
+#                     (a county is all of its councils, not the district search finds first)
 #     percentile_of_its_score: a profile of a place gives the small area's percentile
 #                     after the small area's score, never after the larger area's
 
@@ -61,6 +63,17 @@ cases:
         - {tool: rank_areas, arg: within, op: contains, value: devon}
       state:
         - {path: preset, op: eq, value: retiree}
+      councils_at_least: 2
+      grounded: true
+
+  - name: county_kent
+    category: ranking
+    turns: ["Which neighbourhoods in Kent score best overall?"]
+    expect:
+      tools: [rank_areas]
+      args:
+        - {tool: rank_areas, arg: within, op: contains, value: kent}
+      councils_at_least: 2
       grounded: true
 
   - name: safest_bristol

@@ -379,7 +379,7 @@ export type SortLabel = string | null;
  */
 export type SortUnit = string | null;
 /**
- * The area or place the ranking was limited to
+ * The area or place the ranking was limited to; a county's name (or several) when the scope was a county, which covers every council in it
  */
 export type Within = string | null;
 /**

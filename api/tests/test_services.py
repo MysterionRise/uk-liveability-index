@@ -132,6 +132,25 @@ class TestRanking:
         r = ranking.rank_areas(store, within="Brighton", radius_km=5, level="lsoa")
         assert {a.code for a in r.results} == {"E01000005", "E01000006"}
 
+    def test_within_a_county_covers_every_council_that_shares_it(self, store):
+        """ "Dublin" is the county's councils together, not the one search puts first; a
+        county with one council here ranks that council under the county's name (#233)."""
+        r = ranking.rank_areas(store, within="Dublin", level="lsoa", limit=10)
+        assert (r.within, r.place, r.radius_km) == ("Dublin", "Dublin", None)
+        assert {a.local_authority for a in r.results} == {"Dublin City", "Dún Laoghaire-Rathdown"}
+        assert r.candidates == 3
+        # The box takes in both councils (Rathmines in the west, Dalkey in the east)
+        assert r.bbox[0] < -6.26 and r.bbox[2] > -6.10
+        councils = ranking.rank_areas(store, within="Dublin", level="lad")
+        assert {a.name for a in councils.results} == {"Dublin City", "Dún Laoghaire-Rathdown"}
+        yorkshire = ranking.rank_areas(store, within="Yorkshire", level="lsoa", limit=10)
+        assert yorkshire.within == "West Yorkshire" and yorkshire.candidates == 4
+
+    def test_a_county_with_a_radius_is_a_place_again(self, store):
+        """A radius is measured from a place: the county reading is for "within" alone."""
+        r = ranking.rank_areas(store, within="Dublin", radius_km=3, level="lsoa")
+        assert r.radius_km == 3 and r.within.startswith("within 3 km of")
+
     def test_unknown_preset(self, store):
         with pytest.raises(ValueError, match="Unknown preset"):
             resolve_weights(store, "hermit")
@@ -1100,3 +1119,89 @@ def test_a_repeated_small_area_name_carries_its_code_in_one_bracket():
         small_area_label(S, "Togher 001", None, "Wicklow", "I01013733", None)
         == "Togher 001 (I01013733)"
     )
+
+
+class TestCountyScope:
+    """What a county word covers, on a store that holds only the names (#233)."""
+
+    COUNTIES = {
+        "Devon": {"East Devon", "Exeter", "Plymouth", "Torbay"},
+        "County Durham": {"County Durham", "Darlington", "Hartlepool", "Stockton-on-Tees"},
+        "North Yorkshire": {"North Yorkshire", "York"},
+        "West Yorkshire": {"Leeds", "Bradford"},
+        "East Riding of Yorkshire": {"East Riding of Yorkshire", "Kingston upon Hull"},
+        "East Sussex": {"Brighton and Hove", "Lewes"},
+        "West Sussex": {"Worthing"},
+        "West Midlands": {"Birmingham", "Coventry"},
+        "Greater Manchester": {"Manchester", "Salford"},
+    }
+    REGIONS = {
+        "East Midlands": {"Derby", "Leicester"},
+        "West Midlands": {"Birmingham", "Coventry", "Stoke-on-Trent"},
+        "Yorkshire and The Humber": {"Leeds", "York", "North Lincolnshire"},
+        "North East": {"Darlington"},
+        "South East": {"Brighton and Hove"},
+    }
+
+    @pytest.fixture
+    def names(self, monkeypatch):
+        from types import SimpleNamespace
+
+        from lix_api.models import Place
+        from lix_api.services.text import fold
+
+        # Places and areas whose whole name a bare word can be
+        exact = {"durham": "place", "manchester": "lad", "york": "place"}
+
+        def found(_store, words, limit=8, locale=None):
+            kind = exact.get(fold(words))
+            return [Place(kind=kind, name=words.title())] if kind else []
+
+        monkeypatch.setattr(search, "search_place", found)
+        return SimpleNamespace(
+            county_names={fold(c): c for c in self.COUNTIES},
+            county_councils={fold(c): set(v) for c, v in self.COUNTIES.items()},
+            region_names={fold(r): r for r in self.REGIONS},
+            region_councils={fold(r): set(v) for r, v in self.REGIONS.items()},
+            scope_aliases={"england": ("E",)},
+        )
+
+    def test_a_countys_own_name_is_all_of_its_councils(self, names):
+        assert search.county_scope(names, "devon") == ("Devon", self.COUNTIES["Devon"])
+        label, councils = search.county_scope(names, "County Durham")
+        assert label == "County Durham" and "Hartlepool" in councils
+
+    def test_a_word_that_ends_several_counties_names_them_all(self, names):
+        label, councils = search.county_scope(names, "Yorkshire")
+        assert label == "East Riding of Yorkshire, North Yorkshire and West Yorkshire"
+        assert {"York", "Leeds", "Kingston upon Hull"} <= councils
+        # Not the region that carries the word: North Lincolnshire is not in Yorkshire
+        assert "North Lincolnshire" not in councils
+        assert search.county_scope(names, "Sussex")[0] == "East Sussex and West Sussex"
+
+    def test_a_word_that_ends_two_regions_names_the_regions(self, names):
+        label, councils = search.county_scope(names, "Midlands")
+        assert label == "East Midlands and West Midlands"
+        assert {"Derby", "Stoke-on-Trent"} <= councils
+
+    @pytest.mark.parametrize(
+        "words",
+        [
+            "Durham",  # the city: only "County Durham" is the county
+            "Manchester",  # the council: only "Greater Manchester" is the county
+            "West Midlands",  # a region of that name stays the region
+            "England",  # a nation
+            "East",  # a compass point names nothing
+            "York",  # not a part of "Yorkshire"
+            "Leeds",
+            "",
+        ],
+    )
+    def test_what_is_left_to_the_place_search(self, names, words):
+        assert search.county_scope(names, words) is None
+
+    def test_a_scope_after_a_comma_takes_the_countys_councils(self, names):
+        assert search.named_counties(names, "Durham") == {
+            "County Durham": self.COUNTIES["County Durham"]
+        }
+        assert search.named_counties(names, "north") == {}

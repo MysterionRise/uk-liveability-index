@@ -111,9 +111,16 @@ class Store:
         return out
 
     @cached_property
+    def region_names(self) -> dict[str, str]:
+        """Folded region name → the name as the pack spells it."""
+        from lix_api.services.text import fold
+
+        return {fold(r): r for r in self.features["rgn_nm"].unique().to_list() if r}
+
+    @cached_property
     def county_councils(self) -> dict[str, set[str]]:
-        """Folded county name → the council codes that share it (Dublin's four), where
-        the pack carries a county for councils."""
+        """Folded county name → the council codes that share it (Dublin's four, Devon's
+        ten), where the pack carries a county for councils."""
         from lix_api.services.text import fold
 
         if "county" not in self.areas.columns:
@@ -123,6 +130,16 @@ class Store:
         for code, county in rows.select("code", "county").iter_rows():
             out.setdefault(fold(county), set()).add(code)
         return out
+
+    @cached_property
+    def county_names(self) -> dict[str, str]:
+        """Folded county name → the name as the pack spells it."""
+        from lix_api.services.text import fold
+
+        if "county" not in self.areas.columns:
+            return {}
+        counties = self.areas.filter(pl.col("level") == "lad")["county"].drop_nulls().unique()
+        return {fold(c): c for c in counties.to_list()}
 
     @cached_property
     def applicable(self) -> dict[str, list[str]]:
