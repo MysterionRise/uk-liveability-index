@@ -161,8 +161,13 @@ cases:
     category: lookup
     turns: ["Which has a bigger share of students: Belfield in Dublin or Hyde Park in Leeds?"]
     expect:
-      reply_any: [differ, "not the same", "not directly", "not like for like", "wider",
-                  "comparable", "counts everyone", "school pupils"]
+      # "wider" and "comparable" passed a reply that set 72% against 42% and never said
+      # the counts differ ("both are wider neighbourhoods")
+      reply_any: ["count differently", "counts differently", "counted differently",
+                  "measured differently", "defined differently", "not the same measure",
+                  "not like for like", "isn't like for like", "different definition",
+                  "school pupils", "aged 15", "main status", "not directly comparable",
+                  "aren't directly comparable", "can't be compared directly"]
       grounded: true
 
   - name: compare_two

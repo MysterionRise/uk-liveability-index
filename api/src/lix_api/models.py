@@ -285,6 +285,12 @@ class Comparison(BaseModel):
         description="Substitute indicator → the usual indicator it stands in for, where an "
         "area's nation lacks the usual one",
     )
+    across_nations: dict[str, str] = Field(
+        default_factory=dict,
+        description="Set when the areas are in different nations: the rows those nations "
+        "measure differently (indicator id → why, in English). Give each area's figure "
+        "as its own nation's and do not say which area has more or less of it",
+    )
 
 
 class Poi(BaseModel):

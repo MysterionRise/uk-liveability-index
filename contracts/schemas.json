@@ -417,6 +417,14 @@
     },
     "Comparison": {
       "properties": {
+        "across_nations": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Set when the areas are in different nations: the rows those nations measure differently (indicator id \u2192 why, in English). Give each area's figure as its own nation's and do not say which area has more or less of it",
+          "title": "Across Nations",
+          "type": "object"
+        },
         "areas": {
           "items": {
             "$ref": "#/$defs/ComparedArea"

@@ -535,11 +535,18 @@ export interface Themes1 {
  * via the `definition` "Comparison".
  */
 export interface Comparison {
+  across_nations?: AcrossNations;
   areas: Areas;
   indicator_labels: IndicatorLabels;
   preset: Preset1;
   stand_ins?: StandIns;
   theme_labels: ThemeLabels;
+}
+/**
+ * Set when the areas are in different nations: the rows those nations measure differently (indicator id → why, in English). Give each area's figure as its own nation's and do not say which area has more or less of it
+ */
+export interface AcrossNations {
+  [k: string]: string;
 }
 export interface IndicatorLabels {
   [k: string]: string;

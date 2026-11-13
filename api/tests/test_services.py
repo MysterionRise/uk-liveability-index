@@ -581,6 +581,11 @@ class TestSubstitutes:
         from lix_api.services.compare import COMPARE_INDICATORS, compare_areas
 
         c = compare_areas(store, ["LS6 3HN", "CF10 1AA"])
+        # England and Wales: the rows ranked within the nation say so, with why
+        assert "students_share" in c.across_nations and "house_price" in c.across_nations
+        assert "compare within one" in c.across_nations["students_share"]
+        assert "no2" not in c.across_nations  # measured the same everywhere
+        assert compare_areas(store, ["LS6 3HN", "E01000003"]).across_nations == {}
         # People per room is Ireland's: neither area has it, so it is no row here
         assert list(c.indicator_labels) == [
             i for i in COMPARE_INDICATORS if i in store.indicators and i != "persons_per_room"

@@ -147,10 +147,21 @@ def compare_areas(
                 indicators={i: values.get(i) for i in rows_shown},
             )  # fmt: skip
         )
+    # Areas in two nations: the rows ranked within the nation are not one measure in
+    # both (Ireland's students are everyone aged 15 and over whose main status is
+    # student; "Belfield has the bigger share: 92% against 77%" was said 3 times of 3)
+    nations = {code[:1] for code, *_ in picked}
+    across = {
+        i: store.indicators[i].caveats
+        or "The nations measure or record this differently, so it is ranked within each."
+        for i in rows_shown
+        if len(nations) > 1 and store.indicators[i].benchmark == "nation"
+    }
     return Comparison(
         preset=name,
         areas=areas,
         indicator_labels={i: store.indicators[i].label for i in rows_shown},
         theme_labels={t: s.label for t, s in store.themes.items()},
         stand_ins=stand_ins,
+        across_nations=across,
     )
