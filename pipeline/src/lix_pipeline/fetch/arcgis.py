@@ -49,6 +49,40 @@ def resolve_item(access: ArcgisItemAccess, session: requests.Session) -> dict:
     Returns the lock "resolved" section: url, item_id, title, modified, and for
     feature services the service URL.
     """
+    try:
+        item = _find_item(access, session)
+    except RuntimeError as e:
+        # ArcGIS answered that the item cannot be read (withdrawn, or behind a login)
+        if access.mirror is None:
+            raise
+        logger.warning(f"Item {access.pin} cannot be read ({e}); using the mirror")
+        return {
+            "url": access.mirror.url,
+            "item_id": access.pin,
+            "title": None,
+            "modified": access.mirror.modified,
+            "mirror": True,
+        }
+
+    item_id = item["id"]
+    if access.mode == "data":
+        url = f"{ARCGIS}/content/items/{item_id}/data"
+    elif access.mode == "hub_export":
+        hub = access.hub.rstrip("/")
+        url = f"{hub}/api/download/v1/items/{item_id}/{access.export_format}?layers={access.layer}"
+    else:
+        url = f"{item['url'].rstrip('/')}/{access.layer}"
+
+    return {
+        "url": url,
+        "item_id": item_id,
+        "title": item.get("title"),
+        "modified": _ms_to_iso(item.get("modified")),
+    }
+
+
+def _find_item(access: ArcgisItemAccess, session: requests.Session) -> dict:
+    """The newest search match, else the pinned item."""
     item = None
     if access.query:
         results = _json(
@@ -70,22 +104,7 @@ def resolve_item(access: ArcgisItemAccess, session: requests.Session) -> dict:
         item = _item(session, access.pin)
     elif item["id"] != access.pin:
         logger.info(f"Newer item than pin: {item['title']!r} ({item['id']})")
-
-    item_id = item["id"]
-    if access.mode == "data":
-        url = f"{ARCGIS}/content/items/{item_id}/data"
-    elif access.mode == "hub_export":
-        hub = access.hub.rstrip("/")
-        url = f"{hub}/api/download/v1/items/{item_id}/{access.export_format}?layers={access.layer}"
-    else:
-        url = f"{item['url'].rstrip('/')}/{access.layer}"
-
-    return {
-        "url": url,
-        "item_id": item_id,
-        "title": item.get("title"),
-        "modified": _ms_to_iso(item.get("modified")),
-    }
+    return item
 
 
 def resolve_layer(access: ArcgisLayerAccess, session: requests.Session) -> dict:

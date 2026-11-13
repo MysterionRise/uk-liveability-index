@@ -93,6 +93,49 @@ class TestResolveArcgisItem:
             "https://services1.arcgis.com/x/FeatureServer/0"
         )
 
+    FORBIDDEN = {
+        "error": {
+            "code": 403,
+            "messageCode": "GWM_0003",
+            "message": "You do not have permissions to access this resource or perform this "
+            "operation.",
+        }
+    }
+
+    def test_an_item_behind_a_login_is_read_from_its_mirror(self, arcgis_server):
+        """ONS put four 2021 layers behind a login in November 2026 (#306): the search
+        finds nothing and the pinned item answers 403."""
+        arcgis_server.expect_request("/sharing/rest/search").respond_with_json({"results": []})
+        arcgis_server.expect_request("/sharing/rest/content/items/pinned0").respond_with_json(
+            self.FORBIDDEN
+        )
+        mirror = {
+            "url": "https://example.test/mirror/lsoa.gpkg",
+            "modified": "2025-08-11T08:22:17+00:00",
+        }
+        access = _arcgis_access(mode="hub_export", export_format="geoPackage", mirror=mirror)
+        resolved = arcgis.resolve_item(access, make_session())
+        # The version is the one the copy was made from, so the lockfile still matches
+        assert resolved == {
+            "url": "https://example.test/mirror/lsoa.gpkg",
+            "item_id": "pinned0",
+            "title": None,
+            "modified": "2025-08-11T08:22:17+00:00",
+            "mirror": True,
+        }
+        # Without a mirror the failure is the publisher's, and is raised as before
+        with pytest.raises(RuntimeError, match="GWM_0003"):
+            arcgis.resolve_item(_arcgis_access(), make_session())
+
+    def test_a_readable_item_is_preferred_to_its_mirror(self, arcgis_server):
+        arcgis_server.expect_request("/sharing/rest/search").respond_with_json(self.SEARCH)
+        mirror = {
+            "url": "https://example.test/mirror/nspl.zip",
+            "modified": "2026-08-01T00:00:00+00:00",
+        }
+        resolved = arcgis.resolve_item(_arcgis_access(mirror=mirror), make_session())
+        assert resolved["item_id"] == "aug26" and "mirror" not in resolved
+
     def test_arcgis_error_with_http_200_raises(self, arcgis_server):
         arcgis_server.expect_request("/sharing/rest/search").respond_with_json({"results": []})
         arcgis_server.expect_request("/sharing/rest/content/items/pinned0").respond_with_json(
