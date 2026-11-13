@@ -408,20 +408,46 @@ def _active_services(root: Path, day: date) -> str:
     """
 
 
+def _header(path: Path) -> set[str]:
+    """The column names of a GTFS file (its first line)."""
+    with open(path, encoding="utf-8-sig") as f:
+        return {c.strip().strip('"') for c in f.readline().split(",")}
+
+
 def _gtfs_departures(root) -> pl.DataFrame:
     import duckdb
 
     from lix_pipeline.stage.geo import lonlat_to_bng
 
     con = duckdb.connect()
+    root = Path(root)
     day = gtfs_reference_day(root)
+    # A departure is a line leaving a stop at a time, counted once however many trips say
+    # so. A feed holds overlapping copies of a timetable (an operator publishes the next
+    # version before the last one ends): on 24 November 2026 England's feed ran 464,419
+    # trips that were 426,543 journeys, and First Bristol's 12,380 trips were 6,967. The
+    # copies pile up on later dates, so a row count made a city's buses double.
+    trip_columns = _header(root / "trips.txt")
+    direction = "coalesce(t.direction_id, '')" if "direction_id" in trip_columns else "''"
+    if (root / "routes.txt").exists():
+        route_columns = _header(root / "routes.txt")
+        names = [f"nullif(r.{c}, '')" for c in ("route_short_name", "route_long_name")
+                 if c in route_columns]  # fmt: skip
+        line = f"coalesce({', '.join([*names, 't.route_id'])})"
+        agency = "coalesce(r.agency_id, '')" if "agency_id" in route_columns else "''"
+        routes = f"LEFT JOIN read_csv('{root / 'routes.txt'}', all_varchar=true) r USING (route_id)"
+    else:
+        line, agency, routes = "t.route_id", "''", ""
     sql = f"""
-    WITH active AS ({_active_services(Path(root), day)}),
+    WITH active AS ({_active_services(root, day)}),
     trips AS (
-        SELECT trip_id FROM read_csv('{root / "trips.txt"}', all_varchar=true)
-        WHERE service_id IN (SELECT service_id FROM active)
+        SELECT t.trip_id, {agency} AS agency, {line} AS line, {direction} AS direction
+        FROM read_csv('{root / "trips.txt"}', all_varchar=true) t {routes}
+        WHERE t.service_id IN (SELECT service_id FROM active)
     )
-    SELECT st.stop_id, count(*) AS departures
+    SELECT st.stop_id,
+           count(DISTINCT (trips.agency, trips.line, trips.direction, st.departure_time))
+               AS departures
     FROM read_csv('{root / "stop_times.txt"}', all_varchar=true) st
     JOIN trips USING (trip_id)
     WHERE st.departure_time >= '{DAYTIME[0]}' AND st.departure_time < '{DAYTIME[1]}'
