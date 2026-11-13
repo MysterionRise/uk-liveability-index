@@ -23,6 +23,20 @@ with every area as `source_code`. Scores describe an area as a whole, not any on
 interface calls them small areas, data zones and neighbourhoods according to the nation
 (`levels` in `config/nations.yaml`).
 
+Above the council there is one more name people use, the county, and it is a scope, not
+a level with scores of its own: "within Devon" ranks the neighbourhoods of the county's
+ten councils. In Great Britain a council takes the ceremonial county (OS Boundary-Line:
+England's lieutenancies, the Welsh preserved counties, the Scottish lieutenancy areas)
+where at least two thirds of its residents live, each small area placed by its
+population-weighted centre. Every English council has one (Stockton-on-Tees, which the
+Tees divides, is 70% in County Durham); six councils elsewhere have none, because a
+lieutenancy names only a part of them (Highland is not "Inverness") or because the county
+has since become another council's name (Gwynedd no longer means Anglesey to anyone
+there). Ireland's counties come from a curated list (Dublin is four councils). A county's
+own name is the county, a word that ends several counties' names is all of them
+("Yorkshire", "Sussex"), and a name that is exactly a place stays the place ("Durham" is
+the city, "County Durham" the county).
+
 ## 2. Indicators
 
 Each indicator is built for every LSOA from one or more sources, then given one of
