@@ -9,6 +9,7 @@ lix validate geo               # check the geography backbone
 lix validate serve             # check data/serve (or --dir another serve directory)
 lix validate places            # anchor checks of the face-validity review
 lix qa places                  # write docs/validation.md
+lix qa diff --old DIR          # what moved between two packs, per indicator and nation
 lix refresh --dry-run          # what a refresh would rebuild; lix refresh does it
 lix demo-data --out fixtures/demo   # small dataset for CI/demos (nations.yaml demo_upper)
 """
@@ -197,6 +198,31 @@ def _demo_data(args: argparse.Namespace) -> int:
 
 
 def _qa(args: argparse.Namespace) -> int:
+    if args.target == "diff":
+        from pathlib import Path
+
+        from lix_pipeline.qa.diff import diff_packs
+
+        if not args.old:
+            print("lix qa diff needs --old <the earlier pack's directory>", file=sys.stderr)
+            return 2
+        old_lock = Path(args.old_lock) if args.old_lock else None
+        new_lock = Path(args.new_lock or "config/datasets.lock.json") if old_lock else None
+        report, found = diff_packs(
+            Path(args.old), Path(args.new or data_dir("serve")), old_lock, new_lock
+        )
+        if args.out:
+            Path(args.out).write_text(report)
+            print(f"wrote {args.out}")
+        else:
+            print(report)
+        print(
+            f"{len(found['moved'])} indicators moved; "
+            f"{len(found['moved_without_cause'])} without a new edition or definition; "
+            f"{len(found['editions_that_moved_nothing'])} new editions moved nothing",
+            file=sys.stderr,
+        )
+        return 0
     from lix_pipeline.qa.places import anchor_problems, review, write_review
 
     path = write_review()
@@ -398,7 +424,16 @@ def main(argv: list[str] | None = None) -> None:
     validate.set_defaults(func=_validate)
 
     qa = sub.add_parser("qa", help="Quality reviews of the built data")
-    qa.add_argument("target", choices=["places"])
+    qa.add_argument("target", choices=["places", "diff"])
+    qa.add_argument("--old", help="diff: the earlier pack's directory")
+    qa.add_argument("--new", help="diff: the later pack's directory (default data/serve)")
+    qa.add_argument("--out", help="diff: write the report here instead of printing it")
+    qa.add_argument(
+        "--old-lock",
+        help="diff: the lockfile the earlier pack was built from (a new edition is then a "
+        "file whose checksum changed)",
+    )
+    qa.add_argument("--new-lock", help="diff: the later pack's (default config/datasets.lock.json)")
     qa.set_defaults(func=_qa)
 
     demo = sub.add_parser("demo-data", help="Cut a small serve dataset from a full build")
