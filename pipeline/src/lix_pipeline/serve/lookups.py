@@ -18,7 +18,7 @@ from lix_core.codes import active_nations, in_scope
 from lix_core.config import load_nations
 from lix_core.log import setup_logging
 from lix_core.paths import data_dir
-from lix_core.text import clean_name
+from lix_core.text import clean_name, title_name
 from lix_pipeline.stage.geo import bng_to_lonlat
 
 logger = setup_logging("serve.lookups")
@@ -97,6 +97,15 @@ def _school_pois(staged) -> pl.DataFrame | None:
             pl.lit(None, pl.Date).alias("inspection_date"),
         )
     schools = _with_lonlat(schools)
+    # The Welsh list writes a third of its names in capitals, in Welsh and in English (#310)
+    schools = schools.with_columns(
+        pl.when(pl.col("source") == "wg")
+        .then(
+            pl.col("name").map_elements(lambda n: title_name(n, welsh=True), return_dtype=pl.Utf8)
+        )
+        .otherwise(pl.col("name"))
+        .alias("name")
+    )
     category = (
         pl.when(pl.col("phase").is_in(["Primary", "Middle deemed primary"]))
         .then(pl.lit("primary_school"))
@@ -188,6 +197,15 @@ def build_pois() -> pl.DataFrame:
             pl.when(pl.col("source") == "OpenStreetMap").then(pl.lit(ODBL)).otherwise(pl.lit(OGL))
             .alias("licence")
         )  # fmt: skip
+    # The ODS list writes every name in capitals and Northern Ireland's a few; the others
+    # do not. Done here, not in the stager, so the GP indicators' staged input is as the
+    # source wrote it
+    gp = gp.with_columns(
+        pl.when(pl.col("source").is_in(["NHS England ODS", "Business Services Organisation"]))
+        .then(pl.col("name").map_elements(title_name, return_dtype=pl.Utf8))
+        .otherwise(pl.col("name"))
+        .alias("name")
+    )
     # Ids are prefixed by source, so an OpenStreetMap surgery never reads as an ODS code
     prefix = pl.col("source").replace_strict(GP_ID_PREFIX, default="gp")
     code = pl.col("practice_code").str.replace(r"^osm:", "")

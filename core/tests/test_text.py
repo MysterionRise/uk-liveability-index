@@ -1,8 +1,15 @@
 """Names as people read them: mojibake repair, stray characters, the validator's check."""
 
 import polars as pl
+import pytest
 
-from lix_core.text import clean_name, repair_mojibake, stray_name_problems
+from lix_core.text import (
+    capitals_problems,
+    clean_name,
+    repair_mojibake,
+    stray_name_problems,
+    title_name,
+)
 
 
 def mangle(text: str, codec: str, times: int = 1) -> str:
@@ -114,3 +121,91 @@ def test_stray_name_problems_names_the_column_and_examples():
     assert len(problems) == 1
     assert problems[0].startswith("pois.name: 4 names with stray characters")
     assert stray_name_problems(df.filter(pl.col("poi_id") == "a"), "pois", "poi_id") == []
+
+
+class TestTitleName:
+    """A name that arrives in capitals, as people write it (#258)."""
+
+    @pytest.mark.parametrize(
+        ("raw", "shown"),
+        [
+            ("HEBDEN BRIDGE GROUP PRACTICE", "Hebden Bridge Group Practice"),
+            # Acronyms stay; small words drop unless they open the name or a part of it
+            ("THE NHS CENTRE", "The NHS Centre"),
+            ("COVENTRY GP GROUP OF PRACTICES", "Coventry GP Group of Practices"),
+            ("NEWCASTLE UNDER LYME PMS", "Newcastle under Lyme PMS"),
+            ("INSPIRE HEALTH - THE AVENUE SURGERY", "Inspire Health - The Avenue Surgery"),
+            ("THE SURGERY (THE GROVE)", "The Surgery (The Grove)"),
+            # A word with no vowel is an acronym or initials, unless it is an abbreviation
+            ("STRATFORD-UPON-AVON HC", "Stratford-upon-Avon HC"),
+            ("ST. MARY'S HEALTH CTR", "St. Mary's Health Ctr"),
+            ("HUMSHAUGH & WARK MED GRP", "Humshaugh & Wark Med Grp"),
+            ("HOLES LANE MEDICAL LTD.", "Holes Lane Medical Ltd."),
+            # Initials after "Dr", but not a two-letter surname
+            ("DR PS BATH'S PRACTICE", "Dr PS Bath's Practice"),
+            ("DR AA ANSARI'S PRACTICE", "Dr AA Ansari's Practice"),
+            ("P'SHIP OF DR A B SHAH", "P'ship of Dr A B Shah"),
+            ("DR NG & PARTNERS", "Dr Ng & Partners"),
+            ("DR AL MOUSAWI", "Dr Al Mousawi"),
+            ("DR LEE & PARTNERS", "Dr Lee & Partners"),
+            # Apostrophes, hyphens, Mc
+            ("O'RIORDAN SURGERY", "O'Riordan Surgery"),
+            ("ST JAMES' SURGERY", "St James' Surgery"),
+            ("THE RIGG-MILNER MEDICAL CENTRE", "The Rigg-Milner Medical Centre"),
+            ("CHAPEL-EN-LE-FRITH", "Chapel-en-le-Frith"),
+            ("MCKENZIE HOUSE", "McKenzie House"),
+            ("MACKLIN STREET SURGERY", "Macklin Street Surgery"),
+            # Digits: a postcode district and a code stay, an ordinal drops its capitals
+            ("FIRST 4 HEALTH GROUP - E7 HEALTH", "First 4 Health Group - E7 Health"),
+            ("4TH FLOOR SURGERY", "4th Floor Surgery"),
+            ("YORKLEIGH SURGERY(CT)", "Yorkleigh Surgery(CT)"),
+        ],
+    )
+    def test_capitals_become_title_case(self, raw, shown):
+        assert title_name(raw) == shown
+
+    @pytest.mark.parametrize(
+        ("raw", "shown"),
+        [
+            ("YSGOL Y GARREG", "Ysgol y Garreg"),
+            ("MAES YR HAF", "Maes yr Haf"),
+            ("Y TYMBL", "Y Tymbl"),  # the word that opens a name keeps its capital
+            # w is a vowel: these are words, not acronyms
+            ("CWRT HENRI", "Cwrt Henri"),
+            ("PWLL", "Pwll"),
+            ("YSGOL CWM BANWY", "Ysgol Cwm Banwy"),
+            ("YGG TANYLAN", "YGG Tanylan"),
+            # The I of an initialism is not the Welsh word for "to"
+            ("GRIFFITHS C.I.W. PRIMARY SCHOOL", "Griffiths C.I.W. Primary School"),
+            ("LLANELWEDD CHURCH IN WALES PRIMARY", "Llanelwedd Church in Wales Primary"),
+            ("HAY-ON-WYE C.P. SCHOOL", "Hay-on-Wye C.P. School"),
+            ("ST BERNADETTES RC PRIMARY", "St Bernadettes RC Primary"),
+        ],
+    )  # fmt: skip
+    def test_welsh_names(self, raw, shown):
+        assert title_name(raw, welsh=True) == shown
+
+    def test_w_is_a_vowel_in_welsh_names_only(self):
+        assert title_name("DR GWD JONES") == "Dr GWD Jones"
+        assert title_name("PWLL PRIMARY") == "PWLL Primary"
+
+    def test_a_name_with_lower_case_is_left_alone(self):
+        assert title_name("Meddygfa Teifi Surgery") == "Meddygfa Teifi Surgery"
+        assert title_name("the McKenzie practice") == "the McKenzie practice"
+        assert title_name(None) is None
+
+
+def test_a_source_whose_names_are_mostly_capitals_is_a_problem():
+    shouting = [f"SURGERY NUMBER {i}" for i in range(30)]
+    mixed = [f"Ysgol {i}" for i in range(25)] + ["YSGOL GYNRADD"] * 5 + ["ALDI"]
+    pois = pl.DataFrame(
+        {
+            "name": shouting + mixed + ["RHND"],
+            "source": ["NHS England ODS"] * 30 + ["Welsh Government"] * 31 + ["Tiny list"],
+        }
+    )
+    assert capitals_problems(pois, "pois") == [
+        "pois: 30 of 30 names from NHS England ODS are all in capitals"
+    ]
+    titled = pois.with_columns(pl.col("name").map_elements(title_name, return_dtype=pl.Utf8))
+    assert capitals_problems(titled, "pois") == []

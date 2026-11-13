@@ -101,6 +101,129 @@ def clean_name(expr: pl.Expr) -> pl.Expr:
     )
 
 
+# --- A name that arrives in capitals ("HEBDEN BRIDGE GROUP PRACTICE"), as people write it
+
+# Kept in capitals whatever their letters; a word with no vowel is kept too (HC, NPC, the
+# initials in "DR PS BATH'S PRACTICE") unless it is one of the abbreviations below
+ACRONYMS = frozenset(
+    "nhs gp gps pcn uk hmp pms gms apms cic llp sas ccg uea raf mod yoi".split()
+)  # fmt: skip
+ABBREVIATIONS = frozenset(
+    "dr drs st rd mr mrs ms mt ctr ctrs cntr cnt ltd grp hth hlth ptnr ptnrs blvd mc".split()
+)
+# Lower case unless they open the name or a part of it
+SMALL_WORDS = frozenset("and of the at for in on by with upon under".split())
+# Lower case between hyphens ("Chapel-en-le-Frith", "Chorlton-cum-Hardy")
+HYPHEN_BOUND = frozenset({"en", "le", "la", "cum"})
+# Welsh: the words that stay lower between two others ("Ysgol y Garreg", "Maes yr Haf"),
+# the acronyms of school names that carry a vowel, and w, which is one ("Cwrt", "Pwll")
+WELSH_SMALL_WORDS = frozenset("y yr a ac o i yn ar dan ger na o'r a'r".split())
+WELSH_ACRONYMS = frozenset({"ygg", "va", "ciw"})
+# After "Dr", one or two letters before the surname are initials ("Dr AA Ansari") unless
+# they are a surname or a particle of one ("Dr Ng", "Dr Al Mousawi")
+TWO_LETTER_NAMES = frozenset(
+    "ng li wu xu ma ho le lo yu oo su ko lu hu he vu do an yi mo so ha al el de du la da di".split()
+)  # fmt: skip
+_TOKEN = re.compile(r"([A-Za-z0-9']+)")
+_ORDINAL = re.compile(r"^\d+(st|nd|rd|th)$")
+_VOWEL = re.compile(r"[aeiouy]")
+_WELSH_VOWEL = re.compile(r"[aeiouyw]")
+_PART_BREAK = re.compile(r"\s-|-\s|\($|:\s*$")
+
+
+def _cap(word: str) -> str:
+    return word[:1].upper() + word[1:]
+
+
+def _title_word(word: str) -> str:
+    """One word in title case: Mc and O' take a second capital, a possessive does not."""
+    if word.startswith("mc") and len(word) > 3:
+        return "Mc" + _cap(word[2:])
+    pieces = word.split("'")
+    return "'".join(
+        _cap(p) if i == 0 or pieces[i - 1] in ("o", "d") else p for i, p in enumerate(pieces)
+    )
+
+
+def title_name(name: str | None, welsh: bool = False) -> str | None:
+    """A name written all in capitals, in title case: "THE NHS CENTRE" → "The NHS Centre",
+    "DR PS BATH'S PRACTICE" → "Dr PS Bath's Practice", "ST. MARY'S HEALTH CTR" → "St.
+    Mary's Health Ctr", "MCKENZIE HOUSE" → "McKenzie House". A name that already has a
+    lower-case letter is left as it is. ``welsh``: the name may be Welsh ("YSGOL Y
+    GARREG" → "Ysgol y Garreg", "CWRT HENRI" → "Cwrt Henri")."""
+    if name is None or any(c.islower() for c in name):
+        return name
+    vowel = _WELSH_VOWEL if welsh else _VOWEL
+    tokens = _TOKEN.split(name)
+    out = []
+    opening = True  # the next word opens the name, or a part after a dash or a bracket
+    after_doctor = False
+    for i, token in enumerate(tokens):
+        if i % 2 == 0:  # what stands between words
+            out.append(token)
+            # A spaced dash, a bracket or a colon starts a part; a hyphen joins a word
+            if _PART_BREAK.search(token):
+                opening = True
+            continue
+        word = token.lower()
+        following = tokens[i + 1] if i + 1 < len(tokens) else ""
+        has_next_word = i + 2 < len(tokens)
+        between_hyphens = i >= 2 and tokens[i - 1] == "-" and following == "-"
+        bracketed = i >= 2 and tokens[i - 1].endswith("(") and following.startswith(")")
+        # A Welsh small word stands between spaces: the I of "C.I.W." is an initial
+        spaced = i >= 2 and tokens[i - 1].endswith(" ") and following.startswith(" ")
+        welsh_small = welsh and spaced and not opening and word in WELSH_SMALL_WORDS
+        if any(c.isdigit() for c in word):
+            letters = len(word) - len(word.lstrip("abcdefghijklmnopqrstuvwxyz"))
+            shown = word if _ORDINAL.match(word) else _cap(word) if letters >= 3 else token
+        elif welsh_small:
+            shown = word
+        elif word in ACRONYMS or (bracketed and len(word) <= 2):
+            shown = token  # an acronym, or a code in brackets: "(LA)"
+        elif welsh and word in WELSH_ACRONYMS:
+            shown = token
+        elif after_doctor and word in TWO_LETTER_NAMES:
+            shown = _title_word(word)
+        elif after_doctor and len(word) <= 2 and following == " " and has_next_word:
+            shown = token  # initials
+        elif word in ABBREVIATIONS:
+            shown = _title_word(word)
+        elif len(word) >= 2 and not vowel.search(word):
+            shown = token
+        elif (word in SMALL_WORDS and not opening) or (word in HYPHEN_BOUND and between_hyphens):
+            shown = word
+        else:
+            shown = _title_word(word)
+        out.append(shown)
+        # Initials can follow one another ("DR A B SHAH"); anything else ends them
+        after_doctor = word in ("dr", "drs") or (after_doctor and shown == token and len(word) <= 2)
+        opening = False
+    return "".join(out)
+
+
+def capitals_problems(
+    df: pl.DataFrame, table: str, by: str = "source", share: float = 0.5
+) -> list[str]:
+    """A problem line per value of ``by`` where more than ``share`` of the names are
+    written in capitals: a list that arrives that way is put in title case before it is
+    served (#258, #310). Some names in capitals pass: brands, codes and acronyms are
+    written so ("ALDI", "W4 4NT", "RHND")."""
+    if "name" not in df.columns or by not in df.columns:
+        return []
+    shouting = pl.col("name").str.contains(r"\p{Lu}{2}") & ~pl.col("name").str.contains(r"\p{Ll}")
+    counts = (
+        df.filter(pl.col("name").is_not_null())
+        .group_by(by)
+        .agg(pl.len().alias("names"), shouting.sum().alias("capitals"))
+        .filter((pl.col("names") >= 20) & (pl.col("capitals") > share * pl.col("names")))
+        .sort(by)
+    )
+    return [
+        f"{table}: {capitals:,} of {names:,} names from {source} are all in capitals"
+        for source, names, capitals in counts.rows()
+    ]
+
+
 def stray_name_problems(
     df: pl.DataFrame, table: str, key: str, columns: list[str] | None = None
 ) -> list[str]:

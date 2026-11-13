@@ -78,3 +78,40 @@ def test_staleness_follows_the_publishing_cadence():
     assert is_stale("2026-07-01T00:00:00+00:00", "monthly", now)
     assert not is_stale("2020-01-01T00:00:00+00:00", "static", now)
     assert not is_stale(None, "monthly", now)
+
+
+def test_every_english_council_needs_a_county():
+    from lix_pipeline.qa.validate import county_problems
+
+    areas = pl.DataFrame(
+        {
+            "code": ["E08000035", "E06000023", "S12000017", "E02000001"],
+            "name": ["Leeds", "Bristol, City of", "Highland", "Headingley"],
+            "level": ["lad", "lad", "lad", "msoa"],
+            "county": ["West Yorkshire", None, None, None],
+        }
+    )
+    # Highland is divided between lieutenancies and has none; a neighbourhood has none
+    assert county_problems(areas) == [
+        "1 English councils have no county, e.g. ['Bristol, City of']"
+    ]
+    assert county_problems(areas.drop("county")) == ["areas.parquet has no county column"]
+
+
+def test_a_full_pack_has_the_whole_of_devon_and_kent():
+    from lix_pipeline.qa.validate import COUNTY_COUNCILS, ENGLISH_COUNCILS, county_problems
+
+    def pack(devon: int) -> pl.DataFrame:
+        counties = ["Devon"] * devon + ["Kent"] * COUNTY_COUNCILS["Kent"]
+        counties += ["Essex"] * (ENGLISH_COUNCILS - len(counties))
+        return pl.DataFrame(
+            {
+                "code": [f"E0700{i:04d}" for i in range(len(counties))],
+                "name": [f"Council {i}" for i in range(len(counties))],
+                "level": ["lad"] * len(counties),
+                "county": counties,
+            }
+        )
+
+    assert county_problems(pack(devon=10)) == []
+    assert county_problems(pack(devon=8)) == ["Devon has 8 councils, expected 10"]

@@ -20,7 +20,7 @@ from lix_core.config import (
 )
 from lix_core.paths import data_dir
 from lix_core.quality import QUALITY_LEVELS
-from lix_core.text import stray_name_problems
+from lix_core.text import capitals_problems, stray_name_problems
 
 
 def validate_geo() -> list[str]:
@@ -198,6 +198,32 @@ def indicator_coverage_problems(
     return problems
 
 
+# What two counties cover in a pack that holds all of England: Devon with Plymouth and
+# Torbay, Kent with Medway (#233)
+COUNTY_COUNCILS = {"Devon": 10, "Kent": 13}
+ENGLISH_COUNCILS = 296
+
+
+def county_problems(areas: pl.DataFrame) -> list[str]:
+    """Every English council has a county, the scope a county name means; and where the
+    pack holds all of England, Devon and Kent have the councils they should."""
+    if "county" not in areas.columns:
+        return ["areas.parquet has no county column"]
+    councils = areas.filter(pl.col("level") == "lad")
+    english = councils.filter(pl.col("code").str.starts_with("E"))
+    problems = []
+    without = english.filter(pl.col("county").is_null())
+    if without.height:
+        names = without["name"].sort().head(3).to_list()
+        problems.append(f"{without.height} English councils have no county, e.g. {names}")
+    if english.height >= ENGLISH_COUNCILS:
+        for county, expected in COUNTY_COUNCILS.items():
+            found = councils.filter(pl.col("county") == county).height
+            if found != expected:
+                problems.append(f"{county} has {found} councils, expected {expected}")
+    return problems
+
+
 def validate_serve(serve_dir: Path | None = None) -> list[str]:
     """The files the API and browser read: complete, consistent and as the manifest says.
 
@@ -329,6 +355,13 @@ def validate_serve(serve_dir: Path | None = None) -> list[str]:
             problems.append(f"{table}.parquet could not be read: {exc}")
             continue
         problems += stray_name_problems(frame, table, key)
+        if table == "pois":
+            problems += capitals_problems(frame, table)
+            # GP and school lists are names throughout: a few in capitals is already a fault
+            named = frame.filter(pl.col("category").str.contains("^gp$|school|^nursery$"))
+            problems += capitals_problems(named, "pois (GPs and schools)", share=0.05)
+        if table == "areas":
+            problems += county_problems(frame)
 
     for tiles in ("lsoa", "msoa", "lad"):
         path = serve / "tiles" / f"{tiles}.pmtiles"
