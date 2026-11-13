@@ -50,6 +50,30 @@ def price_to_income(ctx) -> pl.DataFrame:
     )
 
 
+def private_rent(ctx, column: str = "rent") -> pl.DataFrame:
+    """The local authority's average monthly private rent, for each of its areas."""
+    df = broadcast(ctx.staged("ons_private_rents"), [column], "lad", "lad_cd", geo=ctx.geo)
+    return df.rename({column: "value"})
+
+
+def rent_to_income(ctx) -> pl.DataFrame:
+    """A year of the local authority's average rent as a share of the MSOA's mean net
+    household income (%)."""
+    rent = private_rent(ctx).select("lsoa21cd", pl.col("value").alias("rent"))
+    income = ctx.staged("msoa_income").select("msoa21cd", "income_net")
+    df = (
+        ctx.geo.select("lsoa21cd", "msoa21cd")
+        .join(rent, on="lsoa21cd", how="left")
+        .join(income, on="msoa21cd", how="left")
+    )
+    return df.select(
+        "lsoa21cd",
+        (pl.col("rent") * 12 / pl.col("income_net") * 100).alias("value"),
+        # The coarser of its two inputs
+        pl.lit("broadcast_lad").alias("quality"),
+    )
+
+
 def msoa_income(ctx, column: str) -> pl.DataFrame:
     """An MSOA income estimate copied to its LSOAs."""
     df = broadcast(ctx.staged("msoa_income"), [column], "msoa", "msoa21cd", geo=ctx.geo)

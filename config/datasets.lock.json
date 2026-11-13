@@ -3169,6 +3169,21 @@
       "version": "https://assets.publishing.service.gov.uk/media/6af2dfeb8b63641b15a5c8ba/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_October_2026.csv"
     }
   },
+  "ons_private_rents": {
+    "fetched": {
+      "bytes": 18807933,
+      "etag": "\"c5287cd127bc17acf798021fedb8a5f014cf6931\"",
+      "fetched_at": "2026-11-13T19:13:56.676703+00:00",
+      "sha256": "0d79a0b23041b200748edc84526aff286379f59e2367aeeb57ebb8813517a73c",
+      "version": "https://www.ons.gov.uk/file?uri=/economy/inflationandpriceindices/datasets/priceindexofprivaterentsukmonthlypricestatistics/21october2026/priceindexofprivaterentsukmonthlypricestatistics.xlsx"
+    },
+    "resolved": {
+      "release": "2026-10-21",
+      "resolved_at": "2026-11-13T19:13:55+00:00",
+      "url": "https://www.ons.gov.uk/file?uri=/economy/inflationandpriceindices/datasets/priceindexofprivaterentsukmonthlypricestatistics/21october2026/priceindexofprivaterentsukmonthlypricestatistics.xlsx",
+      "version": "https://www.ons.gov.uk/file?uri=/economy/inflationandpriceindices/datasets/priceindexofprivaterentsukmonthlypricestatistics/21october2026/priceindexofprivaterentsukmonthlypricestatistics.xlsx"
+    }
+  },
   "open_charge_map_gb": {
     "fetched": {
       "bytes": 115928058,

@@ -5,7 +5,7 @@
 This project's outputs are built from the datasets below. Reuse must keep these notices. Data derived from OpenStreetMap is a derivative database under the Open Database Licence (ODbL) and must be shared under the same licence.
 
 - Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2026. Contains Royal Mail data © Royal Mail copyright and database right 2026. Contains GeoPlace data © Local Government Information House Limited copyright and database right 2026. (`nspl`)
-- Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2026. (`lsoa_boundaries`, `lsoa_boundaries_bsc`, `msoa_boundaries`, `lad_boundaries`, `lsoa_centroids`, `oa_lookup`, `lsoa11_lsoa21`, `ruc_2021`, `pop_lsoa_mye`, `msoa_income`, `claimant_count`)
+- Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right 2026. (`lsoa_boundaries`, `lsoa_boundaries_bsc`, `msoa_boundaries`, `lad_boundaries`, `lsoa_centroids`, `oa_lookup`, `lsoa11_lsoa21`, `ruc_2021`, `pop_lsoa_mye`, `msoa_income`, `ons_private_rents`, `claimant_count`)
 - House of Commons Library MSOA Names, licensed under the Open Parliament Licence v3.0. Contains OS data © Crown copyright and database right 2026. (`msoa_names`)
 - Contains OS data © Crown copyright and database right 2026. (`os_open_names`, `os_greenspace`, `os_open_uprn`)
 - Contains OS data © Crown copyright and database right 2026, licensed under the Open Government Licence v3.0. (`os_boundary_line`, `os_terrain_50`)

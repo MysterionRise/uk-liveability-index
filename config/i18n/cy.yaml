@@ -25,6 +25,7 @@ presets:
 units:
   gbp: "£"
   gbp_year: "£ y flwyddyn"
+  gbp_month: "£ y mis"
   pct: "%"
   pct_homes: "% o gartrefi"
   pct_pupils: "% o ddisgyblion"
@@ -146,6 +147,8 @@ indicators:
   price_change: {label: Newid ym mhrisiau tai, description: "Newid yn y pris gwerthu canolrifol, y 12 mis diwethaf yn erbyn y 12 mis cynt.", caveats: "Yn anwadal lle mae gwerthiannau'n brin; yn yr Alban ac yng Ngogledd Iwerddon, y newid yw rhwng blynyddoedd calendr, ac nid oes newid ar gyfer ward yng Ngogledd Iwerddon y mae ei chanolrif wedi'i atal yn y naill flwyddyn neu'r llall."}
   council_tax: {label: Treth gyngor (cyfradd Band D y cyngor), description: "Treth gyngor flynyddol ar gartref Band D, gan gynnwys taliadau'r sir, yr heddlu, tân a chyngor cymuned cyfartalog.", caveats: "Yr un peth ym mhob cymdogaeth mewn ardal cyngor; mae bil cartref yn dibynnu ar ei fand. Mae bandiau Cymru wedi'u cyfrifo o fand D cyfartalog pob awdurdod gan ddefnyddio'r cymarebau statudol."}
   price_to_income: {label: Pris o'i gymharu ag incwm lleol, description: Pris tŷ arferol wedi'i rannu ag incwm aelwyd net cymedrig yr ardal., caveats: "Amcangyfrif ar sail model yw'r incwm ar gyfer yr ardal ehangach (MSOA), ar gyfer 2022–23."}
+  private_rent: {label: Rhent preifat (cyfartaledd y cyngor), description: "Rhent preifat misol cyfartalog yn ardal y cyngor, dros bob cartref a rentir yn breifat (Mynegai Prisiau Rhenti Preifat yr ONS).", caveats: "Yr un fath i bob cymdogaeth yn ardal y cyngor, ac yn gyfartaledd dros bob maint o gartref, felly mae'n uwch lle mae'r cartrefi'n fwy. Ystadegau swyddogol sy'n cael eu datblygu. Cyhoeddir yr Alban a Gogledd Iwerddon fesul ardal marchnad rentu, nad yw'n cael ei dangos eto."}
+  rent_to_income: {label: Rhent o'i gymharu ag incwm lleol, description: "Blwyddyn o rent preifat cyfartalog ardal y cyngor fel cyfran o incwm aelwyd net cymedrig yr ardal.", caveats: "Cyfartaledd cyfredol ardal y cyngor yw'r rhent; amcangyfrif ar sail model ar gyfer yr ardal ehangach (MSOA) ar gyfer 2022–23 yw'r incwm, sy'n hŷn na'r rhent. O fewn un cyngor dim ond gyda'r incwm y mae'n newid, ac mae rhentwyr fel arfer yn ennill llai na chymedr yr ardal, felly darllenwch ef fel canllaw i ble mae rhent yn drwm, nid fel yr hyn y mae rhentwr yn ei dalu."}
   new_builds: {label: Cartrefi a adeiladwyd ers 2000, description: Cyfran y cartrefi a adeiladwyd yn 2000 neu'n ddiweddarach.}
   period_homes: {label: Cartrefi a adeiladwyd cyn 1919, description: Cyfran y cartrefi a adeiladwyd cyn 1919.}
   lower_band_homes: {label: Cartrefi ym mandiau treth gyngor A–B, description: Cyfran y cartrefi yn y ddau fand treth gyngor isaf (y cartrefi rhataf yng ngwerthoedd 1991).}

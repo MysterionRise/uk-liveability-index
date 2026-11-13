@@ -26,6 +26,7 @@ presets:
 units:
   gbp: "£"
   gbp_year: "£ sa bhliadhna"
+  gbp_month: "£ sa mhìos"
   pct: "%"
   pct_homes: "% de dhachaighean"
   pct_pupils: "% de sgoilearan"
@@ -170,6 +171,8 @@ indicators:
   price_change: {label: Atharrachadh prìsean thaighean, description: "Atharrachadh sa phrìs reic mheadhanach, na 12 mìosan a dh'fhalbh an aghaidh nan 12 mìosan roimhe.", caveats: "Luaineach far a bheil glè bheag de reic ann; ann an Alba agus Èirinn a Tuath tha an t-atharrachadh eadar bliadhnaichean-mìosachain, agus chan eil atharrachadh aig uàrd ann an Èirinn a Tuath aig a bheil am meadhan air a chumail air ais ann an aon dhen dà bhliadhna."}
   council_tax: {label: Cìs comhairle (reata Bann D na comhairle), description: "Cìs comhairle bhliadhnail air dachaigh Bann D, a' gabhail a-steach cosgaisean siorrachd, poilis, teine agus paraiste cuibheasach.", caveats: "An aon rud airson gach nàbachd ann an sgìre comhairle; tha bile dachaigh an urra ris a bhann. Tha bannan na Cuimrigh air an obrachadh a-mach bho bhann D cuibheasach gach comhairle le na co-mheasan reachdail."}
   price_to_income: {label: Prìs an coimeas ri teachd-a-steach ionadail, description: "Prìs taighe àbhaisteach air a roinn le teachd-a-steach lom teaghlaich cuibheasach na sgìre.", caveats: "Is e tuairmse stèidhichte air modail a th' anns an teachd-a-steach airson na sgìre nas fharsainge (MSOA), airson 2022–23."}
+  private_rent: {label: Màl prìobhaideach (cuibheas na comhairle), description: "Màl prìobhaideach mìosail cuibheasach ann an sgìre na comhairle, thar gach dachaigh air mhàl gu prìobhaideach (Clàr-amais Prìsean Màil Phrìobhaidich an ONS).", caveats: "An aon rud airson gach nàbachd ann an sgìre comhairle, agus na chuibheas thar gach meud dachaigh, agus mar sin tha e nas àirde far a bheil na dachaighean nas motha. Staitistig oifigeil gan leasachadh. Tha Alba agus Èirinn a Tuath air am foillseachadh a rèir sgìre margaidh màil, nach eil ri fhaicinn fhathast."}
+  rent_to_income: {label: Màl an coimeas ri teachd-a-steach ionadail, description: "Bliadhna de mhàl prìobhaideach cuibheasach sgìre na comhairle mar chuid de theachd-a-steach lom teaghlaich cuibheasach na sgìre.", caveats: "Is e cuibheas làithreach sgìre na comhairle am màl; is e tuairmse stèidhichte air modail airson na sgìre nas fharsainge (MSOA) airson 2022–23 an teachd-a-steach, nas sine na am màl. Taobh a-staigh aon chomhairle chan atharraich e ach leis an teachd-a-steach, agus mar as trice bidh luchd-màil a' cosnadh nas lugha na cuibheas na sgìre, agus mar sin leugh e mar stiùireadh air far a bheil màl trom, chan ann mar na phàigheas neach-màil."}
   new_builds: {label: Dachaighean a thogadh bho 2000, description: "Cuid de dhachaighean a thogadh ann an 2000 no nas fhaide air adhart."}
   period_homes: {label: Dachaighean a thogadh ro 1919, description: "Cuid de dhachaighean a thogadh ro 1919."}
   lower_band_homes: {label: Dachaighean ann am bannan cìs comhairle A–B, description: "Cuid de dhachaighean anns an dà bhann cìs comhairle as ìsle (na dachaighean as saoire ann an luachan 1991)."}

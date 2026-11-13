@@ -412,6 +412,7 @@ def stagers() -> dict[str, Callable[[], pl.LazyFrame]]:
         "bods_gtfs": transport.stage_bods_gtfs,
         "ofcom_broadband": transport.stage_ofcom_broadband,  # needs staged oa_lookup
         "msoa_income": housing.stage_msoa_income,
+        "ons_private_rents": housing.stage_private_rents,
         "council_tax": housing.stage_council_tax,
         "voa_ctsop": housing.stage_voa_ctsop,
         "claimant_count": community.stage_claimant_count,

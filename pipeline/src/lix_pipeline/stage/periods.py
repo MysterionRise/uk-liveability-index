@@ -198,7 +198,14 @@ def _curated(path: str) -> Period | None:
     return day(max(parsed)) if parsed else None
 
 
+def _private_rents(slug: str) -> Period | None:
+    """The month the rents are for; the file's name carries the day it was published."""
+    latest = _to_date(_column_max(_staged(slug), "month"))
+    return month(latest) if latest else None
+
+
 STAGED_EXTRACTORS = {
+    "ons_private_rents": _private_rents,
     "police_crime": _police,
     "price_paid": _price_paid,
     "ros_house_prices": _ros_prices,

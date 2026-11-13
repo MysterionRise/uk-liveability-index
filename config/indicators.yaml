@@ -1238,6 +1238,32 @@ indicators:
     role: context
     caveats: Income is a model-based estimate for the wider area (MSOA), for 2022–23.
 
+  - id: private_rent
+    theme: housing
+    label: Private rent (council average)
+    description: Average monthly private rent in the council area, over all privately rented homes (ONS Price Index of Private Rents).
+    unit: £ a month
+    direction: lower_better
+    benchmark: nation
+    coverage: [E, W]
+    sources: [ons_private_rents]
+    builder: housing:private_rent
+    role: context
+    caveats: The same for every neighbourhood in a council area, and an average over every size of home, so it runs higher where homes are larger. Official statistics in development. Scotland and Northern Ireland are published by rental market area, which is not shown yet.
+
+  - id: rent_to_income
+    theme: housing
+    label: Rent to local income
+    description: A year of the council area's average private rent as a share of the area's mean net household income.
+    unit: "%"
+    direction: lower_better
+    benchmark: nation
+    coverage: [E, W]
+    sources: [ons_private_rents, msoa_income]
+    builder: housing:rent_to_income
+    role: context
+    caveats: Rent is the council area's current average; income is a model-based estimate for the wider area (MSOA) for 2022–23, older than the rent. Within one council it moves only with income, and renters usually earn less than the area's mean, so read it as a guide to where rent is heavy, not as what a renter pays.
+
   - id: new_builds
     theme: housing
     label: Homes built since 2000

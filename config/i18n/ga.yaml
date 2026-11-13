@@ -26,6 +26,7 @@ presets:
 units:
   gbp: "£"
   gbp_year: "£ sa bhliain"
+  gbp_month: "£ sa mhí"
   pct: "%"
   pct_homes: "% de thithe"
   pct_pupils: "% de dhaltaí"
@@ -172,6 +173,8 @@ indicators:
   domestic_rates: {label: Rátaí tí (teach tipiciúil), description: "Bille rátaí tí bliantúil do theach ag meánluach caipitil an cheantair, ón ráta réigiúnach agus ó ráta ceantair na comhairle (Tuaisceart Éireann).", caveats: "Muirearaíonn Tuaisceart Éireann rátaí ar luach caipitil tí in ionad cáin chomhairle de réir bandaí; is bille do theach i lár mheascán luachanna 2016 an cheantair an bille a thaispeántar, mar sin athraíonn sé le luachanna áitiúla chomh maith leis an ráta sa phunt."}
   council_tax_typical: {label: Cáin chomhairle (teach tipiciúil anseo), description: "An méid a íocann teach tipiciúil sa cheantar i gcáin chomhairle, muirear gach banda ualaithe de réir an lín tithe sa cheantar atá sa bhanda sin.", caveats: "Úsáideann sé muirear na comhairle do gach banda agus meascán bandaí an cheantair, mar sin is é thart ar dhá thrian de ráta Bhanda D na comhairle atá i gceantar de thithe sraithe Bhanda A; ní áirítear lascainí ná díolúintí."}
   price_to_income: {label: Praghas i gcomparáid le hioncam áitiúil, description: "Praghas tí tipiciúil roinnte ar mheánioncam glan teaghlaigh an cheantair.", caveats: "Meastachán bunaithe ar shamhail is ea an t-ioncam don cheantar níos leithne (MSOA), do 2022–23."}
+  private_rent: {label: Cíos príobháideach (meán na comhairle), description: "Meánchíos príobháideach míosúil i limistéar na comhairle, thar gach teach atá ar cíos go príobháideach (Innéacs Praghsanna Cíosanna Príobháideacha an ONS).", caveats: "Mar an gcéanna do gach comharsanacht i limistéar comhairle, agus ina mheán thar gach méid tí, mar sin bíonn sé níos airde san áit a bhfuil na tithe níos mó. Staitisticí oifigiúla atá á bhforbairt. Foilsítear Albain agus Tuaisceart Éireann de réir limistéar margaidh cíosa, nach dtaispeántar go fóill."}
+  rent_to_income: {label: Cíos i gcomparáid le hioncam áitiúil, description: "Bliain de mheánchíos príobháideach limistéar na comhairle mar sciar de mheánioncam glan teaghlaigh an cheantair.", caveats: "Is é meán reatha limistéar na comhairle an cíos; is meastachán bunaithe ar shamhail don cheantar níos leithne (MSOA) do 2022–23 an t-ioncam, atá níos sine ná an cíos. Laistigh de chomhairle amháin ní athraíonn sé ach leis an ioncam, agus is gnách go dtuilleann cíosaithe níos lú ná meán an cheantair, mar sin léigh é mar threoir ar an áit a bhfuil an cíos trom, ní mar an méid a íocann cíosaí."}
   new_builds: {label: Tithe a tógadh ó 2000, description: "Sciar de thithe a tógadh in 2000 nó ina dhiaidh."}
   period_homes: {label: Tithe a tógadh roimh 1919, description: "Sciar de thithe a tógadh roimh 1919."}
   lower_band_homes: {label: Tithe i mbandaí cánach comhairle A–B, description: "Sciar de thithe sa dá bhanda cánach comhairle is ísle (na tithe is saoire ag luachanna 1991)."}

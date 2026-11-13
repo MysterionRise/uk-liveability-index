@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatValue } from "./format";
+import { formatValue, unitSuffix } from "./format";
 
 describe("formatValue", () => {
   it("formats money, distance and percentages", () => {
@@ -16,6 +16,15 @@ describe("formatValue", () => {
     expect(formatValue(0.68, "index 0–1")).toBe("6.8/10");
     expect(formatValue(0.7, "quality 0–1")).toBe("7/10");
     expect(formatValue(0.75, "rating 0–1 (Good = 0.75)")).toBe("7.5/10");
+  });
+});
+
+describe("a monthly rent", () => {
+  it("prints as pounds, and the unit after it says a month, not a year", () => {
+    expect(formatValue(1406.4, "£ a month")).toBe("£1,406");
+    expect(unitSuffix("£ a month", "£ a month")).toBe("a month");
+    expect(unitSuffix("gbp_month", "£ y mis")).toBe("y mis");
+    expect(unitSuffix("£ a year", "£ a year")).toBe("a year");
   });
 });
 

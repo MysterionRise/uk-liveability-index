@@ -1187,6 +1187,21 @@ msoa_income:
   period: "financial year ending 2023"
   size_hint: 3MB
 
+ons_private_rents:
+  coverage: [E, W]
+  title: Price Index of Private Rents, monthly price statistics (ONS)
+  theme: housing
+  access:
+    type: html_link
+    page: https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/priceindexofprivaterentsukmonthlypricestatistics
+    steps: [{pattern: 'href="(/file\?uri=[^"]*/priceindexofprivaterentsukmonthlypricestatistics/[^"]*\.xlsx)"', order: date_desc}]
+  format: xlsx
+  description: Average monthly private rent in each local authority of England and Wales, for all homes and by number of bedrooms, with its annual change. Official statistics in development. Scotland and Northern Ireland are published by Broad Rental Market Area, which the pack does not carry yet.
+  licence: OGL-3.0
+  attribution: *ons
+  cadence: monthly
+  size_hint: 19MB
+
 council_tax:
   coverage: [E]
   title: Council Tax levels set by local authorities in England

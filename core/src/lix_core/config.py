@@ -379,6 +379,7 @@ class ThemeSpec(_Strict):
 UNIT_CODES: dict[str, str] = {
     "£": "gbp",
     "£ a year": "gbp_year",
+    "£ a month": "gbp_month",
     "%": "pct",
     "% of homes": "pct_homes",
     "% of pupils": "pct_pupils",

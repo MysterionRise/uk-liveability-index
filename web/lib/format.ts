@@ -8,7 +8,7 @@ export function formatValue(value: number | null | undefined, unit: string, loca
   const n = (v: number, digits = 0) =>
     (Number(v.toFixed(digits)) || 0).toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
   const code = unitCode(unit);
-  if (code === "gbp" || code === "gbp_year") return `£${n(Math.round(value))}`;
+  if (code === "gbp" || code === "gbp_year" || code === "gbp_month") return `£${n(Math.round(value))}`;
   if (code === "metres") return value >= 1000 ? `${n(value / 1000, 1)} km` : `${n(Math.round(value))} m`;
   if (code.startsWith("pct")) return `${n(value, value > 0 && value < 10 ? 1 : 0)}%`;
   // A share of residents (IoD rates are 0–1)
@@ -37,13 +37,14 @@ export function formatsUnit(unit: string): boolean {
  * £ figure; nothing when the formatter printed it. */
 export function unitSuffix(unit: string, translated: string): string {
   const code = unitCode(unit);
-  if (code === "gbp_year") return translated.replace(/^£\s*/, "");
+  if (code === "gbp_year" || code === "gbp_month") return translated.replace(/^£\s*/, "");
   if (formatsUnit(unit)) return "";
   return translated;
 }
 
 /** The unit's code when given its English text (lix_core.config.UNIT_CODES), else as is. */
 export function unitCode(unit: string): string {
+  if (unit === "£ a month") return "gbp_month";
   if (unit.startsWith("£")) return unit === "£" ? "gbp" : "gbp_year";
   if (unit === "metres") return "metres";
   if (unit.startsWith("%")) return "pct";

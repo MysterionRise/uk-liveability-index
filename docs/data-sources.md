@@ -2,7 +2,7 @@
 
 # Data sources
 
-238 datasets, all under open licences. Each is pinned to a concrete file in `config/datasets.lock.json` by `lix resolve`. "Data for" is the period the data describes, as far as the publisher says; "Updated" is how often it is published.
+239 datasets, all under open licences. Each is pinned to a concrete file in `config/datasets.lock.json` by `lix resolve`. "Data for" is the period the data describes, as far as the publisher says; "Updated" is how often it is published.
 
 
 ## Geography
@@ -242,6 +242,7 @@
 |---|---|---|---|---|---|---|
 | `price_paid` | [HM Land Registry Price Paid Data (complete)](https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads) | All residential property sales in England and Wales since 1995. | England, Wales | 12 months to August 2026 | monthly | OGL-3.0 |
 | `msoa_income` | [ONS income estimates for small areas (MSOA)](https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/smallareaincomeestimatesformiddlelayersuperoutputareasenglandandwales) | Model-based mean household income per MSOA, total and net, before and after housing costs. | England, Wales | financial year ending 2023 | adhoc | OGL-3.0 |
+| `ons_private_rents` | [Price Index of Private Rents, monthly price statistics (ONS)](https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/priceindexofprivaterentsukmonthlypricestatistics) | Average monthly private rent in each local authority of England and Wales, for all homes and by number of bedrooms, with its annual change. Official statistics in development. Scotland and Northern Ireland are published by Broad Rental Market Area, which the pack does not carry yet. | England, Wales | September 2026 | monthly | OGL-3.0 |
 | `council_tax` | [Council Tax levels set by local authorities in England](https://www.gov.uk/government/statistics/council-tax-levels-set-by-local-authorities-in-england-2026-to-2027) | Average Band D council tax per billing authority, including adult social care and parish precepts. | England | 2026/27 | annual | OGL-3.0 |
 | `voa_ctsop` | [VOA Council Tax stock of properties by band and build period (LSOA)](https://www.gov.uk/government/statistics/council-tax-stock-of-properties-2026) | Dwellings per LSOA by Council Tax band and the period they were built. | England, Wales | 31 March 2026 | annual | OGL-3.0 |
 | `wg_council_tax` | [Council tax levels in Wales by billing authority](https://www.gov.wales/council-tax-levels) | Average band D council tax set by each of the 22 Welsh unitary authorities for the financial year, including police and community council precepts. | Wales | 2026/27 | annual | OGL-3.0 |
