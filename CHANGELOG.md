@@ -6,6 +6,34 @@ All notable changes to this project. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Seven context measures, shown on the profile card and in comparisons and scored by no
+  preset. In housing: **overcrowded households** (fewer bedrooms than the bedroom
+  standard asks for; England, Wales and Scotland), **people per room** (Ireland, whose
+  census counts rooms rather than rating occupancy, so it is a measure of its own with
+  its own unit), **private rent** (the council area's average a month, from ONS's Price
+  Index of Private Rents; England and Wales) and **rent to local income** (a year of
+  that rent over the wider neighbourhood's mean net household income). In community:
+  **full-time students** (England, Wales, Scotland and Ireland, ranked within the
+  nation because Ireland counts a wider group), **residents aged 20 to 34** and
+  **residents under 16** (all five nations). The share of residents aged 65 and over
+  now covers Ireland too. Northern Ireland publishes overcrowding and students for
+  wards only, and Scotland and Northern Ireland publish rents by rental market area:
+  both wait for a quality level between council and neighbourhood (#261). The census
+  tables behind them share one staged form with a column per idea, whichever way a
+  nation's census cuts it (#78, #85, #36).
+- A county works as the place to rank within. "Within Devon" ranked one district of it
+  (whichever the search found first: North Devon for one model, West Devon for another);
+  it now ranks all ten councils of the county, with Plymouth and Torbay, and "Kent" its
+  thirteen with Medway. Each British council takes the ceremonial county that holds at
+  least two thirds of its residents (OS Boundary-Line; 344 of 350 councils, 77 counties),
+  and Ireland keeps its curated counties. A word that ends several counties' names is
+  all of them ("Yorkshire", "Sussex") and one that ends two regions' names is both
+  ("Midlands"); a name that is exactly a place stays that place ("Durham" is the city,
+  "County Durham" the county), and a ranking's `within` says what was used. A search
+  scope after a comma takes the same counties ("Yarm, Durham") (#233).
+
 ### Fixed
 
 - On Anthropic's own API (`LIX_MODEL=anthropic:…`), a follow-up question had its first
@@ -31,8 +59,52 @@ All notable changes to this project. The format follows
   release lists both once more as a new edition, because the form of the version changed;
   their contents are the same, feature for feature (#232).
 
+- English GP surgeries were named in capitals ("HEBDEN BRIDGE GROUP PRACTICE"): the NHS
+  list writes all 6,555 that way. So were a third of Welsh schools ("PONTARDDULAIS
+  PRIMARY SCHOOL" beside "Ysgol Bro Plenydd") and a few Northern Irish practices. They
+  are now in title case in the pack ("Hebden Bridge Group Practice"), with acronyms and
+  initials kept ("The NHS Centre", "Dr PS Bath's Practice", "Stratford-upon-Avon HC")
+  and Welsh read as Welsh ("Ysgol y Garreg", "Cwrt Henri", "YGG Tanylan"). `lix validate
+  serve` refuses a pack where a source's names are mostly capitals, or more than one in
+  twenty of its GP and school names (#258, #310).
+- "Within London" ranked the areas within ten kilometres of the centre (23 councils at
+  council level), because the gazetteer has a city of that name and a place is ranked by
+  radius. A region's own name is now the region: London's 33 boroughs. With a radius
+  ("within 5 km of London") it is still a circle (#311).
+- A census share was 0% where a nation's census does not publish the count at all; it
+  now has no value there. No measure showed such a 0%, because each was limited to the
+  nations that publish it, but the next one added would have.
+- A census column kept no sign: an occupancy rating of "+1" and of "-1" were both
+  `occupancy_rating_of_bedrooms_1`. Columns of the tables already in use are unchanged.
+- A refresh stopped at the flood postcodes stage with a bare `StopIteration`: the
+  Environment Agency renamed the CSV inside its November download. The stage now takes
+  the download's one CSV whatever it is called (#307).
+
 ### Changed
 
+- **English flood figures changed with the Environment Agency's release of 3 November
+  2026**, around the Wash and in south Essex and hardly anywhere else: South Holland's
+  average share of addresses at high or medium risk fell from 39% to 15% and Spalding
+  North's from 73% to 2%, while the high-risk band is unchanged nationally. It is the
+  publisher's change, not a reading fault. Spalding was the flood anchor of the
+  face-validity review, which now uses Goole (92% in both editions) (#308).
+- An English or Welsh build from scratch needs four ONS boundary and centroid layers
+  that ONS has put behind a login; a refresh builds from the copies already on disk
+  (#306).
+- `make data-release` refuses a pack that is not what the checked-out commit builds:
+  code or configuration that is not committed, a commit to them made after the pack was
+  built, or a step the planner would still rebuild. The planner now counts the code that
+  writes the pack (a change to how names are written left it saying "nothing to
+  rebuild").
+
+### Added (tooling)
+
+- `lix qa diff --old <pack> [--old-lock <lockfile>]`: what moved between two packs, per
+  indicator and nation (areas before and after, how many moved and by how much, coverage
+  gained and lost), and the two things a reviewer otherwise looks for by hand: an
+  indicator that moved although none of its sources has a new file, and a new file that
+  moved nothing that reads it. Between `data-2026-11` and this build 46 of 119
+  indicators moved, each with a new file or a new definition behind it.
 - The evals workflow (`evals.yml`) takes a model on Anthropic's own API as well as one
   through OpenRouter: `-f model=anthropic:claude-haiku-5-5` reads the `evals`
   environment's `ANTHROPIC_API_KEY`, as `openrouter:…` reads `OPENROUTER_API_KEY`. It

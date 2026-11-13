@@ -6,7 +6,9 @@
 #   DATA_TAG=data-2026-10.1 make data-release   choose the tag yourself
 #
 # Refuses to run with an uncommitted lockfile, so the release always matches a commit
-# that records exactly which source editions went into it.
+# that records exactly which source editions went into it; and refuses a pack that is
+# not what that commit builds: uncommitted code or configuration, a commit to them made
+# after the pack was built, or a step the planner would still rebuild.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -15,6 +17,11 @@ if ! git diff --quiet -- config/datasets.lock.json; then
   exit 1
 fi
 test -f data/serve/manifest.json || { echo "No built data in data/serve" >&2; exit 1; }
+python3 scripts/data_release.py provenance
+if ! uv run lix refresh --skip-fetch --dry-run | grep -q "nothing to rebuild"; then
+  echo "Not releasing: the pack is stale (uv run lix refresh --skip-fetch --dry-run says what to rebuild)" >&2
+  exit 1
+fi
 
 tag="${DATA_TAG:-$(python3 scripts/data_release.py next-tag)}"
 schema="$(sed -n 's/^SERVE_SCHEMA_VERSION = //p' core/src/lix_core/config.py)"
