@@ -48,10 +48,10 @@ def stand_in(store: Store, row: dict, indicator_id: str) -> str | None:
     return None
 
 
-def fact(store: Store, row: dict, indicator_id: str) -> IndicatorValue:
+def fact(store: Store, row: dict, indicator_id: str, caveats: bool = False) -> IndicatorValue:
     """``indicator_id``'s value here, or its substitute's marked as standing in."""
     shown = stand_in(store, row, indicator_id) or indicator_id
-    value = indicator_value(store, row, shown)
+    value = indicator_value(store, row, shown, caveats=caveats)
     if shown != indicator_id:
         value.stands_in_for = indicator_id
     return value
@@ -78,16 +78,27 @@ def with_substitutes(store: Store, row: dict, values: list[IndicatorValue]) -> l
 
 
 # The card's facts; v0.7.0 adds the four context measures its issues asked to see there
-# (the classes read as words: "Excellent (3.8)")
-KEY_FACTS = ["house_price", "council_tax", "crime_violence", "no2", "noise_exposure",
-             "flood_risk", "tree_canopy", "sunshine", "gp_distance", "station_distance",
-             "everyday_services", "gigabit_broadband", "well_run_pubs",
-             "households_with_children", "hilliness", "protected_nature",
+# (the classes read as words: "Excellent (3.8)"); v0.7.3 adds rent, crowding, students
+# and the 20-to-34s, which a profile and a comparison did not carry at first: asked about
+# rents in a named place, the assistant said the index has none (23 of 62 runs in the
+# release's test pass)
+KEY_FACTS = ["house_price", "private_rent", "council_tax", "crime_violence", "no2",
+             "noise_exposure", "flood_risk", "tree_canopy", "sunshine", "gp_distance",
+             "station_distance", "everyday_services", "gigabit_broadband", "well_run_pubs",
+             "households_with_children", "students_share", "aged_20_34",
+             "overcrowded_households", "hilliness", "protected_nature",
              "bathing_water_class", "river_status"]  # fmt: skip
 
 # A fact with nothing to say for many areas, and what the card shows instead: two thirds
-# of areas have no bathing water within 10 km, so the class would read "no data" there
-KEY_FACT_FALLBACK = {"bathing_water_class": "bathing_water_distance"}
+# of areas have no bathing water within 10 km, so the class would read "no data" there;
+# Ireland's census counts rooms, not an occupancy rating
+KEY_FACT_FALLBACK = {
+    "bathing_water_class": "bathing_water_distance",
+    "overcrowded_households": "persons_per_room",
+}
+# Facts left off the card where the nation publishes nothing for them, rather than shown
+# as a row of "not available" in three nations of five
+OPTIONAL_FACTS = frozenset({"private_rent", "students_share", "overcrowded_households"})
 
 
 def key_facts(store: Store, row: dict) -> list[IndicatorValue]:
@@ -95,10 +106,12 @@ def key_facts(store: Store, row: dict) -> list[IndicatorValue]:
     for i in KEY_FACTS:
         if i not in store.indicators:
             continue
-        value = fact(store, row, i)
+        value = fact(store, row, i, caveats=True)
         other = KEY_FACT_FALLBACK.get(i)
         if value.value is None and other in store.indicators:
-            value = fact(store, row, other)
+            value = fact(store, row, other, caveats=True)
+        if i in OPTIONAL_FACTS and value.quality == "not_available":
+            continue
         out.append(value)
     return out
 
@@ -141,13 +154,19 @@ def _round(v: float | None, digits: int = 1) -> float | None:
 _pct = percentile
 
 
-def indicator_value(store: Store, row: dict, indicator_id: str) -> IndicatorValue:
+def indicator_value(
+    store: Store, row: dict, indicator_id: str, caveats: bool = False
+) -> IndicatorValue:
+    """``caveats``: carry the catalogue's caveat beside the figure. A caveat used to be
+    reachable only through ``list_indicators(detail=True)``, which a model asked about
+    one place never called (0 of 132 turns in the v0.7.3 test pass), so rent to income
+    was given as what renters pay and Ireland's students were set against Britain's."""
     spec = store.indicators[indicator_id]
     return IndicatorValue(
         id=spec.id, label=spec.label, theme=spec.theme, unit=spec.unit,
         value=_round(row.get(f"raw__{spec.id}"), 3), score=_round(row.get(f"n__{spec.id}")),
         quality=str(row.get(f"q__{spec.id}") or "ok"), role=spec.role, benchmark=spec.benchmark,
-        unit_code=spec.unit_code,
+        unit_code=spec.unit_code, caveats=spec.caveats if caveats else None,
     )  # fmt: skip
 
 

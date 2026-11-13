@@ -1,6 +1,8 @@
 """Find what a user means: a postcode, an LSOA/MSOA/LAD code, a place or an area name."""
 
 import re
+from dataclasses import dataclass
+from typing import Literal
 
 import polars as pl
 from rapidfuzz import fuzz, process
@@ -379,33 +381,62 @@ def _listed(names: list[str]) -> str:
     return names[0] if len(names) == 1 else f"{', '.join(names[:-1])} and {names[-1]}"
 
 
-def county_scope(store: Store, words: str) -> tuple[str, set[str]] | None:
-    """The councils a ranking "within" covers when the words name a county, or an area
-    wider than one, rather than a single place; and the name to show for it, which says
-    what was used ("Devon"; "East Sussex and West Sussex" for "Sussex").
+# "the Midlands", "the West Country": the article is not part of the name
+_ARTICLE = re.compile(r"^the\s+", re.IGNORECASE)
 
-    - A county's own name is the county: Devon's ten councils with Plymouth and Torbay,
-      not the district search finds first (#233), and Dublin's four.
+
+@dataclass(frozen=True)
+class WideScope:
+    """A county, or several counties or regions, as the place to rank within: the name to
+    show, the features column that holds it, the values to keep, and the councils with a
+    small area inside (all of them for most counties; a council the county divides is in
+    the list and only its part is ranked)."""
+
+    label: str
+    column: Literal["county", "rgn_nm"]
+    values: tuple[str, ...]
+    councils: frozenset[str]
+
+
+def county_scope(store: Store, words: str) -> WideScope | None:
+    """What a ranking "within" covers when the words name a county, or an area wider than
+    one, rather than a single place; the label says what was used ("Devon"; "East Sussex
+    and West Sussex" for "Sussex").
+
+    - A county's own name is the county: Devon's small areas across its ten councils, not
+      the district search finds first (#233), and Dublin's four councils. Outside England
+      a county that shares a council's name is left to the council ("Aberdeenshire" and
+      "Gwynedd" mean the councils; a lieutenancy of the name is another shape).
     - A word that ends two or more regions' names is those regions ("Midlands"); else one
       that ends counties' names is those counties ("Yorkshire", "Sussex").
     - A name that is also a region's ("West Midlands") stays the region, and one that is
       exactly a place or an area ("Durham" the city, "Manchester") stays that place: only
       "County Durham" and "Greater Manchester" are the counties.
     """
+    words = _ARTICLE.sub("", words.strip())
     folded = fold(words)
     if not folded or folded in store.region_councils or folded in store.scope_aliases:
         return None
+
+    def scope(found: dict[str, set[str]], column: str) -> WideScope:
+        return WideScope(
+            _listed(list(found)), column, tuple(found), frozenset().union(*found.values())
+        )
+
     counties = named_counties(store, words)
     if folded in store.county_names:
-        return _listed(list(counties)), set().union(*counties.values())
+        english = "E" in store.county_nations.get(folded, ())
+        if not english and folded in store.council_names_folded:
+            return None
+        return scope(counties, "county")
     regions = _named(store.region_names, store.region_councils, words)
-    found = regions if len(regions) >= 2 else counties
+    found, column = (regions, "rgn_nm") if len(regions) >= 2 else (counties, "county")
     if not found:
         return None
     top = search_place(store, words, limit=1)
     if top and folded in (fold(top[0].name), fold(top[0].name_en or "")):
         return None
-    return _listed(list(found)), set().union(*found.values())
+    return scope(found, column)
 
 
 def scope_councils(store: Store, scope: str) -> set[str]:
@@ -416,6 +447,8 @@ def scope_councils(store: Store, scope: str) -> set[str]:
     when nothing matches that way ("Edinburgh" for "Edinbrugh")."""
     folded = fold(scope)
     codes = set(store.region_councils.get(folded, ()))
+    # Every council with a small area in the county: a place the county divides its
+    # council from ("Yarm, North Yorkshire" in Stockton-on-Tees) is still found
     for county_codes in named_counties(store, scope).values():
         codes |= county_codes
     councils = [p for p in _candidates(store, scope, limit=10) if p.kind == "lad"]

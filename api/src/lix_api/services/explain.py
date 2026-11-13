@@ -48,7 +48,7 @@ def explain_score(
             store,
             row,
             [
-                indicator_value(store, row, ind.id)
+                indicator_value(store, row, ind.id, caveats=True)
                 for ind in store.indicators.values()
                 if ind.theme == t and ind.role in ("scored", "context")
             ],

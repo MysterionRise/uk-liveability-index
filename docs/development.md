@@ -72,7 +72,7 @@ spend per day (`api/src/lix_api/agent/limits.py`); a refusal, a failure or a mis
 explained in the chat while the map keeps working, and every turn is logged to
 `data/logs/agent.jsonl` (tools called, latency, tokens, what the provider billed).
 
-The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 63 cases
+The assistant has an eval suite ([api/evals/cases.yaml](../api/evals/cases.yaml): 67 cases
 covering ranking with constraints, look-ups, follow-ups, ambiguous places, out-of-scope and
 discriminatory requests, numbers grounded in tool results, analyst SQL, prompt injection,
 profiles from a description, and replies in Welsh, Gaelic and Irish):

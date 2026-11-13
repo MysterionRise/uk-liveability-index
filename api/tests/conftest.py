@@ -58,7 +58,7 @@ REGION_NAMES = {
     "I92000000": "Ireland",
 }
 COUNTRY_CODES = {"E": "E92000001", "W": "W92000004", "I": "I92000000"}
-# Each council's county as the pack's areas table carries it: Dublin's two share one, the
+# Each small area's county, here by its council: Dublin's two councils share one, the
 # British ones are ceremonial counties
 COUNTIES = {
     "I06000007": "Dublin",
@@ -102,7 +102,7 @@ def build_serve_dir(path) -> None:
             "lsoa21cd": code, "lsoa21nm": name, "msoa21cd": msoa, "msoa_name": msoa_nm,
             "lad_cd": lad, "lad_nm": lad_nm, "rgn_cd": rgn, "rgn_nm": REGION_NAMES[rgn],
             "lad_nm_cy": "Caerdydd" if lad == "W06000015" else None,
-            "nation": code[0], "ctry_cd": COUNTRY_CODES[code[0]],
+            "nation": code[0], "ctry_cd": COUNTRY_CODES[code[0]], "county": COUNTIES.get(lad),
             "pfa_nm": "x", "ruc21cd": "UN1" if urban else "RSN1",
             "ruc21nm": "Urban" if urban else "Smaller rural", "urban": urban,
             "ruc_class": "urban" if urban else "rural",

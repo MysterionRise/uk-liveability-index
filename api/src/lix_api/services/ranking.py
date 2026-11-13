@@ -38,18 +38,21 @@ def _within(store: Store, within: str | None, radius_km: float | None, lang: str
     """Filter expression and label for "within" (an area or a place + radius); the
     label names an area in the locale asked for where the pack has that form."""
     if not within:
-        return pl.lit(True), None, None, None, None
-    county = county_scope(store, within) if radius_km is None else None
-    if county:
-        # Every council of the county (or counties) the words name, not the one district
-        # that search puts first
-        label, codes = county
-        boxes = store.areas.filter((pl.col("level") == "lad") & pl.col("code").is_in(codes))
+        return pl.lit(True), None, None, None, None, None
+    wide = county_scope(store, within) if radius_km is None else None
+    if wide and wide.column in store.features.columns:
+        # Every small area of the county (or counties) the words name, not the one
+        # district that search puts first
+        inside = pl.col(wide.column).is_in(list(wide.values))
+        boxes = store.features.filter(inside)
         bbox = (
             boxes["bbox_w"].min(), boxes["bbox_s"].min(),
             boxes["bbox_e"].max(), boxes["bbox_n"].max(),
         )  # fmt: skip
-        return pl.col("lad_cd").is_in(sorted(codes)), label, bbox, label, None
+        names = store.features.filter(pl.col("lad_cd").is_in(list(wide.councils)))["lad_nm"]
+        covers = sorted(set(names.to_list()))
+        # A long list (a region's councils) says nothing a count does not
+        return inside, wide.label, bbox, wide.label, None, covers if len(covers) <= 15 else None
     places = search_place(store, within)
     if radius_km is None and fold(within) in store.region_councils:
         # A region's own name is the region, not the city that shares it: "London" is its
@@ -74,7 +77,7 @@ def _within(store: Store, within: str | None, radius_km: float | None, lang: str
                 row = store.areas.filter(pl.col("code") == place.code)
                 if row.height and row[f"name_{lang}"][0]:
                     label = row[f"name_{lang}"][0]
-        return pl.col(column) == place.code, label, place.bbox, label, None
+        return pl.col(column) == place.code, label, place.bbox, label, None, None
     centre = place.centre
     km = radius_km or DEFAULT_RADIUS_KM
     dlat = km / 111.0
@@ -84,7 +87,7 @@ def _within(store: Store, within: str | None, radius_km: float | None, lang: str
         + ((pl.col("pwc_lon") - centre.lon) * 111.0 * math.cos(math.radians(centre.lat))) ** 2
     ).sqrt()
     bbox = (centre.lon - dlon, centre.lat - dlat, centre.lon + dlon, centre.lat + dlat)
-    return dist_km <= km, f"within {km:g} km of {place.name}", bbox, place.name, km
+    return dist_km <= km, f"within {km:g} km of {place.name}", bbox, place.name, km, None
 
 
 @dataclass(frozen=True)
@@ -258,6 +261,8 @@ def rank_areas(
                 "msoa_name",
                 "lad_cd",
                 "rgn_cd",
+                "rgn_nm",
+                *(["county"] if "county" in store.features.columns else []),
                 "ctry_cd",
                 "nation",
                 "lad_nm",
@@ -279,7 +284,7 @@ def rank_areas(
         [store.features.select(columns), scores.drop("lsoa21cd")],
         how="horizontal",
     )
-    where, label, bbox, place_name, radius = _within(store, within, radius_km, lang)
+    where, label, bbox, place_name, radius, covers = _within(store, within, radius_km, lang)
     if level in AGGREGATE_LEVELS:
         # A row is the neighbourhood's or the council's own score, the one its card and
         # a comparison give it. The scope says which of them are listed, not which of
@@ -384,10 +389,26 @@ def rank_areas(
     # score and value are each averaged over its small areas, and for a skewed measure
     # the two orders differ ("the most protected land" put 148 ha fourth behind 109 ha,
     # v0.7.0 release pass). A within-nation measure, whose raw scales differ by nation,
-    # keeps the score; a threshold score saturates, so the raw value breaks its ties.
+    # keeps the score across nations; a threshold score saturates, so the raw value
+    # breaks its ties.
     best = direction == "best"
     raw_desc = best if measure.raw_higher_better else not best
-    if measure.raw_column and measure.raw_comparable:
+    if measure.raw_column and candidates > 1 and df[measure.raw_column].n_unique() == 1:
+        # A figure published for a whole council is the same in every neighbourhood of
+        # it: 107 Leeds neighbourhoods at £1,148 a month came back in an order that
+        # changed from call to call, eight of them highlighted
+        raise ValueError(
+            f"Every one of the {candidates} areas in {label or 'this scope'} has the same "
+            f"{measure.label} ({measure.value(df.row(0, named=True))} {measure.unit}): it is "
+            "published for the area they share (a council), so it cannot rank the areas "
+            'inside it. Rank councils instead (level="lad") over a county, a region or a '
+            "nation, or say that the figure is one for the whole area"
+        )
+    # A within-nation measure means the same in every area of one nation, so there too
+    # the list follows the figure it shows (Leeds's neighbourhoods by their student
+    # share put 57% seventh, behind 42% and 34%, and the model disowned the list)
+    one_nation = df["nation"].n_unique() <= 1 if "nation" in df.columns else False
+    if measure.raw_column and (measure.raw_comparable or one_nation):
         by, descending = [measure.raw_column, measure.score_column], [raw_desc, best]
     else:
         by, descending = [measure.score_column], [best]
@@ -445,7 +466,7 @@ def rank_areas(
         level=level, within=label, preset=name, theme_weights=themes,
         sort_by=measure.sort_by, sort_label=measure.label, sort_unit=measure.unit,
         direction=direction, place=place_name, radius_km=radius,
-        candidates=candidates, results=results, bbox=bbox,
+        candidates=candidates, results=results, bbox=bbox, covers=covers,
     )  # fmt: skip
 
 

@@ -724,6 +724,19 @@
           "title": "Benchmark",
           "type": "string"
         },
+        "caveats": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "What to keep in mind when reading this figure (English): what it counts, what it is an average of, where the nations differ. Say what matters of it when the figure is quoted, and judge high or low by the score, not by the size of the figure",
+          "title": "Caveats"
+        },
         "id": {
           "title": "Id",
           "type": "string"
@@ -1254,6 +1267,22 @@
           "description": "Areas that passed the filters and have the measure",
           "title": "Candidates",
           "type": "integer"
+        },
+        "covers": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "When the scope is a county (or several): the councils it takes in. All of them are inside the scope named in `within`, including any that share the county's name with it (the council County Durham is one of four in the county County Durham)",
+          "title": "Covers"
         },
         "direction": {
           "default": "best",

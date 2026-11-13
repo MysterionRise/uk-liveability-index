@@ -29,6 +29,10 @@ export type Flags = string[];
  * uk: ranked against every area in the build (the UK and Ireland) · nation: within its nation
  */
 export type Benchmark = "uk" | "nation";
+/**
+ * What to keep in mind when reading this figure (English): what it counts, what it is an average of, where the nations differ. Say what matters of it when the figure is quoted, and judge high or low by the score, not by the size of the figure
+ */
+export type Caveats = string | null;
 export type Id = string;
 export type Label = string;
 export type Quality = string;
@@ -176,7 +180,7 @@ export type Theme2 = string;
  * Share of the overall weight, 0–1
  */
 export type WeightShare = number;
-export type Caveats = string[];
+export type Caveats1 = string[];
 export type Contributions = Contribution[];
 export type Lsoa21Cd1 = string;
 export type Name2 = string;
@@ -225,7 +229,7 @@ export type Title = string;
 export type Version = string | null;
 export type Sources = SourceRef[];
 export type Benchmark1 = "uk" | "nation";
-export type Caveats1 = string | null;
+export type Caveats2 = string | null;
 /**
  * Nation codes it is built for
  */
@@ -319,6 +323,10 @@ export type Bbox3 = [unknown, unknown, unknown, unknown] | null;
  * Areas that passed the filters and have the measure
  */
 export type Candidates = number;
+/**
+ * When the scope is a county (or several): the councils it takes in. All of them are inside the scope named in `within`, including any that share the county's name with it (the council County Durham is one of four in the county County Durham)
+ */
+export type Covers = string[] | null;
 /**
  * best: highest first · worst: lowest first
  */
@@ -456,6 +464,7 @@ export interface Point {
  */
 export interface IndicatorValue {
   benchmark?: Benchmark;
+  caveats?: Caveats;
   id: Id;
   label: Label;
   quality?: Quality;
@@ -561,7 +570,7 @@ export interface Contribution {
  * via the `definition` "Explanation".
  */
 export interface Explanation {
-  caveats: Caveats;
+  caveats: Caveats1;
   contributions: Contributions;
   lsoa21cd: Lsoa21Cd1;
   name: Name2;
@@ -611,7 +620,7 @@ export interface SourcePeriod {
  */
 export interface IndicatorInfo {
   benchmark?: Benchmark1;
-  caveats?: Caveats1;
+  caveats?: Caveats2;
   coverage?: Coverage1;
   description: Description;
   direction: Direction;
@@ -738,6 +747,7 @@ export interface PoiResult {
 export interface RankResult {
   bbox?: Bbox3;
   candidates: Candidates;
+  covers?: Covers;
   direction?: Direction1;
   level: Level1;
   place?: Place1;

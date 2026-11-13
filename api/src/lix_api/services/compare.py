@@ -15,10 +15,13 @@ from lix_api.services.scoring import (
 from lix_api.services.search import distinct_name, resolve_lsoa, search_place, small_area_label
 from lix_api.store import Store
 
+# v0.7.3 adds rent, crowding and students: asked which of two places is cheaper to rent
+# in, the assistant compared them and said the index has no rents (6 runs of 6)
 COMPARE_INDICATORS = [
-    "house_price", "crime_violence", "crime_burglary", "no2", "gp_distance",
+    "house_price", "private_rent", "crime_violence", "crime_burglary", "no2", "gp_distance",
     "patients_per_gp", "primary_school_quality", "well_run_pubs", "supermarket_distance",
     "connectivity_overall", "income_deprivation", "population_density",
+    "overcrowded_households", "persons_per_room", "students_share",
 ]  # fmt: skip
 
 

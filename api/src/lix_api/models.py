@@ -105,6 +105,13 @@ class IndicatorValue(BaseModel):
         description="The indicator this one replaces here: a substitute shown because the "
         "nation lacks the usual one (the SIMD crime rate for police.uk crime in Scotland)",
     )
+    caveats: str | None = Field(
+        None,
+        description="What to keep in mind when reading this figure (English): what it "
+        "counts, what it is an average of, where the nations differ. Say what matters "
+        "of it when the figure is quoted, and judge high or low by the score, not by "
+        "the size of the figure",
+    )
 
 
 class ResolvedFrom(BaseModel):
@@ -242,6 +249,13 @@ class RankResult(BaseModel):
     )
     radius_km: float | None = Field(
         None, description="Set when the scope is a radius around `place` rather than an area"
+    )
+    covers: list[str] | None = Field(
+        None,
+        description="When the scope is a county (or several): the councils it takes in. "
+        "All of them are inside the scope named in `within`, including any that share "
+        "the county's name with it (the council County Durham is one of four in the "
+        "county County Durham)",
     )
     candidates: int = Field(description="Areas that passed the filters and have the measure")
     results: list[RankedArea]
