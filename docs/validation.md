@@ -97,7 +97,7 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 - ✅ community score ≤ 35: 6.5 ⚓
 - ✅ house_price ≤ 240,000: 214,004.3 ⚓
 - ✅ housing_condition ≥ 75: 86.0
-- ✅ flag not_available: aircraft_noise, bus_access, care_homes, claimant_rate, connectivity_cycling, connectivity_overall, connectivity_public_transport, connectivity_walking, council_tax_typical, crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence, domestic_rates, gp_quality, household_income, iod_outdoors, leisure_facilities, life_expectancy, lower_band_homes, new_builds, patients_per_gp, period_homes, pobal_deprivation, price_to_income, primary_results, primary_school_quality, rainfall_total, road_rail_noise, secondary_results, storm_overflow_spills, swimming_pool_distance ⚓
+- ✅ flag not_available: aircraft_noise, bus_access, care_homes, claimant_rate, connectivity_cycling, connectivity_overall, connectivity_public_transport, connectivity_walking, council_tax_typical, crime_asb, crime_burglary, crime_damage_disorder, crime_theft, crime_violence, domestic_rates, gp_quality, household_income, iod_outdoors, leisure_facilities, life_expectancy, lower_band_homes, new_builds, patients_per_gp, period_homes, persons_per_room, pobal_deprivation, price_to_income, primary_results, primary_school_quality, private_rent, rainfall_total, rent_to_income, road_rail_noise, secondary_results, storm_overflow_spills, swimming_pool_distance ⚓
 
 **Bearsden** (Kilmardinny West). Prosperous suburb north of Glasgow, low crime, strong schools. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
@@ -143,8 +143,8 @@ page with `uv run lix qa places`. Checks marked ⚓ also run in `make validate`.
 
 - ✅ community score ≤ 25: 11.1 ⚓
 - ✅ housing score ≥ 50: 61.8 ⚓
-- ✅ flag broadcast_lad: council_tax, secondary_school_quality ⚓
-- ✅ flag not_available: access_deprivation, aircraft_noise, bus_access, care_homes, domestic_rates, gp_list_size, gp_quality, leisure_facilities, life_expectancy, patients_per_gp, pobal_deprivation, primary_results, primary_school_quality, rainfall_total, recorded_crime, secondary_results, storm_overflow_spills, swimming_pool_distance ⚓
+- ✅ flag broadcast_lad: council_tax, private_rent, rent_to_income, secondary_school_quality ⚓
+- ✅ flag not_available: access_deprivation, aircraft_noise, bus_access, care_homes, domestic_rates, gp_list_size, gp_quality, leisure_facilities, life_expectancy, patients_per_gp, persons_per_room, pobal_deprivation, primary_results, primary_school_quality, rainfall_total, recorded_crime, secondary_results, storm_overflow_spills, swimming_pool_distance ⚓
 
 **Merthyr Tydfil** (Gelli-deg & Town). Valleys town, high deprivation, cheap homes. Flags: broadcast_lad, broadcast_msoa, imputed, not_available.
 
