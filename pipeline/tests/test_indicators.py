@@ -244,6 +244,19 @@ def test_flood_risk_any_source_and_estimates_are_flagged():
     assert any_["quality"].to_list() == ["ok", "imputed"]
 
 
+def test_census_share_has_no_value_where_the_numerator_is_not_published():
+    from lix_pipeline.indicators.community import census_share
+
+    table = pl.DataFrame({
+        "lsoa21cd": ["E01000001", "S01000001", "I01000001"],
+        "total": [1000.0, 500.0, 90.0],
+        "overcrowded": [50.0, 0.0, None],
+    })  # fmt: skip
+    out = census_share(FakeContext(census_ts052=table), "census_ts052", ["overcrowded"])
+    # Scotland's zero is a real 0%; Ireland's census has no such count
+    assert out["value"].to_list() == [5.0, 0.0, None]
+
+
 def test_claimant_rate_per_working_age_resident():
     ages = pl.DataFrame({
         "lsoa21cd": ["E01000001"], "aged_15_to_19_years": [100], "aged_20_to_24_years": [400],

@@ -56,6 +56,15 @@ class TestCensus:
             ("Population Density: Persons per square kilometre; measures: Value",
              "persons_per_square_kilometre"),
             ("Distance travelled to work: 2km to less than 5km", "2km_to_less_than_5km"),
+            # A rating of +1 and of -1 are opposite things (#78)
+            ("Occupancy rating for bedrooms: Occupancy rating of bedrooms: +1",
+             "occupancy_rating_of_bedrooms_plus_1"),
+            ("Occupancy rating for bedrooms: Occupancy rating of bedrooms: -1",
+             "occupancy_rating_of_bedrooms_minus_1"),
+            ("Occupancy rating for bedrooms: Occupancy rating of bedrooms: -2 or less",
+             "occupancy_rating_of_bedrooms_minus_2_or_less"),
+            ("Economic activity status: Economically inactive: Long-term sick or disabled",
+             "economically_inactive_long_term_sick_or_disabled"),
         ],
     )  # fmt: skip
     def test_column_names(self, label, name):
@@ -73,6 +82,20 @@ class TestCensus:
         assert df.to_dicts() == [
             {"lsoa21cd": "E01000001", "total": 837.0, "no_cars_or_vans_in_household": 555.0}
         ]
+
+    def test_a_concept_column_sums_the_parts_the_census_splits(self, data):
+        topic = "Occupancy rating for bedrooms"
+        ratings = ["+2 or more", "+1", "0", "-1", "-2 or less"]
+        _write(
+            data / "raw" / "census_ts052" / "census2021-ts052-lsoa.csv",
+            f"date,geography,geography code,{topic}: Total: All households,"
+            + ",".join(f"{topic}: Occupancy rating of bedrooms: {r}" for r in ratings)
+            + "\n2021,City of London 001A,E01000001,1000,400,300,250,40,10\n",
+        )
+        row = stage_census_table("census_ts052").collect().to_dicts()[0]
+        assert row["overcrowded"] == 50.0
+        assert row["occupancy_rating_of_bedrooms_plus_1"] == 300.0
+        assert row["occupancy_rating_of_bedrooms_minus_1"] == 40.0
 
 
 class TestPolice:

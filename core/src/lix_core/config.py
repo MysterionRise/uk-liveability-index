@@ -400,6 +400,7 @@ UNIT_CODES: dict[str, str] = {
     "years of income": "years_income",
     "years": "years",
     "people per km²": "people_km2",
+    "people per room": "people_per_room",
     "per km²": "per_km2",
     "nW/cm²/sr": "radiance",
     "hours a year": "hours_year",

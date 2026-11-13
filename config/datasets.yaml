@@ -383,6 +383,13 @@ census_ts045:
   access: {type: http, url: "https://www.nomisweb.co.uk/output/census/2021/census2021-ts045.zip"}
   description: Households by number of cars or vans.
 
+census_ts052:
+  coverage: [E, W]
+  <<: *census
+  title: Census 2021 TS052 Occupancy rating for bedrooms
+  access: {type: http, url: "https://www.nomisweb.co.uk/output/census/2021/census2021-ts052.zip"}
+  description: Households by how many bedrooms they have against how many their members need (the bedroom standard); −1 or less is overcrowded.
+
 census_ts054:
   coverage: [E, W]
   <<: *census
@@ -403,6 +410,13 @@ census_ts061:
   title: Census 2021 TS061 Method used to travel to work
   access: {type: http, url: "https://www.nomisweb.co.uk/output/census/2021/census2021-ts061.zip"}
   description: Usual residents in employment by travel mode. Collected during COVID-19 restrictions.
+
+census_ts066:
+  coverage: [E, W]
+  <<: *census
+  title: Census 2021 TS066 Economic activity status
+  access: {type: http, url: "https://www.nomisweb.co.uk/output/census/2021/census2021-ts066.zip"}
+  description: Usual residents aged 16+ by economic activity, with full-time students counted apart whether or not they work.
 
 census_ts067:
   coverage: [E, W]

@@ -18,6 +18,8 @@ export function formatValue(value: number | null | undefined, unit: string, loca
   if (code === "index" || code === "quality" || code === "rating") return `${(value * 10).toFixed(1).replace(/\.0$/, "")}/10`;
   // A class (bathing water 1–4, river status 1–5): the number; ValueWithUnit names it
   if (code === "class4" || code === "class5") return n(value, 1);
+  // People per room runs from about 0.2 to 1.1: one decimal would print half of Ireland as 0.5
+  if (code === "people_per_room") return n(value, 2);
   if (Math.abs(value) >= 100) return n(Math.round(value));
   return n(value, 1);
 }
@@ -49,6 +51,7 @@ export function unitCode(unit: string): string {
   if (/^(index|quality|rating) 0–1/.test(unit)) return unit.split(" ")[0];
   if (unit.startsWith("class 1–4")) return "class4";
   if (unit.startsWith("class 1–5")) return "class5";
+  if (unit === "people per room") return "people_per_room";
   return unit;
 }
 

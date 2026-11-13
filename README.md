@@ -15,7 +15,7 @@ assistant that answers with maps, profiles and comparisons instead of walls of t
 - **62,833 neighbourhoods** across the UK and Ireland (2021 LSOAs in England and Wales,
   2022 Data Zones in Scotland, 2021 Super Data Zones in Northern Ireland, 2022 Small Areas
   in Ireland; from a few hundred residents in Ireland and Scotland to a few thousand
-  elsewhere), scored 0–100 on nine themes from **about 224 open datasets** (236 in the
+  elsewhere), scored 0–100 on nine themes from **about 224 open datasets** (238 in the
   registry): police.uk, the PSNI and the CSO's Garda statistics, NHS,
   Ofsted, DfE, the Welsh and Scottish Governments and the Northern Ireland departments,
   Land Registry, Registers of Scotland and Land & Property Services, ONS, NRS, NISRA and
@@ -105,7 +105,7 @@ A full walkthrough video comes with each feature
 
 ## How the scores work
 
-Each neighbourhood gets up to 112 indicators. The 44 that count towards the score are
+Each neighbourhood gets up to 114 indicators. The 44 that count towards the score are
 turned into 0–100 scores, averaged within nine themes (safety, environment, health
 services, schools and childcare, transport, amenities, housing, community and climate), and
 the themes are weighted by what you choose. Measures that are the same everywhere

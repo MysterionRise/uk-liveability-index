@@ -47,6 +47,7 @@ units:
   years_income: "blianta d'ioncam"
   years: blianta
   people_km2: "daoine in aghaidh km²"
+  people_per_room: "daoine in aghaidh an tseomra"
   per_km2: "in aghaidh an km²"
   radiance: "nW/cm²/sr"
   hours_year: "uaireanta sa bhliain"
@@ -174,6 +175,8 @@ indicators:
   new_builds: {label: Tithe a tógadh ó 2000, description: "Sciar de thithe a tógadh in 2000 nó ina dhiaidh."}
   period_homes: {label: Tithe a tógadh roimh 1919, description: "Sciar de thithe a tógadh roimh 1919."}
   lower_band_homes: {label: Tithe i mbandaí cánach comhairle A–B, description: "Sciar de thithe sa dá bhanda cánach comhairle is ísle (na tithe is saoire ag luachanna 1991)."}
+  overcrowded_households: {label: Teaghlaigh róphlódaithe, description: "Sciar de theaghlaigh a bhfuil níos lú seomraí leapa acu ná mar a theastaíonn uathu de réir chaighdeán na seomraí leapa (Daonáireamh 2021; 2022 in Albain).", caveats: "Cuireann caighdeán na seomraí leapa daoine i bpéirí (lánúineacha, beirt leanaí faoi 10 mbliana d'aois, beirt den ghnéas céanna faoi 21), mar sin is féidir le teaghlach a bheith seomra leapa gann gan a bheith plódaithe dar leo féin. Ní fhoilsíonn Tuaisceart Éireann é do cheantair bheaga; áirítear seomraí i ndaonáireamh na hÉireann, agus taispeántar é mar dhaoine in aghaidh an tseomra."}
+  persons_per_room: {label: Daoine in aghaidh an tseomra, description: "Daoine i dteaghlaigh phríobháideacha in aghaidh gach seomra ina dtithe (Daonáireamh 2022), tomhas plódaithe na hÉireann.", caveats: "Meán thar theaghlaigh an cheantair, ní líon na dteaghlach plódaithe. Áirítear cistiní mar sheomraí ach ní áirítear seomraí folctha; glactar le teach a bhfuil \"8 seomra nó níos mó\" ann mar 9."}
   income_deprivation: {label: Díothacht ioncaim, description: "Sciar de chónaitheoirí ar ioncam íseal (fearann ioncaim an innéacs díothachta).", caveats: "Sa Bhreatain Bheag is é an ráta táscaire \"daoine i ndíothacht ioncaim\" WIMD 2025 (StatsWales), an tomhas atá taobh thiar de scór an fhearainn."}
   pobal_deprivation: {label: Rachmas agus díothacht (innéacs Pobal HP), description: "Innéacs díothachta coibhneasta Pobal HP na toghroinne ó Dhaonáireamh 2022 (dífhostaíocht, oideachas, aicme shóisialta, tuismitheoirí aonair, tionacht agus plódú); ciallaíonn níos airde níos saibhre.", caveats: "Foilsithe do thoghranna (thart ar 1,500 duine); tá leagan an Cheantair Bhig ceadúnaithe. Seasann sé in ionad an tomhais ar dhíothacht ioncaim mar sciar, nach bhfoilsíonn Éire faoi leibhéal an chontae."}
   employment_deprivation: {label: Díothacht fostaíochta, description: "Sciar de chónaitheoirí in aois oibre atá dífhostaithe dá n-ainneoin féin (fearann fostaíochta an innéacs díothachta).", caveats: "Sa Bhreatain Bheag is é an ráta táscaire \"daoine in aois oibre i ndíothacht fostaíochta\" WIMD 2025 (StatsWales), an tomhas atá taobh thiar de scór an fhearainn."}

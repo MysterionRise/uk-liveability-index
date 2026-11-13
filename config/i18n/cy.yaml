@@ -46,6 +46,7 @@ units:
   years_income: "blynyddoedd o incwm"
   years: blynyddoedd
   people_km2: "pobl fesul km²"
+  people_per_room: "pobl fesul ystafell"
   per_km2: "y km²"
   radiance: "nW/cm²/sr"
   hours_year: "oriau y flwyddyn"
@@ -148,6 +149,8 @@ indicators:
   new_builds: {label: Cartrefi a adeiladwyd ers 2000, description: Cyfran y cartrefi a adeiladwyd yn 2000 neu'n ddiweddarach.}
   period_homes: {label: Cartrefi a adeiladwyd cyn 1919, description: Cyfran y cartrefi a adeiladwyd cyn 1919.}
   lower_band_homes: {label: Cartrefi ym mandiau treth gyngor A–B, description: Cyfran y cartrefi yn y ddau fand treth gyngor isaf (y cartrefi rhataf yng ngwerthoedd 1991).}
+  overcrowded_households: {label: Aelwydydd gorlawn, description: "Cyfran yr aelwydydd sydd â llai o ystafelloedd gwely nag sydd eu hangen arnynt yn ôl y safon ystafelloedd gwely (Cyfrifiad 2021; Cyfrifiad 2022 yn yr Alban).", caveats: "Mae'r safon ystafelloedd gwely yn paru pobl (cyplau, dau blentyn o dan 10 oed, dau o'r un rhyw o dan 21 oed), felly gall aelwyd fod un ystafell wely yn brin heb deimlo'n orlawn. Nid yw Gogledd Iwerddon yn ei gyhoeddi ar gyfer ardaloedd bach; mae cyfrifiad Iwerddon yn cyfrif ystafelloedd, a ddangosir fel pobl fesul ystafell."}
+  persons_per_room: {label: Pobl fesul ystafell, description: "Pobl mewn aelwydydd preifat am bob ystafell yn eu cartrefi (Cyfrifiad 2022), mesur gorlenwi Iwerddon.", caveats: "Cyfartaledd dros aelwydydd yr ardal, nid cyfrif o'r rhai gorlawn. Mae ceginau'n cyfrif fel ystafelloedd ond nid ystafelloedd ymolchi; cymerir cartref ag \"8 ystafell neu fwy\" fel 9."}
   income_deprivation: {label: Amddifadedd incwm, description: Cyfran y trigolion ar incwm isel (parth incwm y mynegai amddifadedd)., caveats: "Yng Nghymru, y gyfradd yw dangosydd \"pobl mewn amddifadedd incwm\" WIMD 2025 (StatsCymru), y mesur y tu ôl i sgôr y parth."}
   pobal_deprivation: {label: Cyfoeth ac amddifadedd (mynegai Pobal HP), description: "Mynegai amddifadedd cymharol Pobal HP yr adran etholiadol o Gyfrifiad 2022 (diweithdra, addysg, dosbarth cymdeithasol, rhieni sengl, deiliadaeth a gorlenwi); mae uwch yn golygu mwy cefnog.", caveats: "Cyhoeddir ar gyfer Rhaniadau Etholiadol (tua 1,500 o bobl); mae fersiwn yr Ardal Fach dan drwydded. Mae'n sefyll yn lle cyfran yr amddifadedd incwm, nad yw Iwerddon yn ei chyhoeddi islaw lefel y sir."}
   employment_deprivation: {label: Amddifadedd cyflogaeth, description: Cyfran y trigolion o oedran gweithio sydd allan o waith yn anwirfoddol (parth cyflogaeth y mynegai amddifadedd)., caveats: "Yng Nghymru, y gyfradd yw dangosydd \"pobl o oedran gweithio mewn amddifadedd cyflogaeth\" WIMD 2025 (StatsCymru), y mesur y tu ôl i sgôr y parth."}

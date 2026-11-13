@@ -19,6 +19,14 @@ describe("formatValue", () => {
   });
 });
 
+describe("formatValue for people per room", () => {
+  it("keeps two decimals, from the English unit or its code", () => {
+    expect(formatValue(0.4651, "people per room")).toBe("0.47");
+    expect(formatValue(0.4651, "people_per_room")).toBe("0.47");
+    expect(formatValue(1.1, "people per room")).toBe("1.10");
+  });
+});
+
 describe("formatValue never prints a negative zero", () => {
   it("rounds tiny negatives to 0", () => {
     expect(formatValue(-6.5e-15, "hectares")).toBe("0.0");

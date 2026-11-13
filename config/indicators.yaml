@@ -1271,6 +1271,33 @@ indicators:
     params: {slug: voa_ctsop, numerator: [band_a, band_b], denominator: dwellings}
     role: context
 
+  - id: overcrowded_households
+    theme: housing
+    label: Overcrowded households
+    description: Share of households with fewer bedrooms than they need by the bedroom standard (Census 2021; Census 2022 in Scotland).
+    unit: "%"
+    direction: lower_better
+    coverage: [E, W, S]
+    sources: [census_ts052, scotland_census_2022]
+    builder: community:census_share
+    params: {table: census_ts052, numerator: [overcrowded]}
+    role: context
+    caveats: The bedroom standard pairs people up (couples, two children under 10, two of the same sex under 21), so a household can be a bedroom short without feeling crowded. Northern Ireland does not publish it for small areas; Ireland's census counts rooms, shown as people per room.
+
+  - id: persons_per_room
+    theme: housing
+    label: People per room
+    description: People in private households for every room of their homes (Census 2022), Ireland's measure of crowding.
+    unit: people per room
+    direction: lower_better
+    benchmark: nation
+    coverage: [I]
+    sources: [cso_saps22_sa]
+    builder: common:column
+    params: {slug: census_ts052, column: persons_per_room}
+    role: context
+    caveats: An average over the area's households, not a count of crowded ones. Kitchens count as rooms and bathrooms do not; a home with "8 or more rooms" is taken as 9.
+
   # -------------------------------------------------------------------- community
   - id: income_deprivation
     theme: community

@@ -212,7 +212,16 @@ STAGE_INPUTS: dict[str, list[str]] = {
     # Northern Ireland publishes only population, density and single year of age at
     # Super Data Zone level (stage/census.py NI_TABLES); the other tables stop at wards
     "census_ts001": ["census_ts001", "scotland_census_2022", "nisra_census_2021_p1"],
-    "census_ts007a": ["census_ts007a", "scotland_census_2022", "nisra_census_2021_p1"],
+    # Ireland's Small Area file fills the age bands, students and persons per room
+    # (stage/census.py IRELAND_TABLES)
+    "census_ts007a": [
+        "census_ts007a",
+        "scotland_census_2022",
+        "nisra_census_2021_p1",
+        "cso_saps22_sa",
+    ],
+    "census_ts052": ["census_ts052", "scotland_census_2022", "cso_saps22_sa"],
+    "census_ts066": ["census_ts066", "scotland_census_2022", "cso_saps22_sa"],
     # Scotland's density: Census 2022 residents over the zone polygons
     "census_ts006": [
         "census_ts006",

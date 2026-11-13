@@ -4,14 +4,16 @@ import polars as pl
 
 
 def census_share(ctx, table: str, numerator: list[str], denominator: str = "total") -> pl.DataFrame:
-    """sum(numerator columns) / denominator × 100."""
+    """sum(numerator columns) / denominator × 100; no value where a nation's census does
+    not publish any of the numerator columns (a sum of nothing is not a share of 0)."""
     df = ctx.staged(table)
+    published = pl.any_horizontal(pl.col(c).is_not_null() for c in numerator)
     return df.select(
         "lsoa21cd",
         # The parts and the total can come from different tables or roundings: a share is
         # never over 100
-        (pl.sum_horizontal(numerator) / pl.col(denominator) * 100)
-        .clip(upper_bound=100)
+        pl.when(published)
+        .then((pl.sum_horizontal(numerator) / pl.col(denominator) * 100).clip(upper_bound=100))
         .alias("value"),
     )
 

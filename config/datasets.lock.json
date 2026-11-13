@@ -338,6 +338,22 @@
       "version": "census2021-ts045.zip"
     }
   },
+  "census_ts052": {
+    "fetched": {
+      "bytes": 2730733,
+      "extracted": [
+        "census2021-ts052-lsoa.csv"
+      ],
+      "fetched_at": "2026-11-13T18:57:55.896343+00:00",
+      "sha256": "4fa7813b721454c0034cb4ddeba59f909883043fdbac04948637bdc3112d8c89",
+      "version": "census2021-ts052.zip"
+    },
+    "resolved": {
+      "resolved_at": "2026-11-13T18:57:54+00:00",
+      "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts052.zip",
+      "version": "census2021-ts052.zip"
+    }
+  },
   "census_ts054": {
     "fetched": {
       "bytes": 4074446,
@@ -384,6 +400,22 @@
       "resolved_at": "2026-11-12T00:39:27+00:00",
       "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts061.zip",
       "version": "census2021-ts061.zip"
+    }
+  },
+  "census_ts066": {
+    "fetched": {
+      "bytes": 7437823,
+      "extracted": [
+        "census2021-ts066-lsoa.csv"
+      ],
+      "fetched_at": "2026-11-13T18:57:59.404177+00:00",
+      "sha256": "eb9d792d4b9d196b2e36ab558af2ad85f52f5f2f2643b3895b42cd4fad068d1a",
+      "version": "census2021-ts066.zip"
+    },
+    "resolved": {
+      "resolved_at": "2026-11-13T18:57:57+00:00",
+      "url": "https://www.nomisweb.co.uk/output/census/2021/census2021-ts066.zip",
+      "version": "census2021-ts066.zip"
     }
   },
   "census_ts067": {

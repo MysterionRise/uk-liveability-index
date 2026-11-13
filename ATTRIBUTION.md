@@ -12,7 +12,7 @@ This project's outputs are built from the datasets below. Reuse must keep these 
 - Office for Health Improvement and Disparities, Local Health (Fingertips), based on ONS data, licensed under the Open Government Licence v3.0. (`life_expectancy`)
 - Contains HM Land Registry data © Crown copyright and database right 2026. This data is licensed under the Open Government Licence v3.0. (`price_paid`)
 - Ministry of Housing, Communities and Local Government, English Indices of Deprivation 2025, licensed under the Open Government Licence v3.0. (`iod_2025`)
-- Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021. (`census_ts001`, `census_ts003`, `census_ts006`, `census_ts007a`, `census_ts037`, `census_ts044`, `census_ts045`, `census_ts054`, `census_ts058`, `census_ts061`, `census_ts067`)
+- Source: Office for National Statistics licensed under the Open Government Licence v3.0. Census 2021. (`census_ts001`, `census_ts003`, `census_ts006`, `census_ts007a`, `census_ts037`, `census_ts044`, `census_ts045`, `census_ts052`, `census_ts054`, `census_ts058`, `census_ts061`, `census_ts066`, `census_ts067`)
 - Contains public sector information from police.uk licensed under the Open Government Licence v3.0. (`police_crime`)
 - Department for Transport, Road Safety Data (STATS19), licensed under the Open Government Licence v3.0. (`stats19`)
 - © Crown copyright. Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence v3.0. (`defra_pcm_no2`, `defra_pcm_pm25`, `defra_pcm_pm10`)

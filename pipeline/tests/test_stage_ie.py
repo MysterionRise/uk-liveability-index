@@ -159,6 +159,52 @@ def test_tidy_saps_drops_the_state_row_and_sums_the_bands():
     assert out["pop_year"].to_list() == [2022, 2022]
 
 
+def test_persons_per_room_counts_the_top_class_as_nine_rooms():
+    from lix_pipeline.stage.census import tidy_saps_rooms
+
+    rooms = ["1", "2", "3", "4", "5", "6", "7", "GE8"]
+    households = {f"T6_4_{k}RH": ["0", "0"] for k in rooms}
+    people = {f"T6_4_{k}RP": ["0", "0"] for k in rooms}
+    # Ten households of four in five rooms, ten of five in "8 or more"; the second area
+    # has no household that stated its rooms
+    households.update({"T6_4_5RH": ["10", "0"], "T6_4_GE8RH": ["10", "0"]})
+    people.update({"T6_4_5RP": ["40", "0"], "T6_4_GE8RP": ["50", "0"]})
+    df = pl.DataFrame(
+        {
+            "lsoa21cd": ["I01000001", "I01000002"],
+            **households,
+            **people,
+            # Households that did not state their rooms are in neither sum
+            "T6_4_NSH": ["3", "7"],
+            "T6_4_NSP": ["9", "20"],
+        }
+    )
+    out = tidy_saps_rooms(df)
+    assert out["total"].to_list() == [20.0, 0.0]
+    assert out["persons_per_room"].to_list() == [pytest.approx(90 / 140), None]
+
+
+def test_saps_ages_fill_the_five_year_bands_of_the_census_2021_table():
+    from lix_pipeline.stage.census import IRELAND_TABLES, tidy_saps_table
+
+    single = {f"T1_1AGE{a}T": [str(a + 1)] for a in range(20)}
+    bands = {f"T1_1AGE{a}_{a + 4}T": ["100"] for a in range(20, 85, 5)}
+    df = pl.DataFrame(
+        {
+            "lsoa21cd": ["I01000001"],
+            **single,
+            **bands,
+            "T1_1AGEGE_85T": ["7"],
+            "T1_1AGETT": [str(sum(range(1, 21)) + 1300 + 7)],
+        }
+    )
+    row = tidy_saps_table(df, IRELAND_TABLES["census_ts007a"]).to_dicts()[0]
+    assert row["aged_4_years_and_under"] == 1 + 2 + 3 + 4 + 5
+    assert row["aged_15_to_19_years"] == 16 + 17 + 18 + 19 + 20
+    assert row["aged_20_to_24_years"] == 100 and row["aged_85_years_and_over"] == 7
+    assert sum(v for k, v in row.items() if k.startswith("aged_")) == row["total"]
+
+
 def test_load_boundaries_mints_codes_and_dissolves_parts(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("LIX_DATA_DIR", str(tmp_path))
     folder = tmp_path / "raw" / "parts"
