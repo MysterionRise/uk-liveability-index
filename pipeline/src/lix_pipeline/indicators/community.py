@@ -18,6 +18,26 @@ def census_share(ctx, table: str, numerator: list[str], denominator: str = "tota
     )
 
 
+# People per room rests on the households that stated their rooms: under this many, or
+# under this share of the area's households, it says little about the area (the v0.7.3
+# test pass: Julianstown 030/03's figure came from 5 households of 10 people)
+MIN_HOUSEHOLDS = 20
+MIN_STATED_SHARE = 0.5
+
+
+def persons_per_room(ctx) -> pl.DataFrame:
+    """Ireland's people per room, flagged ``low_n`` where few households are behind it."""
+    df = ctx.staged("census_ts052")
+    thin = (pl.col("total") < MIN_HOUSEHOLDS) | (
+        pl.col("total") < MIN_STATED_SHARE * pl.col("households")
+    )
+    return df.filter(pl.col("persons_per_room").is_not_null()).select(
+        "lsoa21cd",
+        pl.col("persons_per_room").alias("value"),
+        pl.when(thin).then(pl.lit("low_n")).otherwise(pl.lit("ok")).alias("quality"),
+    )
+
+
 def claimant_rate(ctx) -> pl.DataFrame:
     """Claimants as a % of residents aged 16–64 (Census 2021 ages; 16–19 taken as 4/5 of 15–19)."""
     ages = ctx.staged("census_ts007a")

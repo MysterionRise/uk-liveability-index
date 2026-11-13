@@ -5,7 +5,9 @@ The LSOA sheet has two title rows above the header ("LSOA21CD", "Employment
 travel times; DfT advises comparing places of the same urban/rural type.
 """
 
+import functools
 import re
+import statistics
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -248,12 +250,33 @@ def _comreg_broadband() -> pl.DataFrame:
 DAYTIME = ("07:00:00", "19:00:00")  # 12 hours
 
 
-def reference_tuesday(start: date, end: date) -> date:
-    """A normal Tuesday about two weeks into the timetable (clear of bank holidays)."""
+# A Tuesday is abnormal when the feed runs under this share of the trips it runs on the
+# Tuesdays around it
+NORMAL_SHARE = 0.9
+
+
+def reference_tuesday(start: date, end: date, trips_on=None) -> date:
+    """A normal Tuesday about two weeks into the timetable (clear of bank holidays).
+
+    ``trips_on`` (a day → the trips the feed runs on it) guards against a day the feed
+    itself marks as abnormal: where the Tuesday two weeks in runs under nine tenths of
+    the median of the Tuesdays up to a fortnight either side, the nearest normal one
+    is taken, the week before first. BODS's files of 12 November 2026 withdraw nearly
+    half of England's trips on Tuesday 1 December (252,541 against 464,419 the week
+    before), and counted on that day Bristol read 0.3 buses an hour for 33."""
+    holidays = {(12, 25), (12, 26), (1, 1)}
     day = start + timedelta(days=14)
-    while day.weekday() != 1 or (day.month, day.day) in {(12, 25), (12, 26), (1, 1)}:
+    while day.weekday() != 1 or (day.month, day.day) in holidays:
         day += timedelta(days=1)
-    return min(day, end)
+    day = min(day, end)
+    if trips_on is None or day.weekday() != 1:
+        return day
+    # Nearest first, the earlier of a pair first
+    around = [day + timedelta(days=7 * k) for k in (0, -1, 1, -2, 2)]
+    around = [d for d in around if start <= d <= end and (d.month, d.day) not in holidays]
+    trips = {d: trips_on(d) for d in around}
+    median = statistics.median(trips.values())
+    return next((d for d in around if trips[d] >= NORMAL_SHARE * median), day)
 
 
 def gtfs_feeds() -> list[str]:
@@ -345,8 +368,44 @@ def gtfs_reference_day(root: Path) -> date | None:
     if not start or not end:
         return None
     return reference_tuesday(
-        datetime.strptime(start, "%Y%m%d").date(), datetime.strptime(end, "%Y%m%d").date()
+        datetime.strptime(start, "%Y%m%d").date(),
+        datetime.strptime(end, "%Y%m%d").date(),
+        # A feed with only its calendar (a test's, a partial download) keeps the plain rule
+        trips_on=(lambda day: _trips_on(str(root), day))
+        if (Path(root) / "trips.txt").exists()
+        else None,
     )
+
+
+@functools.lru_cache(maxsize=64)
+def _trips_on(root: str, day: date) -> int:
+    """The trips a feed runs on a day: its calendar, with the day's exceptions."""
+    import duckdb
+
+    folder = Path(root)
+    sql = f"""
+    WITH active AS ({_active_services(folder, day)})
+    SELECT count(*) FROM read_csv('{folder / "trips.txt"}', all_varchar=true)
+    WHERE service_id IN (SELECT service_id FROM active)
+    """
+    return int(duckdb.connect().execute(sql).fetchone()[0])
+
+
+def _active_services(root: Path, day: date) -> str:
+    """SQL for the service ids running on ``day``: the weekday's calendar rows in force,
+    plus the services added for the day, less the ones removed."""
+    cal = f"read_csv('{root / 'calendar.txt'}', all_varchar=true)"
+    dates = f"read_csv('{root / 'calendar_dates.txt'}', all_varchar=true)"
+    weekday = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")[
+        day.weekday()
+    ]
+    d = day.strftime("%Y%m%d")
+    return f"""
+        SELECT service_id FROM {cal}
+        WHERE {weekday} = '1' AND start_date <= '{d}' AND end_date >= '{d}'
+        UNION SELECT service_id FROM {dates} WHERE date = '{d}' AND exception_type = '1'
+        EXCEPT SELECT service_id FROM {dates} WHERE date = '{d}' AND exception_type = '2'
+    """
 
 
 def _gtfs_departures(root) -> pl.DataFrame:
@@ -355,17 +414,9 @@ def _gtfs_departures(root) -> pl.DataFrame:
     from lix_pipeline.stage.geo import lonlat_to_bng
 
     con = duckdb.connect()
-    cal = f"read_csv('{root / 'calendar.txt'}', all_varchar=true)"
-    dates = f"read_csv('{root / 'calendar_dates.txt'}', all_varchar=true)"
     day = gtfs_reference_day(root)
-    d = day.strftime("%Y%m%d")
     sql = f"""
-    WITH active AS (
-        SELECT service_id FROM {cal}
-        WHERE tuesday = '1' AND start_date <= '{d}' AND end_date >= '{d}'
-        UNION SELECT service_id FROM {dates} WHERE date = '{d}' AND exception_type = '1'
-        EXCEPT SELECT service_id FROM {dates} WHERE date = '{d}' AND exception_type = '2'
-    ),
+    WITH active AS ({_active_services(Path(root), day)}),
     trips AS (
         SELECT trip_id FROM read_csv('{root / "trips.txt"}', all_varchar=true)
         WHERE service_id IN (SELECT service_id FROM active)

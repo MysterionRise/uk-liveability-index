@@ -155,6 +155,18 @@ class TestTitleName:
             ("CHAPEL-EN-LE-FRITH", "Chapel-en-le-Frith"),
             ("MCKENZIE HOUSE", "McKenzie House"),
             ("MACKLIN STREET SURGERY", "Macklin Street Surgery"),
+            # What the release's data tester found wrong in the first version
+            ("SLAG LANE MC", "Slag Lane MC"),
+            ("DRS LAMBERT & NG", "Drs Lambert & Ng"),
+            ("DR ST PIERRE-LIBBERTON", "Dr St Pierre-Libberton"),
+            ("LITTLE WALTHAM & GT NOTLEY SURGERY", "Little Waltham & Gt Notley Surgery"),
+            ("THE SURGERY (SA BAILEY)", "The Surgery (SA Bailey)"),
+            ("DR A NAEEM & PARTNERS,THE NEW SURGERY", "Dr A Naeem & Partners,The New Surgery"),
+            ("ST MARY`S R.C. (A) SCHOOL", "St Mary`s R.C. (A) School"),
+            ("WALLSEND UPCC", "Wallsend UPCC"),
+            ("SPECIAL ALLOCATION SCHEME (NEL)", "Special Allocation Scheme (NEL)"),
+            ("THE SURGERY (ONE)", "The Surgery (One)"),
+            ("CARN TO COAST HEALTH CENTRES", "Carn to Coast Health Centres"),
             # Digits: a postcode district and a code stay, an ordinal drops its capitals
             ("FIRST 4 HEALTH GROUP - E7 HEALTH", "First 4 Health Group - E7 Health"),
             ("4TH FLOOR SURGERY", "4th Floor Surgery"),
@@ -179,6 +191,11 @@ class TestTitleName:
             ("GRIFFITHS C.I.W. PRIMARY SCHOOL", "Griffiths C.I.W. Primary School"),
             ("LLANELWEDD CHURCH IN WALES PRIMARY", "Llanelwedd Church in Wales Primary"),
             ("HAY-ON-WYE C.P. SCHOOL", "Hay-on-Wye C.P. School"),
+            ("COED-Y-BRAIN PRIMARY", "Coed-y-Brain Primary"),
+            ("PEN-Y-BONT SURGERY", "Pen-y-Bont Surgery"),
+            ("LLANRHAEADR YM MOCHNANT C.P. SCHOOL", "Llanrhaeadr ym Mochnant C.P. School"),
+            ("MEDDYGFA CWM RHYMNI PRACTICE", "Meddygfa Cwm Rhymni Practice"),
+            ("GLAN YR AFON SURGERY", "Glan yr Afon Surgery"),
             ("ST BERNADETTES RC PRIMARY", "St Bernadettes RC Primary"),
         ],
     )  # fmt: skip
@@ -189,10 +206,33 @@ class TestTitleName:
         assert title_name("DR GWD JONES") == "Dr GWD Jones"
         assert title_name("PWLL PRIMARY") == "PWLL Primary"
 
-    def test_a_name_with_lower_case_is_left_alone(self):
+    def test_a_name_in_mixed_case_keeps_what_its_author_wrote(self):
         assert title_name("Meddygfa Teifi Surgery") == "Meddygfa Teifi Surgery"
         assert title_name("the McKenzie practice") == "the McKenzie practice"
+        assert title_name("Tesco Superstore-Basildon") == "Tesco Superstore-Basildon"
         assert title_name(None) is None
+
+    @pytest.mark.parametrize(
+        ("raw", "shown", "welsh"),
+        [
+            # Northern Ireland's GP list: 297 of 304 names have the surname in capitals
+            ("Dr. DEERING & PARTNERS", "Dr. Deering & Partners", False),
+            ("Dr. MCGLADE & PARTNERS", "Dr. McGlade & Partners", False),
+            ("DUNVANT Primary SCHOOL", "Dunvant Primary School", True),
+            ("St. MARY'S CHURCH SCHOOL", "St. Mary's Church School", True),
+            ("YSGOL Godre'r Berwyn", "Ysgol Godre'r Berwyn", True),
+            # An article left capital between two Welsh words; one that opens the name stays
+            ("Ysgol Y Gelli", "Ysgol y Gelli", True),
+            ("Ysgol Yr Hendre", "Ysgol yr Hendre", True),
+            ("Y Pant Comprehensive", "Y Pant Comprehensive", True),
+            # Short words in capitals are left: an acronym is likelier than a shout
+            ("Ysgol Gynradd YGG Bro", "Ysgol Gynradd YGG Bro", True),
+            ("Riverside NHS Practice", "Riverside NHS Practice", False),
+            ("Health Hub PCN Team", "Health Hub PCN Team", False),
+        ],
+    )
+    def test_capitals_inside_a_mixed_case_name(self, raw, shown, welsh):
+        assert title_name(raw, welsh=welsh) == shown
 
 
 def test_a_source_whose_names_are_mostly_capitals_is_a_problem():

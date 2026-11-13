@@ -80,22 +80,24 @@ def test_staleness_follows_the_publishing_cadence():
     assert not is_stale(None, "monthly", now)
 
 
-def test_every_english_council_needs_a_county():
+def test_every_english_small_area_needs_a_county():
     from lix_pipeline.qa.validate import county_problems
 
-    areas = pl.DataFrame(
+    features = pl.DataFrame(
         {
-            "code": ["E08000035", "E06000023", "S12000017", "E02000001"],
-            "name": ["Leeds", "Bristol, City of", "Highland", "Headingley"],
-            "level": ["lad", "lad", "lad", "msoa"],
-            "county": ["West Yorkshire", None, None, None],
+            "lsoa21cd": ["E01000001", "E01000002", "S01000001", "N21000001"],
+            "lad_cd": ["E08000035", "E06000023", "S12000017", "N09000003"],
+            "lad_nm": ["Leeds", "Bristol, City of", "Highland", "Belfast"],
+            "county": ["West Yorkshire", None, "Caithness", None],
         }
     )
-    # Highland is divided between lieutenancies and has none; a neighbourhood has none
-    assert county_problems(areas) == [
-        "1 English councils have no county, e.g. ['Bristol, City of']"
+    # Northern Ireland has no counties yet (#315): only England is required
+    assert county_problems(features) == [
+        "1 English small areas have no county, e.g. in ['Bristol, City of']"
     ]
-    assert county_problems(areas.drop("county")) == ["areas.parquet has no county column"]
+    assert county_problems(features.drop("county")) == [
+        "lsoa_features.parquet has no county column"
+    ]
 
 
 def test_a_full_pack_has_the_whole_of_devon_and_kent():
@@ -106,12 +108,12 @@ def test_a_full_pack_has_the_whole_of_devon_and_kent():
         counties += ["Essex"] * (ENGLISH_COUNCILS - len(counties))
         return pl.DataFrame(
             {
-                "code": [f"E0700{i:04d}" for i in range(len(counties))],
-                "name": [f"Council {i}" for i in range(len(counties))],
-                "level": ["lad"] * len(counties),
+                "lsoa21cd": [f"E010{i:05d}" for i in range(len(counties))],
+                "lad_cd": [f"E0700{i:04d}" for i in range(len(counties))],
+                "lad_nm": [f"Council {i}" for i in range(len(counties))],
                 "county": counties,
             }
         )
 
     assert county_problems(pack(devon=10)) == []
-    assert county_problems(pack(devon=8)) == ["Devon has 8 councils, expected 10"]
+    assert county_problems(pack(devon=8)) == ["Devon takes in 8 councils, expected 10"]

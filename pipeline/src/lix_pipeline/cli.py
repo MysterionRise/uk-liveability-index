@@ -219,7 +219,8 @@ def _qa(args: argparse.Namespace) -> int:
         print(
             f"{len(found['moved'])} indicators moved; "
             f"{len(found['moved_without_cause'])} without a new edition or definition; "
-            f"{len(found['editions_that_moved_nothing'])} new editions moved nothing",
+            f"{len(found['editions_that_moved_nothing'])} new editions moved nothing; "
+            f"{len(found['large_shifts'])} typical values shifted by more than a quarter",
             file=sys.stderr,
         )
         return 0

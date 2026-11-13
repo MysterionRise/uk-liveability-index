@@ -1308,7 +1308,7 @@ indicators:
     builder: community:census_share
     params: {table: census_ts052, numerator: [overcrowded]}
     role: context
-    caveats: The bedroom standard pairs people up (couples, two children under 10, two of the same sex under 21), so a household can be a bedroom short without feeling crowded. Northern Ireland does not publish it for small areas; Ireland's census counts rooms, shown as people per room.
+    caveats: The bedroom standard pairs people up (couples, two children under 10, two of the same sex under 21), so a household can be a bedroom short without feeling crowded. Most areas have very few (the typical one 2%), so 5% is already among the most overcrowded quarter. Northern Ireland does not publish it for small areas; Ireland's census counts rooms, shown as people per room.
 
   - id: persons_per_room
     theme: housing
@@ -1319,10 +1319,9 @@ indicators:
     benchmark: nation
     coverage: [I]
     sources: [cso_saps22_sa]
-    builder: common:column
-    params: {slug: census_ts052, column: persons_per_room}
+    builder: community:persons_per_room
     role: context
-    caveats: An average over the area's households, not a count of crowded ones. Kitchens count as rooms and bathrooms do not; a home with "8 or more rooms" is taken as 9.
+    caveats: An average over the area's households, not a count of crowded ones, so read it against the rest of Ireland (the typical area has 0.47, and one area in ten is over 0.6) rather than against one person per room. Kitchens count as rooms and bathrooms do not; a home with "8 or more rooms" is taken as 9.
 
   # -------------------------------------------------------------------- community
   - id: income_deprivation
@@ -1531,7 +1530,7 @@ indicators:
     builder: community:census_share
     params: {table: census_ts066, numerator: [full_time_students]}
     role: context
-    caveats: Counted where students live in term time, so a neighbourhood of halls reads as nearly all students. Ireland counts people aged 15 and over whose main status is student; Northern Ireland publishes it for wards only.
+    caveats: Counted where students live in term time, so a neighbourhood of halls reads as nearly all students. The nations count differently, so compare within one. England and Wales include students who are not working whatever their hours of study, and Ireland counts everyone aged 15 and over whose main status is student, school pupils among them. Northern Ireland publishes it for wards only.
 
   - id: owner_occupied
     theme: community

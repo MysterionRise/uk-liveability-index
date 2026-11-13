@@ -336,8 +336,9 @@ ROOMS_IN_TOP_CLASS = 9
 
 def tidy_saps_rooms(df: pl.DataFrame) -> pl.DataFrame:
     """Persons per room of each Small Area: the members of the private households that
-    stated their rooms over those rooms. ``total`` is the households counted; an area
-    with none has no figure."""
+    stated their rooms over those rooms. ``total`` is the households counted and
+    ``households`` every private household, stated or not; an area with none counted
+    has no figure."""
 
     def count(column: str) -> pl.Expr:
         return pl.col(column).cast(pl.Float64, strict=False).fill_null(0)
@@ -349,6 +350,7 @@ def tidy_saps_rooms(df: pl.DataFrame) -> pl.DataFrame:
     return df.select(
         "lsoa21cd",
         pl.sum_horizontal(count(f"T6_4_{k}RH") for k in _SAPS_ROOMS).alias("total"),
+        count("T6_4_TH").alias("households"),
         pl.when(rooms > 0).then(people / rooms).alias("persons_per_room"),
     )
 

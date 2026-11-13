@@ -59,6 +59,24 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def small_area_counties(geo: pl.DataFrame) -> pl.DataFrame:
+    """Small area → the county people name it by: in Great Britain the ceremonial county
+    its centre lies in (the staged ``area_counties``, see stage/counties.py); in Ireland
+    its council's county from the curated list (Dublin's four councils share one). A
+    nation with neither, and a build without the staged table, has none."""
+    from lix_pipeline.serve.lookups import council_counties
+
+    frames = [pl.DataFrame(schema={"lsoa21cd": pl.Utf8, "county": pl.Utf8})]
+    staged = data_dir("staged") / "area_counties.parquet"
+    if staged.exists():
+        frames.append(pl.read_parquet(staged).select("lsoa21cd", "county"))
+    by_council = council_counties().rename({"code": "lad_cd"})
+    frames.append(
+        geo.select("lsoa21cd", "lad_cd").join(by_council, on="lad_cd").select("lsoa21cd", "county")
+    )
+    return pl.concat(frames).unique("lsoa21cd", keep="first")
+
+
 def build_features() -> pl.DataFrame:
     """Wide per-LSOA table with raw values, percentiles, quality flags and default scores."""
     catalogue = load_indicators()
@@ -70,6 +88,8 @@ def build_features() -> pl.DataFrame:
         *GEO_COLUMNS,
         *[pl.col(c) if c in geo.columns else pl.lit(None, pl.Utf8).alias(c) for c in NAME_COLUMNS],
     )
+
+    geo = geo.join(small_area_counties(geo), on="lsoa21cd", how="left")
 
     raw = long.pivot(on="indicator_id", index="lsoa21cd", values="value")
     quality = long.pivot(on="indicator_id", index="lsoa21cd", values="quality")

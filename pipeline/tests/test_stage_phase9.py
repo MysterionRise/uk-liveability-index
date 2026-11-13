@@ -84,6 +84,27 @@ def test_active_places_public_and_operational(data):
     assert stage_active_places().collect()["facilityid"].to_list() == [1]
 
 
+def test_a_tuesday_the_feed_runs_far_fewer_trips_on_is_passed_over():
+    """BODS's files of 12 November 2026: the Tuesday two weeks in, 1 December, runs 252,541
+    trips against 464,419 the week before, and every English city read as almost busless."""
+    start, end = date(2026, 11, 12), date(2028, 3, 31)
+    trips = {
+        date(2026, 11, 17): 456_496, date(2026, 11, 24): 464_419, date(2026, 12, 1): 252_541,
+        date(2026, 12, 8): 469_248, date(2026, 12, 15): 464_285,
+    }  # fmt: skip
+    assert reference_tuesday(start, end) == date(2026, 12, 1)
+    assert reference_tuesday(start, end, trips_on=trips.get) == date(2026, 11, 24)
+    # A normal day stays, even when a later week runs a little more
+    normal = trips | {date(2026, 12, 1): 460_000}
+    assert reference_tuesday(start, end, trips_on=normal.get) == date(2026, 12, 1)
+    # The week before is thin too: the week after
+    both = trips | {date(2026, 11, 24): 250_000}
+    assert reference_tuesday(start, end, trips_on=both.get) == date(2026, 12, 8)
+    # Every week is thin (a feed that is ending): the day two weeks in stands
+    thin = {d: 10 for d in trips}
+    assert reference_tuesday(start, end, trips_on=thin.get) == date(2026, 12, 1)
+
+
 def test_reference_tuesday():
     assert reference_tuesday(date(2026, 10, 7), date(2027, 7, 7)) == date(2026, 10, 27)
     # Never past the end of the timetable

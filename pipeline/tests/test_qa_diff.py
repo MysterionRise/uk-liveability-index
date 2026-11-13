@@ -88,3 +88,21 @@ def test_the_review_names_what_moved_without_a_cause_and_editions_that_moved_not
     assert "**Moved without a new edition or a new definition (1):** `crime`" in report
     assert "| `rent` | E | 0 | 2 | 0 |" in report
     assert "2 indicators are identical in every nation." in report
+
+
+def test_a_typical_value_that_collapses_is_named_even_when_a_new_file_explains_it():
+    """England's bus frequency, November 2026: a new timetable file, so "explained", and a
+    median of 4.7 an hour that became 0.3."""
+    codes = [f"E010000{i:02d}" for i in range(30)] + [f"W010000{i:02d}" for i in range(30)]
+    before = [4.0 + i / 10 for i in range(30)] + [3.0] * 30
+    after = [0.3] * 30 + [3.1] * 30
+    old_f = pl.DataFrame({"lsoa21cd": codes, "raw__bus_frequency": before})
+    new_f = pl.DataFrame({"lsoa21cd": codes, "raw__bus_frequency": after})
+    manifests = [_manifest({"bus_frequency": ["bods_gtfs"]}, {"bods_gtfs": v}) for v in "ab"]
+    changes = indicator_changes(old_f, new_f, ["bus_frequency"])
+    found = review(*manifests, changes)
+    assert found["moved_without_cause"] == [] and found["editions_that_moved_nothing"] == []
+    (shift,) = found["large_shifts"]
+    assert shift[:2] == ("bus_frequency", "E") and shift[3] == pytest.approx(0.3)
+    report = render(*manifests, changes, found)
+    assert "shifted by more than a quarter (1):** `bus_frequency` in E: median 5.45 → 0.3" in report

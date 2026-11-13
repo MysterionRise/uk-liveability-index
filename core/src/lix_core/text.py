@@ -106,29 +106,38 @@ def clean_name(expr: pl.Expr) -> pl.Expr:
 # Kept in capitals whatever their letters; a word with no vowel is kept too (HC, NPC, the
 # initials in "DR PS BATH'S PRACTICE") unless it is one of the abbreviations below
 ACRONYMS = frozenset(
-    "nhs gp gps pcn uk hmp pms gms apms cic llp sas ccg uea raf mod yoi".split()
+    "nhs gp gps pcn uk hmp pms gms apms cic llp sas ccg uea raf mod yoi upcc ucc uhpc larc".split()
 )  # fmt: skip
+# "Mc" alone is a medical centre ("Slag Lane MC") and stays with the no-vowel words; Ng
+# is a surname wherever it stands
 ABBREVIATIONS = frozenset(
-    "dr drs st rd mr mrs ms mt ctr ctrs cntr cnt ltd grp hth hlth ptnr ptnrs blvd mc".split()
+    "dr drs st rd mr mrs ms mt ct gt ctr ctrs cntr cnt ltd grp hth hlth ptnr ptnrs blvd ng".split()
 )
 # Lower case unless they open the name or a part of it
-SMALL_WORDS = frozenset("and of the at for in on by with upon under".split())
+SMALL_WORDS = frozenset("and of the at for in on by to with upon under".split())
+# Three letters alone in brackets are a code ("(NEL)", "(AWC)") unless they are a word
+BRACKETED_WORDS = frozenset("one two six ten new old the".split())
 # Lower case between hyphens ("Chapel-en-le-Frith", "Chorlton-cum-Hardy")
 HYPHEN_BOUND = frozenset({"en", "le", "la", "cum"})
 # Welsh: the words that stay lower between two others ("Ysgol y Garreg", "Maes yr Haf"),
 # the acronyms of school names that carry a vowel, and w, which is one ("Cwrt", "Pwll")
-WELSH_SMALL_WORDS = frozenset("y yr a ac o i yn ar dan ger na o'r a'r".split())
+WELSH_SMALL_WORDS = frozenset("y yr ym a ac o i yn ar dan ger na o'r a'r".split())
+# The articles and "in", which also stand between hyphens ("Pen-y-Bont", "Coed-y-Brain")
+WELSH_HYPHEN_BOUND = frozenset({"y", "yr", "ym", "yn", "ar"})
 WELSH_ACRONYMS = frozenset({"ygg", "va", "ciw"})
 # After "Dr", one or two letters before the surname are initials ("Dr AA Ansari") unless
 # they are a surname or a particle of one ("Dr Ng", "Dr Al Mousawi")
 TWO_LETTER_NAMES = frozenset(
-    "ng li wu xu ma ho le lo yu oo su ko lu hu he vu do an yi mo so ha al el de du la da di".split()
-)  # fmt: skip
-_TOKEN = re.compile(r"([A-Za-z0-9']+)")
+    "ng li wu xu ma ho le lo yu oo su ko lu hu he vu do an yi mo so ha".split()
+    + "al el de du la da di st".split()
+)
+# A word, with the apostrophes inside it however they were typed ("MARY`S")
+_APOSTROPHE = "'`\u2019"
+_TOKEN = re.compile(rf"([A-Za-z0-9{_APOSTROPHE}]+)")
 _ORDINAL = re.compile(r"^\d+(st|nd|rd|th)$")
 _VOWEL = re.compile(r"[aeiouy]")
 _WELSH_VOWEL = re.compile(r"[aeiouyw]")
-_PART_BREAK = re.compile(r"\s-|-\s|\($|:\s*$")
+_PART_BREAK = re.compile(r"\s-|-\s|\($|[:,]\s*$")
 
 
 def _cap(word: str) -> str:
@@ -139,20 +148,26 @@ def _title_word(word: str) -> str:
     """One word in title case: Mc and O' take a second capital, a possessive does not."""
     if word.startswith("mc") and len(word) > 3:
         return "Mc" + _cap(word[2:])
-    pieces = word.split("'")
-    return "'".join(
-        _cap(p) if i == 0 or pieces[i - 1] in ("o", "d") else p for i, p in enumerate(pieces)
+    pieces = re.split(rf"([{_APOSTROPHE}])", word)  # the pieces, and the marks between them
+    return "".join(
+        _cap(p) if i == 0 or (i % 2 == 0 and pieces[i - 2] in ("o", "d")) else p
+        for i, p in enumerate(pieces)
     )
 
 
 def title_name(name: str | None, welsh: bool = False) -> str | None:
-    """A name written all in capitals, in title case: "THE NHS CENTRE" → "The NHS Centre",
+    """A name written in capitals, in title case: "THE NHS CENTRE" → "The NHS Centre",
     "DR PS BATH'S PRACTICE" → "Dr PS Bath's Practice", "ST. MARY'S HEALTH CTR" → "St.
-    Mary's Health Ctr", "MCKENZIE HOUSE" → "McKenzie House". A name that already has a
-    lower-case letter is left as it is. ``welsh``: the name may be Welsh ("YSGOL Y
-    GARREG" → "Ysgol y Garreg", "CWRT HENRI" → "Cwrt Henri")."""
-    if name is None or any(c.islower() for c in name):
+    Mary's Health Ctr", "MCKENZIE HOUSE" → "McKenzie House". ``welsh``: the name may be
+    Welsh ("YSGOL Y GARREG" → "Ysgol y Garreg", "CWRT HENRI" → "Cwrt Henri").
+
+    A name that mixes the two ("Dr. MCGLADE & PARTNERS", "DUNVANT Primary SCHOOL") keeps
+    what is already in lower case: only its words of four letters or more written all in
+    capitals are recased, and in a Welsh name an article left capital between two words
+    ("Ysgol Y Gelli")."""
+    if name is None:
         return name
+    mixed = any(c.islower() for c in name)
     vowel = _WELSH_VOWEL if welsh else _VOWEL
     tokens = _TOKEN.split(name)
     out = []
@@ -161,7 +176,7 @@ def title_name(name: str | None, welsh: bool = False) -> str | None:
     for i, token in enumerate(tokens):
         if i % 2 == 0:  # what stands between words
             out.append(token)
-            # A spaced dash, a bracket or a colon starts a part; a hyphen joins a word
+            # A spaced dash, a bracket, a colon or a comma starts a part; a hyphen joins
             if _PART_BREAK.search(token):
                 opening = True
             continue
@@ -172,20 +187,41 @@ def title_name(name: str | None, welsh: bool = False) -> str | None:
         bracketed = i >= 2 and tokens[i - 1].endswith("(") and following.startswith(")")
         # A Welsh small word stands between spaces: the I of "C.I.W." is an initial
         spaced = i >= 2 and tokens[i - 1].endswith(" ") and following.startswith(" ")
-        welsh_small = welsh and spaced and not opening and word in WELSH_SMALL_WORDS
-        if any(c.isdigit() for c in word):
+        welsh_small = welsh and (
+            (spaced and not opening and word in WELSH_SMALL_WORDS)
+            or (between_hyphens and word in WELSH_HYPHEN_BOUND)
+        )
+        # Initials: after "Dr", or opening a bracket ("(SA Bailey)"), before a surname
+        initials = (
+            len(word) <= 2
+            and following == " "
+            and has_next_word
+            and (after_doctor or (i >= 2 and tokens[i - 1].endswith("(")))
+            and word not in SMALL_WORDS
+        )
+        if mixed:
+            # Only what is plainly a word in capitals; the rest is as its author wrote it
+            capitals = token.isupper() and len(word) >= 4 and vowel.search(word)
+            known = word in ACRONYMS or (welsh and word in WELSH_ACRONYMS)
+            if welsh_small and word in WELSH_HYPHEN_BOUND:
+                shown = word
+            elif capitals and not known:
+                shown = _title_word(word)
+            else:
+                shown = token
+        elif any(c.isdigit() for c in word):
             letters = len(word) - len(word.lstrip("abcdefghijklmnopqrstuvwxyz"))
             shown = word if _ORDINAL.match(word) else _cap(word) if letters >= 3 else token
         elif welsh_small:
             shown = word
-        elif word in ACRONYMS or (bracketed and len(word) <= 2):
-            shown = token  # an acronym, or a code in brackets: "(LA)"
+        elif word in ACRONYMS or (bracketed and len(word) <= 3 and word not in BRACKETED_WORDS):
+            shown = token  # an acronym, or a code in brackets: "(LA)", "(NEL)"
         elif welsh and word in WELSH_ACRONYMS:
             shown = token
         elif after_doctor and word in TWO_LETTER_NAMES:
             shown = _title_word(word)
-        elif after_doctor and len(word) <= 2 and following == " " and has_next_word:
-            shown = token  # initials
+        elif initials:
+            shown = token
         elif word in ABBREVIATIONS:
             shown = _title_word(word)
         elif len(word) >= 2 and not vowel.search(word):

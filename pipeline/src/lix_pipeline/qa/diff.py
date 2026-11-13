@@ -9,9 +9,13 @@ that a reviewer otherwise makes by hand:
 - an indicator that moved although none of its sources has a new edition (new code, or
   a fault);
 - a source with a new edition that moved no indicator reading it (the edition changed
-  nothing we use, or it is not being read).
+  nothing we use, or it is not being read);
+- a measure whose typical value in a nation shifted by more than a quarter: a new file
+  explains that anything moved, not that everything did (England's bus frequency fell
+  from a median of 4.7 an hour to 0.3 in November 2026, on a new timetable file counted
+  on an abnormal day, and passed the first two checks).
 
-Neither is a failure by itself: the report names them so each gets an explanation.
+None is a failure by itself: the report names them so each gets an explanation.
 """
 
 import json
@@ -22,6 +26,8 @@ import polars as pl
 # A value moved when it differs by more than rounding: relative to its size, or absolutely
 # for values near zero
 TOLERANCE = 1e-9
+# A nation's median that moves by more than this share of itself is a shift to explain
+LARGE_SHIFT = 0.25
 NATIONS = ("E", "W", "S", "N", "I")
 
 
@@ -59,6 +65,9 @@ def indicator_changes(old: pl.DataFrame, new: pl.DataFrame, ids: list[str]) -> p
             (pl.col("old").is_not_null() & pl.col("new").is_not_null()).sum().alias("both"),
             moved.fill_null(False).sum().alias("moved"),
             pl.col("move").filter(moved).median().alias("median_move"),
+            # The typical value either side, over the areas that have one in both packs
+            pl.col("old").filter(pl.col("new").is_not_null()).median().alias("median_before"),
+            pl.col("new").filter(pl.col("old").is_not_null()).median().alias("median_after"),
             pl.col("move").filter(moved).max().alias("largest_move"),
             (pl.col("old").is_null() & pl.col("new").is_not_null()).sum().alias("gained"),
             (pl.col("old").is_not_null() & pl.col("new").is_null()).sum().alias("lost"),
@@ -74,8 +83,18 @@ def indicator_changes(old: pl.DataFrame, new: pl.DataFrame, ids: list[str]) -> p
         pl.col("nation").replace_strict(order, default=9).alias("_order")
     ).sort("indicator", "_order").drop("_order").select(
         "indicator", "nation", "before", "after", "both", "moved",
-        "median_move", "largest_move", "gained", "lost",
+        "median_move", "largest_move", "gained", "lost", "median_before", "median_after",
     )  # fmt: skip
+
+
+def large_shifts(changes: pl.DataFrame) -> pl.DataFrame:
+    """Rows whose median over the areas in both packs moved by more than ``LARGE_SHIFT``
+    of the larger of the two medians (a median that was or became zero counts)."""
+    size = pl.max_horizontal(pl.col("median_before").abs(), pl.col("median_after").abs())
+    shift = (pl.col("median_after") - pl.col("median_before")).abs()
+    return changes.filter((pl.col("both") >= 20) & (size > 0) & (shift > LARGE_SHIFT * size)).sort(
+        (shift / size), descending=True
+    )
 
 
 def new_editions(
@@ -161,6 +180,10 @@ def review(
         "moved": moved,
         "moved_without_cause": unexplained,
         "editions_that_moved_nothing": quiet,
+        "large_shifts": [
+            (r["indicator"], r["nation"], r["median_before"], r["median_after"])
+            for r in large_shifts(changes).iter_rows(named=True)
+        ],
         "unread_editions": sorted(s for s in editions if not readers.get(s)),
     }
 
@@ -194,6 +217,17 @@ def render(old: dict, new: dict, changes: pl.DataFrame, found: dict) -> str:
     lines.append(
         f"- **New editions that moved no indicator reading them ({len(quiet)}):** "
         + (", ".join(f"`{s}`" for s in quiet) or "none")
+    )
+    shifts = found["large_shifts"]
+    lines.append(
+        f"- **Typical values that shifted by more than a quarter ({len(shifts)}):** "
+        + (
+            "; ".join(
+                f"`{ind}` in {nation}: median {_number(before)} → {_number(after)}"
+                for ind, nation, before, after in shifts
+            )
+            or "none"
+        )
     )
     lines += ["", "## New or redefined indicators", ""]
     lines += [f"- `{ind}`: {why}" for ind, why in sorted(found["definitions"].items())] or ["none"]

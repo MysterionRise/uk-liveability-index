@@ -179,8 +179,10 @@ def test_persons_per_room_counts_the_top_class_as_nine_rooms():
             "T6_4_NSP": ["9", "20"],
         }
     )
+    df = df.with_columns(pl.Series("T6_4_TH", ["23", "7"]))
     out = tidy_saps_rooms(df)
     assert out["total"].to_list() == [20.0, 0.0]
+    assert out["households"].to_list() == [23.0, 7.0]
     assert out["persons_per_room"].to_list() == [pytest.approx(90 / 140), None]
 
 

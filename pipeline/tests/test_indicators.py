@@ -287,7 +287,26 @@ def test_rent_is_the_councils_and_its_share_of_income_the_wider_areas():
     assert set(rent["quality"]) == {"broadcast_lad"}
     share = rent_to_income(ctx).sort("lsoa21cd")
     assert share["value"].to_list() == pytest.approx([30.0, 40.0, None])
-    assert set(share["quality"]) == {"broadcast_lad"}
+    # One rent for the council, a share for each neighbourhood
+    assert set(share["quality"]) == {"broadcast_msoa"}
+
+
+def test_people_per_room_is_flagged_where_few_households_are_behind_it():
+    from lix_pipeline.indicators.community import persons_per_room
+
+    rooms = pl.DataFrame({
+        "lsoa21cd": ["I01000001", "I01000002", "I01000003", "I01000004", "E01000001"],
+        "total": [90.0, 5.0, 55.0, 0.0, 400.0],
+        "households": [94.0, 6.0, 206.0, 3.0, None],
+        "persons_per_room": [0.47, 0.5, 1.05, None, None],
+    })  # fmt: skip
+    out = persons_per_room(FakeContext(census_ts052=rooms)).sort("lsoa21cd")
+    # Five households; 55 of 206 stating their rooms; an area with none has no row
+    assert out.rows() == [
+        ("I01000001", 0.47, "ok"),
+        ("I01000002", 0.5, "low_n"),
+        ("I01000003", 1.05, "low_n"),
+    ]
 
 
 def test_council_tax_broadcast_from_billing_authority():

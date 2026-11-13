@@ -69,8 +69,9 @@ def rent_to_income(ctx) -> pl.DataFrame:
     return df.select(
         "lsoa21cd",
         (pl.col("rent") * 12 / pl.col("income_net") * 100).alias("value"),
-        # The coarser of its two inputs
-        pl.lit("broadcast_lad").alias("quality"),
+        # It differs between the neighbourhoods of a council, because the income does:
+        # flagged as the council's, it was read as one figure for all of Leeds
+        pl.lit("broadcast_msoa").alias("quality"),
     )
 
 
