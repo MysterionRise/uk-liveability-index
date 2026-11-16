@@ -23,14 +23,16 @@ updates:
       semver-minor-days: 7
       semver-patch-days: 3
     groups:
-      # The assistant's stack, declared first so that it gets a pull request of its own (a
-      # dependency goes to the first group it matches). CI's scripted model cannot show
+      # The assistant's stack, in a pull request of its own. CI's scripted model cannot show
       # that a real chat still streams and still calls its tools: check one live (make up
-      # BUILD=1 with a model key) before merging
+      # BUILD=1 with a model key) before merging. A dependency that matches two groups goes
+      # to the one Dependabot judges more specific, and minor-and-patch outranks a wildcard
+      # pattern, so minor-and-patch must exclude the same patterns (#423)
       agent-stack:
         patterns: ["@copilotkit/*", "@ag-ui/*"]
       minor-and-patch:
         update-types: [minor, patch]
+        exclude-patterns: ["@copilotkit/*", "@ag-ui/*"]
     ignore:
       # @copilotkit/runtime and react-core pin their own @ag-ui/client (1.0.2). A different
       # top-level copy fails typecheck (TS2769). Move it by hand, with @copilotkit/*.
@@ -61,13 +63,15 @@ updates:
       semver-minor-days: 7
       semver-patch-days: 3
     groups:
-      # The assistant's stack on the Python side, first for the same reason as npm's: a
-      # live chat check before merging. pydantic-graph is released with pydantic-ai, which
-      # pins it to its own version
+      # The assistant's stack on the Python side, in its own pull request for the same reason
+      # as npm's: a live chat check before merging; and minor-and-patch excludes the same
+      # patterns for the same reason (#423). pydantic-graph is released with pydantic-ai,
+      # which pins it to its own version
       agent-stack:
         patterns: ["pydantic-ai*", "pydantic-evals", "pydantic-graph", "fastmcp*", "ag-ui-protocol"]
       minor-and-patch:
         update-types: [minor, patch]
+        exclude-patterns: ["pydantic-ai*", "pydantic-evals", "pydantic-graph", "fastmcp*", "ag-ui-protocol"]
     ignore:
       # polars 2.0 changes lazy/streaming defaults (see pipeline/pyproject.toml): migrate deliberately
       - dependency-name: polars
